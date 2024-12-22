@@ -263,7 +263,7 @@ class BatchProcessInterface(QWidget):
         else:
             filter_str = f"{self.tr('音频文件或视频文件')} ({' '.join(audio_formats + video_formats)})"
 
-        files, _ = QFileDialog.getOpenFileNames(self, self.tr("选择文件"), cfg.last_open_dir , filter_str)
+        files, _ = QFileDialog.getOpenFileNames(self, self.tr("选择文件"), cfg.last_open_dir.value , filter_str)
         for file_path in files:
             self.create_task(file_path)
             
