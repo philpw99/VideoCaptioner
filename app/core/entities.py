@@ -386,6 +386,7 @@ class Task:
     file_path: Optional[str] = None
     url: Optional[str] = None
     source: Source = Source.FILE_IMPORT
+    # Philip: need to know the str is "English" or "en"
     original_language: Optional[str] = None
     target_language: Optional[str] = None
     video_info: Optional[VideoInfo] = None
@@ -396,6 +397,8 @@ class Task:
 
     # 转录（转录模型）
     transcribe_model: Optional[TranscribeModelEnum] = TranscribeModelEnum.JIANYING
+    
+    # Philip: Need clarified. LANGUAGE["英语"]= "en", and TranscribeLanguageEnum have no such value. Only "英语"
     transcribe_language: Optional[TranscribeLanguageEnum] = LANGUAGES[TranscribeLanguageEnum.ENGLISH.value]
     use_asr_cache: bool = True
     need_word_time_stamp: bool = False
@@ -410,6 +413,7 @@ class Task:
     # Faster Whisper 配置
     faster_whisper_model: Optional[FasterWhisperModelEnum] = None
     faster_whisper_model_dir: Optional[str] = None
+    # Philip: this should set "cpu" instead of "cuda" as default value
     faster_whisper_device: str = "cuda"
     faster_whisper_vad_filter: bool = True
     faster_whisper_vad_threshold: float = 0.5
@@ -431,7 +435,6 @@ class Task:
     max_word_count_cjk: int = 12
     max_word_count_english: int = 18
     need_split: bool = True
-
 
     # 视频生成
     need_video: bool = True

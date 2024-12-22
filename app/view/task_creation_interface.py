@@ -294,17 +294,26 @@ class TaskCreationInterface(QWidget):
 
     def on_start_clicked(self):
         if self.start_button._icon == FluentIcon.FOLDER:
-            desktop_path = QStandardPaths.writableLocation(QStandardPaths.DesktopLocation)
+            if cfg.last_open_dir.value != "":
+                open_path = cfg.last_open_dir.value
+            else:
+                open_path = QStandardPaths.writableLocation(QStandardPaths.DesktopLocation)
+            
             file_dialog = QFileDialog()
+            file_dialog.setFileMode(QFileDialog.FileMode.ExistingFile)
 
             # 构建文件过滤器
             video_formats = " ".join(f"*.{fmt.value}" for fmt in SupportedVideoFormats)
             audio_formats = " ".join(f"*.{fmt.value}" for fmt in SupportedAudioFormats)
             filter_str = f"{self.tr('媒体文件')} ({video_formats} {audio_formats});;{self.tr('视频文件')} ({video_formats});;{self.tr('音频文件')} ({audio_formats})"
-
-            file_path, _ = file_dialog.getOpenFileName(self, self.tr("选择媒体文件"), desktop_path, filter_str)
+            file_path, _ = file_dialog.getOpenFileName(self, self.tr("选择媒体文件"), open_path, filter_str)
             if file_path:
-                self.search_input.setText(file_path)
+                # Save this file's directory for later use
+                file_dir = str( Path(file_path).parent )
+                if file_dir != cfg.last_open_dir.value:
+                    cfg.last_open_dir.value = file_dir
+                
+                self.search_input.setText(file_path)                
             return
         
         need_whisper_settings = cfg.transcribe_model.value in [

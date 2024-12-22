@@ -142,10 +142,7 @@ class FasterWhisperASR(BaseASR):
         filtered_segments = []
         for seg in asr_data.segments:
             text = seg.text.strip()
-            if not (text.startswith('【') or 
-                   text.startswith('[') or 
-                   text.startswith('(') or 
-                   text.startswith('（')):
+            if not text.startswith(('【','[','(','（')):
                 filtered_segments.append(seg)
         return filtered_segments
 

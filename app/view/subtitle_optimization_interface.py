@@ -565,8 +565,21 @@ class SubtitleOptimizationInterface(QWidget):
         #         self.load_subtitle_file(file_path)
         #         print(file_path)
         # # 修改mark e
-        file_path, _ = QFileDialog.getOpenFileName(self, self.tr("选择字幕文件"), "", filter_str)
+        
+        if cfg.last_open_dir.value != "":
+            open_path = cfg.last_open_dir.value
+        else:
+            open_path = QStandardPaths.writableLocation(QStandardPaths.DesktopLocation)
+        
+        file_dialog = QFileDialog()
+        file_dialog.setFileMode(QFileDialog.FileMode.ExistingFile)
+        file_path, _ = file_dialog.getOpenFileName(self, self.tr("选择字幕文件"), open_path , filter_str)
         if file_path:
+            # Save this file's directory for later use
+            file_dir = str( Path(file_path).parent )
+            if file_dir != cfg.last_open_dir.value:
+                cfg.last_open_dir.value = file_dir
+
             self.file_select_button.setProperty("selected_file", file_path)
             self.load_subtitle_file(file_path)
             # print(file_path)
@@ -622,11 +635,12 @@ class SubtitleOptimizationInterface(QWidget):
             return
 
         # 获取保存路径
-        default_name = os.path.splitext(os.path.basename(self.task.original_subtitle_save_path))[0]
+        # default_name = os.path.splitext(os.path.basename(self.task.original_subtitle_save_path))[0]
         file_path, _ = QFileDialog.getSaveFileName(
             self,
             self.tr("保存字幕文件"),
-            default_name,  # 使用原文件名作为默认名
+            # default_name,  # 使用原文件名作为默认名
+            self.task.original_subtitle_save_path,  # Use original name and path as default
             f"{self.tr('字幕文件')} (*.{self.format_combobox.currentText()})"
         )
         if not file_path:

@@ -177,6 +177,9 @@ class Config(QConfig):
     checkUpdateAtStartUp = ConfigItem(
         "Update", "CheckUpdateAtStartUp", True, BoolValidator()
     )
+    
+    # ------------------- 最后打开文件夹 -------------------
+    last_open_dir = ConfigItem("All", "Last_Open_Dir", "")
 
 
 cfg = Config()

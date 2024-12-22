@@ -16,6 +16,7 @@ from qfluentwidgets import FluentIcon as FIF
 from qframelesswindow import FramelessWindow, StandardTitleBar
 
 from ..config import RESOURCE_PATH
+from ..common.config import cfg
 from ..core.entities import SupportedVideoFormats, SupportedAudioFormats
 from ..core.entities import Task, VideoInfo
 from ..core.thread.create_task_thread import CreateTaskThread
@@ -262,9 +263,14 @@ class BatchProcessInterface(QWidget):
         else:
             filter_str = f"{self.tr('音频文件或视频文件')} ({' '.join(audio_formats + video_formats)})"
 
-        files, _ = QFileDialog.getOpenFileNames(self, self.tr("选择文件"), "", filter_str)
+        files, _ = QFileDialog.getOpenFileNames(self, self.tr("选择文件"), cfg.last_open_dir , filter_str)
         for file_path in files:
             self.create_task(file_path)
+            
+        # Save the files' directory for later use
+        file_dir = str( Path(files[0]).parent )
+        if file_dir != cfg.last_open_dir.value:
+            cfg.last_open_dir.value = file_dir
 
     def create_task(self, file_path):
         """创建新任务"""
