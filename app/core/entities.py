@@ -427,6 +427,7 @@ class Task:
     faster_whisper_vad_method: Optional[VadMethodEnum] = VadMethodEnum.SILERO_V3
     faster_whisper_ff_mdx_kim2: bool = False
     faster_whisper_one_word: bool = True
+    faster_whisper_translate_to_english: bool = False
     faster_whisper_prompt: Optional[str] = None
 
     # LLM（优化翻译模型）

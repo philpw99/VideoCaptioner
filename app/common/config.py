@@ -121,6 +121,10 @@ class Config(QConfig):
     faster_whisper_one_word = ConfigItem(
         "FasterWhisper", "OneWord", True, BoolValidator()
     )
+    # 翻译成英语
+    faster_whisper_translate_to_english = ConfigItem(
+        "FasterWhisper", "TranslateToEnglish", False, BoolValidator()
+    )
     # 提示词
     faster_whisper_prompt = ConfigItem("FasterWhisper", "Prompt", "")
 

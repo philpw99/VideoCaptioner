@@ -119,6 +119,9 @@ class TranscriptThread(QThread):
                         args["max_line_width"] = int(self.task.max_word_count_english * 8)
                         args["max_comma_cent"] = 50
                         args["max_comma"] = 20
+                
+                if self.task.faster_whisper_translate_to_english:
+                    args["translate_to_english"] = True
 
                 self.asr = FasterWhisperASR(self.task.audio_save_path, **args)
             elif self.task.transcribe_model == TranscribeModelEnum.BIJIAN:

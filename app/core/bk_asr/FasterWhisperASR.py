@@ -35,6 +35,7 @@ class FasterWhisperASR(BaseASR):
                  ff_mdx_kim2: bool = False,
                  # 文本处理参数
                  one_word: int = 0,
+                 translate_to_english: bool = False,
                  sentence: bool = False,
                  max_line_width: int = 100,
                  max_line_count: int = 1,
@@ -69,6 +70,7 @@ class FasterWhisperASR(BaseASR):
         self.max_line_count = max_line_count
         self.max_comma = max_comma
         self.max_comma_cent = max_comma_cent
+        self.translate_to_english = translate_to_english
         self.prompt = prompt
 
         self.process = None
@@ -120,6 +122,10 @@ class FasterWhisperASR(BaseASR):
             self.one_word = 0
         if self.one_word in [0, 1, 2]:
             cmd.extend(["--one_word", str(self.one_word)])
+        
+        # 翻译成英语
+        if self.translate_to_english:
+            cmd.extend(["--task", "translate"])
         
         if self.sentence:
             cmd.extend([
