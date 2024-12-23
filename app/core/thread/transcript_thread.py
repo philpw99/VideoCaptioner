@@ -137,7 +137,20 @@ class TranscriptThread(QThread):
             original_subtitle_path = Path(self.task.original_subtitle_save_path)
             original_subtitle_path.parent.mkdir(parents=True, exist_ok=True)
             asr_data.to_srt(save_path=str(original_subtitle_path))
-            logger.info("字幕文件已保存到: %s", str(original_subtitle_path))
+            if self.task.result_subtitle_save_path:
+                # Make a copy to resul dir as well, if exist
+                result_subtitle_path= Path(self.task.result_subtitle_save_path)
+                result_subtitle_path.parent.mkdir(parents=True, exist_ok=True)
+                match result_subtitle_path.suffix:
+                    case ".ass":
+                        asr_data.to_ass(save_path=self.task.result_subtitle_save_path)
+                    case ".srt":
+                        asr_data.to_srt(save_path=self.task.result_subtitle_save_path)
+                    case _:
+                        raise RuntimeError("Wrong result subtitle file: " + self.task.result_subtitle_save_path)
+                
+                logger.info("目的字幕文件已保存到: %s", self.task.result_subtitle_save_path)
+            logger.info("源字幕文件已保存到: %s", self.task.original_subtitle_save_path)
 
             # 删除音频文件 和 封面
             try:
