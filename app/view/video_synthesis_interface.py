@@ -240,16 +240,15 @@ class VideoSynthesisInterface(QWidget):
         )
 
     def open_video_folder(self):
-        if self.task and self.task.work_dir:
-            file_path = Path(self.task.video_save_path)
-            target_path = str(file_path.parent if file_path.exists() else Path(self.task.work_dir))
+        video_folder= Path(self.video_input.text()).parent
+        if video_folder.exists():
             # Cross-platform folder opening
             if sys.platform == "win32":
-                os.startfile(target_path)
+                os.startfile(str(video_folder))
             elif sys.platform == "darwin":  # macOS
-                subprocess.run(["open", target_path])
+                subprocess.run(["open", str(video_folder)])
             else:  # Linux
-                subprocess.run(["xdg-open", target_path])
+                subprocess.run(["xdg-open", str(video_folder)])
         else:
             InfoBar.warning(
                 self.tr("警告"),

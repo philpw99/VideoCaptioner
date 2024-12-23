@@ -79,7 +79,7 @@ class CreateTaskThread(QThread):
         # 定义各个路径
         audio_save_path = task_work_dir / f"【Audio】{file_name}.wav"
         original_subtitle_save_path = task_work_dir / "subtitle" / f"【原始字幕】{file_name}-{cfg.transcribe_model.value.value}{whisper_type}.srt"
-        result_subtitle_save_path = file_dir / "subtitle" / f"{result_subtitle_type}-{file_name}.srt"
+        result_subtitle_save_path = file_dir / "subtitle" / f"{result_subtitle_type}-{file_name}.ass"
         video_save_path = file_dir / f"【生成】{Path(file_path).name}"
 
         ass_style_name = cfg.subtitle_style_name.value
@@ -195,7 +195,7 @@ class CreateTaskThread(QThread):
         # 定义各个路径
         audio_save_path = task_work_dir / f"【Audio】{Path(video_file_path).stem}.wav"
         original_subtitle_save_path = task_work_dir / "subtitle" / f"【原始字幕】{cfg.transcribe_model.value.value}-file_name-{whisper_type}.srt" if not subtitle_file_path else subtitle_file_path
-        result_subtitle_save_path = task_work_dir / "subtitle" / f"{result_subtitle_type}-{file_name}.srt"
+        result_subtitle_save_path = task_work_dir / "subtitle" / f"{result_subtitle_type}-{file_name}.ass"
         video_save_path = task_work_dir / f"【生成】{Path(video_file_path).name}"
 
         if cfg.transcribe_model.value in [TranscribeModelEnum.JIANYING, TranscribeModelEnum.BIJIAN]:
@@ -289,7 +289,7 @@ class CreateTaskThread(QThread):
 
         audio_save_path = task_work_dir / f"【Audio】{file_name}.wav"
         original_subtitle_save_path = task_work_dir / f"【原始字幕】{file_name}-{cfg.transcribe_model.value.value}-{whisper_type}.srt"
-        result_subtitle_save_path = Path(file_path).parent / f"【生成字幕】{file_name}.srt"
+        result_subtitle_save_path = Path(file_path).parent / f"【生成字幕】{file_name}.ass"
 
         # 创建 Task 对象
         task = Task(
@@ -350,7 +350,7 @@ class CreateTaskThread(QThread):
         logger.info(f"字幕类型: {result_subtitle_type}")
 
         original_subtitle_save_path = task_work_dir / file_path
-        result_subtitle_save_path = task_work_dir / f"{result_subtitle_type}{file_name}.srt"
+        result_subtitle_save_path = task_work_dir / f"{result_subtitle_type}{file_name}.ass"
 
         ass_style_name = cfg.subtitle_style_name.value
         ass_style_path = SUBTITLE_STYLE_PATH / f"{ass_style_name}.txt"
