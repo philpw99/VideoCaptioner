@@ -326,7 +326,7 @@ class TranscriptionInterface(QWidget):
 
     def create_task(self, file_path):
         """创建任务"""
-        self.create_task_thread = CreateTaskThread(file_path, 'transcription')
+        self.create_task_thread = CreateTaskThread(file_path, Task.Type.TRANSCRIBE)
         self.create_task_thread.finished.connect(self.set_task)
         self.create_task_thread.start()
 

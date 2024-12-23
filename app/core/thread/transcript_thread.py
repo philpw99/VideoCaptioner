@@ -55,6 +55,7 @@ class TranscriptThread(QThread):
 
             self.progress.emit(5, self.tr("转换音频中"))
             logger.info("开始转换音频")
+            self.task.status = Task.Status.TRANSCRIBING
 
             # 转换为音频
             audio_save_path = Path(self.task.audio_save_path)
@@ -115,7 +116,7 @@ class TranscriptThread(QThread):
                         args["max_comma_cent"] = 50
                         args["max_comma"] = 5
                     else:
-                        args["max_line_width"] = int(self.task.max_word_count_english * 4)
+                        args["max_line_width"] = int(self.task.max_word_count_english * 8)
                         args["max_comma_cent"] = 50
                         args["max_comma"] = 20
 

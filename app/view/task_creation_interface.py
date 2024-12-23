@@ -388,7 +388,7 @@ class TaskCreationInterface(QWidget):
             return False
 
     def _process_file(self, file_path):
-        self.create_task_thread = CreateTaskThread(file_path, 'file')
+        self.create_task_thread = CreateTaskThread(file_path, Task.Type.SUBTITLE)
         self.create_task_thread.finished.connect(self.on_create_task_finished)
         self.create_task_thread.progress.connect(self.on_create_task_progress)
         self.create_task_thread.start()
@@ -403,7 +403,7 @@ class TaskCreationInterface(QWidget):
                 duration=5000,
                 parent=self
             )
-        self.create_task_thread = CreateTaskThread(url, 'url')
+        self.create_task_thread = CreateTaskThread(url, Task.Type.URL)
         self.create_task_thread.finished.connect(self.on_create_task_finished)
         self.create_task_thread.progress.connect(self.on_create_task_progress)
         self.create_task_thread.error.connect(self.on_create_task_error)
