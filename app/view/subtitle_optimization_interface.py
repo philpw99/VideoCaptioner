@@ -9,7 +9,7 @@ import tempfile
 from PyQt5.QtCore import *
 from PyQt5.QtGui import QDragEnterEvent, QDropEvent, QColor
 from PyQt5.QtWidgets import QAbstractItemView
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QApplication, QHeaderView, QFileDialog
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QApplication, QHeaderView, QFileDialog, QMessageBox
 from qfluentwidgets import ComboBox, PrimaryPushButton, ProgressBar, PushButton, InfoBar, BodyLabel, TableView, ToolButton, TextEdit, MessageBoxBase, RoundMenu, Action, FluentIcon as FIF
 from qfluentwidgets import InfoBarPosition
 from PyQt5.QtCore import QUrl
@@ -600,6 +600,15 @@ class SubtitleOptimizationInterface(QWidget):
           并获取用户选择的文件路径。
         - 加载字幕文件：如果用户选择了多个文件，调用 load_subtitle_file 方法加载这些文件。
         """
+        # Batch processing only for people with their own API key.
+        if cfg.api_key.value == "" or cfg.api_base.value == "":
+            QMessageBox.warning(
+                self,
+                self.tr("No API Key or API Base set"),
+                self.tr("批量字幕处理占用大量服务器资源，因此必须要使用自己的API KEY & BASE，免得公益服务器无法工作，请见谅。\n具体设定在程序左下角的‘设定’里。"),
+            )
+            return
+
         # 构建文件过滤器
         subtitle_formats = " ".join(f"*.{fmt.value}" for fmt in SupportedSubtitleFormats)
         filter_str = f"{self.tr('字幕文件')} ({subtitle_formats})"
@@ -609,6 +618,7 @@ class SubtitleOptimizationInterface(QWidget):
             #     self.file_select_button.setProperty("selected_file", file_path)
             #     self.load_subtitle_file(file_path)
             #     self.process()
+            
             self.file_queue.extend(file_paths)  # 将文件路径加入队列
             self._process_next_file()  # 开始处理队列中的第一个文件
 
