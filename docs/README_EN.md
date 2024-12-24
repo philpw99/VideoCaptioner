@@ -1,10 +1,10 @@
 <div align="center">
-  <img src="./docs/images/logo.png"alt="VideoCaptioner Logo" width="100">
+  <img src="./images/logo.png"alt="VideoCaptioner Logo" width="100">
   <p>KaKa Caption Assistant</p>
   <h1>VideoCaptioner</h1>
   <p>A video subtitle processing assistant based on Large Language Models (LLM), supporting speech recognition, subtitle segmentation, optimization, and translation workflow</p>
 
-  [简体中文](./README_CN.md) / [English](./REAME_EN.md)
+  [简体中文](./README_CN.md) / [English](./REAME_EN.md) / [正体中文](./README_TW.md)
   
 </div>
 
