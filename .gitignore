@@ -19,6 +19,7 @@
 *.srt
 *.mp4
 *.exe
+*.md
 
 # 应用数据
 /AppData/
