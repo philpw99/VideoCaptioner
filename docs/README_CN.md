@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="./docs/images/logo.png"alt="VideoCaptioner Logo" width="100">
+  <img src="./images/logo.png"alt="VideoCaptioner Logo" width="100">
   <p>卡卡字幕助手</p>
   <h1>VideoCaptioner</h1>
   <p>一款基于大语言模型(LLM)的视频字幕处理助手，支持语音识别、字幕断句、优化、翻译全流程处理</p>
