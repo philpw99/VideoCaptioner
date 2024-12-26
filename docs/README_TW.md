@@ -4,7 +4,7 @@
   <h1>VideoCaptioner</h1>
   <p>一款基於大語言模型(LLM)的影片字幕處理助手，支援語音識別、字幕斷句、最佳化、翻譯全流程處理</p>
 
-  [简体中文](./README.md) / 正體中文 / [English](./docs/README_EN.md)
+  [简体中文](./README_CN.md) / 正體中文 / [English](./README_EN.md)
   
 </div>
 
