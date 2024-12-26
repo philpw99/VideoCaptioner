@@ -5,7 +5,6 @@ from enum import Enum
 from random import randint
 from typing import Optional
 
-
 class SupportedAudioFormats(Enum):
     """ 支持的音频格式 """
     AAC = "aac"
@@ -103,6 +102,12 @@ class TargetLanguageEnum(Enum):
     RUSSIAN = "Russian"
     TURKISH = "Turkish"
 
+class TodoWhenDoneEnum(Enum):
+    """ 批量处理完成后需做事情 """
+    NOTHING = "Nothing"
+    SUSPEND = "Suspend the computer"
+    SHUTDOWN = "Shutdown the computer"
+    EXIT = "Exit the program"
 
 class TranscribeLanguageEnum(Enum):
     """ 转录语言 """

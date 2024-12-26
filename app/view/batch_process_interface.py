@@ -7,7 +7,7 @@ from threading import Lock
 
 from PyQt5.QtCore import *
 from PyQt5.QtGui import QPixmap, QFont
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFileDialog, QMainWindow
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFileDialog, QMainWindow, QMessageBox
 from qfluentwidgets import ComboBox, CardWidget, ToolTipFilter, FluentWindow, isDarkTheme, \
     ToolTipPosition, PrimaryPushButton, PushButton, InfoBar, BodyLabel, PillPushButton, setFont, \
     InfoBadgePosition, ProgressRing, InfoBarPosition, ScrollArea, Action, RoundMenu, IconInfoBadge, \
@@ -17,13 +17,27 @@ from qframelesswindow import FramelessWindow, StandardTitleBar
 
 from ..config import RESOURCE_PATH
 from ..common.config import cfg
-from ..core.entities import SupportedVideoFormats, SupportedAudioFormats
+from ..core.entities import SupportedVideoFormats, SupportedAudioFormats, TodoWhenDoneEnum
 from ..core.entities import Task, VideoInfo
 from ..core.thread.create_task_thread import CreateTaskThread
 from ..core.thread.subtitle_pipeline_thread import SubtitlePipelineThread
 from ..core.thread.transcript_thread import TranscriptThread
 from ..view.subtitle_optimization_interface import SubtitleOptimizationInterface
 
+
+class timedMessageBox(QMessageBox):
+    def __init__(self, title, message, timeout):
+        super(timedMessageBox, self).__init__()
+        self.timeout = timeout
+        self.setWindowTitle(title)
+        self.setText('\n'.join((message, f"Closing in {timeout} seconds")))
+        self.setIcon(QMessageBox.Icon.Warning)
+        self.setStandardButtons( QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel )
+        self.setDefaultButton = QMessageBox.StandardButton.Ok
+
+    def showEvent(self, event):
+        QTimer().singleShot(self.timeout*1000, self.close)
+        super(timedMessageBox, self).showEvent(event)
 
 class BatchProcessInterface(QWidget):
     """批量处理界面"""
@@ -70,8 +84,16 @@ class BatchProcessInterface(QWidget):
         self.start_all_button = PrimaryPushButton(self.tr("开始处理"), self, icon=FIF.PLAY)
         self.cancel_button = PushButton(self.tr("取消"), self, icon=FIF.CLOSE)
         self.cancel_button.setEnabled(False)
+        self.todo_when_done_label = BodyLabel(self.tr("全部处理后，就"))
+        self.todo_when_done_label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignCenter )
+        self.todo_when_done_combobox = ComboBox(self)
+        self.todo_when_done_combobox.addItems([self.tr(todo.value) for todo in TodoWhenDoneEnum])
+        self.todo_when_done_combobox.setCurrentIndex(0) # Defaults to do nothing.
+        
         self.top_layout.addWidget(self.start_all_button)
         self.top_layout.addWidget(self.cancel_button)
+        self.top_layout.addWidget(self.todo_when_done_label)
+        self.top_layout.addWidget(self.todo_when_done_combobox)
 
         self.main_layout.addLayout(self.top_layout)
 
@@ -238,6 +260,39 @@ class BatchProcessInterface(QWidget):
     
     def on_batch_finished(self):
         """批量处理完成的处理"""
+        todo = self.todo_when_done_combobox.currentText()
+        match todo:
+            case self.tr(TodoWhenDoneEnum.EXIT):
+                QCoreApplication.quit() # Exit
+
+            case self.tr(TodoWhenDoneEnum.SUSPEND):
+                qbox = timedMessageBox(
+                    self.tr("Suspending in 1 minute"),
+                    self.tr("All jobs are done. The computer is going to be suspended."),
+                    60
+                )
+                ret = qbox.exec()
+                if ret == QMessageBox.StandardButton.Ok:
+                    if sys.platform == 'win32':
+                        os.system("rundll32.exe powrprof.dll,SetSuspendState 0,1,0")
+                    else:
+                        os.system('sudo systemctl suspend')
+
+            case self.tr(TodoWhenDoneEnum.SHUTDOWN):
+                qbox = timedMessageBox(
+                    self.tr( "Shutting Down in 1 minute"),
+                    self.tr("All jobs are done. The computer is shutting down. "),
+                    60
+                )
+                ret = qbox.exec()
+                if ret == QMessageBox.StandardButton.Ok:
+                    if sys.platform == 'win32':
+                        os.system("shutdown /s /t 1")
+                    else:
+                        self.stop()
+                        os.system('sudo shutdown now')
+        
+        # Doing nothing.
         self.processing = False
         self.start_all_button.setEnabled(True)
         self.cancel_button.setEnabled(False)

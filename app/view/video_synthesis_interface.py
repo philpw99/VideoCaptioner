@@ -10,7 +10,7 @@ from PyQt5.QtCore import Qt, pyqtSignal
 from PyQt5.QtGui import QDropEvent
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QApplication,
                              QFileDialog)
-from qfluentwidgets import (CardWidget, LineEdit, BodyLabel,
+from qfluentwidgets import (CardWidget, ComboBox, LineEdit, BodyLabel,
                             InfoBar, InfoBarPosition, ProgressBar, PushButton)
 
 from app.core.thread.create_task_thread import CreateTaskThread
@@ -78,8 +78,11 @@ class VideoSynthesisInterface(QWidget):
         self.button_layout = QHBoxLayout()
         self.synthesize_button = PushButton(self.tr("开始合成"), self)
         self.open_folder_button = PushButton(self.tr("打开视频文件夹"), self)
+        self.open_work_folder_button = PushButton(self.tr("打开临时工作目录"), self)
         self.button_layout.addWidget(self.synthesize_button)
         self.button_layout.addWidget(self.open_folder_button)
+        self.button_layout.addWidget(self.open_work_folder_button)
+
         self.main_layout.addLayout(self.button_layout)
 
         self.main_layout.addStretch(1)
@@ -131,6 +134,7 @@ class VideoSynthesisInterface(QWidget):
         # 合成和文件夹相关信号
         self.synthesize_button.clicked.connect(self.process)
         self.open_folder_button.clicked.connect(self.open_video_folder)
+        self.open_work_folder_button.clicked.connect(self.open_work_folder)
 
     def set_value(self):
         pass
@@ -257,6 +261,15 @@ class VideoSynthesisInterface(QWidget):
                 position=InfoBarPosition.TOP,
                 parent=self
             )
+
+    def open_work_folder(self):
+        # Cross-platform folder opening
+        if sys.platform == "win32":
+            os.startfile(cfg.work_dir.value)
+        elif sys.platform == "darwin":  # macOS
+            subprocess.run(["open", cfg.work_dir.value])
+        else:  # Linux
+            subprocess.run(["xdg-open", cfg.work_dir.value])
 
     def dragEnterEvent(self, event):
         """拖拽进入事件处理"""
