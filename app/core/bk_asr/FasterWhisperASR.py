@@ -187,6 +187,9 @@ class FasterWhisperASR(BaseASR):
                 output = output.strip()
                 if output:
                     # 解析进度百分比
+                    if output.startswith("Operation finished"):
+                        # Sometimes it's not showing 100% in output
+                        is_finish = True
                     if match := re.search(r'(\d+)%', output):
                         progress = int(match.group(1))
                         if progress == 100:
