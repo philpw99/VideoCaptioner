@@ -430,44 +430,51 @@ def from_srt(srt_str: str) -> 'ASRData':
 
 def from_vtt(vtt_str: str) -> 'ASRData':
     """
-    从YouTube VTT格式的字符串创建ASRData实例。
+    从 VTT 格式的字符串创建ASRData实例。
     
-    :param vtt_str: YouTube VTT格式的字幕字符串
+    :param vtt_str: VTT格式的字幕字符串
     :return: ASRData实例
     """
     segments = []
     # 跳过头部元数据
     content = vtt_str.split('\n\n')[2:]
     
+    timestamp_pattern = re.compile(r'(\d{2}):(\d{2}):(\d{2})\.(\d{3})\s*-->\s*(\d{2}):(\d{2}):(\d{2})\.(\d{3})')
+    
     for block in content:
         lines = block.strip().split('\n')
-        if not lines:
+        if len(lines) < 2:
             continue
             
         # 解析时间戳行
-        timestamp_line = lines[0]
-        if '-->' not in timestamp_line:
+        timestamp_line = lines[1]
+        match = timestamp_pattern.match(timestamp_line)
+        if not match:
             continue
             
         # 提取开始和结束时间
-        times = timestamp_line.split(' --> ')[0]
-        hours, minutes, seconds = times.split(':')
-        seconds, milliseconds = seconds.split('.')
-        start_time = (int(hours) * 3600 + int(minutes) * 60 + int(seconds)) * 1000 + int(milliseconds)
+        time_parts = list(map(int, match.groups()))
+        start_time = sum([
+            time_parts[0] * 3600000,
+            time_parts[1] * 60000, 
+            time_parts[2] * 1000,
+            time_parts[3]
+        ])
+        end_time = sum([
+            time_parts[4] * 3600000,
+            time_parts[5] * 60000,
+            time_parts[6] * 1000,
+            time_parts[7]
+        ])
         
-        times = timestamp_line.split(' --> ')[1].split()[0]
-        hours, minutes, seconds = times.split(':')
-        seconds, milliseconds = seconds.split('.')
-        end_time = (int(hours) * 3600 + int(minutes) * 60 + int(seconds)) * 1000 + int(milliseconds)
+        # 处理文本内容
+        text_line = " ".join(lines[2:])
+        cleaned_text = re.sub(r'<\d{2}:\d{2}:\d{2}\.\d{3}>', '', text_line)
+        cleaned_text = re.sub(r'</?c>', '', cleaned_text)
+        cleaned_text = cleaned_text.strip()
         
-        if len(lines) > 1:
-            text_line = lines[1]
-            cleaned_text = re.sub(r'<\d{2}:\d{2}:\d{2}\.\d{3}>', '', text_line)
-            cleaned_text = re.sub(r'</?c>', '', cleaned_text)
-            cleaned_text = cleaned_text.strip()
-            
-            if cleaned_text and cleaned_text != " ":
-                segments.append(ASRDataSeg(cleaned_text, start_time, end_time))
+        if cleaned_text and cleaned_text != " ":
+            segments.append(ASRDataSeg(cleaned_text, start_time, end_time))
     
     return ASRData(segments)
 

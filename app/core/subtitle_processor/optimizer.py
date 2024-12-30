@@ -116,7 +116,8 @@ class SubtitleOptimizer:
         response = self.client.chat.completions.create(
             model=self.model,
             stream=False,
-            messages=message)
+            messages=message,
+            timeout=80)
 
         optimized_text = json_repair.loads(response.choices[0].message.content)
 

@@ -199,3 +199,69 @@ VideoCaptioner/
 ## 🤝 貢獻指南
 
 作者是一名大三學生，個人能力和項目都還有許多不足，項目也在不斷完善中，如果在使用過程遇到的Bug，歡迎提交 [Issue](https://github.com/WEIFENG2333/VideoCaptioner/issues) 和 Pull Request 幫助改進項目。
+
+## 更新日誌
+
+<details>
+<summary>2024.12.07</summary>
+
+- 新增 Faster-whisper 支援，音訊轉字幕品質更優
+- 支援Vad語音斷點檢測，大大減少幻覺現象
+- 支援人聲音分離，分離影片背景噪音
+- 支援關閉影片合成
+- 新增字幕最大長度設定
+- 新增字幕末尾標點去除設定
+- 最佳化和翻譯的提示詞最佳化
+- 最佳化LLM字幕斷句錯誤的情況 
+- 修復音訊轉換格式不一致問題
+
+</details>
+
+<details>
+<summary>2024.11.23</summary>
+
+- 新增 Whisper-v3 模型支援，大幅提升語音識別準確率
+- 最佳化字幕斷句演算法，提供更自然的閱讀體驗 
+- 修復檢測模型可用性時的穩定性問題
+</details>
+
+<details>
+<summary>2024.11.20</summary>
+
+- 支援自定義調節字幕位置和樣式
+- 新增字幕最佳化和翻譯過程的即時日誌查看
+- 修復使用 API 時的自動翻譯問題
+- 最佳化影片工作目錄結構,提升檔案管理效率
+</details>
+
+<details>
+<summary>2024.11.17</summary>
+
+- 支援雙語/單語字幕靈活匯出
+- 新增文稿匹配提示對齊功能
+- 修復字幕匯入時的穩定性問題
+- 修復非中文路徑下載模型的相容性問題
+</details>
+
+<details>
+<summary>2024.11.13</summary>
+
+- 新增 Whisper API 呼叫支援
+- 支援匯入 cookie.txt 下載各大影片平臺資源
+- 字幕檔案名自動與影片保持一致
+- 軟體主頁新增執行日誌即時查看
+- 統一和完善軟體內部功能
+</details>
+
+## ⭐ Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=WEIFENG2333/VideoCaptioner&type=Date)](https://star-history.com/#WEIFENG2333/VideoCaptioner&Date)
+
+## 💖 支持作者
+
+如果覺得項目對你有幫助，可以給項目點個Star，這將是對我最大的鼓勵和支持！
+
+<div align="center">
+  <img src="./images/alipay.jpg" alt="支付寶二維碼" width="30%">
+  <img src="./images/wechat.jpg" alt="微信二維碼" width="30%">
+</div>

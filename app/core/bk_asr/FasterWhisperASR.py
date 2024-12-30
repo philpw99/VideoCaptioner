@@ -199,6 +199,9 @@ class FasterWhisperASR(BaseASR):
                             is_finish = True
                         mapped_progress = int(5 + (progress * 0.9))
                         callback(mapped_progress, f"{mapped_progress} %")
+                    if "Subtitles are written to" in output:
+                        is_finish = True
+                        callback(100, "识别完成")
                     if "error" in output:
                         error_msg += output
                         logger.error(output)
