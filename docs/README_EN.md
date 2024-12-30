@@ -44,7 +44,7 @@ For specific subtitle and video synthesis test results, please refer to [TED Vid
 
 The software is lightweight, with package size under 60MB, and includes all necessary environments for immediate use after download.
 
-1. Download the latest executable from [Release](https://github.com/WEIFENG2333/VideoCaptioner/releases) page. Or: [LanzouCloud Download](https://wwwm.lanzoue.com/iKMhH2g0se9a)
+1. Download the latest executable from [Release](https://github.com/WEIFENG2333/VideoCaptioner/releases) page. Or: [LanzouCloud Download](https://wwwm.lanzoue.com/iQ9IB2hi82ra)
 
 2. Open the installation package to install
 
@@ -155,7 +155,8 @@ Note: Models can be downloaded directly within the software in China; supports b
 |---------|---------|---------|------|
 | B Interface | Chinese & English only | Online | Free, relatively fast |
 | J Interface | Chinese & English only | Online | Free, relatively fast |
-| Whisper | 96 languages including Chinese, Japanese, Korean, English, better for foreign languages | Local | Requires model download<br>Medium or above recommended for Chinese<br>Smaller models work well for English etc. |
+| WhisperCpp | 99 languages including Chinese, Japanese, Korean, English, better for foreign languages | Local | Requires model download<br>Medium or above recommended for Chinese<br>Smaller models work well for English etc. |
+| fasterWhisper | 99 languages including Chinese, English, excellent for foreign languages, more accurate timeline | Local | Requires program and model download<br>Supports CUDA for faster speed, accurate transcription.<br>Recommended as first choice |
 
 ### 5. Cookie Configuration Instructions
 
@@ -197,6 +198,21 @@ VideoCaptioner/
 As a junior student, both my personal abilities and the project still have many shortcomings. The project is continuously being improved. If you encounter any bugs during use, please feel free to submit [Issues](https://github.com/WEIFENG2333/VideoCaptioner/issues) and Pull Requests to help improve the project.
 
 ## Changelog
+
+<details>
+<summary>2024.12.07</summary>
+
+- Added Faster-whisper support for better audio-to-subtitle quality
+- Added Vad voice breakpoint detection to greatly reduce hallucination
+- Added voice separation to remove video background noise
+- Added option to disable video synthesis
+- Added maximum subtitle length setting
+- Added setting to remove punctuation at subtitle end
+- Optimized prompts for optimization and translation
+- Fixed LLM subtitle segmentation errors
+- Fixed audio conversion format inconsistency issues
+
+</details>
 
 <details>
 <summary>2024.11.23</summary>

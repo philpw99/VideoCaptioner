@@ -104,7 +104,8 @@ def split_by_llm_retry(text: str,
             {"role": "system", "content": system_prompt},
             {"role": "user", "content": user_prompt}
         ],
-        temperature=0.2
+        temperature=0.2,
+        timeout=80
     )
     result = response.choices[0].message.content
 
