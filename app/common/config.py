@@ -29,10 +29,10 @@ class Language(Enum):
 
 class SubtitleLayoutEnum(Enum):
     """ 字幕布局 """
-    TRANSLATE_ON_TOP = "译文在上"
-    ORIGINAL_ON_TOP = "原文在上"
-    ONLY_ORIGINAL = "仅原文"
-    ONLY_TRANSLATE = "仅译文"
+    TRANSLATE_ON_TOP = "Translated On Top"
+    ORIGINAL_ON_TOP = "Original On Top"
+    ONLY_ORIGINAL = "Original Only"
+    ONLY_TRANSLATE = "Translated Only"
 
 
 class LanguageSerializer(ConfigSerializer):
@@ -161,12 +161,12 @@ class Config(QConfig):
         OptionsValidator(OutputSubtitleFormatEnum),
         EnumSerializer(OutputSubtitleFormatEnum)
     )
-    subtitle_file_prefix = ConfigItem("Subtitle", "FilePrefix", "生成")
-    subtitle_file_suffix = ConfigItem("Subtitle", "FileSuffix", "字幕")
+    subtitle_file_prefix = ConfigItem("Subtitle", "FilePrefix", "")
+    subtitle_file_suffix = ConfigItem("Subtitle", "FileSuffix", "")
 
     # ------------------- 字幕样式配置 -------------------
     subtitle_style_name = ConfigItem("SubtitleStyle", "StyleName", "default")
-    subtitle_layout = ConfigItem("SubtitleStyle", "Layout", "译文在上")
+    subtitle_layout = ConfigItem("SubtitleStyle", "Layout", "Translated On Top")
     subtitle_preview_image = ConfigItem("SubtitleStyle", "PreviewImage", "")
 
     # ------------------- 保存配置 -------------------
@@ -182,7 +182,7 @@ class Config(QConfig):
     )
     language = OptionsConfigItem(
         "MainWindow", "Language",
-        Language.AUTO,
+        Language.ENGLISH,
         OptionsValidator(Language),
         LanguageSerializer(),
         restart=True

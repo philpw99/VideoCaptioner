@@ -144,7 +144,7 @@ class SubtitleStyleInterface(QWidget):
             FIF.ALIGNMENT,
             self.tr("字幕排布"),
             self.tr("设置主字幕和副字幕的显示方式"),
-            texts=["译文在上", "原文在上", "仅译文", "仅原文"]
+            texts=["Translated On Top", "Original On Top", "Translated Only", "Original Only"]
         )
 
         # 垂直间距
@@ -472,13 +472,13 @@ class SubtitleStyleInterface(QWidget):
 
         # 字幕布局
         layout = self.layoutCard.comboBox.currentText()
-        if layout == "译文在上":
+        if layout == "Translated On Top":
             main_text, sub_text = sub_text, main_text
-        elif layout == "原文在上":
+        elif layout == "Original On Top":
             main_text, sub_text = main_text, sub_text
-        elif layout == "仅译文":
+        elif layout == "Translated Only":
             main_text, sub_text = sub_text, None
-        elif layout == "仅原文":
+        elif layout == "Original Only":
             main_text, sub_text = main_text, None
 
         # 创建预览线程

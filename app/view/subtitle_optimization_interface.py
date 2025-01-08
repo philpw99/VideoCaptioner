@@ -185,7 +185,7 @@ class SubtitleOptimizationInterface(QWidget):
 
         # 添加字幕排布下拉框
         self.layout_combobox = ComboBox(self)
-        self.layout_combobox.addItems(["译文在上", "原文在上", "仅译文", "仅原文"])
+        self.layout_combobox.addItems(["Translated On Top", "Original On Top", "Translated Only", "Original Only"])
         self.layout_combobox.setCurrentText(cfg.subtitle_layout.value)
 
         self.left_layout.addWidget(self.save_button)
@@ -196,7 +196,7 @@ class SubtitleOptimizationInterface(QWidget):
         self.right_layout = QHBoxLayout()
 
         # 添加批量翻译按钮
-        self.batch_translate_button = PushButton(self.tr("批量翻译"), self, icon=FIF.FOLDER_ADD)
+        self.batch_translate_button = PushButton(self.tr("Batch"), self, icon=FIF.FOLDER_ADD)
 
 
         # 添加打开文件夹按钮和文件选择按钮

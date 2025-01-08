@@ -111,7 +111,7 @@ class TranscriptThread(QThread):
                     args["one_word"] = True
                 else:
                     args["sentence"] = True
-                    if self.task.transcribe_language in ["zh", "ja", "ko"]:
+                    if self.task.transcribe_language in ["zh", "ja", "ko"] and not self.isFasterWhisperTranslate():
                         args["max_line_width"] = int(self.task.max_word_count_cjk)
                         args["max_comma_cent"] = 50
                         args["max_comma"] = 5
@@ -167,3 +167,11 @@ class TranscriptThread(QThread):
     def progress_callback(self, value, message):
         progress = min(20 + (value * 0.8), 100)
         self.progress.emit(int(progress), message)
+    
+    # Is the current config is using FasterWhipser and translate to English?
+    def isFasterWhisperTranslate():
+        if cfg.transcribe_model.value == TranscribeModelEnum.FASTER_WHISPER and cfg.faster_whisper_translate_to_english.value:
+            return True
+        else:
+            return False
+

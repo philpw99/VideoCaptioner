@@ -97,8 +97,8 @@ class TaskCreationInterface(QWidget):
 
         # 创建目标语言卡片
         self.target_language_card = ComboBoxSimpleSettingCard(
-            self.tr("翻译目标语言"),
-            self.tr("翻译的目标语言"),
+            self.tr("Translate Target"),
+            self.tr("The final language you want to translate into."),
             [model.value for model in TargetLanguageEnum],
             self
         )

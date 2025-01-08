@@ -84,7 +84,7 @@ class BatchProcessInterface(QWidget):
         self.start_all_button = PrimaryPushButton(self.tr("开始处理"), self, icon=FIF.PLAY)
         self.cancel_button = PushButton(self.tr("取消"), self, icon=FIF.CLOSE)
         self.cancel_button.setEnabled(False)
-        self.todo_when_done_label = BodyLabel(self.tr("全部处理后，就"))
+        self.todo_when_done_label = BodyLabel(self.tr("After All Done, "))
         self.todo_when_done_label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignCenter )
         self.todo_when_done_combobox = ComboBox(self)
         self.todo_when_done_combobox.addItems([self.tr(todo.value) for todo in TodoWhenDoneEnum])

@@ -78,7 +78,7 @@ class VideoSynthesisInterface(QWidget):
         self.button_layout = QHBoxLayout()
         self.synthesize_button = PushButton(self.tr("开始合成"), self)
         self.open_folder_button = PushButton(self.tr("打开视频文件夹"), self)
-        self.open_work_folder_button = PushButton(self.tr("打开临时工作目录"), self)
+        self.open_work_folder_button = PushButton(self.tr("Open Work Dir"), self)
         self.button_layout.addWidget(self.synthesize_button)
         self.button_layout.addWidget(self.open_folder_button)
         self.button_layout.addWidget(self.open_work_folder_button)

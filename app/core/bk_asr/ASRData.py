@@ -138,7 +138,7 @@ class ASRData:
         self.segments = new_segments
 
 
-    def save(self, save_path: str, ass_style: str = None, layout: str = "原文在上") -> None:
+    def save(self, save_path: str, ass_style: str = None, layout: str = "Original On Top") -> None:
         """Save the ASRData to a file"""
         Path(save_path).parent.mkdir(parents=True, exist_ok=True)
         if save_path.endswith('.srt'):
@@ -153,7 +153,7 @@ class ASRData:
         else:
             raise ValueError(f"Unsupported file extension: {save_path}")
 
-    def to_txt(self, save_path=None, layout: str = "原文在上") -> str:
+    def to_txt(self, save_path=None, layout: str = "Original On Top") -> str:
         """Convert to plain text subtitle format (without timestamps)"""
         result = []
         for seg in self.segments:
@@ -164,13 +164,13 @@ class ASRData:
                 original, translated = seg.transcript, ""
 
             # 根据字幕类型组织文本
-            if layout == "原文在上":
+            if layout == "Original On Top":
                 text = f"{original}\n{translated}" if translated else original
-            elif layout == "译文在上":
+            elif layout == "Translated On Top":
                 text = f"{translated}\n{original}" if translated else original
-            elif layout == "仅原文":
+            elif layout == "Original Only":
                 text = original
-            elif layout == "仅译文":
+            elif layout == "Translated Only":
                 text = translated if translated else original
             else:
                 text = seg.transcript
@@ -181,7 +181,7 @@ class ASRData:
                 f.write("\n".join(result))
         return text
 
-    def to_srt(self, layout: str = "原文在上", save_path=None) -> str:
+    def to_srt(self, layout: str = "Original On Top", save_path=None) -> str:
         """Convert to SRT subtitle format"""
         srt_lines = []
         for n, seg in enumerate(self.segments, 1):
@@ -192,13 +192,13 @@ class ASRData:
                 original, translated = seg.transcript, ""
 
             # 根据字幕类型组织文本
-            if layout == "原文在上":
+            if layout == "Original On Top":
                 text = f"{original}\n{translated}" if translated else original
-            elif layout == "译文在上":
+            elif layout == "Translated On Top":
                 text = f"{translated}\n{original}" if translated else original
-            elif layout == "仅原文":
+            elif layout == "Original Only":
                 text = original
-            elif layout == "仅译文":
+            elif layout == "Translated Only":
                 text = translated if translated else original
             else:
                 text = seg.transcript
@@ -238,12 +238,12 @@ class ASRData:
             }
         return result_json
 
-    def to_ass(self, style_str: str = None, layout: str = "原文在上", save_path: str = None) -> str:
+    def to_ass(self, style_str: str = None, layout: str = "Original On Top", save_path: str = None) -> str:
         """转换为ASS字幕格式
         
         Args:
             style_str: ASS样式字符串,为空则使用默认样式
-            layout: 字幕布局,可选值["译文在上", "原文在上", "仅原文", "仅译文"]
+            layout: 字幕布局,可选值["译文在上", "原文在上", "仅原文", "仅译文"] ["Original On Top", "Translated On Top", "Original Only", "Translated Only"]
             
         Returns:
             ASS格式字幕内容
@@ -277,15 +277,15 @@ class ASRData:
             start_time, end_time = seg.to_ass_ts()
             if "\n" in seg.text:
                 original, translate = seg.text.split("\n", 1)
-                if layout == "译文在上" and translate:
+                if layout == "Translated On Top" and translate:
                     ass_content += dialogue_template.format(start_time, end_time, "Secondary", original)
                     ass_content += dialogue_template.format(start_time, end_time, "Default", translate)
-                elif layout == "原文在上" and translate:
+                elif layout == "Original On Top" and translate:
                     ass_content += dialogue_template.format(start_time, end_time, "Secondary", translate)
                     ass_content += dialogue_template.format(start_time, end_time, "Default", original)
-                elif layout == "仅原文":
+                elif layout == "Original Only":
                     ass_content += dialogue_template.format(start_time, end_time, "Default", original)
-                elif layout == "仅译文" and translate:
+                elif layout == "Transalted Only" and translate:
                     ass_content += dialogue_template.format(start_time, end_time, "Default", translate)
             else:
                 ass_content += dialogue_template.format(start_time, end_time, "Default", seg.text)
@@ -338,7 +338,7 @@ def from_subtitle_file(file_path: str) -> 'ASRData':
     """
     file_path = Path(file_path)
     if not file_path.exists():
-        raise FileNotFoundError(f"文件不存在: {file_path}")
+        raise FileNotFoundError(f"File not found: {file_path}")
         
     try:
         content = file_path.read_text(encoding='utf-8')
@@ -358,7 +358,7 @@ def from_subtitle_file(file_path: str) -> 'ASRData':
     elif suffix == '.json':
         return from_json(json.loads(content))
     else:
-        raise ValueError(f"不支持的文件格式: {suffix}")
+        raise ValueError(f"File formate not supported: {suffix}")
 
 def from_json(json_data: dict) -> 'ASRData':
     """从JSON数据创建ASRData实例"""

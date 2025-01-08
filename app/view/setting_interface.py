@@ -59,7 +59,7 @@ class SettingInterface(ScrollArea):
             cfg.api_key,
             FIF.FINGERPRINT,
             self.tr("API Key"),
-            self.tr("输入您的 API Key 令牌"),
+            self.tr("Input your API Key"),
             "sk-",
             self.llmGroup
         )
@@ -67,7 +67,7 @@ class SettingInterface(ScrollArea):
             cfg.api_base,
             FIF.LINK,
             self.tr("Base URL"),
-            self.tr("输入兼容 OpenAI 格式的 Base URL（需包括 /v1 后缀）"),
+            self.tr("Input OpenAI compatible Base URL \( Needs /v1 in the end. \)"),
             "https://api.openai.com/v1",
             self.llmGroup
         )
@@ -75,7 +75,7 @@ class SettingInterface(ScrollArea):
             cfg.model,
             FIF.ROBOT,
             self.tr("模型"),
-            self.tr("输入您的模型，点击下方检查连接后会填充模型列表"),
+            self.tr("Enter your model here. Click on \"Check Connection\" below will fill out model list automatically."),
             ["gpt-4o", "gpt-4o-mini"],
             self.llmGroup
         )
@@ -83,7 +83,7 @@ class SettingInterface(ScrollArea):
             self.tr("检查连接"),
             FIF.LINK,
             self.tr("检查 LLM 连接"),
-            self.tr("点击检查 API 连接是否正常，并获取模型列表"),
+            self.tr("Click here to verify whether API link working or not, and fetch model list."),
             self.llmGroup
         )
         self.batchSizeCard = RangeSettingCard(
@@ -121,7 +121,7 @@ class SettingInterface(ScrollArea):
             cfg.target_language,
             FIF.LANGUAGE,
             self.tr('目标语言'),
-            self.tr('选择翻译字幕的目标语言'),
+            self.tr('Choose subtitle\'s target translate language'),
             texts=[lang.value for lang in cfg.target_language.validator.options],
             parent=self.translateGroup
         )
@@ -133,7 +133,7 @@ class SettingInterface(ScrollArea):
             self.tr('修改'),
             FIF.FONT,
             self.tr('字幕样式'),
-            self.tr('选择字幕的样式（颜色、大小、字体等）'),
+            self.tr('Choose subtitle\'s style \( color, size, font ... etc.\)'),
             self.subtitleGroup
         )
         self.subtitleLayoutCard = HyperlinkCard(
@@ -141,22 +141,22 @@ class SettingInterface(ScrollArea):
             self.tr('修改'),
             FIF.FONT,
             self.tr('字幕布局'),
-            self.tr('选择字幕的布局（单语、双语）'),
+            self.tr('Choose subtitle\'s layout \( Show Original or Translated or both \)'),
             self.subtitleGroup
         )
 
         self.needVideoCard = SwitchSettingCard(
             FIF.VIDEO,
-            self.tr('需要合成视频'),
-            self.tr('是否需要合成视频'),
+            self.tr('Need to sythesis video'),
+            self.tr('Do you want to combine the original video and subtitle into a new video.'),
             cfg.need_video,
             self.subtitleGroup
         )
         # 开启软字幕
         self.softSubtitleCard = SwitchSettingCard(
             FIF.FONT,
-            self.tr('软字幕'),
-            self.tr('合成视频时是否使用软字幕'),
+            self.tr('Soft Subtitles'),
+            self.tr('When synthesising video, add the subtitle as a new track, instead of hard-coding it into video.'),
             cfg.soft_subtitle,
             self.subtitleGroup
         )
@@ -164,8 +164,8 @@ class SettingInterface(ScrollArea):
         self.saveSubtitleFormatCard = ComboBoxSettingCard(
             cfg.subtitle_output_format,
             FIF.FONT,
-            self.tr('保存字幕格式'),
-            self.tr('选择保存字幕的格式'),
+            self.tr('Target Subtitle Format'),
+            self.tr('When saving the final subtitle, use this format.'),
             texts=[format.value for format in cfg.subtitle_output_format.validator.options],
             parent=self.subtitleGroup
         )
@@ -173,16 +173,16 @@ class SettingInterface(ScrollArea):
         self.saveSubtitlePrefixCard = LineEditSettingCard(
             cfg.subtitle_file_prefix,
             FIF.TAG,
-            self.tr("字幕文件前缀"),
-            self.tr("字幕文件名前面加入右边的字符"),
+            self.tr("Subtitle File Name Prefix"),
+            self.tr("Add this string to the front of the subtitle file name."),
             "",
             self.subtitleGroup
         )
         self.saveSubtitleSuffixCard = LineEditSettingCard(
             cfg.subtitle_file_suffix,
             FIF.TAG,
-            self.tr("字幕文件后缀"),
-            self.tr("字幕文件名后面面加入右边的字符"),
+            self.tr("Subtitle File Name Suffix"),
+            self.tr("Add this string to the end of the subtitle file name."),
             "",
             self.subtitleGroup
         )
