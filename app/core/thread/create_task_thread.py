@@ -78,7 +78,7 @@ class CreateTaskThread(QThread):
 
         # 定义各个路径
         audio_save_path = task_work_dir / f"【Audio】{file_name}.wav"
-        original_subtitle_save_path = task_work_dir / "subtitle" / f"【原始字幕】{file_name}-{cfg.transcribe_model.value.value}{whisper_type}.srt"
+        original_subtitle_save_path = task_work_dir / f"【原始字幕】{file_name}-{cfg.transcribe_model.value.value}{whisper_type}.srt"
         result_subtitle_save_path = file_dir / ( cfg.subtitle_file_prefix.value + file_name + cfg.subtitle_file_suffix.value + "." + cfg.subtitle_output_format.value.value )
         video_save_path = file_dir / f"【生成】{Path(file_path).name}"
 
@@ -189,7 +189,7 @@ class CreateTaskThread(QThread):
 
         # 定义各个路径
         audio_save_path = task_work_dir / f"【Audio】{Path(video_file_path).stem}.wav"
-        original_subtitle_save_path = task_work_dir / "subtitle" / f"【原始字幕】{cfg.transcribe_model.value.value}-file_name-{whisper_type}.srt" if not subtitle_file_path else subtitle_file_path
+        original_subtitle_save_path = task_work_dir / f"【原始字幕】{cfg.transcribe_model.value.value}-file_name-{whisper_type}.srt" if not subtitle_file_path else subtitle_file_path
         result_subtitle_save_path = task_work_dir / ( cfg.subtitle_file_prefix.value + file_name + cfg.subtitle_file_suffix.value + "." + cfg.subtitle_output_format.value.value )
         video_save_path = task_work_dir / f"【生成】{Path(video_file_path).name}"
 
