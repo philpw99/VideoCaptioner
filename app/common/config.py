@@ -14,7 +14,8 @@ from ..core.entities import (
     TranscribeLanguageEnum,
     WhisperModelEnum,
     FasterWhisperModelEnum,
-    VadMethodEnum
+    VadMethodEnum,
+    OutputSubtitleFormatEnum
 )
 
 
@@ -152,6 +153,16 @@ class Config(QConfig):
     # ------------------- 字幕合成配置 -------------------
     soft_subtitle = ConfigItem("Video", "SoftSubtitle", True, BoolValidator())
     need_video = ConfigItem("Video", "NeedVideo", True, BoolValidator())
+
+    # ------------------- 字幕生成配置配置 -------------------
+    subtitle_output_format = OptionsConfigItem(
+        "Subtitle", "SaveFormat",
+        OutputSubtitleFormatEnum.ASS.value,
+        OptionsValidator(OutputSubtitleFormatEnum),
+        EnumSerializer(OutputSubtitleFormatEnum)
+    )
+    subtitle_file_prefix = ConfigItem("Subtitle", "FilePrefix", "生成")
+    subtitle_file_suffix = ConfigItem("Subtitle", "FileSuffix", "字幕")
 
     # ------------------- 字幕样式配置 -------------------
     subtitle_style_name = ConfigItem("SubtitleStyle", "StyleName", "default")

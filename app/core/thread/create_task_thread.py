@@ -27,19 +27,18 @@ class CreateTaskThread(QThread):
 
     def run(self):
         try:
-            match self.task_type:
-                case Task.Type.SUBTITLE:
-                    self.create_file_task(self.file_path)
-                case Task.Type.URL:
-                    self.create_url_task(self.file_path)
-                case Task.Type.TRANSCRIBE:
-                    self.create_transcription_task(self.file_path)
-                case Task.Type.OPTIMIZE:
-                    self.create_subtitle_optimization_task()
-                case Task.Type.SYNTHESIS:
-                    self.create_video_synthesis_task()
-                case _:
-                    raise RuntimeError("No matching task type.")
+            if self.task_type == Task.Type.SUBTITLE:
+                self.create_file_task(self.file_path)
+            elif self.task_type == Task.Type.URL:
+                self.create_url_task(self.file_path)
+            elif self.task_type == Task.Type.TRANSCRIBE:
+                self.create_transcription_task(self.file_path)
+            elif self.task_type == Task.Type.OPTIMIZE:
+                self.create_subtitle_optimization_task()
+            elif self.task_type == Task.Type.SYNTHESIS:
+                self.create_video_synthesis_task()
+            else:
+                raise ValueError("No matching task type.")
         except Exception as e:
             logger.exception("创建任务失败: %s", str(e))
             self.progress.emit(0, self.tr("创建任务失败"))
@@ -50,8 +49,9 @@ class CreateTaskThread(QThread):
         logger.info(f"开始创建文件任务：{file_path}")
         # 使用 Path 对象处理路径
         task_work_dir = Path(cfg.work_dir.value) / Path(file_path).stem
-        file_dir = Path(file_path).parent
-        file_name = Path(file_path).stem
+        file_full_path = Path(file_path)
+        file_dir = file_full_path.parent
+        file_name = file_full_path.stem
 
         # 获取 视频/音频 信息
         thumbnail_path = str(task_work_dir / "thumbnail.jpg")
@@ -79,12 +79,12 @@ class CreateTaskThread(QThread):
         # 定义各个路径
         audio_save_path = task_work_dir / f"【Audio】{file_name}.wav"
         original_subtitle_save_path = task_work_dir / "subtitle" / f"【原始字幕】{file_name}-{cfg.transcribe_model.value.value}{whisper_type}.srt"
-        result_subtitle_save_path = file_dir / "subtitle" / f"{result_subtitle_type}-{file_name}.ass"
+        result_subtitle_save_path = file_dir / ( cfg.subtitle_file_prefix.value + file_name + cfg.subtitle_file_suffix.value + "." + cfg.subtitle_output_format.value.value )
         video_save_path = file_dir / f"【生成】{Path(file_path).name}"
 
-        ass_style_name = cfg.subtitle_style_name.value
-        ass_style_path = SUBTITLE_STYLE_PATH / f"{ass_style_name}.txt"
-        if ass_style_path.exists():
+        if cfg.subtitle_output_format.value.value == "ass" and ass_style_path.exists():
+            ass_style_name = cfg.subtitle_style_name.value
+            ass_style_path = SUBTITLE_STYLE_PATH / f"{ass_style_name}.txt"
             subtitle_style_srt = ass_style_path.read_text(encoding="utf-8")
         else:
             subtitle_style_srt = None
@@ -174,15 +174,9 @@ class CreateTaskThread(QThread):
         )
 
         # 使用 Path 对象处理路径
-        task_work_dir = Path(video_file_path).parent
-        file_name = Path(video_file_path).stem
-
-        if cfg.need_optimize.value:
-            result_subtitle_type = "【修正字幕】"
-        elif cfg.need_translate.value:
-            result_subtitle_type = "【翻译字幕】"
-        else:
-            result_subtitle_type = ""
+        file_full_path = Path(video_file_path)
+        task_work_dir = file_full_path.parent
+        file_name = file_full_path.stem
 
         if cfg.transcribe_model.value == TranscribeModelEnum.WHISPER:
             whisper_type = f"{cfg.whisper_model.value.value}-{cfg.transcribe_language.value.value}"
@@ -196,7 +190,7 @@ class CreateTaskThread(QThread):
         # 定义各个路径
         audio_save_path = task_work_dir / f"【Audio】{Path(video_file_path).stem}.wav"
         original_subtitle_save_path = task_work_dir / "subtitle" / f"【原始字幕】{cfg.transcribe_model.value.value}-file_name-{whisper_type}.srt" if not subtitle_file_path else subtitle_file_path
-        result_subtitle_save_path = task_work_dir / "subtitle" / f"{result_subtitle_type}-{file_name}.ass"
+        result_subtitle_save_path = task_work_dir / ( cfg.subtitle_file_prefix.value + file_name + cfg.subtitle_file_suffix.value + "." + cfg.subtitle_output_format.value.value )
         video_save_path = task_work_dir / f"【生成】{Path(video_file_path).name}"
 
         if cfg.transcribe_model.value in [TranscribeModelEnum.JIANYING, TranscribeModelEnum.BIJIAN]:
@@ -204,9 +198,9 @@ class CreateTaskThread(QThread):
         else:
             need_word_time_stamp = False
 
-        ass_style_name = cfg.subtitle_style_name.value
-        ass_style_path = SUBTITLE_STYLE_PATH / f"{ass_style_name}.txt"
-        if ass_style_path.exists():
+        if cfg.subtitle_output_format.value.value == "ass" and ass_style_path.exists():
+            ass_style_name = cfg.subtitle_style_name.value
+            ass_style_path = SUBTITLE_STYLE_PATH / f"{ass_style_name}.txt"
             subtitle_style_srt = ass_style_path.read_text(encoding="utf-8")
         else:
             subtitle_style_srt = None
@@ -272,7 +266,8 @@ class CreateTaskThread(QThread):
         # task_work_dir = Path(file_path).parent
         
         # 使用 Path 对象处理路径
-        file_name = Path(file_path).stem
+        file_full_path = Path(file_path)
+        file_name = file_full_path.stem
         task_work_dir = Path(cfg.work_dir.value) / file_name
         thumbnail_path = task_work_dir / "thumbnail.jpg"
 
@@ -291,8 +286,15 @@ class CreateTaskThread(QThread):
 
         audio_save_path = task_work_dir / f"【Audio】{file_name}.wav"
         original_subtitle_save_path = task_work_dir / f"【原始字幕】{file_name}-{cfg.transcribe_model.value.value}-{whisper_type}.srt"
-        result_subtitle_save_path = Path(file_path).parent / f"【生成字幕】{file_name}.ass"
+        result_subtitle_save_path = file_full_path.parent / ( cfg.subtitle_file_prefix.value + file_name + cfg.subtitle_file_suffix.value + "." + cfg.subtitle_output_format.value.value )
 
+        if cfg.subtitle_output_format.value.value == "ass" and ass_style_path.exists():
+            ass_style_name = cfg.subtitle_style_name.value
+            ass_style_path = SUBTITLE_STYLE_PATH / f"{ass_style_name}.txt"
+            subtitle_style_srt = ass_style_path.read_text(encoding="utf-8")
+        else:
+            subtitle_style_srt = None
+        
         # 创建 Task 对象
         task = Task(
             id=0,
@@ -330,6 +332,7 @@ class CreateTaskThread(QThread):
             use_asr_cache=cfg.use_asr_cache.value,
             original_subtitle_save_path=str(original_subtitle_save_path),
             result_subtitle_save_path=str(result_subtitle_save_path),
+            subtitle_style_srt=subtitle_style_srt,
             max_word_count_cjk=cfg.max_word_count_cjk.value,
             max_word_count_english=cfg.max_word_count_english.value,
             # Added by Philip
@@ -341,9 +344,9 @@ class CreateTaskThread(QThread):
 
     def create_subtitle_optimization_task(file_path):
         logger.info(f"开始创建字幕优化任务：{file_path}")
-        task_work_dir = Path(file_path.strip()).parent
-        file_name = Path(file_path.strip()).stem
-
+        file_full_path = Path(file_path)
+        task_work_dir = Path(file_path).parent
+        
         if cfg.need_translate.value:
             result_subtitle_type = "【翻译字幕】"
         elif cfg.need_optimize.value:
@@ -353,7 +356,7 @@ class CreateTaskThread(QThread):
         logger.info(f"字幕类型: {result_subtitle_type}")
 
         original_subtitle_save_path = task_work_dir / file_path
-        result_subtitle_save_path = task_work_dir / f"{result_subtitle_type}{file_name}.ass"
+        result_subtitle_save_path = file_full_path.parent / ( cfg.subtitle_file_prefix.value + file_full_path.stem + cfg.subtitle_file_suffix.value + "." + cfg.subtitle_output_format.value.value )
 
         ass_style_name = cfg.subtitle_style_name.value
         ass_style_path = SUBTITLE_STYLE_PATH / f"{ass_style_name}.txt"

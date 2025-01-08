@@ -261,36 +261,40 @@ class BatchProcessInterface(QWidget):
     def on_batch_finished(self):
         """批量处理完成的处理"""
         todo = self.todo_when_done_combobox.currentText()
-        match todo:
-            case self.tr(TodoWhenDoneEnum.EXIT):
+        if todo == self.tr(TodoWhenDoneEnum.EXIT.value):
+            qbox = timedMessageBox(
+                self.tr("Program exiting in 1 minute"),
+                self.tr("All jobs are done. This program is going to be closed."),
+                60
+            )
+            ret = qbox.exec()
+            if ret == QMessageBox.StandardButton.Ok:
                 QCoreApplication.quit() # Exit
-
-            case self.tr(TodoWhenDoneEnum.SUSPEND):
-                qbox = timedMessageBox(
-                    self.tr("Suspending in 1 minute"),
-                    self.tr("All jobs are done. The computer is going to be suspended."),
-                    60
-                )
-                ret = qbox.exec()
-                if ret == QMessageBox.StandardButton.Ok:
-                    if sys.platform == 'win32':
-                        os.system("rundll32.exe powrprof.dll,SetSuspendState 0,1,0")
-                    else:
-                        os.system('sudo systemctl suspend')
-
-            case self.tr(TodoWhenDoneEnum.SHUTDOWN):
-                qbox = timedMessageBox(
-                    self.tr( "Shutting Down in 1 minute"),
-                    self.tr("All jobs are done. The computer is shutting down. "),
-                    60
-                )
-                ret = qbox.exec()
-                if ret == QMessageBox.StandardButton.Ok:
-                    if sys.platform == 'win32':
-                        os.system("shutdown /s /t 1")
-                    else:
-                        self.stop()
-                        os.system('sudo shutdown now')
+        elif todo == self.tr(TodoWhenDoneEnum.SUSPEND.value):
+            qbox = timedMessageBox(
+                self.tr("Suspending in 1 minute"),
+                self.tr("All jobs are done. The computer is going to be suspended."),
+                60
+            )
+            ret = qbox.exec()
+            if ret == QMessageBox.StandardButton.Ok:
+                if sys.platform == 'win32':
+                    os.system("rundll32.exe powrprof.dll,SetSuspendState 0,1,0")
+                else:
+                    os.system('sudo systemctl suspend')
+        elif todo == self.tr(TodoWhenDoneEnum.SHUTDOWN.value):
+            qbox = timedMessageBox(
+                self.tr( "Shutting Down in 1 minute"),
+                self.tr("All jobs are done. The computer is shutting down. "),
+                60
+            )
+            ret = qbox.exec()
+            if ret == QMessageBox.StandardButton.Ok:
+                if sys.platform == 'win32':
+                    os.system("shutdown /s /t 1")
+                else:
+                    self.stop()
+                    os.system('sudo shutdown now')
         
         # Doing nothing.
         self.processing = False
