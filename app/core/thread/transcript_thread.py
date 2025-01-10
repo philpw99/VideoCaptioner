@@ -133,6 +133,10 @@ class TranscriptThread(QThread):
             
             asr_data = self.asr.run(callback=self.progress_callback)
 
+            # Check if asr_data needs to add minimum length
+            if cfg.subtitle_enable_sentence_minimum_time:
+                asr_data.add_minimum_len(cfg.subtitle_sentence_minimum_time.value)
+            
             # 保存字幕文件
             original_subtitle_path = Path(self.task.original_subtitle_save_path)
             original_subtitle_path.parent.mkdir(parents=True, exist_ok=True)

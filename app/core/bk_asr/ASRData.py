@@ -2,6 +2,7 @@ import json
 import re
 from typing import List, Tuple
 from pathlib import Path
+from PyQt5.QtCore import QObject
 import math
 
 class ASRDataSeg:
@@ -323,6 +324,19 @@ class ASRData:
     def __str__(self):
         return self.to_txt()
     
+    def add_minimum_len(self, min_len_ms=1500):
+        # Set each sentence's minimum time length. Default is 1.5 seconds.
+        # This method doesn't work with word segments, but it will be applied anyway
+        
+        for i in range(len(self.segments)-1):
+            seg = self.segments[i]
+            if seg.end_time - seg.start_time < min_len_ms:
+                # This sentence time is too short.
+                seg.end_time = seg.start_time + min_len_ms
+                if seg.end_time >= self.segments[i+1].start_time:
+                    # Add 1500ms to start time is too much, cut off 10 ms
+                    seg.end_time = self.segments[i+1].start_time - 10
+
 
 def from_subtitle_file(file_path: str) -> 'ASRData':
     """从文件路径加载ASRData实例

@@ -154,7 +154,15 @@ class Config(QConfig):
     soft_subtitle = ConfigItem("Video", "SoftSubtitle", True, BoolValidator())
     need_video = ConfigItem("Video", "NeedVideo", True, BoolValidator())
 
-    # ------------------- 字幕生成配置配置 -------------------
+    # ------------------- 字幕样式配置 -------------------
+    subtitle_style_name = ConfigItem("SubtitleStyle", "StyleName", "default")
+    subtitle_layout = ConfigItem("SubtitleStyle", "Layout", SubtitleLayoutEnum.TRANSLATE_ON_TOP.value)
+    subtitle_preview_image = ConfigItem("SubtitleStyle", "PreviewImage", "")
+
+    # ------------------- 保存配置 -------------------
+    work_dir = ConfigItem("Save", "Work_Dir", WORK_PATH, FolderValidator())
+
+    # ------------------- 字幕生成配置 -------------------
     subtitle_output_format = OptionsConfigItem(
         "Subtitle", "SaveFormat",
         OutputSubtitleFormatEnum.ASS.value,
@@ -164,13 +172,16 @@ class Config(QConfig):
     subtitle_file_prefix = ConfigItem("Subtitle", "FilePrefix", "")
     subtitle_file_suffix = ConfigItem("Subtitle", "FileSuffix", "")
 
-    # ------------------- 字幕样式配置 -------------------
-    subtitle_style_name = ConfigItem("SubtitleStyle", "StyleName", "default")
-    subtitle_layout = ConfigItem("SubtitleStyle", "Layout", "Translated On Top")
-    subtitle_preview_image = ConfigItem("SubtitleStyle", "PreviewImage", "")
-
-    # ------------------- 保存配置 -------------------
-    work_dir = ConfigItem("Save", "Work_Dir", WORK_PATH, FolderValidator())
+    # ------------------- 字幕最低时长配置 -------------------
+    subtitle_enable_sentence_minimum_time = ConfigItem(
+        "Subtitle", "Enable Sentence Minimum Time",
+        False, BoolValidator()
+    )
+    
+    subtitle_sentence_minimum_time = RangeConfigItem(
+        "Subtitle", "Sentence Minimum Time",
+        1500, RangeValidator(500, 3000)
+    )
 
     # ------------------- 软件页面配置 -------------------
     micaEnabled = ConfigItem("MainWindow", "MicaEnabled", False, BoolValidator())

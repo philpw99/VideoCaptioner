@@ -17,7 +17,7 @@ from PyQt5.QtCore import QUrl
 from app.config import SUBTITLE_STYLE_PATH
 
 from ..core.thread.subtitle_optimization_thread import SubtitleOptimizationThread
-from ..common.config import cfg
+from ..common.config import cfg, SubtitleLayoutEnum
 from ..core.bk_asr.ASRData import from_subtitle_file, from_json
 from ..core.entities import OutputSubtitleFormatEnum, SupportedSubtitleFormats
 from ..core.entities import Task
@@ -185,7 +185,8 @@ class SubtitleOptimizationInterface(QWidget):
 
         # 添加字幕排布下拉框
         self.layout_combobox = ComboBox(self)
-        self.layout_combobox.addItems(["Translated On Top", "Original On Top", "Translated Only", "Original Only"])
+        
+        self.layout_combobox.addItems([layout.value for layout in SubtitleLayoutEnum])
         self.layout_combobox.setCurrentText(cfg.subtitle_layout.value)
 
         self.left_layout.addWidget(self.save_button)
@@ -358,7 +359,7 @@ class SubtitleOptimizationInterface(QWidget):
         # 更新配置中的字幕布局
         cfg.subtitle_layout.value = layout
         # 更新下拉框的当前文本为新的布局
-        self.layout_combobox.setCurrentText(layout)
+        self.layout_combobox.setCurrentText(layout.value)
 
     def create_task(self, file_path):
         """
@@ -663,9 +664,9 @@ class SubtitleOptimizationInterface(QWidget):
 
             if file_path.endswith(".ass"):
                 style_str = self.task.subtitle_style_srt
-                asr_data.to_ass(style_str, layout, file_path)
+                asr_data.to_ass(style_str, layout_str, file_path)
             else:
-                asr_data.save(file_path, layout=layout)
+                asr_data.save(file_path, layout=layout_str)
             InfoBar.success(
                 self.tr("保存成功"),
                 self.tr(f"字幕已保存至:") + file_path,

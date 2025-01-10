@@ -6,7 +6,7 @@ from qfluentwidgets import FluentIcon as FIF
 from qfluentwidgets import InfoBar
 from qfluentwidgets import (SettingCardGroup, SwitchSettingCard, OptionsSettingCard, PushSettingCard,
                             HyperlinkCard, PrimaryPushSettingCard, ScrollArea,
-                            ComboBoxSettingCard, ExpandLayout, CustomColorSettingCard,
+                            ComboBoxSettingCard, ExpandLayout, CustomColorSettingCard, RangeSettingCard,
                             setTheme, setThemeColor, RangeSettingCard, MessageBox)
 
 from app.components.WhisperAPISettingDialog import WhisperAPISettingDialog
@@ -187,6 +187,23 @@ class SettingInterface(ScrollArea):
             self.subtitleGroup
         )
 
+        # 字幕句子最少时长
+        self.enableSubtitleSentenceMinimumTimeCard = SwitchSettingCard(
+            FIF.CHECKBOX,
+            self.tr('Enable Minimum Subtitle Sentence Time'),
+            self.tr('Enable the feature to add time to subtitle sentences so they won\'t be too short. '),
+            cfg.subtitle_enable_sentence_minimum_time,
+            self.subtitleGroup
+        )
+        
+        self.SubtitleSentenceMinimumTimeCard = RangeSettingCard(
+            cfg.subtitle_sentence_minimum_time,
+            FIF.STOP_WATCH,
+            self.tr('Mimimum Subtitle Sentence Time'),
+            self.tr('In milliseconds, the minimum time each sentence should at least have.'),
+            self.subtitleGroup
+        )
+
         # 保存配置
         self.saveGroup = SettingCardGroup(self.tr("保存配置"), self.scrollWidget)
         self.savePathCard = PushSettingCard(
@@ -321,6 +338,8 @@ class SettingInterface(ScrollArea):
         self.subtitleGroup.addSettingCard(self.saveSubtitleFormatCard)
         self.subtitleGroup.addSettingCard(self.saveSubtitlePrefixCard)
         self.subtitleGroup.addSettingCard(self.saveSubtitleSuffixCard)
+        self.subtitleGroup.addSettingCard(self.enableSubtitleSentenceMinimumTimeCard)
+        self.subtitleGroup.addSettingCard(self.SubtitleSentenceMinimumTimeCard)
         self.saveGroup.addSettingCard(self.savePathCard)
 
         self.personalGroup.addSettingCard(self.themeCard)
@@ -346,7 +365,6 @@ class SettingInterface(ScrollArea):
     def __connectSignalToSlot(self):
         """ 连接信号与槽 """
         cfg.appRestartSig.connect(self.__showRestartTooltip)
-
 
         # Whisper 设置
         self.whisperSettingCard.linkButton.clicked.connect(self.show_whisper_settings)
