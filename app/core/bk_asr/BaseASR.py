@@ -65,7 +65,7 @@ class BaseASR:
     def _get_key(self):
         return f"{self.__class__.__name__}-{self.crc32_hex}"
 
-    def run(self, callback=None, **kwargs):
+    def run(self, callback=None, **kwargs) -> ASRData:
         k = self._get_key()
         if k in self.cache and self.use_cache:
             resp_data = self.cache[k]

@@ -297,6 +297,34 @@ class ASRData:
                 f.write(ass_content)
         return ass_content
 
+    def to_vtt(self, save_path=None) -> str:
+        """转换为WebVTT字幕格式
+        
+        Args:
+            save_path: 可选的保存路径
+            
+        Returns:
+            str: WebVTT格式的字幕内容
+        """
+        # WebVTT头部
+        vtt_lines = ['WEBVTT\n']
+        
+        for n, seg in enumerate(self.segments, 1):
+            # 转换时间戳格式从毫秒到 HH:MM:SS.mmm
+            start_time = seg._ms_to_srt_time(seg.start_time).replace(',', '.')
+            end_time = seg._ms_to_srt_time(seg.end_time).replace(',', '.')
+            
+            # 添加序号（可选）和时间戳
+            vtt_lines.append(f"{n}\n{start_time} --> {end_time}\n{seg.transcript}\n")
+        
+        vtt_text = "\n".join(vtt_lines)
+        
+        if save_path:
+            with open(save_path, 'w', encoding='utf-8') as f:
+                f.write(vtt_text)
+            
+        return vtt_text
+
     def merge_segments(self, start_index: int, end_index: int, merged_text: str = None):
             """合并从 start_index 到 end_index 的段（包含）。"""
             if start_index < 0 or end_index >= len(self.segments) or start_index > end_index:
