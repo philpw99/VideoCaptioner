@@ -174,8 +174,5 @@ class TranscriptThread(QThread):
     
     # Is the current config is using FasterWhipser and translate to English?
     def isFasterWhisperTranslate(self):
-        if cfg.transcribe_model.value == TranscribeModelEnum.FASTER_WHISPER and cfg.faster_whisper_translate_to_english.value:
-            return True
-        else:
-            return False
+        return cfg.transcribe_model.value == TranscribeModelEnum.FASTER_WHISPER and cfg.faster_whisper_translate_to_english.value
 
