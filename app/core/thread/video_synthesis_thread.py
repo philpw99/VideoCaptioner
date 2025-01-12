@@ -1,5 +1,4 @@
-import datetime
-import logging
+import datetime, time
 from pathlib import Path
 from PyQt5.QtCore import QThread, pyqtSignal
 
@@ -21,10 +20,22 @@ class VideoSynthesisThread(QThread):
         logger.debug(f"初始化 VideoSynthesisThread，任务: {self.task}")
 
     def run(self):
+        doingSynthesizing = False
         try:
+            # Check to see if another task is doing synthesizing
+            if cfg.gbDoingSynthesis:
+                logger.info("其他任务在进行视频合成，等待其完成")
+                self.task.status = Task.Status.WAITINGSYNTHESIS
+                self.progress.emit(5, self.tr("Waiting for synthesis"))
+                while cfg.gbDoingSynthesis:
+                    time.sleep(1)
+            
+            cfg.gbDoingSynthesis = True
+            doingSynthesizing = True
+            
             logger.info(f"\n===========视频合成任务开始===========")
             logger.info(f"时间：{datetime.datetime.now()}")
-            self.task.status = Task.Status.GENERATING
+            self.task.status = Task.Status.SYNTHESIZING
             video_file = self.task.file_path
             if Path(self.task.result_subtitle_save_path).is_file():
                 # result sub exist (after optimizing)
@@ -37,25 +48,32 @@ class VideoSynthesisThread(QThread):
             
             video_save_path = self.task.video_save_path
             soft_subtitle = self.task.soft_subtitle
+            
+            """  # It's disabled because the cfg setting will make all synthesis impossible.
             need_video = cfg.need_video.value
 
             if not need_video:
                 logger.info(f"不需要合成视频，跳过")
                 self.progress.emit(100, self.tr("合成完成"))
                 self.finished.emit(self.task)
+                cfg.gbDoingSynthesis = False
                 return
+            """
             
             logger.info(f"开始合成视频: {video_file}")
-            self.progress.emit(5, self.tr("正在合成"))
+            self.progress.emit(10, self.tr("正在合成"))
             add_subtitles(video_file, subtitle_file, video_save_path, soft_subtitle=soft_subtitle,
                           progress_callback=self.progress_callback)
             self.progress.emit(100, self.tr("合成完成"))
             logger.info(f"视频合成完成，保存路径: {video_save_path}")
             self.finished.emit(self.task)
+            cfg.gbDoingSynthesis = False
         except Exception as e:
             logger.exception(f"视频合成失败: {e}")
             self.error.emit(str(e))
             self.progress.emit(100, self.tr("视频合成失败"))
+            if doingSynthesizing:
+                cfg.gbDoingSynthesis = False
 
     def progress_callback(self, value, message):
         progress = int(5 + int(value) / 100 * 95)

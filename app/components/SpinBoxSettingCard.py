@@ -20,7 +20,7 @@ class DoubleSpinBoxSettingCard(SettingCard):
         self.spinBox = CompactDoubleSpinBox(self)
         self.spinBox.setRange(minimum, maximum)
         self.spinBox.setDecimals(decimals)
-        self.spinBox.setMinimumWidth(60)
+        self.spinBox.setMinimumWidth(70)
         self.spinBox.setSingleStep(step)  # 设置步长为0.2
 
         # 添加到布局

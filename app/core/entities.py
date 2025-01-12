@@ -458,8 +458,14 @@ class Task:
         """ 任务状态 (下载、转录、优化、翻译、生成) """
         PENDING = "Pending"
         DOWNLOADING = "Downloading"
+        WAITINGAUDIO = "Waiting for audio transcoding"
+        WAITINGTRANSCRIBE = "Waiting for transcribing"
+        WAITINGOPTIMIZE = "Waiting for optimizing"
+        WAITINGSYNTHESIS = "Waiting for synthesizing"
+        TRANSCODING = "Transcoding"
         TRANSCRIBING = "Transcribing"
         OPTIMIZING = "Optimizing"
+        SYNTHESIZING = "Synthesizing"
         TRANSLATING = "Translating"
         GENERATING = "Generating"
         COMPLETED = "Completed"
@@ -524,6 +530,7 @@ class Task:
     faster_whisper_ff_mdx_kim2: bool = False
     faster_whisper_one_word: bool = True
     faster_whisper_translate_to_english: bool = False
+    faster_whisper_repetion_penalty: float = 1
     faster_whisper_prompt: Optional[str] = None
 
     # LLM（优化翻译模型）

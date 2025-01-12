@@ -741,6 +741,19 @@ class FasterWhisperSettingDialog(MessageBoxBase):
             cfg.faster_whisper_translate_to_english,
             self.other_group
         )
+        
+        # 重复惩罚
+        self.repetition_penalty_card = DoubleSpinBoxSettingCard(
+            cfg.faster_whisper_repetition_penalty,
+            FIF.COPY,
+            self.tr("重复字句惩罚"),
+            self.tr("对重复字句的惩罚，1为不惩罚，一般1.2就可"),
+            minimum=1.00,
+            maximum=2.00,
+            decimals=2,
+            step=0.05
+        )
+        
         # 提示词
         self.prompt_card = LineEditSettingCard(
             cfg.faster_whisper_prompt,
@@ -774,6 +787,7 @@ class FasterWhisperSettingDialog(MessageBoxBase):
         self.other_group.addSettingCard(self.ff_mdx_kim2_card)
         self.other_group.addSettingCard(self.one_word_card)
         self.other_group.addSettingCard(self.translate_to_english_card)
+        self.other_group.addSettingCard(self.repetition_penalty_card)
         self.other_group.addSettingCard(self.prompt_card)
 
         # 检查并提示下载 faster-whisper

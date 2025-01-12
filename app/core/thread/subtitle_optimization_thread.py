@@ -76,6 +76,7 @@ class SubtitleOptimizationThread(QThread):
         raise Exception(self.tr("自带的API配置暂时不可用，请配置自己的大模型API"))
 
     def run(self):
+        doingOptimizing = False
         try:
             logger.info(f"\n===========字幕优化任务开始===========")
             logger.info(f"时间：{datetime.datetime.now()}")
@@ -106,8 +107,18 @@ class SubtitleOptimizationThread(QThread):
             assert Path(str_path).exists(), self.tr("字幕文件路径不存在")
             assert Path(str_path).suffix in ['.srt', '.vtt', '.ass'], self.tr("字幕文件格式不支持")
 
+            if cfg.gbDoingOptimizing:
+                self.task.status = Task.Status.WAITINGOPTIMIZE
+                self.progress.emit(5, self.tr("等待优化/翻译字幕"))
+                logger.info("有别的任务在进行优化/翻译字幕，等待其完成")
+                while cfg.gbDoingOptimizing:
+                    time.sleep(1)
+            
+            cfg.gbDoingOptimizing = True
+            doingOptimizing = True
+            
             self.task.status = Task.Status.OPTIMIZING
-            self.progress.emit(2, self.tr("开始优化字幕..."))
+            self.progress.emit(10, self.tr("开始优化字幕..."))
 
             self.llm_result_logger = setup_logger("llm_result", 
                                                 info_fmt="%(message)s",
@@ -120,7 +131,7 @@ class SubtitleOptimizationThread(QThread):
             if not asr_data.is_word_timestamp() and need_split and self.task.faster_whisper_one_word:
                 asr_data.split_to_word_segments()
             if asr_data.is_word_timestamp():
-                self.progress.emit(5, self.tr("字幕断句..."))
+                self.progress.emit(15, self.tr("字幕断句..."))
                 logger.info("正在字幕断句...")
                 asr_data = merge_segments(asr_data, model=llm_model, 
                                           num_threads=thread_num, 
@@ -192,13 +203,28 @@ class SubtitleOptimizationThread(QThread):
                 save_srt_path = Path(self.task.work_dir) / f"【卡卡】{Path(self.task.video_info.file_name).stem}.srt"
                 asr_data.to_srt(save_path=str(save_srt_path), layout=subtitle_layout)
 
+            # stop the llm logging in working dir
+            for handler in self.llm_result_logger.handlers:
+                if handler.close:   # Has close method
+                    handler.close()
+                self.llm_result_logger.removeHandler(handler)
+                
             self.progress.emit(100, self.tr("优化完成"))
             logger.info("优化完成")
             self.finished.emit(self.task)
+            cfg.gbDoingOptimizing = False
+            doingOptimizing = False
         except Exception as e:
             logger.exception(f"优化失败: {str(e)}")
             self.error.emit(str(e))
             self.progress.emit(100, self.tr("优化失败"))
+            if self.llm_result_logger:
+                for handler in self.llm_result_logger.handlers:
+                    if handler.close: # Has close method
+                        handler.close()
+                    self.llm_result_logger.removeHandler(handler)
+            if doingOptimizing:
+                cfg.gbDoingOptimizing = False
 
     def set_limit(self):
         self.settings = QSettings(QSettings.IniFormat, QSettings.UserScope,

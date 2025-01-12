@@ -1,4 +1,4 @@
-import datetime
+import datetime, time
 import os
 from pathlib import Path
 import subprocess
@@ -25,9 +25,9 @@ from ..core.thread.transcript_thread import TranscriptThread
 from ..view.subtitle_optimization_interface import SubtitleOptimizationInterface
 
 
-class timedMessageBox(QMessageBox):
+class TimedMessageBox(QMessageBox):
     def __init__(self, title, message, timeout):
-        super(timedMessageBox, self).__init__()
+        super(TimedMessageBox, self).__init__()
         self.timeout = timeout
         self.setWindowTitle(title)
         self.setText('\n'.join((message, f"Closing in {timeout} seconds")))
@@ -37,11 +37,10 @@ class timedMessageBox(QMessageBox):
 
     def showEvent(self, event):
         QTimer().singleShot(self.timeout*1000, self.close)
-        super(timedMessageBox, self).showEvent(event)
+        super(TimedMessageBox, self).showEvent(event)
 
 class BatchProcessInterface(QWidget):
     """批量处理界面"""
-
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setObjectName("BatchProcessInterface")
@@ -76,6 +75,9 @@ class BatchProcessInterface(QWidget):
         # 任务类型选择
         self.task_type_combo = ComboBox(self)
         self.task_type_combo.addItems([self.tr("视频加字幕"), self.tr("音视频转录")])
+        if not cfg.need_video.value:    # Set it according to the configuration
+            self.task_type_combo.setCurrentIndex(1)
+            
         self.top_layout.addWidget(self.task_type_combo)
 
         self.top_layout.addStretch(1)
@@ -178,15 +180,21 @@ class BatchProcessInterface(QWidget):
             parent=self
         )
 
-        # 查找第一个未完成的任务并开始处理
+        # 查找头两个未完成的任务并开始处理
+        c = 1
         for task_card in self.task_cards:
             if task_card.task.status not in [Task.Status.COMPLETED, Task.Status.FAILED]:
+                if c == 2:  # Add a 5 second pause between 1 and 2
+                    time.sleep(5)
                 task_card.finished.connect(self.on_task_finished)
                 task_card.error.connect(self.on_task_error)
                 task_card.start()
-                break
+                c += 1
+                if c >= 2:
+                    break
+
         # 判断是否所有任务都已完成
-        if all(task_card.task.status in [Task.Status.COMPLETED, Task.Status.FAILED] for task_card in self.task_cards):
+        if all(task_card.task.status in [Task.Status.COMPLETED, Task.Status.FAILED, Task.Status.CANCELED] for task_card in self.task_cards):
             self.on_batch_finished()
 
     def cancel_batch_process(self):
@@ -199,8 +207,7 @@ class BatchProcessInterface(QWidget):
 
         # 停止所有正在运行的任务
         for task_card in self.task_cards:
-            if task_card.task.status in [Task.Status.TRANSCRIBING, Task.Status.PENDING, Task.Status.OPTIMIZING,
-                                         Task.Status.GENERATING]:
+            if task_card.task.status not in [Task.Status.COMPLETED, Task.Status.FAILED, Task.Status.CANCELED, Task.Status.PENDING]:
                 task_card.stop()
 
         # 显示取消处理的通知
@@ -224,15 +231,20 @@ class BatchProcessInterface(QWidget):
 
         # 查找下一个未完成的任务
         next_task = None
+        c = 0
         for task_card in self.task_cards:
-            if task_card.task.status not in [Task.Status.COMPLETED, Task.Status.FAILED]:
-                next_task = task_card
+            if task_card.task.status not in [Task.Status.PENDING, Task.Status.COMPLETED, Task.Status.FAILED, Task.Status.CANCELED]:
+                c += 1
+            if task_card.task.status == Task.Status.PENDING:
+                task_card.finished.connect(self.on_task_finished)
+                if c == 1:  # Add a 5 second pause between 1 and 2
+                    time.sleep(5)
+                task_card.start()
+                c += 1
+            if c >= 2:  # 2 tasks are running
                 break
 
-        if next_task:
-            next_task.finished.connect(self.on_task_finished)
-            next_task.start()
-        else:
+        if c == 0:  # No next task at all
             # 所有任务都完成了
             self.on_batch_finished()
 
@@ -247,7 +259,7 @@ class BatchProcessInterface(QWidget):
         # 查找下一个未完成的任务
         next_task = None
         for task_card in self.task_cards:
-            if task_card.task.status not in [Task.Status.COMPLETED, Task.Status.FAILED]:
+            if task_card.task.status == Task.Status.PENDING:
                 next_task = task_card
                 break
 
@@ -262,7 +274,7 @@ class BatchProcessInterface(QWidget):
         """批量处理完成的处理"""
         todo = self.todo_when_done_combobox.currentText()
         if todo == self.tr(TodoWhenDoneEnum.EXIT.value):
-            qbox = timedMessageBox(
+            qbox = TimedMessageBox(
                 self.tr("Program exiting in 1 minute"),
                 self.tr("All jobs are done. This program is going to be closed."),
                 60
@@ -271,7 +283,7 @@ class BatchProcessInterface(QWidget):
             if ret == QMessageBox.StandardButton.Ok:
                 QCoreApplication.quit() # Exit
         elif todo == self.tr(TodoWhenDoneEnum.SUSPEND.value):
-            qbox = timedMessageBox(
+            qbox = TimedMessageBox(
                 self.tr("Suspending in 1 minute"),
                 self.tr("All jobs are done. The computer is going to be suspended."),
                 60
@@ -283,7 +295,7 @@ class BatchProcessInterface(QWidget):
                 else:
                     os.system('sudo systemctl suspend')
         elif todo == self.tr(TodoWhenDoneEnum.SHUTDOWN.value):
-            qbox = timedMessageBox(
+            qbox = TimedMessageBox(
                 self.tr( "Shutting Down in 1 minute"),
                 self.tr("All jobs are done. The computer is shutting down. "),
                 60
@@ -381,6 +393,7 @@ class BatchProcessInterface(QWidget):
             position=InfoBarPosition.BOTTOM,
             parent=self
         )
+        
 
     def remove_task_card(self, task_card):
         """移除任务卡片"""
@@ -473,10 +486,10 @@ class TaskInfoCard(CardWidget):
         self.subtitle_window = None  # 添加成员变量
 
     def setup_ui(self):
-        self.setFixedHeight(150)
+        self.setFixedHeight(180)
         self.layout = QHBoxLayout(self)
-        self.layout.setContentsMargins(20, 15, 20, 15)
-        self.layout.setSpacing(20)
+        self.layout.setContentsMargins(15, 10, 15, 10)
+        self.layout.setSpacing(10)
 
         # 设置缩略图
         self.setup_thumbnail()
@@ -498,33 +511,41 @@ class TaskInfoCard(CardWidget):
     def setup_info_layout(self):
         self.info_layout = QVBoxLayout()
         self.info_layout.setContentsMargins(3, 8, 3, 8)
-        self.info_layout.setSpacing(10)
+        self.info_layout.setSpacing(5)
 
         # 设置视频标题
         self.video_title = BodyLabel(self.tr("未选择视频"), self)
-        self.video_title.setFont(QFont("Microsoft YaHei", 14, QFont.Bold))
+        self.video_title.setFont(QFont("Microsoft YaHei", 14))
         self.video_title.setWordWrap(True)
         self.info_layout.addWidget(self.video_title, alignment=Qt.AlignTop)
 
         # 设置视频详细信息
-        self.details_layout = QHBoxLayout()
-        self.details_layout.setSpacing(15)
+        self.details_layout1 = QHBoxLayout()
+        self.details_layout1.setSpacing(15)
+        self.details_layout2 = QHBoxLayout()
+        self.details_layout2.setSpacing(15)
 
-        self.resolution_info = self.create_pill_button(self.tr("画质"), 110)
-        self.file_size_info = self.create_pill_button(self.tr("文件大小"), 110)
-        self.duration_info = self.create_pill_button(self.tr("时长"), 100)
+        self.resolution_info = self.create_pill_button(self.tr("画质"), 120)
+        self.file_size_info = self.create_pill_button(self.tr("文件大小"), 120)
+        self.duration_info = self.create_pill_button(self.tr("时长"), 120)
+        self.video_codec = self.create_pill_button(self.tr("视频码"), 120)
+        self.audio_codec = self.create_pill_button(self.tr("音频码"), 120)
 
         self.progress_ring = ProgressRing(self)
         self.progress_ring.setFixedSize(20, 20)
         self.progress_ring.setStrokeWidth(4)
         self.progress_ring.hide()
 
-        self.details_layout.addWidget(self.resolution_info)
-        self.details_layout.addWidget(self.file_size_info)
-        self.details_layout.addWidget(self.duration_info)
-        self.details_layout.addWidget(self.progress_ring)
-        self.details_layout.addStretch(1)
-        self.info_layout.addLayout(self.details_layout)
+        self.details_layout1.addWidget(self.resolution_info)
+        self.details_layout1.addWidget(self.file_size_info)
+        self.details_layout1.addWidget(self.duration_info)
+        self.details_layout1.addWidget(self.progress_ring)
+        self.details_layout1.addStretch(1)
+        self.details_layout2.addWidget(self.video_codec)
+        self.details_layout2.addWidget(self.audio_codec)
+        self.details_layout2.addStretch(1)
+        self.info_layout.addLayout(self.details_layout1)
+        self.info_layout.addLayout(self.details_layout2)
         self.layout.addLayout(self.info_layout)
 
     def create_pill_button(self, text, width):
@@ -547,7 +568,7 @@ class TaskInfoCard(CardWidget):
 
         button_widget = QWidget()
         button_widget.setLayout(self.button_layout)
-        button_widget.setFixedWidth(150)
+        button_widget.setFixedWidth(180)
         self.layout.addWidget(button_widget)
 
     def mouseDoubleClickEvent(self, event):
@@ -563,6 +584,8 @@ class TaskInfoCard(CardWidget):
         self.file_size_info.setText(self.tr("大小: ") + f"{file_size_mb:.1f} MB")
         duration = datetime.timedelta(seconds=int(video_info.duration_seconds))
         self.duration_info.setText(self.tr("时长: ") + str(duration))
+        self.video_codec.setText(self.tr("视频码 ") + video_info.video_codec)
+        self.audio_codec.setText(self.tr("音频码 ") + video_info.audio_codec)
         # self.start_button.setDisabled(False)
         self.update_thumbnail(video_info.thumbnail_path)
         self.update_tooltip()

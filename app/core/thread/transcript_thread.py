@@ -1,4 +1,4 @@
-import datetime
+import datetime, time
 from pathlib import Path
 
 from PyQt5.QtCore import QThread, pyqtSignal
@@ -23,7 +23,7 @@ class TranscriptThread(QThread):
     finished = pyqtSignal(Task)
     progress = pyqtSignal(int, str)
     error = pyqtSignal(str)
-
+    
     ASR_MODELS = {
         TranscribeModelEnum.JIANYING: JianYingASR,
         # TranscribeModelEnum.KUAISHOU: KuaiShouASR,
@@ -38,34 +38,63 @@ class TranscriptThread(QThread):
         self.task = task
 
     def run(self):
+        doingAudio = False
+        doingTranscribe = False
         try:
             logger.info(f"\n===========转录任务开始===========")
-            logger.info(f"时间：{datetime.datetime.now()}")
+            logger.info(f"时间：{time.strftime("%d %b %Y %H:%M:%S")}")
             # 检查是否已经存在字幕文件
+            # 不能跳过，因为如果有两个同名的视频文件，就需要生成和覆盖旧的字幕
+            """
             if Path(self.task.original_subtitle_save_path).exists():
                 logger.info("字幕文件已存在，跳过转录")
                 self.progress.emit(100, self.tr("字幕已存在"))
                 self.finished.emit(self.task)
                 return
+            """
 
             video_path = Path(self.task.file_path)
             if not video_path:
                 logger.error("视频路径不能为空")
                 raise ValueError(self.tr("视频路径不能为空"))
 
+            # 如果音频在制作中，等待
+            if cfg.gbDoingAudioRecoding:
+                # Some task is doing audio recoding.
+                self.progress.emit(0, self.tr("等待其他音频处理结束"))
+                self.task.status = Task.Status.WAITINGAUDIO
+                timeOut = time.time() + 600
+                while cfg.gbDoingAudioRecoding:
+                    time.sleep(1)
+                    
+            # 转换为音频
             self.progress.emit(5, self.tr("转换音频中"))
             logger.info("开始转换音频")
-            self.task.status = Task.Status.TRANSCRIBING
+            self.task.status = Task.Status.TRANSCODING
 
-            # 转换为音频
+            cfg.gbDoingAudioRecoding = True    # 开始转音频
+            doingAudio = True
             audio_save_path = Path(self.task.audio_save_path)
-            is_success = video2audio(str(video_path), output=str(audio_save_path))
+            is_success = video2audio(str(video_path), output_file=str(audio_save_path), format= self.task.audio_format)
+            cfg.gbDoingAudioRecoding = False   # 完成
+            doingAudio = False
             if not is_success:
                 logger.error("音频转换失败")
                 raise RuntimeError(self.tr("音频转换失败"))
 
+            # 如果音频在转录中，等待
+            if cfg.gbDoingTranscribing:
+                # Some task is doing transcribing.
+                self.progress.emit(0, self.tr("等待其他转录结束"))
+                self.task.status = Task.Status.WAITINGTRANSCRIBE
+                while cfg.gbDoingTranscribing:
+                    time.sleep(1)
+
+            self.task.status = Task.Status.TRANSCRIBING
             self.progress.emit(20, self.tr("语音转录中"))
             logger.info("开始语音转录")
+            cfg.gbDoingTranscribing = True
+            doingTranscribe = True
 
             # 获取ASR模型
             asr_class = self.ASR_MODELS.get(self.task.transcribe_model)
@@ -120,8 +149,8 @@ class TranscriptThread(QThread):
                         args["max_comma_cent"] = 50
                         args["max_comma"] = 20
                 
-                if self.task.faster_whisper_translate_to_english:
-                    args["translate_to_english"] = True
+                args["translate_to_english"] = self.task.faster_whisper_translate_to_english
+                args["repetition_penalty"] = self.task.faster_whisper_repetion_penalty
 
                 self.asr = FasterWhisperASR(self.task.audio_save_path, **args)
             elif self.task.transcribe_model == TranscribeModelEnum.BIJIAN:
@@ -161,12 +190,18 @@ class TranscriptThread(QThread):
             except Exception as e:
                 logger.error("删除音频文件或封面失败: %s", str(e))
 
+            doingTranscribe = False
             self.progress.emit(100, self.tr("转录完成"))
             self.finished.emit(self.task)
+            cfg.gbDoingTranscribing = False
         except Exception as e:
             logger.exception("转录过程中发生错误: %s", str(e))
             self.error.emit(str(e))
             self.progress.emit(100, self.tr("转录失败"))
+            if doingAudio:
+                cfg.gbDoingAudioRecoding = False
+            if doingTranscribe:
+                cfg.gbDoingTranscribing = False
 
     def progress_callback(self, value, message):
         progress = min(20 + (value * 0.8), 100)

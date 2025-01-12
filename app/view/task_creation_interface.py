@@ -8,7 +8,8 @@ from PyQt5.QtCore import pyqtSignal, Qt, QStandardPaths
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QApplication, QLabel, QFileDialog
 from qfluentwidgets import LineEdit, ProgressBar, PushButton, InfoBar, InfoBarPosition, BodyLabel, ToolButton, HyperlinkButton
-from qfluentwidgets import FluentIcon, FluentStyleSheet
+from qfluentwidgets import FluentIcon, FluentStyleSheet, ComboBoxSettingCard
+from qfluentwidgets import FluentIcon as FIF
 
 from ..common.config import cfg
 from ..components.SimpleSettingCard import ComboBoxSimpleSettingCard, SwitchButtonSimpleSettingCard
@@ -206,11 +207,23 @@ class TaskCreationInterface(QWidget):
         self.info_label.setAlignment(Qt.AlignCenter)
         self.info_label.setStyleSheet("font-size: 12px; color: #888888;")
         
+        # 创建语言转换按钮
+        self.languageCard = ComboBoxSettingCard(
+            cfg.language,
+            FIF.LANGUAGE,
+            self.tr('语言'),
+            self.tr('设置您偏好的界面语言'),
+            texts=['简体中文', '繁體中文', 'English', self.tr('使用系统设置')],
+            parent=self
+        )
+        self.languageCard.setFixedHeight(50)
+        
         # 将组件添加到底部布局
         bottom_layout.addStretch()
         bottom_layout.addWidget(self.info_label)
         bottom_layout.addWidget(self.log_button)
         bottom_layout.addStretch()
+        bottom_layout.addWidget(self.languageCard)        
         
         self.main_layout.addStretch()
         self.main_layout.addWidget(bottom_container)
@@ -226,9 +239,11 @@ class TaskCreationInterface(QWidget):
         self.subtitle_optimization_card.checkedChanged.connect(signalBus.on_subtitle_optimization_changed)
         self.subtitle_translation_card.checkedChanged.connect(signalBus.on_subtitle_translation_changed)
         self.target_language_card.valueChanged.connect(signalBus.on_target_language_changed)
+        self.languageCard.comboBox.currentIndexChanged.connect(self.showRestartTooltip)
         signalBus.subtitle_optimization_changed.connect(self.on_subtitle_optimization_changed)
         signalBus.subtitle_translation_changed.connect(self.on_subtitle_translation_changed)
         signalBus.target_language_changed.connect(self.on_target_language_changed)
+        
 
     def on_subtitle_optimization_changed(self, optimization: bool):
         """当字幕优化状态改变时触发"""
@@ -457,6 +472,16 @@ class TaskCreationInterface(QWidget):
                 duration=3000,
                 parent=self
             )
+
+    def showRestartTooltip(self):
+        """ 显示重启提示 """
+        InfoBar.success(
+            self.tr('更新成功'),
+            self.tr('配置将在重启后生效'),
+            duration=1500,
+            parent=self
+        )
+
 
     def show_log_window(self):
         """显示日志窗口"""

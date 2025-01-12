@@ -36,6 +36,7 @@ class FasterWhisperASR(BaseASR):
                  # 文本处理参数
                  one_word: int = 0,
                  translate_to_english: bool = False,
+                 repetition_penalty: float = 1,
                  sentence: bool = False,
                  max_line_width: int = 100,
                  max_line_count: int = 1,
@@ -71,6 +72,7 @@ class FasterWhisperASR(BaseASR):
         self.max_comma = max_comma
         self.max_comma_cent = max_comma_cent
         self.translate_to_english = translate_to_english
+        self.repetition_penalty = repetition_penalty
         self.prompt = prompt
 
         self.process = None
@@ -126,6 +128,9 @@ class FasterWhisperASR(BaseASR):
         # 翻译成英语
         if self.translate_to_english:
             cmd.extend(["--task", "translate"])
+        
+        # 重复字句的惩罚
+        cmd.extend(["--repetition_penalty", f"{self.repetition_penalty:.2f}"])
         
         if self.sentence:
             cmd.extend([

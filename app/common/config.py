@@ -47,6 +47,12 @@ class LanguageSerializer(ConfigSerializer):
 
 
 class Config(QConfig):
+    # Global variables here. g as global, b as bool
+    gbDoingAudioRecoding = False
+    gbDoingTranscribing = False
+    gbDoingOptimizing = False
+    gbDoingSynthesis = False
+    
     """ 应用配置 """
     # ------------------- LLM 配置 -------------------
     api_key = ConfigItem("LLM", "API_Key", "")
@@ -125,6 +131,10 @@ class Config(QConfig):
     # 翻译成英语
     faster_whisper_translate_to_english = ConfigItem(
         "FasterWhisper", "TranslateToEnglish", False, BoolValidator()
+    )
+    # 重复惩罚
+    faster_whisper_repetition_penalty = ConfigItem(
+        "FasterWhisper", "RepetitionPenalty", 1, RangeValidator(1,2)
     )
     # 提示词
     faster_whisper_prompt = ConfigItem("FasterWhisper", "Prompt", "")

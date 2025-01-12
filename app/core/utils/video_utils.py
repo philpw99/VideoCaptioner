@@ -11,22 +11,34 @@ from ..utils.logger import setup_logger
 logger = setup_logger("video_utils")
 
 
-def video2audio(input_file: str, output: str = "") -> bool:
+def video2audio(input_file: str, output_file: str = "", format: str = "copy") -> bool:
     """使用ffmpeg将视频转换为音频"""    
     # 创建output目录
-    output = Path(output)
-    output.parent.mkdir(parents=True, exist_ok=True)
-    output = str(output)
-    cmd = [
-        'ffmpeg',
-        '-i', input_file,
-        '-map', '0:a',
-        '-ac', '1',
-        '-ar', '16000',
-        '-af', 'aresample=async=1',  # 处理音频同步问题
-        '-y',
-        output
-    ]
+    Path(output_file).parent.mkdir(parents=True, exist_ok=True)
+
+    if format == "copy":
+        # copy only
+        cmd = [
+            'ffmpeg',
+            '-i', input_file,
+            '-map', '0:a',
+            '-c', 'copy',
+            '-y',
+            output_file
+        ]
+    else:
+        # encode to whatever format
+        cmd = [
+            'ffmpeg',
+            '-i', input_file,
+            '-map', '0:a',
+            '-ac', format,      # can be aac, mp3 ...etc
+            '-ar', '16000',
+            '-af', 'aresample=async=1',  # 处理音频同步问题
+            '-y',
+            output_file
+        ]
+
     logger.info(f"转换为音频执行命令: {' '.join(cmd)}")
     
     try:
@@ -38,7 +50,7 @@ def video2audio(input_file: str, output: str = "") -> bool:
             errors='replace', 
             creationflags=subprocess.CREATE_NO_WINDOW if hasattr(subprocess, 'CREATE_NO_WINDOW') else 0,
             )
-        if result.returncode == 0 and Path(output).is_file():
+        if result.returncode == 0 and Path(output_file).is_file():
             return True
         else:
             logger.error("音频转换失败")
@@ -101,7 +113,8 @@ def add_subtitles(
     # 移动到临时文件  Fix: 路径错误
     temp_dir = Path(tempfile.gettempdir()) / "VideoCaptioner"
     temp_dir.mkdir(exist_ok=True)
-    temp_subtitle = temp_dir / "temp_subtitle.ass"
+    
+    temp_subtitle = temp_dir / ( "temp_subtitle" + Path(subtitle_file).suffix )   # could be .srt, .ass or .vtt
     shutil.copy2(subtitle_file, temp_subtitle)
     subtitle_file = str(temp_subtitle)
 
@@ -333,7 +346,6 @@ def extract_thumbnail(video_path: str, seek_time: float, thumbnail_path: str) ->
     except Exception as e:
         logger.exception(f"提取缩略图时出错: {str(e)}")
         return False
-
 
 if __name__ == "__main__":
     video_path = r"C:\Users\weifeng\Videos\example_video.mp4"
