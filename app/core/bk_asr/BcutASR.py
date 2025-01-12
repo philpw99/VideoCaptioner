@@ -8,7 +8,6 @@ import requests
 from .ASRData import ASRDataSeg
 from .BaseASR import BaseASR
 from ..utils.logger import setup_logger
-from PyQt5.QtCore import QSettings
 
 logger = setup_logger("bcut_asr")
 
@@ -50,15 +49,6 @@ class BcutASR(BaseASR):
         self.task_id: Optional[str] = None
 
         self.need_word_time_stamp = need_word_time_stamp
-
-        self.settings = QSettings(QSettings.IniFormat, QSettings.UserScope,
-                                  'VideoCaptioner', 'VideoCaptioner')
-        current_date = time.strftime('%Y-%m-%d')
-        last_date = self.settings.value('bcutasr/last_date', '')
-        if current_date != last_date:
-            self.settings.setValue('bcutasr/last_date', current_date)
-            self.settings.setValue('bcutasr/daily_calls', 0)
-            self.settings.sync()  # 强制写入
 
     def upload(self) -> None:
         """申请上传"""
@@ -151,13 +141,6 @@ class BcutASR(BaseASR):
     def _run(self, callback=None, **kwargs):
         if callback is None:
             callback = lambda x, y: None
-
-        daily_calls = int(self.settings.value('bcutasr/daily_calls', 0))
-        if daily_calls >= self.MAX_DAILY_CALLS:
-            raise Exception(f"请明天再试")
-        self.settings.setValue('bcutasr/daily_calls', daily_calls + 1)
-        self.settings.sync()  # 强制写入
-        print(self.settings.value('bcutasr/daily_calls', 0))
 
         callback(0, "上传中")
         self.upload()
