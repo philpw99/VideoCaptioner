@@ -11,7 +11,7 @@ from qfluentwidgets import LineEdit, ProgressBar, PushButton, InfoBar, InfoBarPo
 from qfluentwidgets import FluentIcon, FluentStyleSheet, ComboBoxSettingCard
 from qfluentwidgets import FluentIcon as FIF
 
-from ..common.config import cfg
+from ..common.config import cfg, InternetTranslateEnum
 from ..components.SimpleSettingCard import ComboBoxSimpleSettingCard, SwitchButtonSimpleSettingCard
 from ..core.entities import SupportedAudioFormats, SupportedVideoFormats
 from ..core.entities import TargetLanguageEnum, TranscribeModelEnum, Task
@@ -48,7 +48,7 @@ class TaskCreationInterface(QWidget):
     def setup_ui(self):
         self.main_layout = QVBoxLayout(self)
         self.main_layout.setObjectName("main_layout")
-        self.main_layout.setSpacing(20)
+        self.main_layout.setSpacing(0)
 
         self.setup_config_layout()
         self.setup_logo()
@@ -57,15 +57,15 @@ class TaskCreationInterface(QWidget):
         self.setup_info_label()
 
     def setup_config_layout(self):
-        self.config_layout = QHBoxLayout()
-        self.config_layout.setObjectName("config_layout")
-        self.config_layout.setSpacing(20)
+        self.config_layout1 = QHBoxLayout()
+        self.config_layout1.setObjectName("config_layout")
+        self.config_layout1.setSpacing(20)
 
         # 创建转录模型卡片和设置按钮的容器
         transcription_container = QWidget()
         transcription_layout = QHBoxLayout(transcription_container)
         transcription_layout.setContentsMargins(0, 0, 0, 0)
-        transcription_layout.setSpacing(5)
+        transcription_layout.setSpacing(10)
 
         # 创建转录模型卡片
         self.transcription_model_card = ComboBoxSimpleSettingCard(
@@ -81,21 +81,31 @@ class TaskCreationInterface(QWidget):
         self.whisper_setting_button.clicked.connect(self.show_whisper_settings)
         transcription_layout.addWidget(self.transcription_model_card)
         transcription_layout.addWidget(self.whisper_setting_button)
-
-        # 创建字幕修正卡片
-        self.subtitle_optimization_card = SwitchButtonSimpleSettingCard(
-            self.tr("字幕修正"),
-            self.tr("使用AI大模型进行字幕修正（格式、错字、标点等）"),
-            self
-        )
+        transcription_container.setLayout(transcription_layout)
 
         # 创建字幕修正+翻译卡片
-        self.subtitle_translation_card = SwitchButtonSimpleSettingCard(
-            self.tr("字幕修正+翻译"),
-            self.tr("使用AI大模型进行字幕翻译（包含修正过程）"),
+        self.subtitle_optimization_card = SwitchButtonSimpleSettingCard(
+            self.tr("人工智能字幕修正+翻译"),
+            self.tr("使用AI大模型进行字幕修正（格式、错字、标点等），如果源字幕和目标字幕不同则翻译，需要充足Token。"),
             self
         )
 
+        # 创建字幕单句翻译卡片
+        self.subtitle_translation_card = SwitchButtonSimpleSettingCard(
+            self.tr("人工智能单句字幕翻译"),
+            self.tr("使用AI大模型进行单句字幕翻译，可以少用Token。"),
+            self
+        )
+
+        self.config_layout1.addWidget(transcription_container)
+        self.config_layout1.addWidget(self.subtitle_optimization_card)
+        self.config_layout1.addWidget(self.subtitle_translation_card)
+
+        config_container1 = QWidget()
+        config_container1.setLayout(self.config_layout1)
+        config_container1.setFixedHeight(70)
+        
+        # =========== Second Line of Config Layout ==============
         # 创建目标语言卡片
         self.target_language_card = ComboBoxSimpleSettingCard(
             self.tr("Translate Target"),
@@ -103,18 +113,34 @@ class TaskCreationInterface(QWidget):
             [model.value for model in TargetLanguageEnum],
             self
         )
+        
+        self.internet_translate_card = SwitchButtonSimpleSettingCard(
+            self.tr("使用网络翻译"),
+            self.tr("使用免费网络翻译服务"),
+            self
+        )
+        
+        self.internet_translate_method_card = ComboBoxSimpleSettingCard(
+            self.tr("Internet Translate"),
+            self.tr("Use translation service like Google Translate."),
+            [language.value for language in InternetTranslateEnum],
+            self
+        )
 
-
-        self.config_layout.addWidget(transcription_container)
-        self.config_layout.addWidget(self.subtitle_optimization_card)
-        self.config_layout.addWidget(self.subtitle_translation_card)
-        self.config_layout.addWidget(self.target_language_card)
-
-        config_container = QWidget()
-        config_container.setLayout(self.config_layout)
-        config_container.setFixedHeight(70)
-        self.main_layout.addWidget(config_container)
-        self.main_layout.addSpacing(20)
+        self.config_layout2 = QHBoxLayout()
+        self.config_layout2.setObjectName("config_layout2")
+        self.config_layout2.setSpacing(20)
+        self.config_layout2.addWidget(self.target_language_card)
+        self.config_layout2.addWidget(self.internet_translate_card)
+        self.config_layout2.addWidget(self.internet_translate_method_card)
+        
+        config_container2 = QWidget()
+        config_container2.setLayout(self.config_layout2)
+        config_container2.setFixedHeight(70)
+        
+        self.main_layout.addWidget(config_container1)
+        self.main_layout.addWidget(config_container2)
+        # self.main_layout.addSpacing(20)
 
     def setup_logo(self):
         self.logo_label = QLabel(self)
@@ -169,7 +195,7 @@ class TaskCreationInterface(QWidget):
         self.search_layout.addWidget(self.start_button)
         self.search_layout.setSpacing(10)
         self.main_layout.addLayout(self.search_layout)
-        self.main_layout.addSpacing(100)
+        self.main_layout.addSpacing(50)
 
     def setup_status_layout(self):
         self.status_layout = QVBoxLayout()
@@ -216,7 +242,7 @@ class TaskCreationInterface(QWidget):
             texts=['简体中文', '繁體中文', 'English', self.tr('使用系统设置')],
             parent=self
         )
-        self.languageCard.setFixedHeight(50)
+        self.languageCard.setFixedHeight(70)
         
         # 将组件添加到底部布局
         bottom_layout.addStretch()
@@ -239,24 +265,23 @@ class TaskCreationInterface(QWidget):
         self.subtitle_optimization_card.checkedChanged.connect(signalBus.on_subtitle_optimization_changed)
         self.subtitle_translation_card.checkedChanged.connect(signalBus.on_subtitle_translation_changed)
         self.target_language_card.valueChanged.connect(signalBus.on_target_language_changed)
-        self.languageCard.comboBox.currentIndexChanged.connect(self.showRestartTooltip)
+        self.internet_translate_card.checkedChanged.connect(signalBus.on_internet_translation_changed)
+        self.internet_translate_method_card.comboBox.currentTextChanged.connect(signalBus.on_internet_translation_method_changed)
+        self.languageCard.comboBox.currentTextChanged.connect(signalBus.on_language_changed)
+        
         signalBus.subtitle_optimization_changed.connect(self.on_subtitle_optimization_changed)
         signalBus.subtitle_translation_changed.connect(self.on_subtitle_translation_changed)
+        signalBus.internet_translation_changed.connect(self.on_internet_translation_changed)
+        signalBus.internet_translation_method_changed.connect(self.on_internet_translation_method_changed)
         signalBus.target_language_changed.connect(self.on_target_language_changed)
-        
+        signalBus.language_changed.connect(self.on_language_changed)
 
     def on_subtitle_optimization_changed(self, optimization: bool):
         """当字幕优化状态改变时触发"""
-        if self.subtitle_optimization_card.isChecked() != optimization:
-            self.subtitle_optimization_card.setChecked(optimization)
+        self.subtitle_optimization_card.setChecked(optimization)
 
-    def on_subtitle_translation_changed(self, translation: bool):
-        if self.subtitle_translation_card.isChecked() != translation:
-            self.subtitle_translation_card.setChecked(translation)
-        if translation:
-            self.target_language_card.setEnabled(True)
-        else:
-            self.target_language_card.setEnabled(False)
+    def on_subtitle_translation_changed(self, translation: bool ):
+        self.subtitle_translation_card.setChecked(translation)
 
     def on_target_language_changed(self, language: str):
         self.target_language_card.comboBox.setCurrentText(language)
@@ -266,7 +291,10 @@ class TaskCreationInterface(QWidget):
         self.target_language_card.setValue(cfg.target_language.value.value)
         self.subtitle_optimization_card.setChecked(cfg.need_optimize.value)
         self.subtitle_translation_card.setChecked(cfg.need_translate.value)
-        self.target_language_card.setEnabled(self.subtitle_translation_card.isChecked())
+        # self.target_language_card.setEnabled(self.subtitle_translation_card.isChecked())
+        self.internet_translate_card.setChecked(cfg.use_internet_translate.value)
+        self.internet_translate_method_card.comboBox.setCurrentText(cfg.use_internet_translate_method.value.value)
+        self.internet_translate_method_card.setDisabled(not cfg.use_internet_translate.value)
         self.search_input.setText("")
         self.whisper_setting_button.setVisible(
             self.transcription_model_card.value() == TranscribeModelEnum.WHISPER.value or
@@ -311,6 +339,7 @@ class TaskCreationInterface(QWidget):
         if self.start_button._icon == FluentIcon.FOLDER:
             if cfg.last_open_dir.value != "":
                 open_path = cfg.last_open_dir.value
+                cfg.save()
             else:
                 open_path = QStandardPaths.writableLocation(QStandardPaths.DesktopLocation)
             
@@ -327,6 +356,7 @@ class TaskCreationInterface(QWidget):
                 file_dir = str( Path(file_path).parent )
                 if file_dir != cfg.last_open_dir.value:
                     cfg.last_open_dir.value = file_dir
+                    cfg.save()
                 
                 self.search_input.setText(file_path)                
             return
@@ -473,15 +503,24 @@ class TaskCreationInterface(QWidget):
                 parent=self
             )
 
-    def showRestartTooltip(self):
+    def on_internet_translation_changed(self, check: bool):
+        """由人工智能变成网络翻译，或者相反"""
+        # If use internet translate, disable subtitle optimization and AI translation
+        self.internet_translate_card.setChecked(check)
+        self.internet_translate_method_card.setDisabled(not check)
+
+    def on_internet_translation_method_changed(self, index: int):
+        if index != self.internet_translate_method_card.comboBox.currentIndex():
+            self.internet_translate_method_card.comboBox.setCurrentIndex(index)
+
+    def on_language_changed(self, language):
         """ 显示重启提示 """
         InfoBar.success(
-            self.tr('更新成功'),
+            self.tr('更新成功 :' + language),
             self.tr('配置将在重启后生效'),
-            duration=1500,
+            duration=2000,
             parent=self
         )
-
 
     def show_log_window(self):
         """显示日志窗口"""

@@ -4,6 +4,21 @@ from dataclasses import dataclass, field
 from enum import Enum
 from random import randint
 from typing import Optional
+from PyQt5.QtCore import QObject
+
+qoEntities = QObject()
+
+class SubtitleLayoutEnum(Enum):
+    """ 字幕布局 """
+    TRANSLATE_ON_TOP = qoEntities.tr("Translated On Top")
+    ORIGINAL_ON_TOP = qoEntities.tr("Original On Top")
+    ONLY_ORIGINAL = qoEntities.tr("Original Only")
+    ONLY_TRANSLATE = qoEntities.tr("Translated Only")
+
+
+class InternetTranslateEnum(Enum):
+    """网络翻译"""
+    GOOGLE = qoEntities.tr("谷歌翻译")
 
 class SupportedAudioFormats(Enum):
     """ 支持的音频格式 """
@@ -195,10 +210,10 @@ class TargetLanguageEnum(Enum):
 
 class TodoWhenDoneEnum(Enum):
     """ 批量处理完成后需做事情 """
-    NOTHING = "Nothing"
-    SUSPEND = "Suspend the computer"
-    SHUTDOWN = "Shutdown the computer"
-    EXIT = "Exit the program"
+    NOTHING = qoEntities.tr("Nothing")
+    SUSPEND = qoEntities.tr("Suspend the computer")
+    SHUTDOWN = qoEntities.tr("Shutdown the computer")
+    EXIT = qoEntities.tr("Exit the program")
 
 class TranscribeLanguageEnum(Enum):
     """ 转录语言 """

@@ -312,6 +312,7 @@ class TranscriptionInterface(QWidget):
 
         if cfg.last_open_dir.value != "":
             open_path = cfg.last_open_dir.value
+            cfg.save()
         else:
             open_path = QStandardPaths.writableLocation(QStandardPaths.DesktopLocation)
             
@@ -321,6 +322,7 @@ class TranscriptionInterface(QWidget):
             file_dir = str( Path(file_path).parent )
             if file_dir != cfg.last_open_dir.value:
                 cfg.last_open_dir.value = file_dir
+                cfg.save()
 
             self.create_task(file_path)
 

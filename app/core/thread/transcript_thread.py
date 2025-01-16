@@ -63,7 +63,6 @@ class TranscriptThread(QThread):
                 # Some task is doing audio recoding.
                 self.progress.emit(0, self.tr("等待其他音频处理结束"))
                 self.task.status = Task.Status.WAITINGAUDIO
-                timeOut = time.time() + 600
                 while cfg.gbDoingAudioRecoding:
                     time.sleep(1)
                     

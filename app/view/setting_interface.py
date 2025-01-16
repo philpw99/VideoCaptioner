@@ -13,8 +13,9 @@ from app.components.WhisperAPISettingDialog import WhisperAPISettingDialog
 from app.config import VERSION, YEAR, AUTHOR, HELP_URL, FEEDBACK_URL, RELEASE_URL
 from app.core.entities import TranscribeModelEnum
 from app.core.thread.version_manager_thread import VersionManager
-from ..common.config import cfg
+from ..common.config import cfg, InternetTranslateEnum, SubtitleLayoutEnum
 from ..components.EditComboBoxSettingCard import EditComboBoxSettingCard
+from ..components.EnumComboBoxSettingCard import *
 from ..components.LineEditSettingCard import LineEditSettingCard
 from ..core.utils.test_opanai import test_openai, get_openai_models
 from ..components.WhisperSettingDialog import WhisperSettingDialog
@@ -112,11 +113,28 @@ class SettingInterface(ScrollArea):
         )
         self.subtitleTranslateCard = SwitchSettingCard(
             FIF.LANGUAGE,
-            self.tr('字幕翻译'),
-            self.tr('是否对生成的字幕进行翻译（包含校正过程）'),
+            self.tr('人工智能字幕翻译'),
+            self.tr('是否对生成的字幕进行AI大模型智能翻译（包含校正过程）'),
             cfg.need_translate,
             self.translateGroup
         )
+        self.internetTranslateCard = SwitchSettingCard(
+            FIF.GLOBE,
+            self.tr('网络翻译'),
+            self.tr('使用互联网的免费翻译服务'),
+            cfg.use_internet_translate,
+            self.translateGroup
+        )
+        
+        self.internetTranslateMethodCard = ComboBoxSettingCard(
+            cfg.use_internet_translate_method,
+            FIF.LINK,
+            self.tr("网络翻译选择"),
+            self.tr("选择免费翻译服务网站"),
+            texts = [method.value for method in InternetTranslateEnum],
+            parent= self.translateGroup
+        )
+        
         self.targetLanguageCard = ComboBoxSettingCard(
             cfg.target_language,
             FIF.LANGUAGE,
@@ -136,12 +154,12 @@ class SettingInterface(ScrollArea):
             self.tr('Choose subtitle\'s style \( color, size, font ... etc.\)'),
             self.subtitleGroup
         )
-        self.subtitleLayoutCard = HyperlinkCard(
-            "",
-            self.tr('修改'),
+        self.subtitleLayoutCard = EnumComboBoxSettingCard(
+            cfg.subtitle_layout,
             FIF.FONT,
             self.tr('字幕布局'),
             self.tr('Choose subtitle\'s layout \( Show Original or Translated or both \)'),
+            SubtitleLayoutEnum,
             self.subtitleGroup
         )
 
@@ -165,7 +183,7 @@ class SettingInterface(ScrollArea):
             cfg.subtitle_output_format,
             FIF.FONT,
             self.tr('Target Subtitle Format'),
-            self.tr('When saving the final subtitle, use this format.'),
+            self.tr('The format for saving the final subtitle and video systhesis. Use ASS format if you want to see text styles.'),
             texts=[format.value for format in cfg.subtitle_output_format.validator.options],
             parent=self.subtitleGroup
         )
@@ -329,6 +347,8 @@ class SettingInterface(ScrollArea):
 
         self.translateGroup.addSettingCard(self.subtitleCorrectCard)
         self.translateGroup.addSettingCard(self.subtitleTranslateCard)
+        self.translateGroup.addSettingCard(self.internetTranslateCard)
+        self.translateGroup.addSettingCard(self.internetTranslateMethodCard)
         self.translateGroup.addSettingCard(self.targetLanguageCard)
 
         self.subtitleGroup.addSettingCard(self.subtitleStyleCard)
@@ -378,8 +398,6 @@ class SettingInterface(ScrollArea):
         # 字幕样式修改跳转
         self.subtitleStyleCard.linkButton.clicked.connect(
             lambda: self.window().switchTo(self.window().subtitleStyleInterface))
-        self.subtitleLayoutCard.linkButton.clicked.connect(
-            lambda: self.window().switchTo(self.window().subtitleStyleInterface))
 
         # 个性化
         self.themeCard.optionChanged.connect(lambda ci: setTheme(cfg.get(ci)))
@@ -393,11 +411,20 @@ class SettingInterface(ScrollArea):
 
         # 全局 signalBus
         self.subtitleCorrectCard.checkedChanged.connect(signalBus.on_subtitle_optimization_changed)
+        self.subtitleLayoutCard.comboBox.currentTextChanged.connect(signalBus.on_subtitle_layout_changed)
         self.subtitleTranslateCard.checkedChanged.connect(signalBus.on_subtitle_translation_changed)
+        self.internetTranslateCard.checkedChanged.connect(signalBus.on_internet_translation_changed)
+        self.internetTranslateMethodCard.comboBox.currentTextChanged.connect(signalBus.on_internet_translation_method_changed)
         self.targetLanguageCard.comboBox.currentTextChanged.connect(signalBus.on_target_language_changed)
+        # self.languageCard.comboBox.currentTextChanged.connect(signalBus.on_language_changed)
+        
         signalBus.subtitle_optimization_changed.connect(self.subtitleCorrectCard.setChecked)
+        signalBus.subtitle_layout_changed.connect(self.subtitleLayoutCard.comboBox.setCurrentText)
         signalBus.subtitle_translation_changed.connect(self.subtitleTranslateCard.setChecked)
+        signalBus.internet_translation_changed.connect(self.internetTranslateCard.setChecked)
+        signalBus.internet_translation_method_changed.connect(self.internetTranslateMethodCard.comboBox.setCurrentText)
         signalBus.target_language_changed.connect(self.targetLanguageCard.comboBox.setCurrentText)
+        signalBus.language_changed.connect(self.languageCard.comboBox.setCurrentText)
     
     def show_whisper_settings(self):
         """显示Whisper设置对话框"""

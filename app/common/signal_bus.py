@@ -1,15 +1,19 @@
 from PyQt5.QtCore import QObject, pyqtSignal, QUrl
 
-
 class SignalBus(QObject):
     # 字幕排布信号
     subtitle_layout_changed = pyqtSignal(str)
     # 字幕优化信号
     subtitle_optimization_changed = pyqtSignal(bool)
-    # 字幕翻译信号
+    # 字幕AI翻译信号
     subtitle_translation_changed = pyqtSignal(bool)
     # 翻译语言
     target_language_changed = pyqtSignal(str)
+    # 界面语言
+    language_changed = pyqtSignal(str)
+    # 使用网络翻译
+    internet_translation_changed = pyqtSignal(bool)
+    internet_translation_method_changed = pyqtSignal(bool)
 
     # 新增视频控制相关信号
     video_play = pyqtSignal()  # 播放信号
@@ -24,18 +28,35 @@ class SignalBus(QObject):
 
     def on_subtitle_optimization_changed(self, optimization: bool):
         if optimization:
-            # 如果开启字幕优化,则关闭字幕翻译
+            # 如果开启字幕优化+翻译，则关闭批量单句翻译
             self.subtitle_translation_changed.emit(False)
+            self.internet_translation_changed.emit(False)
         self.subtitle_optimization_changed.emit(optimization)
 
     def on_subtitle_translation_changed(self, translation: bool):
         if translation:
-            # 如果开启字幕翻译,则关闭字幕优化
+            # 如果开启批量单句字幕翻译,则关闭字幕优化+翻译
             self.subtitle_optimization_changed.emit(False)
+            self.internet_translation_changed.emit(False)
         self.subtitle_translation_changed.emit(translation)
 
+    def on_internet_translation_changed(self, isInternetTranslate: bool):
+        """由人工智能变成网络翻译，或者相反"""
+        if isInternetTranslate:
+            # If use internet translate, disable subtitle optimization and AI translation
+            signalBus.subtitle_optimization_changed.emit(False)
+            signalBus.subtitle_translation_changed.emit(False)
+        self.internet_translation_changed.emit(isInternetTranslate)
+
+    def on_internet_translation_method_changed(self, index: int):
+        # 网络翻译方式列表，暂时只有谷歌翻译
+        pass
+    
     def on_target_language_changed(self, language: str):
         self.target_language_changed.emit(language)
+
+    def on_language_changed(self, language: str):
+        self.language_changed.emit(language)
 
     # 新增视频控制相关方法
     def play_video(self):

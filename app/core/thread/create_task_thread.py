@@ -14,6 +14,7 @@ from ..utils.logger import setup_logger
 from ...config import SUBTITLE_STYLE_PATH, APPDATA_PATH
 
 logger = setup_logger("create_task_thread")
+qoCreateTask = QObject()
 
 class CreateTaskThread(QThread):
     finished = pyqtSignal(Task)
@@ -367,11 +368,11 @@ class CreateTaskThread(QThread):
         task_work_dir = Path(file_path).parent
         
         if cfg.need_translate.value:
-            result_subtitle_type = QObject.tr("【翻译字幕】")
+            result_subtitle_type = qoCreateTask.tr("【翻译字幕】")
         elif cfg.need_optimize.value:
-            result_subtitle_type = QObject.tr("【修正字幕】")
+            result_subtitle_type = qoCreateTask.tr("【修正字幕】")
         else:
-            result_subtitle_type = QObject.tr("【字幕】")
+            result_subtitle_type = qoCreateTask.tr("【字幕】")
         logger.info(f"字幕类型: {result_subtitle_type}")
 
         original_subtitle_save_path = task_work_dir / file_path
@@ -417,7 +418,7 @@ class CreateTaskThread(QThread):
         subtitle_file = Path(subtitle_file.strip()).as_posix()
         video_file = Path(video_file.strip()).as_posix()
         task_work_dir = Path(video_file.strip()).parent
-        video_save_path = task_work_dir / f"{QObject.tr("【生成】")}{Path(video_file).name}"
+        video_save_path = task_work_dir / f"{qoCreateTask.tr("【生成】")}{Path(video_file).name}"
 
         # 创建 Task 对象,保存文件夹与原视频路径一样
         task = Task(

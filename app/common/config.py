@@ -1,7 +1,7 @@
 # coding:utf-8
 from enum import Enum
 
-from PyQt5.QtCore import QLocale
+from PyQt5.QtCore import QLocale, QObject
 from PyQt5.QtGui import QColor
 from qfluentwidgets import (qconfig, QConfig, ConfigItem, OptionsConfigItem, BoolValidator,
                             OptionsValidator, RangeConfigItem, RangeValidator,
@@ -15,9 +15,14 @@ from ..core.entities import (
     WhisperModelEnum,
     FasterWhisperModelEnum,
     VadMethodEnum,
-    OutputSubtitleFormatEnum
+    OutputSubtitleFormatEnum,
+    TodoWhenDoneEnum,
+    SubtitleLayoutEnum,
+    InternetTranslateEnum,
 )
+from ..components.EnumComboBoxSettingCard import EnumExSerializer, EnumOptionsValidator
 
+qoConfig = QObject()    # qo means QObject
 
 class Language(Enum):
     """ 软件语言 """
@@ -25,15 +30,6 @@ class Language(Enum):
     CHINESE_TRADITIONAL = QLocale(QLocale.Chinese, QLocale.HongKong)
     ENGLISH = QLocale(QLocale.English)
     AUTO = QLocale()
-
-
-class SubtitleLayoutEnum(Enum):
-    """ 字幕布局 """
-    TRANSLATE_ON_TOP = "Translated On Top"
-    ORIGINAL_ON_TOP = "Original On Top"
-    ONLY_ORIGINAL = "Original Only"
-    ONLY_TRANSLATE = "Translated Only"
-
 
 class LanguageSerializer(ConfigSerializer):
     """ Language serializer """
@@ -43,7 +39,6 @@ class LanguageSerializer(ConfigSerializer):
 
     def deserialize(self, value: str):
         return Language(QLocale(value)) if value != "Auto" else Language.AUTO
-
 
 
 class Config(QConfig):
@@ -148,6 +143,13 @@ class Config(QConfig):
     # ------------------- 字幕配置 -------------------
     need_optimize = ConfigItem("Subtitle", "NeedOptimize", True, BoolValidator())
     need_translate = ConfigItem("Subtitle", "NeedTranslate", False, BoolValidator())
+    use_internet_translate = ConfigItem("Subtitle","UseInternetTranslate", False, BoolValidator())
+    use_internet_translate_method = OptionsConfigItem(
+        "Subtitle","UseInternetTranslateMethod",
+        InternetTranslateEnum.GOOGLE.value,
+        OptionsValidator(InternetTranslateEnum),
+        EnumSerializer(InternetTranslateEnum)
+    )
     target_language = OptionsConfigItem(
         "Subtitle", "TargetLanguage",
         TargetLanguageEnum.CHINESE_SIMPLIFIED.value,
@@ -166,7 +168,12 @@ class Config(QConfig):
 
     # ------------------- 字幕样式配置 -------------------
     subtitle_style_name = ConfigItem("SubtitleStyle", "StyleName", "default")
-    subtitle_layout = ConfigItem("SubtitleStyle", "Layout", SubtitleLayoutEnum.TRANSLATE_ON_TOP.value)
+    subtitle_layout = OptionsConfigItem(
+        "SubtitleStyle", "Layout",
+        SubtitleLayoutEnum.ONLY_TRANSLATE.name,
+        EnumOptionsValidator(SubtitleLayoutEnum),
+        EnumExSerializer(SubtitleLayoutEnum)
+    )
     subtitle_preview_image = ConfigItem("SubtitleStyle", "PreviewImage", "")
 
     # ------------------- 保存配置 -------------------
@@ -201,6 +208,7 @@ class Config(QConfig):
         OptionsValidator([1, 1.25, 1.5, 1.75, 2, "Auto"]),
         restart=True
     )
+    
     language = OptionsConfigItem(
         "MainWindow", "Language",
         Language.ENGLISH,
@@ -217,6 +225,14 @@ class Config(QConfig):
     # ------------------- 最后打开文件夹 -------------------
     last_open_dir = ConfigItem("All", "Last_Open_Dir", "")
 
+    # ------------------- 批量完成后的事情 -------------------
+    todo_when_done = OptionsConfigItem(
+        "All",
+        "ToDo_When_Done",
+        "NOTHING",
+        EnumOptionsValidator(TodoWhenDoneEnum),
+        EnumExSerializer(TodoWhenDoneEnum)
+    )
 
 cfg = Config()
 cfg.themeMode.value = Theme.DARK

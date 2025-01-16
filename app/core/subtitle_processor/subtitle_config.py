@@ -296,5 +296,6 @@ Return a pure JSON following this structure and translate into [TargetLanguage]:
 SINGLE_TRANSLATE_PROMPT = """
 You are a professional [TargetLanguage] translator. 
 Please translate the following text into [TargetLanguage]. 
+Strictly maintain one-to-one correspondence for each line with the translation.
 Return the translation result directly without any explanation or other content.
 """

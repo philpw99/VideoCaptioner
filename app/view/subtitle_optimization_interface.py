@@ -185,9 +185,9 @@ class SubtitleOptimizationInterface(QWidget):
 
         # 添加字幕排布下拉框
         self.layout_combobox = ComboBox(self)
-        
         self.layout_combobox.addItems([layout.value for layout in SubtitleLayoutEnum])
-        self.layout_combobox.setCurrentText(cfg.subtitle_layout.value)
+        key = cfg.subtitle_layout.value
+        self.layout_combobox.setCurrentText(SubtitleLayoutEnum[key].value)
 
         self.left_layout.addWidget(self.save_button)
         self.left_layout.addWidget(self.format_combobox)
@@ -347,19 +347,24 @@ class SubtitleOptimizationInterface(QWidget):
             # 设置提示按钮的图标为默认的文档图标
             self.prompt_button.setIcon(FIF.DOCUMENT)
 
-    def on_subtitle_layout_changed(self, layout: str):
+    def on_subtitle_layout_changed(self, value: str):
         """
         处理字幕布局更改事件
 
         该方法更新配置中的字幕布局，并更新下拉框的当前文本。
 
         参数:
-            layout: 新的字幕布局。
+            value: 新的字幕布局
         """
         # 更新配置中的字幕布局
-        cfg.subtitle_layout.value = layout
-        # 更新下拉框的当前文本为新的布局
-        self.layout_combobox.setCurrentText(layout.value)
+        key = None
+        for item in SubtitleLayoutEnum:
+            if item.value == value:
+                key = item.name
+        if key:
+            cfg.subtitle_layout.value = key
+            # 更新下拉框的当前文本为新的布局
+            self.layout_combobox.setCurrentText(value)
 
     def create_task(self, file_path):
         """
@@ -569,6 +574,7 @@ class SubtitleOptimizationInterface(QWidget):
         
         if cfg.last_open_dir.value != "":
             open_path = cfg.last_open_dir.value
+            cfg.save()
         else:
             open_path = QStandardPaths.writableLocation(QStandardPaths.DesktopLocation)
         
@@ -580,6 +586,7 @@ class SubtitleOptimizationInterface(QWidget):
             file_dir = str( Path(file_path).parent )
             if file_dir != cfg.last_open_dir.value:
                 cfg.last_open_dir.value = file_dir
+                cfg.save()
 
             self.file_select_button.setProperty("selected_file", file_path)
             self.load_subtitle_file(file_path)
@@ -664,9 +671,9 @@ class SubtitleOptimizationInterface(QWidget):
 
             if file_path.endswith(".ass"):
                 style_str = self.task.subtitle_style_srt
-                asr_data.to_ass(style_str, layout_str, file_path)
+                asr_data.to_ass(style_str, layout, file_path)
             else:
-                asr_data.save(file_path, layout=layout_str)
+                asr_data.save(file_path, layout=layout)
             InfoBar.success(
                 self.tr("保存成功"),
                 self.tr(f"字幕已保存至:") + file_path,

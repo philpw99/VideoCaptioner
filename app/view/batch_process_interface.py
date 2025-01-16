@@ -17,6 +17,7 @@ from qframelesswindow import FramelessWindow, StandardTitleBar
 
 from ..config import RESOURCE_PATH
 from ..common.config import cfg
+from ..components.EnumComboBoxSettingCard import EnumComboBoxSettingCard, EnumOptionsValidator, EnumExSerializer
 from ..core.entities import SupportedVideoFormats, SupportedAudioFormats, TodoWhenDoneEnum
 from ..core.entities import Task, VideoInfo
 from ..core.thread.create_task_thread import CreateTaskThread
@@ -26,7 +27,7 @@ from ..view.subtitle_optimization_interface import SubtitleOptimizationInterface
 
 
 class TimedMessageBox(QMessageBox):
-    def __init__(self, title, message, timeout):
+    def __init__(self, title, message, timeout=60):
         super(TimedMessageBox, self).__init__()
         self.timeout = timeout
         self.setWindowTitle(title)
@@ -88,9 +89,10 @@ class BatchProcessInterface(QWidget):
         self.cancel_button.setEnabled(False)
         self.todo_when_done_label = BodyLabel(self.tr("After All Done, "))
         self.todo_when_done_label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignCenter )
-        self.todo_when_done_combobox = ComboBox(self)
-        self.todo_when_done_combobox.addItems([self.tr(todo.value) for todo in TodoWhenDoneEnum])
-        self.todo_when_done_combobox.setCurrentIndex(0) # Defaults to do nothing.
+        self.todo_when_done_combobox = ComboBox()
+        self.todo_when_done_combobox.addItems(item.value for item in TodoWhenDoneEnum)
+        todoKey = cfg.todo_when_done.value
+        self.todo_when_done_combobox.setCurrentText(TodoWhenDoneEnum[todoKey].value)  # Doing nothing
         
         self.top_layout.addWidget(self.start_all_button)
         self.top_layout.addWidget(self.cancel_button)
@@ -128,6 +130,16 @@ class BatchProcessInterface(QWidget):
         self.clear_all_button.clicked.connect(self.clear_all_tasks)
         self.start_all_button.clicked.connect(self.start_batch_process)
         self.cancel_button.clicked.connect(self.cancel_batch_process)
+        self.todo_when_done_combobox.currentTextChanged.connect(self.todo_when_done_changed)
+
+    def todo_when_done_changed(self, text: str):
+        todoKey = None
+        for key in TodoWhenDoneEnum:
+            if  key.value == text:
+                todoKey = key.name
+                break
+        if todoKey:
+            cfg.set(cfg.todo_when_done, todoKey)
 
     def clear_all_tasks(self):
         """清空所有任务"""
@@ -345,6 +357,7 @@ class BatchProcessInterface(QWidget):
         file_dir = str( Path(files[0]).parent )
         if file_dir != cfg.last_open_dir.value:
             cfg.last_open_dir.value = file_dir
+            cfg.save()
 
     def create_task(self, file_path, task_type: Task.Type):
         """创建新任务"""

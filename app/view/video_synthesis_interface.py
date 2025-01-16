@@ -150,6 +150,7 @@ class VideoSynthesisInterface(QWidget):
             file_dir = str( Path(file_path).parent )
             if file_dir != cfg.last_open_dir.value:
                 cfg.last_open_dir.value = file_dir
+                cfg.save()
 
 
     def choose_video_file(self):
@@ -164,6 +165,7 @@ class VideoSynthesisInterface(QWidget):
             file_dir = str( Path(file_path).parent )
             if file_dir != cfg.last_open_dir.value:
                 cfg.last_open_dir.value = file_dir
+                cfg.save()
 
     def create_task(self):
         subtitle_file = self.subtitle_input.text()

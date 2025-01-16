@@ -2,8 +2,8 @@ import json
 import re
 from typing import List, Tuple
 from pathlib import Path
-from PyQt5.QtCore import QObject
 import math
+from ...common.config import SubtitleLayoutEnum as SubEnum
 
 class ASRDataSeg:
     def __init__(self, text: str, start_time: int, end_time: int):
@@ -139,7 +139,7 @@ class ASRData:
         self.segments = new_segments
 
 
-    def save(self, save_path: str, ass_style: str = None, layout: str = "Original On Top") -> None:
+    def save(self, save_path: str, ass_style: str = None, layout: str = SubEnum.ONLY_TRANSLATE.name) -> None:
         """Save the ASRData to a file"""
         Path(save_path).parent.mkdir(parents=True, exist_ok=True)
         if save_path.endswith('.srt'):
@@ -154,7 +154,7 @@ class ASRData:
         else:
             raise ValueError(f"Unsupported file extension: {save_path}")
 
-    def to_txt(self, save_path=None, layout: str = "Original On Top") -> str:
+    def to_txt(self, save_path=None, layout: str = SubEnum.ONLY_TRANSLATE.name) -> str:
         """Convert to plain text subtitle format (without timestamps)"""
         result = []
         for seg in self.segments:
@@ -165,13 +165,13 @@ class ASRData:
                 original, translated = seg.transcript, ""
 
             # 根据字幕类型组织文本
-            if layout == "Original On Top":
+            if layout == SubEnum.ORIGINAL_ON_TOP.name:
                 text = f"{original}\n{translated}" if translated else original
-            elif layout == "Translated On Top":
+            elif layout == SubEnum.TRANSLATE_ON_TOP.name:
                 text = f"{translated}\n{original}" if translated else original
-            elif layout == "Original Only":
+            elif layout == SubEnum.ONLY_ORIGINAL.name:
                 text = original
-            elif layout == "Translated Only":
+            elif layout == SubEnum.ONLY_TRANSLATE.name:
                 text = translated if translated else original
             else:
                 text = seg.transcript
@@ -182,7 +182,7 @@ class ASRData:
                 f.write("\n".join(result))
         return text
 
-    def to_srt(self, layout: str = "Original On Top", save_path=None) -> str:
+    def to_srt(self, layout: str = SubEnum.ONLY_TRANSLATE.name, save_path=None) -> str:
         """Convert to SRT subtitle format"""
         srt_lines = []
         for n, seg in enumerate(self.segments, 1):
@@ -193,13 +193,13 @@ class ASRData:
                 original, translated = seg.transcript, ""
 
             # 根据字幕类型组织文本
-            if layout == "Original On Top":
+            if layout == SubEnum.ORIGINAL_ON_TOP.name:
                 text = f"{original}\n{translated}" if translated else original
-            elif layout == "Translated On Top":
+            elif layout == SubEnum.TRANSLATE_ON_TOP.name:
                 text = f"{translated}\n{original}" if translated else original
-            elif layout == "Original Only":
+            elif layout == SubEnum.ONLY_ORIGINAL.name:
                 text = original
-            elif layout == "Translated Only":
+            elif layout == SubEnum.ONLY_TRANSLATE.name:
                 text = translated if translated else original
             else:
                 text = seg.transcript
@@ -239,12 +239,12 @@ class ASRData:
             }
         return result_json
 
-    def to_ass(self, style_str: str = None, layout: str = "Original On Top", save_path: str = None) -> str:
+    def to_ass(self, style_str: str = None, layout: str = SubEnum.ONLY_TRANSLATE.name, save_path: str = None) -> str:
         """转换为ASS字幕格式
         
         Args:
             style_str: ASS样式字符串,为空则使用默认样式
-            layout: 字幕布局,可选值["译文在上", "原文在上", "仅原文", "仅译文"] ["Original On Top", "Translated On Top", "Original Only", "Translated Only"]
+            layout: 字幕布局, 为SubtitleStyleEnum里面左边的name，而不是右边的value
             
         Returns:
             ASS格式字幕内容
@@ -278,15 +278,15 @@ class ASRData:
             start_time, end_time = seg.to_ass_ts()
             if "\n" in seg.text:
                 original, translate = seg.text.split("\n", 1)
-                if layout == "Translated On Top" and translate:
+                if layout == SubEnum.TRANSLATE_ON_TOP.name and translate:
                     ass_content += dialogue_template.format(start_time, end_time, "Secondary", original)
                     ass_content += dialogue_template.format(start_time, end_time, "Default", translate)
-                elif layout == "Original On Top" and translate:
+                elif layout == SubEnum.ORIGINAL_ON_TOP.name and translate:
                     ass_content += dialogue_template.format(start_time, end_time, "Secondary", translate)
                     ass_content += dialogue_template.format(start_time, end_time, "Default", original)
-                elif layout == "Original Only":
+                elif layout == SubEnum.ONLY_ORIGINAL.name:
                     ass_content += dialogue_template.format(start_time, end_time, "Default", original)
-                elif layout == "Transalted Only" and translate:
+                elif layout == SubEnum.ONLY_TRANSLATE.name and translate:
                     ass_content += dialogue_template.format(start_time, end_time, "Default", translate)
             else:
                 ass_content += dialogue_template.format(start_time, end_time, "Default", seg.text)

@@ -11,9 +11,10 @@ from qfluentwidgets import (ScrollArea, SettingCardGroup, LineEdit, MessageBoxBa
                             PushSettingCard, FluentIcon as FIF, CardWidget, BodyLabel, ImageLabel,
                             InfoBar, InfoBarPosition)
 
-from ..common.config import cfg
+from ..common.config import cfg, SubtitleLayoutEnum
 from ..components.MySettingCard import SpinBoxSettingCard, ComboBoxSettingCard, ColorSettingCard, \
     DoubleSpinBoxSettingCard
+from ..components.EnumComboBoxSettingCard import *
 from ..core.utils.subtitle_preview import generate_preview
 from ..config import SUBTITLE_STYLE_PATH
 from ..common.signal_bus import signalBus
@@ -140,11 +141,12 @@ class SubtitleStyleInterface(QWidget):
     def _initSettingCards(self):
         """初始化所有设置卡片"""
         # 字幕排布设置
-        self.layoutCard = ComboBoxSettingCard(
+        self.layoutCard = EnumComboBoxSettingCard(
+            cfg.subtitle_layout,
             FIF.ALIGNMENT,
             self.tr("字幕排布"),
             self.tr("设置主字幕和副字幕的显示方式"),
-            texts=["Translated On Top", "Original On Top", "Translated Only", "Original Only"]
+            SubtitleLayoutEnum
         )
 
         # 垂直间距
@@ -318,7 +320,8 @@ class SubtitleStyleInterface(QWidget):
     def __setValues(self):
         """设置初始值"""
         # 设置字幕排布
-        self.layoutCard.comboBox.setCurrentText(cfg.get(cfg.subtitle_layout))
+        key = cfg.get(cfg.subtitle_layout)
+        self.layoutCard.comboBox.setCurrentText(SubtitleLayoutEnum[key].value)
         # 设置字幕样式
         self.styleNameComboBox.comboBox.setCurrentText(cfg.get(cfg.subtitle_style_name))
 
@@ -351,7 +354,8 @@ class SubtitleStyleInterface(QWidget):
         # 字幕排布
         self.layoutCard.currentTextChanged.connect(self.onSettingChanged)
         self.layoutCard.currentTextChanged.connect(
-            lambda: cfg.set(cfg.subtitle_layout, self.layoutCard.comboBox.currentText()))
+            lambda: cfg.set(cfg.subtitle_layout, self.getLayoutKey(self.layoutCard.comboBox.currentText())))
+        
         # 垂直间距
         self.verticalSpacingCard.spinBox.valueChanged.connect(self.onSettingChanged)
 
@@ -384,6 +388,12 @@ class SubtitleStyleInterface(QWidget):
         self.layoutCard.currentTextChanged.connect(signalBus.on_subtitle_layout_changed)
         signalBus.subtitle_layout_changed.connect(self.on_subtitle_layout_changed)
 
+    def getLayoutKey(self, value: str):
+        for item in SubtitleLayoutEnum:
+            if item.value == value:
+                return item.name
+        return SubtitleLayoutEnum.ONLY_TRANSLATE.name
+
     def on_open_style_folder_clicked(self):
         """打开样式文件夹"""
         if sys.platform == "win32":
@@ -394,8 +404,8 @@ class SubtitleStyleInterface(QWidget):
             subprocess.run(["xdg-open", SUBTITLE_STYLE_PATH])
 
     def on_subtitle_layout_changed(self, layout: str):
-        cfg.subtitle_layout.value = layout
-        self.layoutCard.setCurrentText(layout)
+        cfg.subtitle_layout.value = self.getLayoutKey(layout)
+        self.layoutCard.comboBox.setCurrentText(layout)
 
     def onSettingChanged(self):
         """当任何设置改变时调用"""
@@ -471,14 +481,14 @@ class SubtitleStyleInterface(QWidget):
         main_text, sub_text = PERVIEW_TEXTS[self.previewTextCard.comboBox.currentText()]
 
         # 字幕布局
-        layout = self.layoutCard.comboBox.currentText()
-        if layout == "Translated On Top":
+        layoutValue = self.layoutCard.comboBox.currentText()
+        if layoutValue == SubtitleLayoutEnum.TRANSLATE_ON_TOP.value:
             main_text, sub_text = sub_text, main_text
-        elif layout == "Original On Top":
+        elif layoutValue == SubtitleLayoutEnum.ORIGINAL_ON_TOP.value:
             main_text, sub_text = main_text, sub_text
-        elif layout == "Translated Only":
+        elif layoutValue == SubtitleLayoutEnum.ONLY_TRANSLATE.value:
             main_text, sub_text = sub_text, None
-        elif layout == "Original Only":
+        elif layoutValue == SubtitleLayoutEnum.ONLY_ORIGINAL.value:
             main_text, sub_text = main_text, None
 
         # 创建预览线程

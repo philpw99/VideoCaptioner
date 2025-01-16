@@ -37,7 +37,8 @@ class SubtitleOptimizer:
         target_language: str = "Chinese",
         llm_result_logger: logging.Logger = None,
         need_remove_punctuation: bool = True,
-        cjk_only: bool = True
+        cjk_only: bool = True,
+        single_sentence_translate = False
     ) -> None:
         base_url = os.getenv('OPENAI_BASE_URL')
         api_key = os.getenv('OPENAI_API_KEY')
@@ -55,6 +56,7 @@ class SubtitleOptimizer:
         self.llm_result_logger = llm_result_logger
         self.need_remove_punctuation = need_remove_punctuation
         self.cjk_only = cjk_only
+        self.single_sentence_translate = single_sentence_translate
 
         # 注册退出处理
         import atexit
@@ -230,6 +232,55 @@ class SubtitleOptimizer:
             except Exception as e:
                 logger.error(f"单条翻译失败: {e}")
                 translate_result[key] = f"{value}\n "
+        return translate_result
+
+    def translate_single_batch(self, original_subtitle: Dict[int,str], callback = None) -> Dict[int,str]:
+        """直接大批翻译字幕"""
+        translate_result = {}
+        text = ""
+
+        i, total_lines = 1, len(original_subtitle)      # line numbers starts with 1, not 0
+        logger.info(f"total lines:{total_lines}")
+        reSearch = re.compile(r'^\[\[(\d+)\]\](.*)', re.MULTILINE) # Compile it so it can run faster
+        
+        """try:"""
+        while i <= total_lines:
+            text = ""
+            for j in range(self.batch_num): # Do it 10 sentence at a time
+                text += f"\n[[{i}]]{original_subtitle[str(i)]}"
+                i += 1
+                if i > total_lines:  # Reach the end
+                    break
+
+            logger.info(f"Translating lines up to {i}")
+            # logger.info(text)
+            message = [{"role": "system",
+                "content": SINGLE_TRANSLATE_PROMPT.replace("[TargetLanguage]", self.target_language)},
+                {"role": "user", "content": text}]
+            response = self.client.chat.completions.create(
+                model=self.model,
+                stream=False,
+                messages=message)
+            translate = response.choices[0].message.content
+            # logger.info("returned text:\n" + translate)
+            result_lines = reSearch.findall(translate)
+            # Add it to result dict
+            seg = {}
+            for j in range(len(result_lines)):
+                line:str = result_lines[j][0]
+                if line.isdigit():
+                    seg[line] = result_lines[j][1]
+
+            if callback:
+                # report the progress
+                callback(seg)
+            
+            translate_result.update(seg)      # Add seg to result
+        """
+        except Exception as e:
+            logger.error(f"批量单句翻译失败{e}")
+            return original_subtitle
+        """
         return translate_result
 
     def remove_punctuation(self, text: str) -> str:
