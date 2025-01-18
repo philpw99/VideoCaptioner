@@ -1888,6 +1888,19 @@ Detail settings are in the &apos;Settings&apos; on the lower left corner.</trans
     </message>
 </context>
 <context>
+    <name>SwitchButtonSimpleSettingCard</name>
+    <message>
+        <location filename="../../app/components/SimpleSettingCard.py" line="65"/>
+        <source>开</source>
+        <translation>On</translation>
+    </message>
+    <message>
+        <location filename="../../app/components/SimpleSettingCard.py" line="66"/>
+        <source>关</source>
+        <translation>Off</translation>
+    </message>
+</context>
+<context>
     <name>TaskCreationInterface</name>
     <message>
         <location filename="../../app/view/task_creation_interface.py" line="72"/>
@@ -2120,12 +2133,12 @@ Detail settings are in the &apos;Settings&apos; on the lower left corner.</trans
     <message>
         <location filename="../../app/view/batch_process_interface.py" line="600"/>
         <source>视频码 </source>
-        <translation>Video Codec</translation>
+        <translation>Video Codec </translation>
     </message>
     <message>
         <location filename="../../app/view/batch_process_interface.py" line="601"/>
         <source>音频码 </source>
-        <translation>Audio Codec</translation>
+        <translation>Audio Codec </translation>
     </message>
     <message>
         <location filename="../../app/view/batch_process_interface.py" line="610"/>
@@ -2751,50 +2764,151 @@ Detail settings are in the &apos;Settings&apos; on the lower left corner.</trans
     </message>
 </context>
 <context>
-    <name>qoEntities</name>
+    <name>qoEnums</name>
     <message>
-        <location filename="../../app/core/entities.py" line="14"/>
-        <source>Translated On Top</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../../app/core/entities.py" line="15"/>
-        <source>Original On Top</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../../app/core/entities.py" line="16"/>
+        <location filename="../../app/common/enums.py" line="8"/>
         <source>Original Only</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/core/entities.py" line="19"/>
+        <location filename="../../app/common/enums.py" line="9"/>
         <source>Translated Only</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/core/entities.py" line="23"/>
-        <source>谷歌翻译</source>
-        <translation>Google Translate</translation>
+        <location filename="../../app/common/enums.py" line="10"/>
+        <source>Original on Top</source>
+        <translation></translation>
     </message>
     <message>
-        <location filename="../../app/core/entities.py" line="214"/>
+        <location filename="../../app/common/enums.py" line="12"/>
+        <source>Translated on Top</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="14"/>
+        <source>Google Translate</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="15"/>
         <source>Nothing</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/core/entities.py" line="215"/>
-        <source>Suspend the computer</source>
+        <location filename="../../app/common/enums.py" line="16"/>
+        <source>Exit The Program</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/core/entities.py" line="216"/>
-        <source>Shutdown the computer</source>
+        <location filename="../../app/common/enums.py" line="17"/>
+        <source>Shutdown The Computer</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/core/entities.py" line="218"/>
-        <source>Exit the program</source>
+        <location filename="../../app/common/enums.py" line="19"/>
+        <source>Suspend The Computer</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="20"/>
+        <source>Canceled</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="21"/>
+        <source>Completed</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="22"/>
+        <source>Downloading</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="23"/>
+        <source>Failed</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="24"/>
+        <source>Generating</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="25"/>
+        <source>Optimizing</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="26"/>
+        <source>Pending</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="27"/>
+        <source>Synthesizing</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="28"/>
+        <source>Transcoding</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="29"/>
+        <source>Translating</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="30"/>
+        <source>Waiting for audio transcoding</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="31"/>
+        <source>Waiting for optimization</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="32"/>
+        <source>Waiting for video synthesis</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="34"/>
+        <source>Waiting for transcripting</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="35"/>
+        <source>File Import</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="37"/>
+        <location filename="../../app/common/enums.py" line="41"/>
+        <source>URL Import</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="38"/>
+        <source>Optimize</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="39"/>
+        <source>Subtitle</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="40"/>
+        <source>Synthesis</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="41"/>
+        <source>Transcribe</source>
         <translation></translation>
     </message>
 </context>

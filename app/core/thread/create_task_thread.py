@@ -83,8 +83,8 @@ class CreateTaskThread(QThread):
         video_save_path = file_dir / f"{self.tr("【生成】")}{Path(file_path).name}"
 
         # 音频处理
-        audio_save_path = task_work_dir / f"{self.tr("【音频】")}{file_name}.m4a"
-        audio_format = "mp3"    # for all other audio format
+        audio_save_path = task_work_dir / f"{self.tr("【音频】")}{file_name}.wav"
+        audio_format = "pcm_s16le"    # for all other audio format
         if video_info.audio_codec in ["aac", "mp3", "pcm"]:
             audio_format = "copy"
 
@@ -195,13 +195,13 @@ class CreateTaskThread(QThread):
             whisper_type = ""
 
         # 定义各个路径
-        audio_save_path = task_work_dir / f"{self.tr("【音频】")}{Path(video_file_path).stem}.m4a"
+        audio_save_path = task_work_dir / f"{self.tr("【音频】")}{Path(video_file_path).stem}.wav"
         original_subtitle_save_path = task_work_dir / f"{self.tr("【原始字幕】")}{cfg.transcribe_model.value.value}-file_name-{whisper_type}.srt" if not subtitle_file_path else subtitle_file_path
         result_subtitle_save_path = task_work_dir / ( cfg.subtitle_file_prefix.value + file_name + cfg.subtitle_file_suffix.value + "." + cfg.subtitle_output_format.value.value )
         video_save_path = task_work_dir / f"{self.tr("【生成】")}{Path(video_file_path).name}"
 
         # 音频处理
-        audio_format = "mp3"    # for all other audio format
+        audio_format = "pcm_s16le"    # for all other audio format
         if video_info.audio_codec in ["aac", "mp3", "pcm"]:
             audio_format = "copy"
 
@@ -298,12 +298,12 @@ class CreateTaskThread(QThread):
             whisper_type = ""
 
         # 音频处理
-        audio_save_path = task_work_dir / f"Audio_{file_name}.m4a"
-        audio_format = "mp3"    # for all other audio format
+        audio_save_path = task_work_dir / f"Audio_{file_name}.wav"
+        audio_format = "pcm_s16le"    # for all other audio format
         if video_info.audio_codec in ["aac", "mp3", "pcm"]:
             audio_format = "copy"
 
-        audio_save_path = task_work_dir / f"Audio_{file_name}.m4a"
+        audio_save_path = task_work_dir / f"Audio_{file_name}.wav"
         original_subtitle_save_path = task_work_dir / f"【原始字幕】{file_name}-{cfg.transcribe_model.value.value}-{whisper_type}.srt"
         result_subtitle_save_path = file_full_path.parent / ( cfg.subtitle_file_prefix.value + file_name + cfg.subtitle_file_suffix.value + "." + cfg.subtitle_output_format.value.value )
 

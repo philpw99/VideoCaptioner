@@ -27,6 +27,7 @@ from PyQt5.QtWidgets import QApplication
 from qfluentwidgets import FluentTranslator
 
 from app.common.config import cfg
+from app.common.enums import Enums_Translate
 from app.view.main_window import MainWindow
 from app.config import RESOURCE_PATH
 from app.core.utils import logger
@@ -54,12 +55,15 @@ app.setAttribute(Qt.AA_DontCreateNativeWidgetSiblings)
 
 # Internationalization (Multi-language)
 locale = cfg.get(cfg.language).value
-translator = FluentTranslator(locale)
+# translator = FluentTranslator(locale)
 myTranslator = QTranslator()
 translations_path = RESOURCE_PATH / "translations" / f"VideoCaptioner_{locale.name()}.qm"
 myTranslator.load(str(translations_path))
-app.installTranslator(translator)
+# app.installTranslator(translator)
 app.installTranslator(myTranslator)
+
+# Set the enums to new translated values
+Enums_Translate()
 
 w = MainWindow()
 w.show()

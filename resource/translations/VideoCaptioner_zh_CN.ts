@@ -1886,6 +1886,19 @@
     </message>
 </context>
 <context>
+    <name>SwitchButtonSimpleSettingCard</name>
+    <message>
+        <location filename="../../app/components/SimpleSettingCard.py" line="65"/>
+        <source>开</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../app/components/SimpleSettingCard.py" line="66"/>
+        <source>关</source>
+        <translation></translation>
+    </message>
+</context>
+<context>
     <name>TaskCreationInterface</name>
     <message>
         <location filename="../../app/view/task_creation_interface.py" line="72"/>
@@ -2749,51 +2762,152 @@
     </message>
 </context>
 <context>
-    <name>qoEntities</name>
+    <name>qoEnums</name>
     <message>
-        <location filename="../../app/core/entities.py" line="14"/>
-        <source>Translated On Top</source>
-        <translation>译文在上</translation>
-    </message>
-    <message>
-        <location filename="../../app/core/entities.py" line="15"/>
-        <source>Original On Top</source>
-        <translation>原文在上</translation>
-    </message>
-    <message>
-        <location filename="../../app/core/entities.py" line="16"/>
+        <location filename="../../app/common/enums.py" line="8"/>
         <source>Original Only</source>
         <translation>只留原文</translation>
     </message>
     <message>
-        <location filename="../../app/core/entities.py" line="19"/>
+        <location filename="../../app/common/enums.py" line="9"/>
         <source>Translated Only</source>
         <translation>只留译文</translation>
     </message>
     <message>
-        <location filename="../../app/core/entities.py" line="23"/>
-        <source>谷歌翻译</source>
-        <translation></translation>
+        <location filename="../../app/common/enums.py" line="10"/>
+        <source>Original on Top</source>
+        <translation>原文在上</translation>
     </message>
     <message>
-        <location filename="../../app/core/entities.py" line="214"/>
+        <location filename="../../app/common/enums.py" line="12"/>
+        <source>Translated on Top</source>
+        <translation>译文在上</translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="14"/>
+        <source>Google Translate</source>
+        <translation>谷歌翻译</translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="15"/>
         <source>Nothing</source>
         <translation>没事</translation>
     </message>
     <message>
-        <location filename="../../app/core/entities.py" line="215"/>
-        <source>Suspend the computer</source>
-        <translation>机器睡眠</translation>
+        <location filename="../../app/common/enums.py" line="16"/>
+        <source>Exit The Program</source>
+        <translation>退出程序</translation>
     </message>
     <message>
-        <location filename="../../app/core/entities.py" line="216"/>
-        <source>Shutdown the computer</source>
+        <location filename="../../app/common/enums.py" line="17"/>
+        <source>Shutdown The Computer</source>
         <translation>关机</translation>
     </message>
     <message>
-        <location filename="../../app/core/entities.py" line="218"/>
-        <source>Exit the program</source>
-        <translation>退出程序</translation>
+        <location filename="../../app/common/enums.py" line="19"/>
+        <source>Suspend The Computer</source>
+        <translation>机器睡眠</translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="20"/>
+        <source>Canceled</source>
+        <translation>已取消</translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="21"/>
+        <source>Completed</source>
+        <translation>已完成</translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="22"/>
+        <source>Downloading</source>
+        <translation>正在下载</translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="23"/>
+        <source>Failed</source>
+        <translation>已失败</translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="24"/>
+        <source>Generating</source>
+        <translation>正在产生</translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="25"/>
+        <source>Optimizing</source>
+        <translation>正在优化</translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="26"/>
+        <source>Pending</source>
+        <translation>等待</translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="27"/>
+        <source>Synthesizing</source>
+        <translation>正在合成</translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="28"/>
+        <source>Transcoding</source>
+        <translation>正在转码</translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="29"/>
+        <source>Translating</source>
+        <translation>正在翻译</translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="30"/>
+        <source>Waiting for audio transcoding</source>
+        <translation>等待语音转码</translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="31"/>
+        <source>Waiting for optimization</source>
+        <translation>等待优化</translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="32"/>
+        <source>Waiting for video synthesis</source>
+        <translation>等待合成</translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="34"/>
+        <source>Waiting for transcripting</source>
+        <translation>等待转录</translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="35"/>
+        <source>File Import</source>
+        <translation>接受文件</translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="37"/>
+        <location filename="../../app/common/enums.py" line="41"/>
+        <source>URL Import</source>
+        <translation>接受网址</translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="38"/>
+        <source>Optimize</source>
+        <translation>优化</translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="39"/>
+        <source>Subtitle</source>
+        <translation>字幕</translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="40"/>
+        <source>Synthesis</source>
+        <translation>合成</translation>
+    </message>
+    <message>
+        <location filename="../../app/common/enums.py" line="41"/>
+        <source>Transcribe</source>
+        <translation>转录</translation>
     </message>
 </context>
 </TS>

@@ -49,8 +49,7 @@ class VideoSynthesisThread(QThread):
             video_save_path = self.task.video_save_path
             soft_subtitle = self.task.soft_subtitle
             
-            """  # It's disabled because the cfg setting will make all synthesis impossible.
-            need_video = cfg.need_video.value
+            need_video = self.task.need_video
 
             if not need_video:
                 logger.info(f"不需要合成视频，跳过")
@@ -58,10 +57,10 @@ class VideoSynthesisThread(QThread):
                 self.finished.emit(self.task)
                 cfg.gbDoingSynthesis = False
                 return
-            """
             
             logger.info(f"开始合成视频: {video_file}")
             self.progress.emit(10, self.tr("正在合成"))
+            self.progress.emit(11, f"Soft subtitle:{soft_subtitle}")
             add_subtitles(video_file, subtitle_file, video_save_path, soft_subtitle=soft_subtitle,
                           progress_callback=self.progress_callback)
             self.progress.emit(100, self.tr("合成完成"))

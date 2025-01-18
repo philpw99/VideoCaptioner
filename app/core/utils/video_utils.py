@@ -32,7 +32,8 @@ def video2audio(input_file: str, output_file: str = "", format: str = "copy") ->
             'ffmpeg',
             '-i', input_file,
             '-map', '0:a',
-            '-ac', format,      # can be aac, mp3 ...etc
+            '-ac', '1',
+            '-acodec', format,      # can be aac, mp3 ...etc
             '-ar', '16000',
             '-af', 'aresample=async=1',  # 处理音频同步问题
             '-y',
@@ -113,33 +114,46 @@ def add_subtitles(
     # 移动到临时文件  Fix: 路径错误
     temp_dir = Path(tempfile.gettempdir()) / "VideoCaptioner"
     temp_dir.mkdir(exist_ok=True)
+    output_file = Path(output)
     
     temp_subtitle = temp_dir / ( "temp_subtitle" + Path(subtitle_file).suffix )   # could be .srt, .ass or .vtt
     shutil.copy2(subtitle_file, temp_subtitle)
     subtitle_file = str(temp_subtitle)
 
     # 如果是WebM格式，强制使用硬字幕
-    if Path(output).suffix.lower() == '.webm':
+    if output_file.suffix.lower() == '.webm':
         soft_subtitle = False
         logger.info("WebM格式视频，强制使用硬字幕")
 
     if soft_subtitle:
         # 添加软字幕
-        cmd = [
-            'ffmpeg',
-            '-i', input_file,
-            '-i', subtitle_file,
-            '-c:v', 'copy',
-            '-c:a', 'copy',
-            '-c:s', 'mov_text',
-            output,
-            '-y'
-        ]
+        if output_file.suffix.lower() == '.mp4':
+            cmd = [
+                'ffmpeg',
+                '-i', input_file,
+                '-i', subtitle_file,
+                '-c:v', 'copy',
+                '-c:a', 'copy',
+                '-c:s', 'mov_text',
+                output,
+                '-y'
+            ]
+        else:   # 其他格式 most likely .mkv
+            cmd = [
+                'ffmpeg',
+                '-i', input_file,
+                '-i', subtitle_file,
+                '-c:v', 'copy',
+                '-c:a', 'copy',
+                '-c:s', 'copy',
+                output,
+                '-y'
+            ]
         logger.info(f"添加软字幕执行命令: {' '.join(cmd)}")
         result = subprocess.run(
             cmd, 
             capture_output=True, 
-            text=True, 
+            check=True, 
             encoding='utf-8', 
             errors='replace',
             creationflags=subprocess.CREATE_NO_WINDOW if hasattr(subprocess, 'CREATE_NO_WINDOW') else 0,
@@ -346,6 +360,10 @@ def extract_thumbnail(video_path: str, seek_time: float, thumbnail_path: str) ->
     except Exception as e:
         logger.exception(f"提取缩略图时出错: {str(e)}")
         return False
+
+def q(text):
+    """Quote a string for use in a shell command."""
+    return '"' + text + '"'
 
 if __name__ == "__main__":
     video_path = r"C:\Users\weifeng\Videos\example_video.mp4"

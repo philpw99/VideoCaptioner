@@ -62,8 +62,8 @@ class SwitchButtonSimpleSettingCard(SimpleSettingCard):
 
     def setup_switch(self):
         self.switchButton = SwitchButton(self)
-        self.switchButton.setOnText("开")
-        self.switchButton.setOffText("关")
+        self.switchButton.setOnText(self.tr("开"))
+        self.switchButton.setOffText(self.tr("关"))
         self.switchButton.checkedChanged.connect(self.checkedChanged)
         self.layout.addWidget(self.switchButton)
 
