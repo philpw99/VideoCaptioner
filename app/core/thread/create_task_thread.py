@@ -88,7 +88,7 @@ class CreateTaskThread(QThread):
         if video_info.audio_codec in ["aac", "mp3", "pcm"]:
             audio_format = "copy"
 
-        if cfg.subtitle_output_format.value.value == "ass" and ass_style_path.exists():
+        if cfg.subtitle_output_format.value.value == "ass":
             ass_style_name = cfg.subtitle_style_name.value
             ass_style_path = SUBTITLE_STYLE_PATH / f"{ass_style_name}.txt"
             subtitle_style_srt = ass_style_path.read_text(encoding="utf-8")
@@ -353,6 +353,7 @@ class CreateTaskThread(QThread):
             original_subtitle_save_path=str(original_subtitle_save_path),
             result_subtitle_save_path=str(result_subtitle_save_path),
             subtitle_style_srt=subtitle_style_srt,
+            subtitle_layout=cfg.subtitle_layout.value,
             max_word_count_cjk=cfg.max_word_count_cjk.value,
             max_word_count_english=cfg.max_word_count_english.value,
             # Added by Philip

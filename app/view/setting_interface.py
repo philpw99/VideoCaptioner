@@ -68,7 +68,7 @@ class SettingInterface(ScrollArea):
             cfg.api_base,
             FIF.LINK,
             self.tr("Base URL"),
-            self.tr("Input OpenAI compatible Base URL \( Needs /v1 in the end. \)"),
+            self.tr("Input OpenAI compatible Base URL ( Needs /v1 in the end. )"),
             "https://api.openai.com/v1",
             self.llmGroup
         )
@@ -151,14 +151,14 @@ class SettingInterface(ScrollArea):
             self.tr('修改'),
             FIF.FONT,
             self.tr('字幕样式'),
-            self.tr('Choose subtitle\'s style \( color, size, font ... etc.\)'),
+            self.tr('Choose subtitle\'s style ( color, size, font ... etc.)'),
             self.subtitleGroup
         )
         self.subtitleLayoutCard = EnumComboBoxSettingCard(
             cfg.subtitle_layout,
             FIF.FONT,
             self.tr('字幕布局'),
-            self.tr('Choose subtitle\'s layout \( Show Original or Translated or both \)'),
+            self.tr('Choose subtitle\'s layout ( Show Original or Translated or both )'),
             SubtitleLayoutEnum,
             self.subtitleGroup
         )
@@ -221,7 +221,15 @@ class SettingInterface(ScrollArea):
             self.tr('In milliseconds, the minimum time each sentence should at least have.'),
             self.subtitleGroup
         )
-
+        
+        self.SubtitleTimeOffsetCard = RangeSettingCard(
+            cfg.time_offset,
+            FIF.STOP_WATCH,
+            self.tr('Subtitle Time Offset'),
+            self.tr('In milliseconds, the offset to apply to all subtitle timings.'),
+            self.subtitleGroup
+        )
+        
         # 保存配置
         self.saveGroup = SettingCardGroup(self.tr("保存配置"), self.scrollWidget)
         self.savePathCard = PushSettingCard(
@@ -360,6 +368,7 @@ class SettingInterface(ScrollArea):
         self.subtitleGroup.addSettingCard(self.saveSubtitleSuffixCard)
         self.subtitleGroup.addSettingCard(self.enableSubtitleSentenceMinimumTimeCard)
         self.subtitleGroup.addSettingCard(self.SubtitleSentenceMinimumTimeCard)
+        self.subtitleGroup.addSettingCard(self.SubtitleTimeOffsetCard)
         self.saveGroup.addSettingCard(self.savePathCard)
 
         self.personalGroup.addSettingCard(self.themeCard)

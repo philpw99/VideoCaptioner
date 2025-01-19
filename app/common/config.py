@@ -200,6 +200,12 @@ class Config(QConfig):
         1500, RangeValidator(500, 3000)
     )
 
+    time_offset = RangeConfigItem(
+        "Subtitle", "TimeOffset",
+        0,
+        RangeValidator(-5000, 5000)
+    )
+
     # ------------------- 软件页面配置 -------------------
     micaEnabled = ConfigItem("MainWindow", "MicaEnabled", False, BoolValidator())
     dpiScale = OptionsConfigItem(

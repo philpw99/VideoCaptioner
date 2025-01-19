@@ -2,7 +2,7 @@ import difflib
 import logging
 import os
 from concurrent.futures import ThreadPoolExecutor
-import re
+import re, json
 from typing import Dict
 
 import retry
@@ -12,7 +12,8 @@ from .subtitle_config import (
     TRANSLATE_PROMPT,
     OPTIMIZER_PROMPT,
     REFLECT_TRANSLATE_PROMPT,
-    SINGLE_TRANSLATE_PROMPT
+    SINGLE_TRANSLATE_PROMPT,
+    SINGLE_BATCH_TRANSLATE_PROMPT
 )
 from ..subtitle_processor.aligner import SubtitleAligner
 from ..utils import json_repair
@@ -86,20 +87,29 @@ class SubtitleOptimizer:
         chunks = [dict(items[i:i + batch_num]) for i in range(0, len(items), batch_num)]
 
         def process_chunk(chunk):
+            failed = False
             if translate:
                 try:
                     result = self.translate(chunk, reflect)
                 except Exception as e:
                     logger.error(f"翻译失败，使用单条翻译：{e}")
-                    result = self.translate_single(chunk)
+                    # logger.info(f"chunk len:{len(chunk)}\n{chunk}")
+                    failed = True
+                    # result = self.translate_single(chunk)
             else:
                 try:
                     result = self.optimize(chunk)
                 except Exception as e:
                     logger.error(f"优化失败：{e}")
                     result = chunk
+            
+            if failed:
+                result = self.translate_single(chunk)
+                failed = False
+            
             if callback:
-                callback(result)
+                if isinstance(result, Dict):
+                    callback(result)
             return result
 
         results = list(self.executor.map(process_chunk, chunks))
@@ -108,7 +118,7 @@ class SubtitleOptimizer:
         optimizer_result = {k: v for result in results for k, v in result.items()}
         return optimizer_result
     
-    @retry.retry(tries=2)
+    @retry.retry(tries=1)
     def optimize(self, original_subtitle: Dict[int, str]) -> Dict[int, str]:
         """ Optimize the given subtitle. """
         logger.info(f"[+]正在优化字幕：{next(iter(original_subtitle))} - {next(reversed(original_subtitle))}")
@@ -133,7 +143,7 @@ class SubtitleOptimizer:
             self.llm_result_logger.info("===========")
         return aligned_subtitle
 
-    @retry.retry(tries=2)
+    @retry.retry(tries=1)
     def translate(self, original_subtitle: Dict[int, str], reflect=False) -> Dict[int, str]:
         """优化并翻译给定的字幕。"""
         if reflect:
@@ -153,6 +163,7 @@ class SubtitleOptimizer:
         # print(response_content)
         optimized_text = {k: v["optimized_subtitle"] for k, v in response_content.items()}  # 字幕文本
         aligned_subtitle = repair_subtitle(original_subtitle, optimized_text)  # 修复字幕对齐问题
+        # print(aligned_subtitle)
         # 在 translations 中查找对应的翻译  文本-翻译 映射
         translations = {item["optimized_subtitle"]: item["revised_translation"] for item in response_content.values()}
         
@@ -212,70 +223,65 @@ class SubtitleOptimizer:
                    {"role": "user", "content": input_content}]
         return message
 
-    def translate_single(self, original_subtitle: Dict[int, str]) -> Dict[int, str]:
+    def translate_single(self, original_subtitles: Dict[int, str]) -> Dict[int, str]:
         """单条字幕翻译，用于在批量翻译失败时的备选方案"""
         translate_result = {}
-        for key, value in original_subtitle.items():
-            try:
-                message = [{"role": "system",
-                            "content": SINGLE_TRANSLATE_PROMPT.replace("[TargetLanguage]", self.target_language)},
-                           {"role": "user", "content": value}]
-                response = self.client.chat.completions.create(
-                    model=self.model,
-                    stream=False,
-                    messages=message)
-                translate = response.choices[0].message.content.replace("\n", "")
-                original_text = self.remove_punctuation(value)
-                translated_text = self.remove_punctuation(translate)
-                translate_result[key] = f"{original_text}\n{translated_text}"
-                logger.info(f"单条翻译结果: {translate_result[key]}")
-            except Exception as e:
-                logger.error(f"单条翻译失败: {e}")
-                translate_result[key] = f"{value}\n "
+        # logger.info(f"org sub:{original_subtitle}")
+        for key, value in original_subtitles.items():
+            # try:
+            message = [{"role": "system",
+                        "content": SINGLE_TRANSLATE_PROMPT.replace("[TargetLanguage]", self.target_language)},
+                        {"role": "user", "content": [value]}]
+            response = self.client.chat.completions.create(
+                model=self.model,
+                stream=False,
+                messages=message)
+            logger.info(f"response: {response}\n")
+            translate = response.choices[0].message.content.replace("\n", "")
+            original_text = self.remove_punctuation(value)
+            translated_text = self.remove_punctuation(translate)
+            translate_result[key] = f"{original_text}\n{translated_text}"
+            logger.info(f"单条翻译结果: {translate_result[key]}")
+            # except Exception as e:
+            #     logger.error(f"单条翻译失败: {e.with_traceback()}")
+            #     translate_result[key] = f"{value}\n "
         return translate_result
 
     def translate_single_batch(self, original_subtitle: Dict[int,str], callback = None) -> Dict[int,str]:
         """直接大批翻译字幕"""
         translate_result = {}
-        text = ""
-
-        i, total_lines = 1, len(original_subtitle)      # line numbers starts with 1, not 0
-        logger.info(f"total lines:{total_lines}")
-        reSearch = re.compile(r'^\[\[(\d+)\]\](.*)', re.MULTILINE) # Compile it so it can run faster
-        
-        """try:"""
-        while i <= total_lines:
-            text = ""
-            for j in range(self.batch_num): # Do it 10 sentence at a time
-                text += f"\n[[{i}]]{original_subtitle[str(i)]}"
-                i += 1
-                if i > total_lines:  # Reach the end
-                    break
-
-            logger.info(f"Translating lines up to {i}")
-            # logger.info(text)
+        previous_sentence = ""
+        previous_translation = ""
+        for key, value in original_subtitle.items():
+            
+            content = SINGLE_BATCH_TRANSLATE_PROMPT.replace("[TargetLanguage]", self.target_language
+                ).replace( "[PreviousSentence]", previous_sentence
+                ).replace( "[PreviousTranslation]", previous_translation)
+            
+            # logger.info(f"prompt:{content}")
+            
             message = [{"role": "system",
-                "content": SINGLE_TRANSLATE_PROMPT.replace("[TargetLanguage]", self.target_language)},
-                {"role": "user", "content": text}]
+                "content": content},
+                {"role": "user", "content": value}]
+            
+            previous_sentence = value
+            
             response = self.client.chat.completions.create(
                 model=self.model,
                 stream=False,
                 messages=message)
-            translate = response.choices[0].message.content
-            # logger.info("returned text:\n" + translate)
-            result_lines = reSearch.findall(translate)
-            # Add it to result dict
-            seg = {}
-            for j in range(len(result_lines)):
-                line:str = result_lines[j][0]
-                if line.isdigit():
-                    seg[line] = result_lines[j][1]
+
+            return_text = response.choices[0].message.content
+            # logger.info(f"response:{type(return_text)}")
+            previous_translation = return_text
+            
+            line = {str(key): return_text}  # Create a dictionary with key and translated text
 
             if callback:
                 # report the progress
-                callback(seg)
+                callback(line)
             
-            translate_result.update(seg)      # Add seg to result
+            translate_result.update(line)      # Add line to result
         """
         except Exception as e:
             logger.error(f"批量单句翻译失败{e}")

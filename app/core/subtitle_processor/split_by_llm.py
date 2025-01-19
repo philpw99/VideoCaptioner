@@ -67,7 +67,7 @@ def split_by_llm(text: str,
                  model: str = "gpt-4o-mini", 
                  use_cache: bool = False,
                  max_word_count_cjk: int = 18,
-                 max_word_count_english: int = 12) -> List[str]:
+                 max_word_count_english: int = 32) -> List[str]:
     """
     包装 split_by_llm_retry 函数，确保在重试全部失败后返回空列表
     """

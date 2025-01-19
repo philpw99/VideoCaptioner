@@ -1,7 +1,13 @@
 ﻿requests
+
 openai
+
 retry
+
 PyQt5
+
 PyQt-Fluent-Widgets
+
 yt_dlp
+
 modelscope

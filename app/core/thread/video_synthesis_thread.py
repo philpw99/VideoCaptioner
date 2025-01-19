@@ -37,10 +37,10 @@ class VideoSynthesisThread(QThread):
             logger.info(f"时间：{datetime.datetime.now()}")
             self.task.status = Task.Status.SYNTHESIZING
             video_file = self.task.file_path
-            if Path(self.task.result_subtitle_save_path).is_file():
+            if Path(self.task.original_subtitle_save_path).is_file():
                 # result sub exist (after optimizing)
                 subtitle_file = self.task.result_subtitle_save_path
-            elif Path(self.task.original_subtitle_save_path).is_file():
+            elif Path(self.task.result_subtitle_save_path).is_file():
                 # No optimzing, original sub only
                 subtitle_file = self.task.original_subtitle_save_path
             else:

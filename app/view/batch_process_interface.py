@@ -581,7 +581,7 @@ class TaskInfoCard(CardWidget):
 
         button_widget = QWidget()
         button_widget.setLayout(self.button_layout)
-        button_widget.setFixedWidth(180)
+        button_widget.setFixedWidth(200)
         self.layout.addWidget(button_widget)
 
     def mouseDoubleClickEvent(self, event):

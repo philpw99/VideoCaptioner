@@ -296,6 +296,13 @@ Return a pure JSON following this structure and translate into [TargetLanguage]:
 SINGLE_TRANSLATE_PROMPT = """
 You are a professional [TargetLanguage] translator. 
 Please translate the following text into [TargetLanguage]. 
-Strictly maintain one-to-one correspondence for each line with the translation.
+Return the translation result directly without any explanation or other content.
+"""
+
+SINGLE_BATCH_TRANSLATE_PROMPT = """
+You are a professional [TargetLanguage] translator. 
+The previous sentence is: "[PreviousSentence]"
+and it was translated as: "[PreviousTranslation]".
+Please translate the following text into [TargetLanguage] and don't repeat the previous translation.
 Return the translation result directly without any explanation or other content.
 """

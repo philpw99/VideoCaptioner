@@ -129,18 +129,17 @@ class SubtitleOptimizationThread(QThread):
             asr_data = from_subtitle_file(str_path)
 
             # 检查是否需要合并重新断句
-            if need_optimize:
-                if not asr_data.is_word_timestamp() and need_split and self.task.faster_whisper_one_word:
-                    asr_data.split_to_word_segments()
-                if asr_data.is_word_timestamp():
-                    self.progress.emit(15, self.tr("字幕断句..."))
-                    logger.info("正在字幕断句...")
-                    asr_data = merge_segments(asr_data, model=llm_model, 
-                                            num_threads=thread_num, 
-                                            max_word_count_cjk=max_word_count_cjk, 
-                                            max_word_count_english=max_word_count_english)
-                    asr_data.save(save_path=split_path)
-                    self.update_all.emit(asr_data.to_json())
+            if not asr_data.is_word_timestamp() and need_split and self.task.faster_whisper_one_word:
+                asr_data.split_to_word_segments()
+            if asr_data.is_word_timestamp():
+                self.progress.emit(15, self.tr("字幕断句..."))
+                logger.info("正在字幕断句...")
+                asr_data = merge_segments(asr_data, model=llm_model, 
+                                        num_threads=thread_num, 
+                                        max_word_count_cjk=max_word_count_cjk, 
+                                        max_word_count_english=max_word_count_english)
+                asr_data.save(save_path=split_path)
+                self.update_all.emit(asr_data.to_json())
 
             # 制作成请求llm接口的格式 {{"1": "original_subtitle"},...}
             subtitle_json = {str(k): v["original_subtitle"] for k, v in asr_data.to_json().items()}
@@ -182,10 +181,10 @@ class SubtitleOptimizationThread(QThread):
                 )
                 optimizer_result = self.optimizer.translate_single_batch(subtitle_json, callback=self.callback)
 
-            # 替换优化或者翻译后的字幕
+            # 加入优化或者翻译后的字幕
             for i, subtitle_text in optimizer_result.items():
                 seg = asr_data.segments[int(i) - 1]
-                seg.text = subtitle_text
+                seg.text = seg.text + "\n" + subtitle_text
 
             # 保存字幕
             if result_subtitle_save_path.endswith(".ass"):

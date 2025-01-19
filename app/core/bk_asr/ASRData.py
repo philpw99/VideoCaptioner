@@ -479,7 +479,7 @@ def from_vtt(vtt_str: str) -> 'ASRData':
     """
     segments = []
     # 跳过头部元数据
-    content = vtt_str.split('\n\n')[2:]
+    content = vtt_str.split('\n\n')[1:]
     
     timestamp_pattern = re.compile(r'(\d{2}):(\d{2}):(\d{2})\.(\d{3})\s*-->\s*(\d{2}):(\d{2}):(\d{2})\.(\d{3})')
     

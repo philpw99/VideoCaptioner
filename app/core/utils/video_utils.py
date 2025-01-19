@@ -7,9 +7,10 @@ import tempfile
 from typing import Literal
 
 from ..utils.logger import setup_logger
+from PyQt5.QtCore import QObject
 
 logger = setup_logger("video_utils")
-
+qoVideo = QObject()  # for i18n
 
 def video2audio(input_file: str, output_file: str = "", format: str = "copy") -> bool:
     """使用ffmpeg将视频转换为音频"""    
@@ -108,8 +109,8 @@ def add_subtitles(
         soft_subtitle: bool = False,
         progress_callback: callable = None
 ) -> None:
-    assert Path(input_file).is_file(), "输入文件不存在"
-    assert Path(subtitle_file).is_file(), "字幕文件不存在"
+    assert Path(input_file).is_file(), qoVideo.tr("输入文件不存在")
+    assert Path(subtitle_file).is_file(), qoVideo.tr("字幕文件不存在")
 
     # 移动到临时文件  Fix: 路径错误
     temp_dir = Path(tempfile.gettempdir()) / "VideoCaptioner"
@@ -143,9 +144,10 @@ def add_subtitles(
                 'ffmpeg',
                 '-i', input_file,
                 '-i', subtitle_file,
-                '-c:v', 'copy',
-                '-c:a', 'copy',
-                '-c:s', 'copy',
+                '-sub_charenc', 'UTF-8',
+                '-map', '0',
+                '-map', '1',
+                '-c', 'copy',
                 output,
                 '-y'
             ]
@@ -174,8 +176,10 @@ def add_subtitles(
             cmd.extend(['-hwaccel', 'cuda'])
         cmd.extend([
             '-i', input_file,
+            '-map', '0',    # 复制所有流
             '-acodec', 'copy',
             '-vcodec', vcodec,
+            '-c:s', 'copy'
             '-preset', quality,
             '-vf', vf,
             '-y',  # 覆盖输出文件
@@ -223,10 +227,10 @@ def add_subtitles(
                 # 计算进度百分比
                 if total_duration:
                     progress = (current_time / total_duration) * 100
-                    progress_callback(f"{round(progress)}", "正在合成")
+                    progress_callback(f"{round(progress)}", qoVideo.tr("正在合成"))
 
             if progress_callback:
-                progress_callback("100", "合成完成")
+                progress_callback("100", qoVideo.tr("合成完成"))
             # 检查进程的返回码
             return_code = process.wait()
             if return_code != 0:

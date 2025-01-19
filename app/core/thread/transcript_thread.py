@@ -162,8 +162,14 @@ class TranscriptThread(QThread):
             asr_data = self.asr.run(callback=self.progress_callback)
 
             # Check if asr_data needs to add minimum length
-            if cfg.subtitle_enable_sentence_minimum_time:
+            if cfg.subtitle_enable_sentence_minimum_time.value:
                 asr_data.add_minimum_len(cfg.subtitle_sentence_minimum_time.value)
+            
+            # If time offset is not zero, adjust the timestamps
+            if cfg.time_offset.value != 0:
+                for seg in asr_data.segments:
+                    seg.start_time += cfg.time_offset.value
+                    seg.end_time += cfg.time_offset.value
             
             # 保存字幕文件
             original_subtitle_path = Path(self.task.original_subtitle_save_path)
@@ -171,8 +177,8 @@ class TranscriptThread(QThread):
             asr_data.to_srt(save_path=str(original_subtitle_path))
             logger.info("源字幕文件已保存到: %s", self.task.original_subtitle_save_path)
             
-            if self.task.result_subtitle_save_path:
-                # Make a copy to result dir as well, if exist
+            if self.task.type == Task.Type.TRANSCRIBE and self.task.result_subtitle_save_path:
+                # Make a copy to result dir as well, if this is only a transcribe task
                 asr_data.save(
                     save_path=self.task.result_subtitle_save_path,
                     ass_style=self.task.subtitle_style_srt,

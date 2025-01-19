@@ -9,6 +9,7 @@
 *.pyc
 */__pycache__/
 *.env
+.*
 
 # 测试和脚本
 /test/
