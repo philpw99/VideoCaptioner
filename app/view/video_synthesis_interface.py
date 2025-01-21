@@ -7,15 +7,15 @@ import subprocess
 from ..common.config import cfg
 
 from PyQt5.QtCore import Qt, pyqtSignal
-from PyQt5.QtGui import QDropEvent
+from PyQt5.QtGui import QDropEvent, QColor
 from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QApplication,
                              QFileDialog)
-from qfluentwidgets import (CardWidget, ComboBox, LineEdit, BodyLabel,
-                            InfoBar, InfoBarPosition, ProgressBar, PushButton)
+from qfluentwidgets import (CardWidget, LineEdit, BodyLabel, SwitchButton, IndicatorPosition,
+                            InfoBar, InfoBarPosition, ProgressBar, PushButton, Slider)
 
 from app.core.thread.create_task_thread import CreateTaskThread
 from app.core.thread.video_synthesis_thread import VideoSynthesisThread
-from ..core.entities import SupportedVideoFormats, SupportedSubtitleFormats
+from ..core.entities import SupportedVideoFormats, SupportedSubtitleFormats, SupportedImageFormats
 from ..core.entities import Task
 
 current_dir = Path(__file__).parent.parent
@@ -35,6 +35,7 @@ class VideoSynthesisInterface(QWidget):
         self.set_value()
         self.setup_signals()
         self.task = None
+        self.portrait_background = None
 
     def setup_ui(self):
         self.main_layout = QVBoxLayout(self)
@@ -71,7 +72,58 @@ class VideoSynthesisInterface(QWidget):
         self.video_layout.addWidget(self.video_input)
         self.video_layout.addWidget(self.video_button)
         self.config_layout.addLayout(self.video_layout)
+        
+        # 附加选项
+        self.options_layout = QHBoxLayout()
+        self.option_soft_subtitle = SwitchButton(self.tr("软字幕"), self, indicatorPos=IndicatorPosition.RIGHT)
+        self.option_soft_subtitle.setOnText(self.tr("硬字幕"))
+        self.option_portrait = SwitchButton(self.tr("横屏字幕"), self, indicatorPos=IndicatorPosition.RIGHT)
+        self.option_portrait.setOnText(self.tr("竖屏字幕"))
+        self.option_portrait.setDisabled(True)
+        self.option_portrait_background = PushButton(self.tr("背景：无"), self)
+        self.option_portrait_background.setDisabled(True)
+        
+        # 字幕垂直偏移
+        self.option_vertical_offset_label = BodyLabel(self.tr("垂直偏移量 (px): 100"),self)
+        self.option_vertical_offset_label.setFixedWidth(130)
+        self.set_bodylabel_disabled(self.option_vertical_offset_label, True)
+        self.option_vertical_offset = Slider(Qt.Orientation.Vertical, self)
+        self.option_vertical_offset.setRange(-500, 500)
+        self.option_vertical_offset.setValue(0)
+        self.option_vertical_offset.setDisabled(True)
+        
+        # 竖屏时视频大小
+        self.option_zoom_video_label = BodyLabel(self.tr("竖屏视频大小: 100%"),self)
+        self.option_zoom_video_label.setFixedWidth(130)
+        self.set_bodylabel_disabled(self.option_zoom_video_label, True)
+        self.option_zoom_video = Slider(Qt.Orientation.Vertical, self)
 
+        self.option_zoom_video.setRange(-300, -10)
+        self.option_zoom_video.setValue(-100)
+        self.option_zoom_video.setDisabled(True)
+
+        # 竖屏时字幕大小
+        self.option_zoom_subtitle_label = BodyLabel(self.tr("竖屏字幕大小: 100%"),self)
+        self.option_zoom_subtitle_label.setFixedWidth(130)
+        self.set_bodylabel_disabled(self.option_zoom_subtitle_label, True)
+        self.option_zoom_subtitle = Slider(Qt.Orientation.Vertical, self)
+        self.option_zoom_subtitle.setRange(-300, -10)
+        self.option_zoom_subtitle.setValue(-100)
+        self.option_zoom_subtitle.setDisabled(True)
+
+
+        self.options_layout.addWidget(self.option_soft_subtitle)
+        self.options_layout.addWidget(self.option_portrait)
+        self.options_layout.addWidget(self.option_portrait_background)
+        self.options_layout.addWidget(self.option_vertical_offset_label)
+        self.options_layout.addWidget(self.option_vertical_offset)
+        self.options_layout.addWidget(self.option_zoom_video_label)
+        self.options_layout.addWidget(self.option_zoom_video)
+        self.options_layout.addWidget(self.option_zoom_subtitle_label)
+        self.options_layout.addWidget(self.option_zoom_subtitle)
+        self.options_layout.addStretch(1)
+        self.config_layout.addLayout(self.options_layout)
+                
         self.main_layout.addWidget(self.config_card)
 
         # 合成按钮和打开文件夹按钮
@@ -96,6 +148,68 @@ class VideoSynthesisInterface(QWidget):
         self.bottom_layout.addWidget(self.progress_bar, 1)  # 进度条使用剩余空间
         self.bottom_layout.addWidget(self.status_label)  # 状态标签使用固定宽度
         self.main_layout.addLayout(self.bottom_layout)
+
+    def on_portrait_background_clicked(self):
+        # Open file dialog to select background image
+        image_formats = {f"*.{fmt.value}" for fmt in SupportedImageFormats}
+        file_str, _ = QFileDialog.getOpenFileName(self, self.tr("选择背景图片"), cfg.last_open_dir.value, ' '.join(image_formats))
+        if file_str:
+            file_path = Path(file_str)
+            if file_path.exists():
+                self.option_portrait_background.setText(f"背景：{file_path.name}")
+                # self.option_portrait_background.setFixedWidth(200)
+                self.portrait_background = file_str
+            else:
+                InfoBar.error(
+                    self.tr("错误"),
+                    self.tr("无效的文件路径"),
+                    duration=3000,
+                    position=InfoBarPosition.TOP,
+                    parent=self
+                )
+        else: # User canceled the file selection
+            self.option_portrait_background.setText("背景：无")
+            self.option_portrait_background.setFixedWidth(100)
+            self.portrait_background = None
+            
+    
+    def set_bodylabel_disabled(self, label: BodyLabel, disable: bool):
+        if disable:
+            label.setTextColor(light=QColor(128,128,128), dark=QColor(128,128,128))
+        else:
+            label.setTextColor(light=QColor(0,0,0), dark=QColor(255,255,255))
+
+    
+    def on_soft_subtitle_toggled(self, checked):
+        # checked means hard subtitle
+        self.option_portrait.setDisabled(not checked)
+        if self.option_portrait.isChecked():
+            # 竖屏
+            self.option_portrait_background.setDisabled(not checked)
+            self.option_zoom_video.setDisabled(not checked)
+            self.set_bodylabel_disabled(self.option_zoom_video_label, not checked )
+            self.option_zoom_subtitle.setDisabled(not checked)
+            self.set_bodylabel_disabled(self.option_zoom_subtitle_label, not checked )
+
+        self.option_vertical_offset.setDisabled(not checked)
+        self.set_bodylabel_disabled(self.option_vertical_offset_label, not checked)
+
+    def on_vertical_offset_changed(self, offset):
+        self.option_vertical_offset_label.setText(self.tr("垂直偏移量 (px): ") + str(offset) )
+
+    def on_zoom_video_changed(self, zoom):
+        self.option_zoom_video_label.setText(self.tr(f"竖屏视频大小: {-zoom}%"))
+
+    def on_zoom_subtitle_changed(self, zoom):
+        self.option_zoom_subtitle_label.setText(self.tr(f"竖屏字幕大小: {-zoom}%"))
+        
+    def on_portrait_toggled(self, checked):
+        self.option_portrait_background.setDisabled(not checked)
+        self.option_zoom_video.setDisabled(not checked)
+        self.set_bodylabel_disabled(self.option_zoom_video_label, not checked )
+        self.option_zoom_subtitle.setDisabled(not checked)
+        self.set_bodylabel_disabled(self.option_zoom_subtitle_label, not checked )
+        
 
     def setup_style(self):
         self.subtitle_input.focusOutEvent = lambda e: super(LineEdit, self.subtitle_input).focusOutEvent(e)
@@ -135,6 +249,14 @@ class VideoSynthesisInterface(QWidget):
         self.synthesize_button.clicked.connect(self.process)
         self.open_folder_button.clicked.connect(self.open_video_folder)
         self.open_work_folder_button.clicked.connect(self.open_work_folder)
+        
+        # 字幕选项相关信号
+        self.option_soft_subtitle.checkedChanged.connect(self.on_soft_subtitle_toggled)
+        self.option_portrait.checkedChanged.connect(self.on_portrait_toggled)
+        self.option_portrait_background.clicked.connect(self.on_portrait_background_clicked)
+        self.option_vertical_offset.valueChanged.connect(self.on_vertical_offset_changed)
+        self.option_zoom_video.valueChanged.connect(self.on_zoom_video_changed)
+        self.option_zoom_subtitle.valueChanged.connect(self.on_zoom_subtitle_changed)
 
     def set_value(self):
         pass
@@ -180,7 +302,21 @@ class VideoSynthesisInterface(QWidget):
             )
             return None
 
-        self.task = CreateTaskThread.create_video_synthesis_task(subtitle_file, video_file)
+        soft_sub = not self.option_soft_subtitle.isChecked()    # when checked, it's hard sub
+        self.task = CreateTaskThread.create_video_synthesis_task(subtitle_file, video_file, soft_sub)
+        if not soft_sub:
+            # Hard coded subtitle
+            if self.option_portrait.isChecked():    # portrait sub
+                self.task.portrait = True
+                self.task.portrait_background = self.portrait_background
+                # They are negative numbers from -300 to -10
+                self.task.zoom_video = abs(self.option_zoom_video.value())
+                self.task.zoom_subtitle = abs(self.option_zoom_subtitle.value())
+            else:
+                self.task.portrait = False
+
+            self.task.vertical_offset = self.option_vertical_offset.value()
+        
         return self.task
 
     def set_task(self, task: Task):
@@ -199,7 +335,9 @@ class VideoSynthesisInterface(QWidget):
         if not self.task:
             self.task = None
             self.create_task()
-        if self.task.file_path != self.video_input.text() or self.task.result_subtitle_save_path != self.subtitle_input.text():
+        
+        if self.task.file_path != str(Path(self.video_input.text())) \
+            or self.task.original_subtitle_save_path != str(Path(self.subtitle_input.text())):
             self.task = None
             self.create_task()
 

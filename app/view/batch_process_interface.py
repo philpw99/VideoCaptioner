@@ -11,15 +11,16 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFileDial
 from qfluentwidgets import ComboBox, CardWidget, ToolTipFilter, FluentWindow, isDarkTheme, \
     ToolTipPosition, PrimaryPushButton, PushButton, InfoBar, BodyLabel, PillPushButton, setFont, \
     InfoBadgePosition, ProgressRing, InfoBarPosition, ScrollArea, Action, RoundMenu, IconInfoBadge, \
-    InfoLevel
+    InfoLevel, SwitchButton, IndicatorPosition
 from qfluentwidgets import FluentIcon as FIF
 from qframelesswindow import FramelessWindow, StandardTitleBar
 
 from ..config import RESOURCE_PATH
 from ..common.config import cfg
+from ..common.signal_bus import signalBus
 from ..components.EnumComboBoxSettingCard import EnumComboBoxSettingCard, EnumOptionsValidator, EnumExSerializer
-from ..core.entities import SupportedVideoFormats, SupportedAudioFormats, TodoWhenDoneEnum
-from ..core.entities import Task, VideoInfo
+from ..core.entities import SupportedVideoFormats, SupportedAudioFormats, TodoWhenDoneEnum, SupportedSubtitleFormats, SupportedImageFormats
+from ..core.entities import Task, VideoInfo, BatchTaskTypeEnum
 from ..core.thread.create_task_thread import CreateTaskThread
 from ..core.thread.subtitle_pipeline_thread import SubtitlePipelineThread
 from ..core.thread.transcript_thread import TranscriptThread
@@ -75,9 +76,8 @@ class BatchProcessInterface(QWidget):
 
         # 任务类型选择
         self.task_type_combo = ComboBox(self)
-        self.task_type_combo.addItems([self.tr("视频加字幕"), self.tr("音视频转录")])
-        if not cfg.need_video.value:    # Set it according to the configuration
-            self.task_type_combo.setCurrentIndex(1)
+        self.task_type_combo.addItems(job.value for job in BatchTaskTypeEnum)
+        self.set_default_task_type(True)
             
         self.top_layout.addWidget(self.task_type_combo)
 
@@ -131,6 +131,21 @@ class BatchProcessInterface(QWidget):
         self.start_all_button.clicked.connect(self.start_batch_process)
         self.cancel_button.clicked.connect(self.cancel_batch_process)
         self.todo_when_done_combobox.currentTextChanged.connect(self.todo_when_done_changed)
+        
+        signalBus.need_video_changed.connect(self.set_default_task_type)
+        signalBus.soft_subtitle_changed.connect(self.set_default_task_type)
+
+    def set_default_task_type(self, whatever):
+        # Set it according to the configuration
+        if cfg.need_video.value:    
+            if cfg.soft_subtitle.value:
+                # Create soft sub video
+                self.task_type_combo.setCurrentText(BatchTaskTypeEnum.SOFT.value)
+            else:
+                # Create hard sub video
+                self.task_type_combo.setCurrentText(BatchTaskTypeEnum.HARD.value)
+        else:
+            self.task_type_combo.setCurrentText(BatchTaskTypeEnum.TRANSCRIBE.value)
 
     def todo_when_done_changed(self, text: str):
         todoKey = None
@@ -341,25 +356,32 @@ class BatchProcessInterface(QWidget):
         # 构建文件过滤器字符串
         video_formats = [f"*.{fmt.value}" for fmt in SupportedVideoFormats]
         audio_formats = [f"*.{fmt.value}" for fmt in SupportedAudioFormats]
-        if self.task_type_combo.currentText() == self.tr("视频加字幕"):
+        if self.task_type_combo.currentText() == BatchTaskTypeEnum.SOFT.value:  # Create soft sub video
             filter_str = f"{self.tr('视频文件')} ({' '.join(video_formats)})"
             task_type = Task.Type.SUBTITLE
+            soft_sub = True
+        elif self.task_type_combo.currentText() == BatchTaskTypeEnum.HARD.value:  # Create hard sub video
+            filter_str = f"{self.tr('视频文件')} ({' '.join(video_formats)})"
+            task_type = Task.Type.SUBTITLE
+            soft_sub = False
         else:
             # 音频/视频生成字幕
             filter_str = f"{self.tr('音频文件或视频文件')} ({' '.join(audio_formats + video_formats)})"
             task_type = Task.Type.TRANSCRIBE
+            soft_sub = True
 
         files, _ = QFileDialog.getOpenFileNames(self, self.tr("选择文件"), cfg.last_open_dir.value , filter_str)
         for file_path in files:
-            self.create_task(file_path, task_type)
+            self.create_task(file_path, task_type, soft_sub)
             
         # Save the files' directory for later use
-        file_dir = str( Path(files[0]).parent )
-        if file_dir != cfg.last_open_dir.value:
-            cfg.last_open_dir.value = file_dir
-            cfg.save()
+        if files:
+            file_dir = str( Path(files[0]).parent )
+            if file_dir != cfg.last_open_dir.value:
+                cfg.last_open_dir.value = file_dir
+                cfg.save()
 
-    def create_task(self, file_path, task_type: Task.Type):
+    def create_task(self, file_path, task_type: Task.Type, soft_sub: bool):
         """创建新任务"""
         # 检查文件是否已存在
         for task in self.tasks:
@@ -373,8 +395,7 @@ class BatchProcessInterface(QWidget):
                 )
                 return
 
-        # task_type = 'transcription' if self.task_type_combo.currentText() == self.tr("音视频转录") else 'file'
-        create_thread = CreateTaskThread(file_path, task_type)
+        create_thread = CreateTaskThread(file_path, task_type, soft_sub)
         create_thread.finished.connect(self.add_task_card)
         create_thread.finished.connect(lambda: self.cleanup_thread(create_thread))
         self.create_threads.append(create_thread)
@@ -457,17 +478,22 @@ class BatchProcessInterface(QWidget):
             file_ext = os.path.splitext(file_path)[1][1:].lower()
 
             # 根据任务类型检查文件格式
-            if self.task_type_combo.currentText() == self.tr("视频加字幕"):
+            if self.task_type_combo.currentText() in [BatchTaskTypeEnum.SOFT.value, BatchTaskTypeEnum.HARD.value]:
+                # Create soft or hard sub video
                 supported_formats = {fmt.value for fmt in SupportedVideoFormats}
                 task_type = Task.Type.SUBTITLE
             else:
+                # Create subtitle only
                 supported_formats = {fmt.value for fmt in SupportedVideoFormats} | {fmt.value for fmt in SupportedAudioFormats}
                 task_type = Task.Type.TRANSCRIBE
 
             if file_ext in supported_formats:
-                self.create_task(file_path, task_type)
+                if self.task_type_combo.currentText() == BatchTaskTypeEnum.HARD.value:
+                    self.create_task(file_path, task_type, False)    # Hard coded subtitles
+                else:
+                    self.create_task(file_path, task_type, True)   # Soft coded subtitles
             else:
-                error_msg = self.tr("请拖入视频文件") if self.task_type_combo.currentText() == self.tr("视频加字幕") else self.tr("请拖入音频或视频文件")
+                error_msg = self.tr("请拖入视频文件") if self.task_type_combo.currentText() == BatchTaskTypeEnum.TRANSCRIBE.value else self.tr("请拖入音频或视频文件")
                 InfoBar.error(
                     self.tr(f"格式错误") + file_ext,
                     error_msg,
@@ -501,7 +527,7 @@ class TaskInfoCard(CardWidget):
     def setup_ui(self):
         self.setFixedHeight(180)
         self.layout = QHBoxLayout(self)
-        self.layout.setContentsMargins(15, 10, 15, 10)
+        self.layout.setContentsMargins(15, 5, 15, 5)
         self.layout.setSpacing(10)
 
         # 设置缩略图
@@ -528,22 +554,29 @@ class TaskInfoCard(CardWidget):
 
         # 设置视频标题
         self.video_title = BodyLabel(self.tr("未选择视频"), self)
-        self.video_title.setFont(QFont("Microsoft YaHei", 14))
+        self.video_title.setFont(QFont("Microsoft YaHei", 12))
         self.video_title.setWordWrap(True)
         self.info_layout.addWidget(self.video_title, alignment=Qt.AlignTop)
 
         # 设置视频详细信息
         self.details_layout1 = QHBoxLayout()
-        self.details_layout1.setSpacing(15)
+        self.details_layout1.setSpacing(10)
         self.details_layout2 = QHBoxLayout()
-        self.details_layout2.setSpacing(15)
+        self.details_layout2.setSpacing(10)
 
         self.resolution_info = self.create_pill_button(self.tr("画质"), 120)
         self.file_size_info = self.create_pill_button(self.tr("文件大小"), 120)
         self.duration_info = self.create_pill_button(self.tr("时长"), 120)
         self.video_codec = self.create_pill_button(self.tr("视频码"), 120)
         self.audio_codec = self.create_pill_button(self.tr("音频码"), 120)
-
+        
+        self.portrait_mode = SwitchButton(self, indicatorPos = IndicatorPosition.RIGHT)
+        self.portrait_mode.setOnText(self.tr("竖屏"))
+        self.portrait_mode.setOffText(self.tr("横屏"))
+        self.portrait_background = PushButton(self.tr("背景：无"), parent=self)
+        self.portrait_background.hide()
+        
+        
         self.progress_ring = ProgressRing(self)
         self.progress_ring.setFixedSize(20, 20)
         self.progress_ring.setStrokeWidth(4)
@@ -556,6 +589,9 @@ class TaskInfoCard(CardWidget):
         self.details_layout1.addStretch(1)
         self.details_layout2.addWidget(self.video_codec)
         self.details_layout2.addWidget(self.audio_codec)
+        self.details_layout2.addWidget(self.portrait_mode)
+        self.details_layout2.addWidget(self.portrait_background)
+        
         self.details_layout2.addStretch(1)
         self.info_layout.addLayout(self.details_layout1)
         self.info_layout.addLayout(self.details_layout2)
@@ -590,7 +626,6 @@ class TaskInfoCard(CardWidget):
 
     def update_info(self, video_info: VideoInfo):
         """更新视频信息显示"""
-        # self.video_title.setText(video_info.file_name.rsplit('.', 1)[0])
         self.video_title.setText(video_info.file_name + '\n' + video_info.file_path)
         self.resolution_info.setText(self.tr("画质: ") + f"{video_info.width}x{video_info.height}")
         file_size_mb = os.path.getsize(self.task.file_path) / 1024 / 1024
@@ -601,22 +636,41 @@ class TaskInfoCard(CardWidget):
         self.audio_codec.setText(self.tr("音频码 ") + video_info.audio_codec)
         # self.start_button.setDisabled(False)
         self.update_thumbnail(video_info.thumbnail_path)
+        if self.task and self.task.type == Task.Type.SUBTITLE and not cfg.soft_subtitle.value:
+            # When need to hard code subtitles, enable it.
+            self.portrait_mode.setDisabled(False)
+        else:
+            # Other cases, disable it.
+            self.portrait_mode.setDisabled(True)
+            
         self.update_tooltip()
 
     def update_tooltip(self):
         """更新tooltip"""
         # 设置整体tooltip
-        strategy_text = self.tr("无")
-        if self.task.need_optimize:
-            strategy_text = self.tr("字幕优化")
-        elif self.task.need_translate:
-            # strategy_text = self.tr("字幕优化+翻译 ") + str(self.task.target_language)
-            strategy_text = self.tr("字幕翻译 ") + str(self.task.target_language)
+        
+        strategy_text = ""
+        if self.task.need_optimize or self.task.need_translate:
+            if self.task.need_optimize:
+                strategy_text += self.tr("翻译方式：智能多线程优化+翻译，目标：") + str(self.task.target_language) + " "
+            if self.task.need_translate:
+                strategy_text += self.tr("翻译方式：智能单线程单句翻译，目标：") + self.task.target_language + " "
+            strategy_text += self.tr("，使用的LLM 模型：") + self.task.llm_model + ""
+            if self.task.soft_subtitle:
+                strategy_text += self.tr("字幕类型：软字幕 ")
+            else:
+                strategy_text += self.tr("字幕类型：硬字幕 ")
+            if self.task.portrait:
+                strategy_text += self.tr("竖屏模式：开启 ")
+            if self.task.portrait_background:
+                strategy_text += "\n" + self.tr("竖屏背景：") + self.task.portrait_background
 
-        tooltip = self.tr("转录模型: ") + self.task.transcribe_model.value + "\n"
-        tooltip += self.tr("文件: ") + self.task.file_path + '\n'
-        if self.task.status == Task.Status.PENDING:
-            tooltip += self.tr("字幕策略: ") + strategy_text + "\n"
+        tooltip = self.tr("任务类型：") + self.task.type.value + "  " + self.tr("转录模型：") + self.task.transcribe_model.value + "\n"
+        if len(self.task.file_path) > 100:
+            tooltip += self.tr("文件: ") + self.task.file_path[:50] + "..." + Path(self.task.file_path).name + "\n"
+        else:
+            tooltip += self.tr("文件: ") + self.task.file_path + '\n'
+        tooltip += strategy_text + "\n"
         tooltip += self.tr("任务状态: ") + self.task.status.value
         self.setToolTip(tooltip)
 
@@ -636,6 +690,37 @@ class TaskInfoCard(CardWidget):
         self.start_button.clicked.connect(self.start)
         self.open_folder_button.clicked.connect(self.on_open_folder_clicked)
         self.preview_subtitle_button.clicked.connect(self.open_subtitle)
+        self.portrait_mode.checkedChanged.connect(self.on_portrait_mode_changed)
+        self.portrait_background.clicked.connect(self.on_portrait_background_clicked)
+
+    def on_portrait_mode_changed(self, checked):
+        """竖屏模式切换"""
+        self.task.portrait = checked
+        if checked:
+            self.portrait_background.show()
+        else:
+            self.portrait_background.hide()
+        self.update_tooltip()
+
+    def on_portrait_background_clicked(self):
+        picture_formats = [f"*.{fmt.value}" for fmt in SupportedImageFormats]
+        file, _ = QFileDialog.getOpenFileName(self, self.tr("选择背景图片"),
+                                               cfg.last_open_dir.value,
+                                               self.tr("Image Files (") + " ".join(picture_formats) + ")")
+        if not file:
+            return
+        file_path = Path(file)
+        if not file_path.exists():
+            InfoBar.warning(
+                self.tr("文件不存在"),
+                self.tr("请重新选择"),
+                duration=3000,
+            )
+            return
+
+        self.portrait_background.setText(self.tr("背景：") + file_path.name)
+        self.task.portrait_background = file
+        self.update_tooltip()
 
     def show_context_menu(self, pos):
         """显示右键菜单"""
@@ -656,21 +741,38 @@ class TaskInfoCard(CardWidget):
         menu.addAction(delete_action)
 
         reprocess_action = Action(FIF.SYNC, self.tr("重新处理"), self)
-        reprocess_action.triggered.connect(self.start)
+        reprocess_action.triggered.connect(self.reprocess)
         menu.addAction(reprocess_action)
 
-        cancel_action = Action(FIF.CANCEL, self.tr("取消任务"), self)
+        cancel_action = Action(FIF.CLOSE, self.tr("停止任务"), self)
         cancel_action.triggered.connect(self.cancel)
         menu.addAction(cancel_action)
 
         # 显示菜单
         menu.exec_(self.mapToGlobal(pos))
 
+    def reprocess(self):
+        self.status = Task.Status.PENDING
+        self.start()
+
     def open_subtitle(self):
         """打开字幕优化界面"""
         preview_subtitle_path = Path(self.task.original_subtitle_save_path)
-        if self.task.result_subtitle_save_path:
+        if self.task.result_subtitle_save_path and Path(self.task.result_subtitle_save_path).exists():
             preview_subtitle_path = Path(self.task.result_subtitle_save_path)
+        # The original sub might be word-split and not full sentence sub.
+        # elif self.task.original_subtitle_save_path and Path(self.task.original_subtitle_save_path).exists():
+        #     preview_subtitle_path = Path(self.task.original_subtitle_save_path)
+        else:
+            # Open file dialog
+            subtitle_formats = [f"*.{fmt.value}" for fmt in SupportedSubtitleFormats]
+            filter_str = f"{self.tr('字幕文件')} ({' '.join(subtitle_formats)})"
+            file, _ = QFileDialog.getOpenFileName( self, self.tr("选择字幕文件"), cfg.last_open_dir.value, filter_str)
+            if file and Path(file).exists():
+                preview_subtitle_path = Path(file)
+            else:
+                return
+
         if preview_subtitle_path.exists():
             self.subtitle_window = QWidget()
             self.subtitle_window.setWindowTitle(self.tr("字幕预览"))

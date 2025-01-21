@@ -205,6 +205,11 @@ class Config(QConfig):
         0,
         RangeValidator(-5000, 5000)
     )
+    
+    vertical_offset = RangeConfigItem(
+        "Subtitle", "VerticalOffset",
+        0, RangeValidator(-500, 500)
+    )
 
     # ------------------- 软件页面配置 -------------------
     micaEnabled = ConfigItem("MainWindow", "MicaEnabled", False, BoolValidator())

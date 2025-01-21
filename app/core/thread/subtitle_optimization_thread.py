@@ -129,9 +129,10 @@ class SubtitleOptimizationThread(QThread):
             asr_data = from_subtitle_file(str_path)
 
             # 检查是否需要合并重新断句
-            if not asr_data.is_word_timestamp() and need_split and self.task.faster_whisper_one_word:
+            is_word_split = asr_data.is_word_timestamp()
+            if not is_word_split and need_split and self.task.faster_whisper_one_word:
                 asr_data.split_to_word_segments()
-            if asr_data.is_word_timestamp():
+            if is_word_split:
                 self.progress.emit(15, self.tr("字幕断句..."))
                 logger.info("正在字幕断句...")
                 asr_data = merge_segments(asr_data, model=llm_model, 
@@ -140,6 +141,8 @@ class SubtitleOptimizationThread(QThread):
                                         max_word_count_english=max_word_count_english)
                 asr_data.save(save_path=split_path)
                 self.update_all.emit(asr_data.to_json())
+
+                
 
             # 制作成请求llm接口的格式 {{"1": "original_subtitle"},...}
             subtitle_json = {str(k): v["original_subtitle"] for k, v in asr_data.to_json().items()}

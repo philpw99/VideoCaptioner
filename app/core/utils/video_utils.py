@@ -103,10 +103,18 @@ def add_subtitles(
         input_file: str,
         subtitle_file: str,
         output: str,
+        duration: int,
+        output_width: int = None,
+        output_height: int = None,
         quality: Literal[
             'ultrafast', 'superfast', 'veryfast', 'faster', 'fast', 'medium', 'slow', 'slower', 'veryslow'] = 'medium',
         vcodec: str = 'libx264',
         soft_subtitle: bool = False,
+        portrait: bool = False,
+        portrait_background: str = None,
+        vertical_offset: int = 0,
+        zoom_video: int = 100,
+        zoom_subtitle: int = 100,
         progress_callback: callable = None
 ) -> None:
     assert Path(input_file).is_file(), qoVideo.tr("输入文件不存在")
@@ -133,6 +141,7 @@ def add_subtitles(
                 'ffmpeg',
                 '-i', input_file,
                 '-i', subtitle_file,
+                '-map', '0',    # 复制所有流
                 '-c:v', 'copy',
                 '-c:a', 'copy',
                 '-c:s', 'mov_text',
@@ -163,7 +172,6 @@ def add_subtitles(
     else:
         logger.info("使用硬字幕")
         subtitle_file = Path(subtitle_file).as_posix().replace(':', r'\:')
-        vf = f"subtitles='{subtitle_file}'"
         if Path(output).suffix.lower() == '.webm':
             vcodec = 'libvpx-vp9'
             logger.info("WebM格式视频，使用libvpx-vp9编码器")
@@ -174,31 +182,94 @@ def add_subtitles(
         if use_cuda:
             logger.info("使用CUDA加速")
             cmd.extend(['-hwaccel', 'cuda'])
+            if vcodec == 'libx264':
+                vcodec = 'h264_nvenc'
+            elif vcodec == 'libx265':
+                vcodec = 'hevc_nvenc'
+                
         cmd.extend([
             '-i', input_file,
+        ])
+        
+        print (f"portrait: {portrait}, background{portrait_background}\n" \
+            +f"output_width: {output_width}, output_height: {output_height}, duration{duration}")
+        
+        if portrait and output_width and output_height:
+            # output_height = 1920, output_width = 1080, squeeze_height = 606
+            squeeze_height = int( output_width * output_width / output_height /2) * 2   # The original video's height after rotating.
+            # Zoom of video and subtitles, all need to be multiple of 2
+            output_width_subtitle = int(output_width * zoom_subtitle // 200) * 2
+            output_height_subtitle = int(squeeze_height * zoom_subtitle // 200) * 2
+            squeeze_height_subtitle = int( squeeze_height * zoom_subtitle // 200 ) * 2
+            subtitle_x = (output_width - output_width_subtitle) //2
+            subtitle_y = (output_height - squeeze_height_subtitle) // 2
+            
+            output_width_video = int(output_width * zoom_video // 200) * 2
+            output_height_video = int(squeeze_height * zoom_video // 200) * 2
+            squeeze_height_video = int(squeeze_height * zoom_video // 200) * 2
+            video_x = (output_width - output_width_video) // 2
+            video_y = (output_height - output_height_video) // 2
+            
+            
+            if portrait_background:
+                cmd.extend([
+                    '-i', portrait_background,
+                ])
+                # With picture background
+                vf = f"[1:v]trim=0:{duration},scale={output_width}:{output_height}[bg];" \
+                    + f"color=d={duration}:c=black@0:s={output_width_subtitle}x{squeeze_height_subtitle}," \
+                    + f"subtitles='{subtitle_file}':alpha=1[sub];[0:v]scale={output_width_video}:{squeeze_height_video}[fg];" \
+                    + f"[bg][fg]overlay={video_x}:{video_y}[out];[out][sub]overlay={subtitle_x}:{subtitle_y+vertical_offset},setsar=1"
+                
+            else:   # Blur background
+                vf = f"[0:v]avgblur=sizeX=40:sizeY=40,scale={output_width}x{output_height}:flags=fast_bilinear[bg];" \
+                    + f"color=d={duration}:c=black@0:s={output_width_subtitle}x{squeeze_height_subtitle}," \
+                    + f"subtitles='{subtitle_file}':alpha=1[sub];[0:v]scale={output_width_video}:{squeeze_height_video}[fg];" \
+                    + f"[bg][fg]overlay={video_x}:{video_y}[out];[out][sub]overlay={subtitle_x}:{subtitle_y+vertical_offset},setsar=1"
+        else:
+            # Just landscape subtitle
+            vf = f"color=d={duration}:c=black@0:s={output_width_subtitle}x{output_height_subtitle}," \
+                + f"subtitles='{subtitle_file}':alpha=1[sub];[0:v][sub]overlay={subtitle_x}:{subtitle_y+vertical_offset},setsar=1"
+            
+        cmd.extend([
             '-map', '0',    # 复制所有流
+            '-map', '-0:v',  # 排除视频流，免得生成两个视频流
             '-acodec', 'copy',
             '-vcodec', vcodec,
-            '-c:s', 'copy'
+            '-c:s', 'copy',
             '-preset', quality,
-            '-vf', vf,
+            '-filter_complex', q(vf),
             '-y',  # 覆盖输出文件
             output
         ])
-
+        
         cmd_str = subprocess.list2cmdline(cmd)
+        cmd_str = cmd_str.replace('\\"', '"')  # Fix the quote problem of video filters
         logger.info(f"添加硬字幕执行命令: {cmd_str}")
 
         try:
-            process = subprocess.Popen(
-                cmd, 
-                stdout=subprocess.PIPE, 
-                stderr=subprocess.PIPE, 
-                text=True, 
-                encoding='utf-8',
-                errors='replace',
-                creationflags=subprocess.CREATE_NO_WINDOW if hasattr(subprocess, 'CREATE_NO_WINDOW') else 0,
-            )
+            if os.name == 'nt':
+                # In windows system, the -filter_complex need quoting.
+                process = subprocess.Popen(
+                    cmd_str, 
+                    stdout=subprocess.PIPE, 
+                    stderr=subprocess.PIPE, 
+                    text=True, 
+                    encoding='utf-8',
+                    errors='replace',
+                    creationflags=subprocess.CREATE_NO_WINDOW if hasattr(subprocess, 'CREATE_NO_WINDOW') else 0,
+                )
+            else:
+                process = subprocess.Popen(
+                    cmd, 
+                    stdout=subprocess.PIPE, 
+                    stderr=subprocess.PIPE, 
+                    text=True, 
+                    encoding='utf-8',
+                    errors='replace',
+                    creationflags=subprocess.CREATE_NO_WINDOW if hasattr(subprocess, 'CREATE_NO_WINDOW') else 0,
+                )
+                
 
             # 实时读取输出并调用回调函数
             total_duration = None

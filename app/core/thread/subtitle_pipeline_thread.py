@@ -65,15 +65,16 @@ class SubtitlePipelineThread(QThread):
             
             # 3. 视频合成
             # self.task.status = Task.Status.GENERATING
-            self.progress.emit(80, self.tr("开始合成视频"))
-            synthesis_thread = VideoSynthesisThread(self.task)
-            synthesis_thread.progress.connect(lambda value, msg: self.progress.emit(int(70 + value * 0.3), msg))
-            synthesis_thread.error.connect(handle_error)
-            synthesis_thread.run()
+            if self.task.need_video:
+                self.progress.emit(80, self.tr("开始合成视频"))
+                synthesis_thread = VideoSynthesisThread(self.task)
+                synthesis_thread.progress.connect(lambda value, msg: self.progress.emit(int(70 + value * 0.3), msg))
+                synthesis_thread.error.connect(handle_error)
+                synthesis_thread.run()
 
-            if self.has_error:
-                logger.info("视频合成过程中发生错误，终止流程")
-                return
+                if self.has_error:
+                    logger.info("视频合成过程中发生错误，终止流程")
+                    return
 
             self.task.status = Task.Status.COMPLETED
             logger.info("处理完成")

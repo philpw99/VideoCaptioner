@@ -7,7 +7,7 @@ from qfluentwidgets import InfoBar
 from qfluentwidgets import (SettingCardGroup, SwitchSettingCard, OptionsSettingCard, PushSettingCard,
                             HyperlinkCard, PrimaryPushSettingCard, ScrollArea,
                             ComboBoxSettingCard, ExpandLayout, CustomColorSettingCard, RangeSettingCard,
-                            setTheme, setThemeColor, RangeSettingCard, MessageBox)
+                            setTheme, setThemeColor )
 
 from app.components.WhisperAPISettingDialog import WhisperAPISettingDialog
 from app.config import VERSION, YEAR, AUTHOR, HELP_URL, FEEDBACK_URL, RELEASE_URL
@@ -230,6 +230,14 @@ class SettingInterface(ScrollArea):
             self.subtitleGroup
         )
         
+        self.VerticalOffsetCard = RangeSettingCard(
+            cfg.vertical_offset,
+            FIF.MOVE,
+            self.tr('Vertical Offset for Subtitles'),
+            self.tr('In pixels, the vertical offset to apply to all subtitle positions.'),
+            self.subtitleGroup
+        )
+        
         # 保存配置
         self.saveGroup = SettingCardGroup(self.tr("保存配置"), self.scrollWidget)
         self.savePathCard = PushSettingCard(
@@ -369,6 +377,7 @@ class SettingInterface(ScrollArea):
         self.subtitleGroup.addSettingCard(self.enableSubtitleSentenceMinimumTimeCard)
         self.subtitleGroup.addSettingCard(self.SubtitleSentenceMinimumTimeCard)
         self.subtitleGroup.addSettingCard(self.SubtitleTimeOffsetCard)
+        self.subtitleGroup.addSettingCard(self.VerticalOffsetCard)
         self.saveGroup.addSettingCard(self.savePathCard)
 
         self.personalGroup.addSettingCard(self.themeCard)
@@ -425,6 +434,8 @@ class SettingInterface(ScrollArea):
         self.internetTranslateCard.checkedChanged.connect(signalBus.on_internet_translation_changed)
         self.internetTranslateMethodCard.comboBox.currentTextChanged.connect(signalBus.on_internet_translation_method_changed)
         self.targetLanguageCard.comboBox.currentTextChanged.connect(signalBus.on_target_language_changed)
+        self.softSubtitleCard.checkedChanged.connect(signalBus.on_soft_subtitle_changed)
+        self.needVideoCard.checkedChanged.connect(signalBus.on_need_video_changed)
         # self.languageCard.comboBox.currentTextChanged.connect(signalBus.on_language_changed)
         
         signalBus.subtitle_optimization_changed.connect(self.subtitleCorrectCard.setChecked)
@@ -434,7 +445,7 @@ class SettingInterface(ScrollArea):
         signalBus.internet_translation_method_changed.connect(self.internetTranslateMethodCard.comboBox.setCurrentText)
         signalBus.target_language_changed.connect(self.targetLanguageCard.comboBox.setCurrentText)
         signalBus.language_changed.connect(self.languageCard.comboBox.setCurrentText)
-    
+        
     def show_whisper_settings(self):
         """显示Whisper设置对话框"""
         if self.transcribeModelCard.comboBox.currentText() == TranscribeModelEnum.WHISPER.value:

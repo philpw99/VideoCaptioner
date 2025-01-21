@@ -274,6 +274,8 @@ class SubtitleOptimizer:
             return_text = response.choices[0].message.content
             # logger.info(f"response:{type(return_text)}")
             previous_translation = return_text
+
+            logger.info(f"{key}. Original: {value}\n{key}. Translated: {return_text}")
             
             line = {str(key): return_text}  # Create a dictionary with key and translated text
 

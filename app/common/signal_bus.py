@@ -14,6 +14,9 @@ class SignalBus(QObject):
     # 使用网络翻译
     internet_translation_changed = pyqtSignal(bool)
     internet_translation_method_changed = pyqtSignal(bool)
+    # 
+    need_video_changed = pyqtSignal(bool)
+    soft_subtitle_changed = pyqtSignal(bool)
 
     # 新增视频控制相关信号
     video_play = pyqtSignal()  # 播放信号
@@ -22,6 +25,12 @@ class SignalBus(QObject):
     video_source_changed = pyqtSignal(QUrl)  # 视频源改变信号
     video_segment_play = pyqtSignal(int, int)  # 播放片段信号，参数为开始和结束时间(ms)
     video_subtitle_added = pyqtSignal(str)  # 添加字幕文件信号
+
+    def on_need_video_changed(self, needVideo: bool):
+        self.need_video_changed.emit(needVideo)
+    
+    def on_soft_subtitle_changed(self, softSubtitle: bool):
+        self.soft_subtitle_changed.emit(softSubtitle)
 
     def on_subtitle_layout_changed(self, layout: str):
         self.subtitle_layout_changed.emit(layout)

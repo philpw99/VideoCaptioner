@@ -6,6 +6,12 @@ from random import randint
 from typing import Optional
 from PyQt5.QtCore import QObject
 
+class BatchTaskTypeEnum(Enum):
+    """ 批量任务类型 """
+    TRANSCRIBE = "Create Subtitle from Audio/Video"
+    SOFT = "Create Soft Subtitle Video"
+    HARD = "Create Hard Subtitle Video"
+
 class SubtitleLayoutEnum(Enum):
     """ 字幕布局 """
     ONLY_ORIGINAL = "Original Only"
@@ -17,6 +23,15 @@ class SubtitleLayoutEnum(Enum):
 class InternetTranslateEnum(Enum):
     """网络翻译"""
     GOOGLE = "Google Translate"
+
+
+class SupportedImageFormats(Enum):
+    """ 支持的图片格式 """
+    JPG = "jpg"
+    PNG = "png"
+    BMP = "bmp"
+    GIF = "gif"
+    WEBP = "webp"
 
 
 class SupportedAudioFormats(Enum):
@@ -492,11 +507,11 @@ class Task:
 
     class Type(Enum):
         # 任务类型：transcribe or generate subtitle
-        TRANSCRIBE = "Transcription"
-        SUBTITLE = "Subtitle"
-        OPTIMIZE = "Optimization"
-        SYNTHESIS = "Synthesis"
-        URL = "URL"
+        TRANSCRIBE = "Get Subtitle From Video/Audio"
+        SUBTITLE = "Add Subtitle To Video"
+        OPTIMIZE = "Optimize + Translate Subtitles"
+        SYNTHESIS = "Combine Subtitle with Video"
+        URL = "Download Video from URL then Add Subtitle"
         
     # 任务信息
     id: int = field(default_factory=lambda: randint(0, 100_000_000))
@@ -522,7 +537,6 @@ class Task:
 
     # 转录（转录模型）
     transcribe_model: Optional[TranscribeModelEnum] = TranscribeModelEnum.JIANYING
-    
     transcribe_language: Optional[TranscribeLanguageEnum] = LANGUAGES[TranscribeLanguageEnum.ENGLISH.value]
     use_asr_cache: bool = True
     need_word_time_stamp: bool = False
@@ -559,10 +573,16 @@ class Task:
     subtitle_layout: Optional[str] = None
     max_word_count_cjk: int = 12
     max_word_count_english: int = 18
-    need_split: bool = True
+    need_split: bool = False
 
     # 视频生成
     need_video: bool = True
     video_save_path: Optional[str] = None
     soft_subtitle: bool = True
     subtitle_style_srt: Optional[str] = None
+    portrait: bool = False
+    portrait_background: Optional[str] = None
+    zoom_video: int = 100
+    zoom_subtitle: int = 100
+    vertical_offset: int = 0
+    

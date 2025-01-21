@@ -21,23 +21,20 @@ class CreateTaskThread(QThread):
     progress = pyqtSignal(int, str)
     error = pyqtSignal(str)
 
-    def __init__(self, file_path, task_type: Task.Type):
+    def __init__(self, file_path, task_type: Task.Type, soft_sub: bool):
         super().__init__()
         self.file_path = file_path
         self.task_type = task_type
+        self.soft_sub = soft_sub
 
     def run(self):
         try:
             if self.task_type == Task.Type.SUBTITLE:
-                self.create_file_task(self.file_path)
+                self.create_file_task(self.file_path, self.soft_sub)
             elif self.task_type == Task.Type.URL:
-                self.create_url_task(self.file_path)
+                self.create_url_task(self.file_path, self.soft_sub)
             elif self.task_type == Task.Type.TRANSCRIBE:
                 self.create_transcription_task(self.file_path)
-            elif self.task_type == Task.Type.OPTIMIZE:
-                self.create_subtitle_optimization_task()
-            elif self.task_type == Task.Type.SYNTHESIS:
-                self.create_video_synthesis_task()
             else:
                 raise ValueError("No matching task type.")
         except Exception as e:
@@ -45,7 +42,7 @@ class CreateTaskThread(QThread):
             self.progress.emit(0, self.tr("创建任务失败"))
             self.error.emit(str(e))
 
-    def create_file_task(self, file_path):
+    def create_file_task(self, file_path, soft_sub: bool):
         logger.info("\n===================")
         logger.info(f"开始创建文件任务：{file_path}")
         # 使用 Path 对象处理路径
@@ -91,7 +88,8 @@ class CreateTaskThread(QThread):
         if cfg.subtitle_output_format.value.value == "ass":
             ass_style_name = cfg.subtitle_style_name.value
             ass_style_path = SUBTITLE_STYLE_PATH / f"{ass_style_name}.txt"
-            subtitle_style_srt = ass_style_path.read_text(encoding="utf-8")
+            if ass_style_path.exists():
+                subtitle_style_srt = ass_style_path.read_text(encoding="utf-8")
         else:
             subtitle_style_srt = None
 
@@ -149,16 +147,17 @@ class CreateTaskThread(QThread):
             result_subtitle_save_path=str(result_subtitle_save_path),
             subtitle_layout=cfg.subtitle_layout.value,
             video_save_path=str(video_save_path),
-            soft_subtitle=cfg.soft_subtitle.value,
+            soft_subtitle=soft_sub,
             subtitle_style_srt=subtitle_style_srt,
             need_video=cfg.need_video.value,
+            vertical_offset=cfg.vertical_offset.value,
             type=Task.Type.SUBTITLE,
         )
         self.finished.emit(task)
         self.progress.emit(100, self.tr("创建任务完成"))
         logger.info(f"文件任务创建完成：{task}")
 
-    def create_url_task(self, url, task_type):
+    def create_url_task(self, url, soft_sub: bool):
         logger.info("\n===================")
         logger.info(f"开始创建URL任务：{url}")
         self.progress.emit(5, self.tr("正在获取视频信息"))
@@ -213,7 +212,8 @@ class CreateTaskThread(QThread):
         if cfg.subtitle_output_format.value.value == "ass" and ass_style_path.exists():
             ass_style_name = cfg.subtitle_style_name.value
             ass_style_path = SUBTITLE_STYLE_PATH / f"{ass_style_name}.txt"
-            subtitle_style_srt = ass_style_path.read_text(encoding="utf-8")
+            if ass_style_path.exists():
+                subtitle_style_srt = ass_style_path.read_text(encoding="utf-8")
         else:
             subtitle_style_srt = None
 
@@ -266,9 +266,10 @@ class CreateTaskThread(QThread):
             result_subtitle_save_path=str(result_subtitle_save_path),
             subtitle_layout=cfg.subtitle_layout.value,
             video_save_path=str(video_save_path),
-            soft_subtitle=cfg.soft_subtitle.value,
+            soft_subtitle=soft_sub,
             subtitle_style_srt=subtitle_style_srt,
             need_video=cfg.need_video.value,
+            vertical_offset=cfg.vertical_offset.value,
             task=Task.Type.SUBTITLE,
         )
         self.finished.emit(task)
@@ -307,10 +308,11 @@ class CreateTaskThread(QThread):
         original_subtitle_save_path = task_work_dir / f"【原始字幕】{file_name}-{cfg.transcribe_model.value.value}-{whisper_type}.srt"
         result_subtitle_save_path = file_full_path.parent / ( cfg.subtitle_file_prefix.value + file_name + cfg.subtitle_file_suffix.value + "." + cfg.subtitle_output_format.value.value )
 
-        if cfg.subtitle_output_format.value.value == "ass" and ass_style_path.exists():
+        if cfg.subtitle_output_format.value.value == "ass":
             ass_style_name = cfg.subtitle_style_name.value
             ass_style_path = SUBTITLE_STYLE_PATH / f"{ass_style_name}.txt"
-            subtitle_style_srt = ass_style_path.read_text(encoding="utf-8")
+            if ass_style_path.exists():
+                subtitle_style_srt = ass_style_path.read_text(encoding="utf-8")
         else:
             subtitle_style_srt = None
         
@@ -414,7 +416,7 @@ class CreateTaskThread(QThread):
         logger.info(f"字幕优化任务创建完成：{task}")
         return task
 
-    def create_video_synthesis_task(subtitle_file, video_file):
+    def create_video_synthesis_task(subtitle_file, video_file, soft_sub: bool):
         logger.info(f"开始创建视频合成任务：{subtitle_file} {video_file}")
         subtitle_file = Path(subtitle_file.strip()).as_posix()
         video_file = Path(video_file.strip()).as_posix()
@@ -430,7 +432,7 @@ class CreateTaskThread(QThread):
             status=Task.Status.GENERATING,
             work_dir=str(task_work_dir),
             file_path=str(Path(video_file)),
-            result_subtitle_save_path=str(Path(subtitle_file)),
+            original_subtitle_save_path=str(Path(subtitle_file)),
             video_save_path=str(video_save_path),
             soft_subtitle=cfg.soft_subtitle.value,
             type=Task.Type.SYNTHESIS,
@@ -500,7 +502,6 @@ def sanitize_filename(name, replacement="_"):
     # 如果文件名为空，返回一个默认名称
     if not sanitized:
         sanitized = "default_filename"
-
     return sanitized
 
 
