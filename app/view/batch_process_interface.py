@@ -674,7 +674,7 @@ class TaskInfoCard(CardWidget):
             if self.task.portrait_background:
                 strategy_text += "\n" + self.tr("竖屏背景：") + self.task.portrait_background
 
-        tooltip = self.tr("任务类型：") + self.task.type.value + "  " + self.tr("转录模型：") + self.task.transcribe_model.value + "\n"
+        tooltip = self.tr("任务类型：") + self.task.type.value + "  " + self.tr("转录模型：") + self.task.transcribe_model + "\n"
         if len(self.task.file_path) > 100:
             tooltip += self.tr("文件: ") + self.task.file_path[:50] + "..." + Path(self.task.file_path).name + "\n"
         else:

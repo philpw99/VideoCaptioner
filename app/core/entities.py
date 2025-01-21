@@ -539,7 +539,7 @@ class Task:
     audio_save_path: Optional[str] = None
 
     # 转录（转录模型）
-    transcribe_model: Optional[TranscribeModelEnum] = TranscribeModelEnum.JIANYING
+    transcribe_model: Optional[TranscribeModelEnum] = TranscribeModelEnum.JIANYING.value
     transcribe_language: Optional[TranscribeLanguageEnum] = LANGUAGES[TranscribeLanguageEnum.ENGLISH.value]
     use_asr_cache: bool = True
     need_word_time_stamp: bool = False

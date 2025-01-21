@@ -142,15 +142,15 @@ class VideoInfoCard(CardWidget):
 
     def show_whisper_settings(self):
         """显示Whisper设置对话框"""
-        if cfg.transcribe_model.value == TranscribeModelEnum.WHISPER:
+        if cfg.transcribe_model.value == TranscribeModelEnum.WHISPER.value:
             dialog = WhisperSettingDialog(self.window())
             if dialog.exec_():
                 return True
-        elif cfg.transcribe_model.value == TranscribeModelEnum.WHISPER_API:
+        elif cfg.transcribe_model.value == TranscribeModelEnum.WHISPER_API.value:
             dialog = WhisperAPISettingDialog(self.window())
             if dialog.exec_():
                 return True
-        elif cfg.transcribe_model.value == TranscribeModelEnum.FASTER_WHISPER:
+        elif cfg.transcribe_model.value == TranscribeModelEnum.FASTER_WHISPER.value:
             dialog = FasterWhisperSettingDialog(self.window())
             if dialog.exec_():
                 return True
@@ -159,7 +159,11 @@ class VideoInfoCard(CardWidget):
     def on_start_button_clicked(self):
         """开始转录按钮点击事件"""
         if self.task.status == Task.Status.TRANSCRIBING:
-            need_whisper_settings = cfg.transcribe_model.value in [TranscribeModelEnum.WHISPER, TranscribeModelEnum.WHISPER_API, TranscribeModelEnum.FASTER_WHISPER]
+            need_whisper_settings = cfg.transcribe_model.value in [
+                TranscribeModelEnum.WHISPER.value,
+                TranscribeModelEnum.WHISPER_API.value,
+                TranscribeModelEnum.FASTER_WHISPER.value
+            ]
             if need_whisper_settings and not self.show_whisper_settings():
                 return
         self.progress_ring.show()

@@ -42,7 +42,7 @@ class SettingInterface(ScrollArea):
             FIF.MICROPHONE,
             self.tr('转录模型'),
             self.tr('语音转换文字要使用的转录模型'),
-            texts=[model.value for model in cfg.transcribe_model.validator.options],
+            texts=[ model.value for model in TranscribeModelEnum ],
             parent=self.transcribeGroup
         )
         self.whisperSettingCard = HyperlinkCard(

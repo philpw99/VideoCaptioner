@@ -61,11 +61,11 @@ class CreateTaskThread(QThread):
         video_info = VideoInfo(**video_info)
 
         match cfg.transcribe_model.value:
-            case TranscribeModelEnum.WHISPER:
+            case TranscribeModelEnum.WHISPER.value:
                 whisper_type = f"-{cfg.whisper_model.value.value}-{cfg.transcribe_language.value.value}"
-            case TranscribeModelEnum.WHISPER_API:
+            case TranscribeModelEnum.WHISPER_API.value:
                 whisper_type = f"-{cfg.whisper_api_model.value}-{cfg.transcribe_language.value.value}"
-            case TranscribeModelEnum.FASTER_WHISPER:
+            case TranscribeModelEnum.FASTER_WHISPER.value:
                 whisper_type = f"-{cfg.faster_whisper_model.value.value}-{cfg.transcribe_language.value.value}"
             case _:
                 whisper_type = ""
@@ -89,7 +89,7 @@ class CreateTaskThread(QThread):
         else:
             subtitle_style_srt = None
 
-        need_word_time_stamp = cfg.transcribe_model.value in [TranscribeModelEnum.JIANYING, TranscribeModelEnum.BIJIAN]
+        need_word_time_stamp = cfg.transcribe_model.value in [TranscribeModelEnum.JIANYING.value, TranscribeModelEnum.BIJIAN.value]
 
         # 创建 Task 对象
         task = Task(
@@ -178,18 +178,18 @@ class CreateTaskThread(QThread):
         file_name = file_full_path.stem
 
         match cfg.transcribe_model.value:
-            case TranscribeModelEnum.WHISPER:
+            case TranscribeModelEnum.WHISPER.value:
                 whisper_type = f"{cfg.whisper_model.value.value}-{cfg.transcribe_language.value.value}"
-            case TranscribeModelEnum.WHISPER_API:
-                whisper_type = f"{cfg.whisper_api_model.value}-{cfg.transcribe_language.value.value}"
-            case TranscribeModelEnum.FASTER_WHISPER:
+            case TranscribeModelEnum.WHISPER_API.value:
+                whisper_type = f"{cfg.whisper_api_model.value.value}-{cfg.transcribe_language.value.value}"
+            case TranscribeModelEnum.FASTER_WHISPER.value:
                 whisper_type = f"{cfg.faster_whisper_model.value.value}-{cfg.transcribe_language.value.value}"
             case _:
                 whisper_type = ""
 
         # 定义各个路径
         audio_save_path = task_work_dir / f"{self.tr("【音频】")}{Path(video_file_path).stem}.wav"
-        original_subtitle_save_path = task_work_dir / f"{self.tr("【原始字幕】")}{cfg.transcribe_model.value.value}-file_name-{whisper_type}.srt" if not subtitle_file_path else subtitle_file_path
+        original_subtitle_save_path = task_work_dir / f"{self.tr("【原始字幕】")}{cfg.transcribe_model.value}-file_name-{whisper_type}.srt" if not subtitle_file_path else subtitle_file_path
         result_subtitle_save_path = task_work_dir / ( cfg.subtitle_file_prefix.value + file_name + cfg.subtitle_file_suffix.value + "." + cfg.subtitle_output_format.value.value )
         video_save_path = task_work_dir / f"{self.tr("【生成】")}{Path(video_file_path).name}"
 
@@ -198,7 +198,7 @@ class CreateTaskThread(QThread):
         if video_info.audio_codec in ["mp3", "pcm"]:
             audio_format = "copy"
 
-        if cfg.transcribe_model.value in [TranscribeModelEnum.JIANYING, TranscribeModelEnum.BIJIAN]:
+        if cfg.transcribe_model.value in [TranscribeModelEnum.JIANYING.value, TranscribeModelEnum.BIJIAN.value]:
             need_word_time_stamp = True
         else:
             need_word_time_stamp = False
@@ -300,7 +300,7 @@ class CreateTaskThread(QThread):
             audio_format = "copy"
 
         audio_save_path = task_work_dir / f"Audio_{file_name}.wav"
-        original_subtitle_save_path = task_work_dir / f"【原始字幕】{file_name}-{cfg.transcribe_model.value.value}-{whisper_type}.srt"
+        original_subtitle_save_path = task_work_dir / f"【原始字幕】{file_name}-{cfg.transcribe_model.value}-{whisper_type}.srt"
         result_subtitle_save_path = file_full_path.parent / ( cfg.subtitle_file_prefix.value + file_name + cfg.subtitle_file_suffix.value + "." + cfg.subtitle_output_format.value.value )
 
         if cfg.subtitle_output_format.value.value == "ass":

@@ -287,7 +287,7 @@ class TaskCreationInterface(QWidget):
         self.target_language_card.comboBox.setCurrentText(language)
 
     def setup_values(self):
-        self.transcription_model_card.setValue(cfg.transcribe_model.value.value)
+        self.transcription_model_card.setValue(cfg.transcribe_model.value)
         self.target_language_card.setValue(cfg.target_language.value.value)
         self.subtitle_optimization_card.setChecked(cfg.need_optimize.value)
         self.subtitle_translation_card.setChecked(cfg.need_translate.value)
@@ -312,12 +312,13 @@ class TaskCreationInterface(QWidget):
 
     def on_transcription_model_changed(self, value):
         """当转录模型改变时触发"""
-        cfg.set(cfg.transcribe_model, TranscribeModelEnum(value))
-        self.whisper_setting_button.setVisible(
-            value == TranscribeModelEnum.WHISPER.value or
-            value == TranscribeModelEnum.WHISPER_API.value or
-            value == TranscribeModelEnum.FASTER_WHISPER.value
-        )
+        if value in [model.value for model in TranscribeModelEnum]:
+            cfg.set(cfg.transcribe_model, value)
+            self.whisper_setting_button.setVisible(
+                value == TranscribeModelEnum.WHISPER.value or
+                value == TranscribeModelEnum.WHISPER_API.value or
+                value == TranscribeModelEnum.FASTER_WHISPER.value
+            )
 
     def show_whisper_settings(self):
         """显示Whisper设置对话框"""

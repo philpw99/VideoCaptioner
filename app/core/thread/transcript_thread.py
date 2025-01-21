@@ -107,13 +107,13 @@ class TranscriptThread(QThread):
                 "need_word_time_stamp": self.task.need_word_time_stamp,
             }
             match self.task.transcribe_model:
-                case TranscribeModelEnum.WHISPER:
+                case TranscribeModelEnum.WHISPER.value:
                     args["language"] = self.task.transcribe_language
                     args["whisper_model"] = self.task.whisper_model
                     args["use_cache"] = False
                     args["need_word_time_stamp"] = True
                     self.asr = WhisperASR(self.task.audio_save_path, **args)
-                case TranscribeModelEnum.WHISPER_API:
+                case TranscribeModelEnum.WHISPER_API.value:
                     args["language"] = self.task.transcribe_language
                     args["whisper_model"] = self.task.whisper_api_model
                     args["api_key"] = self.task.whisper_api_key
@@ -122,7 +122,7 @@ class TranscriptThread(QThread):
                     args["use_cache"] = False
                     args["need_word_time_stamp"] = True
                     self.asr = WhisperAPI(self.task.audio_save_path, **args)
-                case TranscribeModelEnum.FASTER_WHISPER:
+                case TranscribeModelEnum.FASTER_WHISPER.value:
                     args["faster_whisper_path"] = cfg.faster_whisper_program.value
                     args["whisper_model"] = self.task.faster_whisper_model.value
                     args["model_dir"] = str(MODEL_PATH)
@@ -153,9 +153,9 @@ class TranscriptThread(QThread):
                     args["repetition_penalty"] = self.task.faster_whisper_repetion_penalty
 
                     self.asr = FasterWhisperASR(self.task.audio_save_path, **args)
-                case TranscribeModelEnum.BIJIAN:
+                case TranscribeModelEnum.BIJIAN.value:
                     self.asr = BcutASR(self.task.audio_save_path, **args)
-                case TranscribeModelEnum.JIANYING:
+                case TranscribeModelEnum.JIANYING.value:
                     self.asr = JianYingASR(self.task.audio_save_path, **args)
                 case _:
                     raise ValueError(self.tr("无效的转录模型: ") + str(self.task.transcribe_model))
@@ -215,5 +215,5 @@ class TranscriptThread(QThread):
     
     # Is the current config is using FasterWhipser and translate to English?
     def isFasterWhisperTranslate(self):
-        return cfg.transcribe_model.value == TranscribeModelEnum.FASTER_WHISPER and cfg.faster_whisper_translate_to_english.value
+        return cfg.transcribe_model.value == TranscribeModelEnum.FASTER_WHISPER.value and cfg.faster_whisper_translate_to_english.value
 
