@@ -49,9 +49,7 @@ class VideoSynthesisThread(QThread):
             video_save_path = self.task.video_save_path
             soft_subtitle = self.task.soft_subtitle
             
-            need_video = self.task.need_video
-
-            if not need_video:
+            if not self.task.need_video: # Shouldn't happen, just in case.
                 logger.info(f"不需要合成视频，跳过")
                 self.progress.emit(100, self.tr("合成完成"))
                 self.finished.emit(self.task)

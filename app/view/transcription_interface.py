@@ -7,10 +7,10 @@ import subprocess
 from pathlib import Path
 
 from PyQt5.QtCore import *
-from PyQt5.QtGui import QPixmap, QFont
+from PyQt5.QtGui import QPixmap, QFont, QDragEnterEvent, QDropEvent
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QApplication, QLabel, QFileDialog
 from qfluentwidgets import CardWidget, PrimaryPushButton, PushButton, InfoBar, BodyLabel, PillPushButton, setFont, \
-    ProgressRing, InfoBarPosition
+        ProgressRing, InfoBarPosition
 
 from ..components.FasterWhisperSettingDialog import FasterWhisperSettingDialog
 from ..components.WhisperSettingDialog import WhisperSettingDialog
@@ -28,6 +28,7 @@ DEFAULT_THUMBNAIL_PATH = RESOURCE_PATH / "assets" / "default_thumbnail.jpg"
 
 class VideoInfoCard(CardWidget):
     finished = pyqtSignal(Task)
+    task: Task|None = None
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -37,9 +38,9 @@ class VideoInfoCard(CardWidget):
 
     def setup_ui(self):
         self.setFixedHeight(150)
-        self.layout = QHBoxLayout(self)
-        self.layout.setContentsMargins(20, 15, 20, 15)
-        self.layout.setSpacing(20)
+        self.cardlayout = QHBoxLayout(self)
+        self.cardlayout.setContentsMargins(20, 15, 20, 15)
+        self.cardlayout.setSpacing(20)
 
         self.setup_thumbnail()
         self.setup_info_layout()
@@ -52,14 +53,14 @@ class VideoInfoCard(CardWidget):
         self.video_thumbnail = QLabel(self)
         self.video_thumbnail.setFixedSize(208, 117)
         self.video_thumbnail.setStyleSheet("background-color: #1E1F22;")
-        self.video_thumbnail.setAlignment(Qt.AlignCenter)
+        self.video_thumbnail.setAlignment(Qt.AlignmentFlag.AlignCenter)
         pixmap = QPixmap(default_thumbnail_path).scaled(
             self.video_thumbnail.size(),
-            Qt.KeepAspectRatio,
-            Qt.SmoothTransformation
+            Qt.AspectRatioMode.KeepAspectRatio,
+            Qt.TransformationMode.SmoothTransformation
         )
         self.video_thumbnail.setPixmap(pixmap)
-        self.layout.addWidget(self.video_thumbnail, 0, Qt.AlignLeft)
+        self.cardlayout.addWidget(self.video_thumbnail, 0, Qt.AlignmentFlag.AlignLeft)
 
     def setup_info_layout(self):
         self.info_layout = QVBoxLayout()
@@ -67,9 +68,9 @@ class VideoInfoCard(CardWidget):
         self.info_layout.setSpacing(10)
 
         self.video_title = BodyLabel(self.tr("请拖入音频或视频文件"), self)
-        self.video_title.setFont(QFont("Microsoft YaHei", 14, QFont.Bold))
+        self.video_title.setFont(QFont("Microsoft YaHei", 14, QFont.Weight.Bold))
         self.video_title.setWordWrap(True)
-        self.info_layout.addWidget(self.video_title, alignment=Qt.AlignTop)
+        self.info_layout.addWidget(self.video_title, alignment=Qt.AlignmentFlag.AlignTop)
 
         self.details_layout = QHBoxLayout()
         self.details_layout.setSpacing(15)
@@ -89,7 +90,7 @@ class VideoInfoCard(CardWidget):
         self.details_layout.addWidget(self.progress_ring)
         self.details_layout.addStretch(1)
         self.info_layout.addLayout(self.details_layout)
-        self.layout.addLayout(self.info_layout)
+        self.cardlayout.addLayout(self.info_layout)
 
     def create_pill_button(self, text, width):
         button = PillPushButton(text, self)
@@ -110,7 +111,7 @@ class VideoInfoCard(CardWidget):
         button_widget = QWidget()
         button_widget.setLayout(self.button_layout)
         button_widget.setFixedWidth(130)
-        self.layout.addWidget(button_widget)
+        self.cardlayout.addWidget(button_widget)
 
     def update_info(self, video_info: VideoInfo):
         """更新视频信息显示"""
@@ -130,8 +131,8 @@ class VideoInfoCard(CardWidget):
 
         pixmap = QPixmap(str(thumbnail_path)).scaled(
             self.video_thumbnail.size(),
-            Qt.KeepAspectRatio,
-            Qt.SmoothTransformation
+            Qt.AspectRatioMode.KeepAspectRatio,
+            Qt.TransformationMode.SmoothTransformation
         )
         self.video_thumbnail.setPixmap(pixmap)
 
@@ -258,14 +259,13 @@ class VideoInfoCard(CardWidget):
             self.transcript_thread.terminate()
 
 
-
 class TranscriptionInterface(QWidget):
     """转录界面类,用于显示视频信息和转录进度"""
     finished = pyqtSignal(Task)
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setAttribute(Qt.WA_StyledBackground, True)
+        self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
         self.setAcceptDrops(True)
         self.task = None
 
@@ -282,7 +282,7 @@ class TranscriptionInterface(QWidget):
         self.main_layout.addWidget(self.video_info_card)
 
         self.file_select_button = PushButton(self.tr("选择视频文件"), self)
-        self.main_layout.addWidget(self.file_select_button, alignment=Qt.AlignCenter)
+        self.main_layout.addWidget(self.file_select_button, alignment=Qt.AlignmentFlag.AlignCenter)
 
     def _setup_signals(self):
         """设置信号连接"""
@@ -314,7 +314,7 @@ class TranscriptionInterface(QWidget):
             open_path = cfg.last_open_dir.value
             cfg.save()
         else:
-            open_path = QStandardPaths.writableLocation(QStandardPaths.DesktopLocation)
+            open_path = QStandardPaths.writableLocation(QStandardPaths.StandardLocation.DesktopLocation)
             
         file_path, _ = file_dialog.getOpenFileName(self, self.tr("选择媒体文件"), open_path, filter_str)
         if file_path:
@@ -349,7 +349,7 @@ class TranscriptionInterface(QWidget):
         """拖拽进入事件处理"""
         event.accept() if event.mimeData().hasUrls() else event.ignore()
 
-    def dropEvent(self, event):
+    def dropEvent(self, event: QDropEvent):
         """拖拽放下事件处理"""
         files = [u.toLocalFile() for u in event.mimeData().urls()]
         for file_path in files:
@@ -386,8 +386,8 @@ class TranscriptionInterface(QWidget):
 
 if __name__ == "__main__":
     QApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
-    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
-    QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
+    QApplication.setAttribute(Qt.ApplicationAttribute.AA_EnableHighDpiScaling)
+    QApplication.setAttribute(Qt.ApplicationAttribute.AA_UseHighDpiPixmaps)
 
     app = QApplication(sys.argv)
     window = TranscriptionInterface()

@@ -142,6 +142,7 @@ class ASRData:
     def save(self, save_path: str, ass_style: str = None, layout: str = SubEnum.ONLY_TRANSLATE.name) -> None:
         """Save the ASRData to a file"""
         Path(save_path).parent.mkdir(parents=True, exist_ok=True)
+        # Cannot use match/case here. Too much extra calculations.
         if save_path.endswith('.srt'):
             self.to_srt(save_path=save_path, layout=layout)
         elif save_path.endswith('.txt'):
@@ -165,16 +166,18 @@ class ASRData:
                 original, translated = seg.transcript, ""
 
             # 根据字幕类型组织文本
-            if layout == SubEnum.ORIGINAL_ON_TOP.name:
-                text = f"{original}\n{translated}" if translated else original
-            elif layout == SubEnum.TRANSLATE_ON_TOP.name:
-                text = f"{translated}\n{original}" if translated else original
-            elif layout == SubEnum.ONLY_ORIGINAL.name:
-                text = original
-            elif layout == SubEnum.ONLY_TRANSLATE.name:
-                text = translated if translated else original
-            else:
-                text = seg.transcript
+            match layout:
+                case SubEnum.ORIGINAL_ON_TOP.name:
+                    text = f"{original}\n{translated}" if translated else original
+                case SubEnum.TRANSLATE_ON_TOP.name:
+                    text = f"{translated}\n{original}" if translated else original
+                case SubEnum.ONLY_ORIGINAL.name:
+                    text = original
+                case SubEnum.ONLY_TRANSLATE.name:
+                    text = translated if translated else original
+                case _:
+                    text = seg.transcript
+                
             result.append(text)
         text = "\n".join(result)
         if save_path:
@@ -193,17 +196,17 @@ class ASRData:
                 original, translated = seg.transcript, ""
 
             # 根据字幕类型组织文本
-            if layout == SubEnum.ORIGINAL_ON_TOP.name:
-                text = f"{original}\n{translated}" if translated else original
-            elif layout == SubEnum.TRANSLATE_ON_TOP.name:
-                text = f"{translated}\n{original}" if translated else original
-            elif layout == SubEnum.ONLY_ORIGINAL.name:
-                text = original
-            elif layout == SubEnum.ONLY_TRANSLATE.name:
-                text = translated if translated else original
-            else:
-                text = seg.transcript
-
+            match layout:
+                case SubEnum.ORIGINAL_ON_TOP.name:
+                    text = f"{original}\n{translated}" if translated else original
+                case SubEnum.TRANSLATE_ON_TOP.name:
+                    text = f"{translated}\n{original}" if translated else original
+                case SubEnum.ONLY_ORIGINAL.name:
+                    text = original
+                case SubEnum.ONLY_TRANSLATE.name:
+                    text = translated if translated else original
+                case _:
+                    text = seg.transcript
             srt_lines.append(f"{n}\n{seg.to_srt_ts()}\n{text}\n")
 
         srt_text = "\n".join(srt_lines)
@@ -245,6 +248,7 @@ class ASRData:
         Args:
             style_str: ASS样式字符串,为空则使用默认样式
             layout: 字幕布局, 为SubtitleStyleEnum里面左边的name，而不是右边的value
+            save_path: 如果有，就顺便存成这个文档。UTF-8格式的 ASS 文件
             
         Returns:
             ASS格式字幕内容
@@ -278,19 +282,21 @@ class ASRData:
             start_time, end_time = seg.to_ass_ts()
             if "\n" in seg.text:
                 original, translate = seg.text.split("\n", 1)
-                if layout == SubEnum.TRANSLATE_ON_TOP.name and translate:
-                    ass_content += dialogue_template.format(start_time, end_time, "Secondary", original)
-                    ass_content += dialogue_template.format(start_time, end_time, "Default", translate)
-                elif layout == SubEnum.ORIGINAL_ON_TOP.name and translate:
-                    ass_content += dialogue_template.format(start_time, end_time, "Secondary", translate)
-                    ass_content += dialogue_template.format(start_time, end_time, "Default", original)
-                elif layout == SubEnum.ONLY_ORIGINAL.name:
-                    ass_content += dialogue_template.format(start_time, end_time, "Default", original)
-                elif layout == SubEnum.ONLY_TRANSLATE.name and translate:
-                    ass_content += dialogue_template.format(start_time, end_time, "Default", translate)
-            else:
-                ass_content += dialogue_template.format(start_time, end_time, "Default", seg.text)
-            
+
+                match layout:
+                    case SubEnum.ORIGINAL_ON_TOP.name if translate:
+                        ass_content += dialogue_template.format(start_time, end_time, "Secondary", translate)
+                        ass_content += dialogue_template.format(start_time, end_time, "Default", original)
+                    case SubEnum.TRANSLATE_ON_TOP.name if translate:
+                        ass_content += dialogue_template.format(start_time, end_time, "Secondary", original)
+                        ass_content += dialogue_template.format(start_time, end_time, "Default", translate)
+                    case SubEnum.ONLY_ORIGINAL.name:
+                        ass_content += dialogue_template.format(start_time, end_time, "Default", original)
+                    case SubEnum.ONLY_TRANSLATE.name if translate:
+                        ass_content += dialogue_template.format(start_time, end_time, "Default", translate)
+                    case _:
+                        ass_content += dialogue_template.format(start_time, end_time, "Default", seg.text)
+
         if save_path:
             Path(save_path).parent.mkdir(parents=True, exist_ok=True)
             with open(save_path, 'w', encoding='utf-8') as f:
@@ -389,18 +395,19 @@ def from_subtitle_file(file_path: str) -> 'ASRData':
         
     suffix = file_path.suffix.lower()
     
-    if suffix == '.srt':
-        return from_srt(content)
-    elif suffix == '.vtt':
-        if '<c>' in content:  # YouTube VTT格式包含字级时间戳
-            return from_youtube_vtt(content)
-        return from_vtt(content)
-    elif suffix == '.ass':
-        return from_ass(content)
-    elif suffix == '.json':
-        return from_json(json.loads(content))
-    else:
-        raise ValueError(f"File formate not supported: {suffix}")
+    match suffix:
+        case '.srt':
+            return from_srt(content)
+        case '.vtt':
+            if '<c>' in content:  # YouTube VTT格式包含字级时间戳
+                return from_youtube_vtt(content)
+            return from_vtt(content)
+        case '.ass':
+            return from_ass(content)
+        case '.json':
+            return from_json(json.loads(content))
+        case _:
+            raise ValueError(f"File formate not supported: {suffix}")
 
 def from_json(json_data: dict) -> 'ASRData':
     """从JSON数据创建ASRData实例"""

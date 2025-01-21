@@ -448,25 +448,26 @@ class SettingInterface(ScrollArea):
         
     def show_whisper_settings(self):
         """显示Whisper设置对话框"""
-        if self.transcribeModelCard.comboBox.currentText() == TranscribeModelEnum.WHISPER.value:
-            dialog = WhisperSettingDialog(self.window())
-            if dialog.exec_():
-                return True
-        elif self.transcribeModelCard.comboBox.currentText() == TranscribeModelEnum.WHISPER_API.value:
-            dialog = WhisperAPISettingDialog(self.window())
-            if dialog.exec_():
-                return True
-        elif self.transcribeModelCard.comboBox.currentText() == TranscribeModelEnum.FASTER_WHISPER.value:
-            dialog = FasterWhisperSettingDialog(self.window())
-            if dialog.exec_():
-                return True
-        else:
-            InfoBar.error(
-                self.tr('错误'),
-                self.tr('请先选择Whisper转录模型'),
-                duration=3000,
-                parent=self
-            )
+        match self.transcribeModelCard.comboBox.currentText():
+            case TranscribeModelEnum.WHISPER.value:
+                dialog = WhisperSettingDialog(self.window())
+                if dialog.exec_():
+                    return True
+            case TranscribeModelEnum.WHISPER_API.value:
+                dialog = WhisperAPISettingDialog(self.window())
+                if dialog.exec_():
+                    return True
+            case TranscribeModelEnum.FASTER_WHISPER.value:
+                dialog = FasterWhisperSettingDialog(self.window())
+                if dialog.exec_():
+                    return True
+                else:
+                    InfoBar.error(
+                        self.tr('错误'),
+                        self.tr('请先选择Whisper转录模型'),
+                        duration=3000,
+                        parent=self
+                    )
         return False
     
     def __showRestartTooltip(self):

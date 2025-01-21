@@ -2,10 +2,10 @@
 import os
 from pathlib import Path
 import sys
-from urllib.parse import urlparse
+from urllib.parse import urlparse, ParseResult
 
 from PyQt5.QtCore import pyqtSignal, Qt, QStandardPaths
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QDragEnterEvent, QDropEvent
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QApplication, QLabel, QFileDialog
 from qfluentwidgets import LineEdit, ProgressBar, PushButton, InfoBar, InfoBarPosition, BodyLabel, ToolButton, HyperlinkButton
 from qfluentwidgets import FluentIcon, FluentStyleSheet, ComboBoxSettingCard
@@ -38,7 +38,7 @@ class TaskCreationInterface(QWidget):
         self.log_window = None
 
         self.setObjectName("TaskCreationInterface")
-        self.setAttribute(Qt.WA_StyledBackground, True)
+        self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
         self.setAcceptDrops(True)
 
         self.setup_ui()
@@ -147,12 +147,12 @@ class TaskCreationInterface(QWidget):
         self.logo_pixmap = QPixmap(str(LOGO_PATH))
         self.logo_pixmap = self.logo_pixmap.scaled(
             150, 150, 
-            Qt.KeepAspectRatio, 
-            Qt.SmoothTransformation
+            Qt.AspectRatioMode.KeepAspectRatio, 
+            Qt.TransformationMode.SmoothTransformation
         )
 
         self.logo_label.setPixmap(self.logo_pixmap)
-        self.logo_label.setAlignment(Qt.AlignCenter)
+        self.logo_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.main_layout.addWidget(self.logo_label)
         self.main_layout.addSpacing(30)
 
@@ -200,15 +200,15 @@ class TaskCreationInterface(QWidget):
     def setup_status_layout(self):
         self.status_layout = QVBoxLayout()
         self.status_layout.setContentsMargins(50, 0, 30, 5)
-        self.status_layout.setAlignment(Qt.AlignBottom | Qt.AlignHCenter)
+        self.status_layout.setAlignment(Qt.AlignmentFlag.AlignBottom | Qt.AlignmentFlag.AlignHCenter)
         self.status_label = BodyLabel(self.tr("准备就绪"), self)
         self.status_label.setStyleSheet("font-size: 14px; color: #888888;")
-        self.status_layout.addWidget(self.status_label, 0, Qt.AlignCenter)
+        self.status_layout.addWidget(self.status_label, 0, Qt.AlignmentFlag.AlignCenter)
         self.progress_bar = ProgressBar(self)
         self.status_label.hide()
         self.progress_bar.hide()
         self.progress_bar.setFixedWidth(300)
-        self.status_layout.addWidget(self.progress_bar, 0, Qt.AlignCenter)
+        self.status_layout.addWidget(self.progress_bar, 0, Qt.AlignmentFlag.AlignCenter)
 
         self.main_layout.addStretch(1)
         self.main_layout.addLayout(self.status_layout)
@@ -230,7 +230,7 @@ class TaskCreationInterface(QWidget):
         """)
         # 添加版权信息标签
         self.info_label = BodyLabel(self.tr(f"©VideoCaptioner {VERSION} • By Weifeng"), self)
-        self.info_label.setAlignment(Qt.AlignCenter)
+        self.info_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.info_label.setStyleSheet("font-size: 12px; color: #888888;")
         
         # 创建语言转换按钮
@@ -258,14 +258,14 @@ class TaskCreationInterface(QWidget):
         self.start_button.clicked.connect(self.on_start_clicked)
         self.search_input.textChanged.connect(self.on_search_input_changed)
         self.log_button.clicked.connect(self.show_log_window)
-        self.transcription_model_card.valueChanged.connect(
+        self.transcription_model_card.comboBox.currentIndexChanged.connect(
             self.on_transcription_model_changed
         )
 
-        self.subtitle_optimization_card.checkedChanged.connect(signalBus.on_subtitle_optimization_changed)
-        self.subtitle_translation_card.checkedChanged.connect(signalBus.on_subtitle_translation_changed)
-        self.target_language_card.valueChanged.connect(signalBus.on_target_language_changed)
-        self.internet_translate_card.checkedChanged.connect(signalBus.on_internet_translation_changed)
+        self.subtitle_optimization_card.switchButton.checkedChanged.connect(signalBus.on_subtitle_optimization_changed)
+        self.subtitle_translation_card.switchButton.checkedChanged.connect(signalBus.on_subtitle_translation_changed)
+        self.target_language_card.comboBox.currentTextChanged.connect(signalBus.on_target_language_changed)
+        self.internet_translate_card.switchButton.checkedChanged.connect(signalBus.on_internet_translation_changed)
         self.internet_translate_method_card.comboBox.currentTextChanged.connect(signalBus.on_internet_translation_method_changed)
         self.languageCard.comboBox.currentTextChanged.connect(signalBus.on_language_changed)
         
@@ -377,10 +377,10 @@ class TaskCreationInterface(QWidget):
         else:
             self.start_button.setIcon(FluentIcon.FOLDER)
 
-    def dragEnterEvent(self, event):
+    def dragEnterEvent(self, event: QDragEnterEvent):
         event.accept() if event.mimeData().hasUrls() else event.ignore()
 
-    def dropEvent(self, event):
+    def dropEvent(self, event: QDropEvent):
         files = [u.toLocalFile() for u in event.mimeData().urls()]
         for file_path in files:
             if not os.path.isfile(file_path):
@@ -427,7 +427,7 @@ class TaskCreationInterface(QWidget):
 
     def _is_valid_url(self, url):
         try:
-            result = urlparse(url)
+            result: ParseResult = urlparse(url)
             return result.scheme in ('http', 'https') and bool(result.netloc)
         except ValueError:
             return False
@@ -454,7 +454,7 @@ class TaskCreationInterface(QWidget):
         self.create_task_thread.error.connect(self.on_create_task_error)
         self.create_task_thread.start()
 
-    def on_create_task_finished(self, task):
+    def on_create_task_finished(self, task: Task):
         self.task = task
         if self.task.status == Task.Status.PENDING:
             self.finished.emit(task)
@@ -533,8 +533,8 @@ class TaskCreationInterface(QWidget):
 
 if __name__ == "__main__":
     QApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
-    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
-    QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
+    QApplication.setAttribute(Qt.ApplicationAttribute.AA_EnableHighDpiScaling)
+    QApplication.setAttribute(Qt.ApplicationAttribute.AA_UseHighDpiPixmaps)
 
     app = QApplication(sys.argv)
     window = TaskCreationInterface()

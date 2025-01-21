@@ -4,7 +4,8 @@ from ..core.entities import SubtitleLayoutEnum, InternetTranslateEnum, TodoWhenD
 
 def Enums_Translate():
     qoEnums = QObject()
-    BatchTaskTypeEnum.TRANSCRIBE._value_ = qoEnums.tr("Create Subtitle from Audio/Video")
+    BatchTaskTypeEnum.TRANSCRIBE._value_ = qoEnums.tr("Create Transcription from Audio/Video")
+    BatchTaskTypeEnum.TRANSLATE._value_ = qoEnums.tr("Transcribe + Translate Audio/Video")
     BatchTaskTypeEnum.SOFT._value_ = qoEnums.tr("Create Soft Subtitle Video")
     BatchTaskTypeEnum.HARD._value_ = qoEnums.tr("Create Hard Subtitle Video")
     

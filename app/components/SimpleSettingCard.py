@@ -15,15 +15,14 @@ class SimpleSettingCard(CardWidget):
         self.setup_ui()
 
     def setup_ui(self):
-        self.layout = QHBoxLayout(self)
-        self.layout.setContentsMargins(16, 10, 8, 10)
-        self.layout.setSpacing(8)
-
+        self.cardlayout = QHBoxLayout(self)
+        self.cardlayout.setContentsMargins(16, 10, 8, 10)
+        self.cardlayout.setSpacing(8)
         self.label = CaptionLabel(self)
         self.label.setText(self.title)
-        self.layout.addWidget(self.label)
+        self.cardlayout.addWidget(self.label)
 
-        self.layout.addStretch(1)
+        self.cardlayout.addStretch(1)
 
         self.setToolTip(self.content)
         self.installEventFilter(ToolTipFilter(self, 100, ToolTipPosition.BOTTOM))
@@ -43,7 +42,7 @@ class ComboBoxSimpleSettingCard(SimpleSettingCard):
         self.comboBox.addItems(self.items)
         self.comboBox.setMaxVisibleItems(6)
         self.comboBox.currentTextChanged.connect(self.valueChanged)
-        self.layout.addWidget(self.comboBox)
+        self.cardlayout.addWidget(self.comboBox)
 
     def setValue(self, value):
         self.comboBox.setCurrentIndex(self.items.index(value))
@@ -65,7 +64,7 @@ class SwitchButtonSimpleSettingCard(SimpleSettingCard):
         self.switchButton.setOnText(self.tr("开"))
         self.switchButton.setOffText(self.tr("关"))
         self.switchButton.checkedChanged.connect(self.checkedChanged)
-        self.layout.addWidget(self.switchButton)
+        self.cardlayout.addWidget(self.switchButton)
 
         self.clicked.connect(lambda: self.switchButton.setChecked(not self.switchButton.isChecked()))
 

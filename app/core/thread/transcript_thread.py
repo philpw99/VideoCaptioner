@@ -106,58 +106,59 @@ class TranscriptThread(QThread):
                 "use_cache": self.task.use_asr_cache,
                 "need_word_time_stamp": self.task.need_word_time_stamp,
             }
-            if self.task.transcribe_model == TranscribeModelEnum.WHISPER:
-                args["language"] = self.task.transcribe_language
-                args["whisper_model"] = self.task.whisper_model
-                args["use_cache"] = False
-                args["need_word_time_stamp"] = True
-                self.asr = WhisperASR(self.task.audio_save_path, **args)
-            elif self.task.transcribe_model == TranscribeModelEnum.WHISPER_API:
-                args["language"] = self.task.transcribe_language
-                args["whisper_model"] = self.task.whisper_api_model
-                args["api_key"] = self.task.whisper_api_key
-                args["base_url"] = self.task.whisper_api_base
-                args["prompt"] = self.task.whisper_api_prompt
-                args["use_cache"] = False
-                args["need_word_time_stamp"] = True
-                self.asr = WhisperAPI(self.task.audio_save_path, **args)
-            elif self.task.transcribe_model == TranscribeModelEnum.FASTER_WHISPER:
-                args["faster_whisper_path"] = cfg.faster_whisper_program.value
-                args["whisper_model"] = self.task.faster_whisper_model.value
-                args["model_dir"] = str(MODEL_PATH)
-                args["language"] = self.task.transcribe_language
-                args["device"] = self.task.faster_whisper_device
-                args["vad_filter"] = self.task.faster_whisper_vad_filter
-                args["vad_threshold"] = self.task.faster_whisper_vad_threshold
-                args["vad_method"] = self.task.faster_whisper_vad_method.value
-                args["ff_mdx_kim2"] = self.task.faster_whisper_ff_mdx_kim2
-                args["one_word"] = self.task.faster_whisper_one_word
-                args["prompt"] = self.task.faster_whisper_prompt
-                args["use_cache"] = False
+            match self.task.transcribe_model:
+                case TranscribeModelEnum.WHISPER:
+                    args["language"] = self.task.transcribe_language
+                    args["whisper_model"] = self.task.whisper_model
+                    args["use_cache"] = False
+                    args["need_word_time_stamp"] = True
+                    self.asr = WhisperASR(self.task.audio_save_path, **args)
+                case TranscribeModelEnum.WHISPER_API:
+                    args["language"] = self.task.transcribe_language
+                    args["whisper_model"] = self.task.whisper_api_model
+                    args["api_key"] = self.task.whisper_api_key
+                    args["base_url"] = self.task.whisper_api_base
+                    args["prompt"] = self.task.whisper_api_prompt
+                    args["use_cache"] = False
+                    args["need_word_time_stamp"] = True
+                    self.asr = WhisperAPI(self.task.audio_save_path, **args)
+                case TranscribeModelEnum.FASTER_WHISPER:
+                    args["faster_whisper_path"] = cfg.faster_whisper_program.value
+                    args["whisper_model"] = self.task.faster_whisper_model.value
+                    args["model_dir"] = str(MODEL_PATH)
+                    args["language"] = self.task.transcribe_language
+                    args["device"] = self.task.faster_whisper_device
+                    args["vad_filter"] = self.task.faster_whisper_vad_filter
+                    args["vad_threshold"] = self.task.faster_whisper_vad_threshold
+                    args["vad_method"] = self.task.faster_whisper_vad_method.value
+                    args["ff_mdx_kim2"] = self.task.faster_whisper_ff_mdx_kim2
+                    args["one_word"] = self.task.faster_whisper_one_word
+                    args["prompt"] = self.task.faster_whisper_prompt
+                    args["use_cache"] = False
 
-                if self.task.faster_whisper_one_word:
-                    args["one_word"] = True
-                else:
-                    args["sentence"] = True
-                    if self.task.transcribe_language in ["zh", "ja", "ko"] and not self.isFasterWhisperTranslate():
-                        args["max_line_width"] = int(self.task.max_word_count_cjk)
-                        args["max_comma_cent"] = 50
-                        args["max_comma"] = 5
+                    if self.task.faster_whisper_one_word:
+                        args["one_word"] = True
                     else:
-                        args["max_line_width"] = int(self.task.max_word_count_english * 8)
-                        args["max_comma_cent"] = 50
-                        args["max_comma"] = 20
+                        args["sentence"] = True
+                        if self.task.transcribe_language in ["zh", "ja", "ko"] and not self.isFasterWhisperTranslate():
+                            args["max_line_width"] = int(self.task.max_word_count_cjk)
+                            args["max_comma_cent"] = 50
+                            args["max_comma"] = 5
+                        else:
+                            args["max_line_width"] = int(self.task.max_word_count_english * 8)
+                            args["max_comma_cent"] = 50
+                            args["max_comma"] = 20
                 
-                args["translate_to_english"] = self.task.faster_whisper_translate_to_english
-                args["repetition_penalty"] = self.task.faster_whisper_repetion_penalty
+                    args["translate_to_english"] = self.task.faster_whisper_translate_to_english
+                    args["repetition_penalty"] = self.task.faster_whisper_repetion_penalty
 
-                self.asr = FasterWhisperASR(self.task.audio_save_path, **args)
-            elif self.task.transcribe_model == TranscribeModelEnum.BIJIAN:
-                self.asr = BcutASR(self.task.audio_save_path, **args)
-            elif self.task.transcribe_model == TranscribeModelEnum.JIANYING:
-                self.asr = JianYingASR(self.task.audio_save_path, **args)
-            else:
-                raise ValueError(self.tr("无效的转录模型: ") + str(self.task.transcribe_model))
+                    self.asr = FasterWhisperASR(self.task.audio_save_path, **args)
+                case TranscribeModelEnum.BIJIAN:
+                    self.asr = BcutASR(self.task.audio_save_path, **args)
+                case TranscribeModelEnum.JIANYING:
+                    self.asr = JianYingASR(self.task.audio_save_path, **args)
+                case _:
+                    raise ValueError(self.tr("无效的转录模型: ") + str(self.task.transcribe_model))
             
             asr_data = self.asr.run(callback=self.progress_callback)
 

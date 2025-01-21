@@ -101,9 +101,9 @@ class SubtitleStyleInterface(QWidget):
 
         self.previewLabel = BodyLabel(self.tr("预览效果"))
         self.previewImage = ImageLabel()
-        self.previewImage.setAlignment(Qt.AlignCenter)
-        self.previewTopLayout.addWidget(self.previewImage, 0, Qt.AlignCenter)
-        self.previewTopLayout.setAlignment(Qt.AlignVCenter)
+        self.previewImage.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.previewTopLayout.addWidget(self.previewImage, 0, Qt.AlignmentFlag.AlignCenter)
+        self.previewTopLayout.setAlignment(Qt.AlignmentFlag.AlignVCenter)
 
         # 底部控件区域
         self.previewBottomWidget = QWidget()
@@ -481,15 +481,15 @@ class SubtitleStyleInterface(QWidget):
         main_text, sub_text = PERVIEW_TEXTS[self.previewTextCard.comboBox.currentText()]
 
         # 字幕布局
-        layoutValue = self.layoutCard.comboBox.currentText()
-        if layoutValue == SubtitleLayoutEnum.TRANSLATE_ON_TOP.value:
-            main_text, sub_text = sub_text, main_text
-        elif layoutValue == SubtitleLayoutEnum.ORIGINAL_ON_TOP.value:
-            main_text, sub_text = main_text, sub_text
-        elif layoutValue == SubtitleLayoutEnum.ONLY_TRANSLATE.value:
-            main_text, sub_text = sub_text, None
-        elif layoutValue == SubtitleLayoutEnum.ONLY_ORIGINAL.value:
-            main_text, sub_text = main_text, None
+        match self.layoutCard.comboBox.currentText():
+            case SubtitleLayoutEnum.TRANSLATE_ON_TOP.value:
+                main_text, sub_text = sub_text, main_text
+            case SubtitleLayoutEnum.ORIGINAL_ON_TOP.value:
+                main_text, sub_text = main_text, sub_text
+            case SubtitleLayoutEnum.ONLY_TRANSLATE.value:
+                main_text, sub_text = sub_text, None
+            case SubtitleLayoutEnum.ONLY_ORIGINAL.value:
+                main_text, sub_text = main_text, None
 
         # 创建预览线程
         self.preview_thread = PreviewThread(style_str, (main_text, sub_text))
@@ -689,5 +689,5 @@ class StyleNameDialog(MessageBoxBase):
         self.yesButton.setDisabled(True)
         self.nameLineEdit.textChanged.connect(self._validateInput)
 
-    def _validateInput(self, text):
+    def _validateInput(self, text: str):
         self.yesButton.setEnabled(bool(text.strip()))

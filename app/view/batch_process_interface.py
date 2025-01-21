@@ -144,6 +144,8 @@ class BatchProcessInterface(QWidget):
             else:
                 # Create hard sub video
                 self.task_type_combo.setCurrentText(BatchTaskTypeEnum.HARD.value)
+        elif cfg.need_translate.value:
+            self.task_type_combo.setCurrentText(BatchTaskTypeEnum.TRANSLATE.value)
         else:
             self.task_type_combo.setCurrentText(BatchTaskTypeEnum.TRANSCRIBE.value)
 
@@ -299,76 +301,83 @@ class BatchProcessInterface(QWidget):
     
     def on_batch_finished(self):
         """批量处理完成的处理"""
-        todo = self.todo_when_done_combobox.currentText()
-        if todo == self.tr(TodoWhenDoneEnum.EXIT.value):
-            qbox = TimedMessageBox(
-                self.tr("Program exiting in 1 minute"),
-                self.tr("All jobs are done. This program is going to be closed."),
-                60
-            )
-            ret = qbox.exec()
-            if ret == QMessageBox.StandardButton.Ok:
-                QCoreApplication.quit() # Exit
-        elif todo == self.tr(TodoWhenDoneEnum.SUSPEND.value):
-            qbox = TimedMessageBox(
-                self.tr("Suspending in 1 minute"),
-                self.tr("All jobs are done. The computer is going to be suspended."),
-                60
-            )
-            ret = qbox.exec()
-            if ret == QMessageBox.StandardButton.Ok:
-                if sys.platform == 'win32':
-                    os.system("rundll32.exe powrprof.dll,SetSuspendState 0,1,0")
-                else:
-                    os.system('sudo systemctl suspend')
-        elif todo == self.tr(TodoWhenDoneEnum.SHUTDOWN.value):
-            qbox = TimedMessageBox(
-                self.tr( "Shutting Down in 1 minute"),
-                self.tr("All jobs are done. The computer is shutting down. "),
-                60
-            )
-            ret = qbox.exec()
-            if ret == QMessageBox.StandardButton.Ok:
-                if sys.platform == 'win32':
-                    os.system("shutdown /s /t 1")
-                else:
-                    self.stop()
-                    os.system('sudo shutdown now')
-        
-        # Doing nothing.
-        self.processing = False
-        self.start_all_button.setEnabled(True)
-        self.cancel_button.setEnabled(False)
-        self.add_file_button.setEnabled(True)
-        self.clear_all_button.setEnabled(True)
+        match self.todo_when_done_combobox.currentText():
+            case TodoWhenDoneEnum.EXIT.value:
+                qbox = TimedMessageBox(
+                    self.tr("Program exiting in 1 minute"),
+                    self.tr("All jobs are done. This program is going to be closed."),
+                    60
+                )
+                ret = qbox.exec()
+                if ret == QMessageBox.StandardButton.Ok:
+                    QCoreApplication.quit() # Exit
+            case TodoWhenDoneEnum.SUSPEND.value:
+                qbox = TimedMessageBox(
+                    self.tr("Suspending in 1 minute"),
+                    self.tr("All jobs are done. The computer is going to be suspended."),
+                    60
+                )
+                ret = qbox.exec()
+                if ret == QMessageBox.StandardButton.Ok:
+                    if sys.platform == 'win32':
+                        os.system("rundll32.exe powrprof.dll,SetSuspendState 0,1,0")
+                    else:
+                        os.system('sudo systemctl suspend')
+            case TodoWhenDoneEnum.SHUTDOWN.value:
+                qbox = TimedMessageBox(
+                    self.tr( "Shutting Down in 1 minute"),
+                    self.tr("All jobs are done. The computer is shutting down. "),
+                    60
+                )
+                ret = qbox.exec()
+                if ret == QMessageBox.StandardButton.Ok:
+                    if sys.platform == 'win32':
+                        os.system("shutdown /s /t 1")
+                    else:
+                        self.stop()
+                        os.system('sudo shutdown now')
+            case _:
+                # Doing nothing.
+                self.processing = False
+                self.start_all_button.setEnabled(True)
+                self.cancel_button.setEnabled(False)
+                self.add_file_button.setEnabled(True)
+                self.clear_all_button.setEnabled(True)
+                # 显示所有任务完成的通知
+                InfoBar.success(
+                    self.tr("全部完成"),
+                    self.tr("所有任务已处理完成"),
+                    duration=3000,
+                    position=InfoBarPosition.BOTTOM,
+                    parent=self
+                )
 
-        # 显示所有任务完成的通知
-        InfoBar.success(
-            self.tr("全部完成"),
-            self.tr("所有任务已处理完成"),
-            duration=2000,
-            position=InfoBarPosition.BOTTOM,
-            parent=self
-        )
 
     def on_add_file(self):
         """添加文件按钮点击事件"""
         # 构建文件过滤器字符串
         video_formats = [f"*.{fmt.value}" for fmt in SupportedVideoFormats]
         audio_formats = [f"*.{fmt.value}" for fmt in SupportedAudioFormats]
-        if self.task_type_combo.currentText() == BatchTaskTypeEnum.SOFT.value:  # Create soft sub video
-            filter_str = f"{self.tr('视频文件')} ({' '.join(video_formats)})"
-            task_type = Task.Type.SUBTITLE
-            soft_sub = True
-        elif self.task_type_combo.currentText() == BatchTaskTypeEnum.HARD.value:  # Create hard sub video
-            filter_str = f"{self.tr('视频文件')} ({' '.join(video_formats)})"
-            task_type = Task.Type.SUBTITLE
-            soft_sub = False
-        else:
-            # 音频/视频生成字幕
-            filter_str = f"{self.tr('音频文件或视频文件')} ({' '.join(audio_formats + video_formats)})"
-            task_type = Task.Type.TRANSCRIBE
-            soft_sub = True
+        match self.task_type_combo.currentText():
+            case BatchTaskTypeEnum.SOFT.value:  # Create soft sub video
+                filter_str = f"{self.tr('视频文件')} ({' '.join(video_formats)})"
+                task_type = Task.Type.SUBTITLE
+                soft_sub = True
+            case BatchTaskTypeEnum.HARD.value:  # Create hard sub video
+                filter_str = f"{self.tr('视频文件')} ({' '.join(video_formats)})"
+                task_type = Task.Type.SUBTITLE
+                soft_sub = False
+            case BatchTaskTypeEnum.TRANSCRIBE.value:  # Create transcription
+                # 音频/视频生成字幕
+                filter_str = f"{self.tr('音频文件或视频文件')} ({' '.join(audio_formats + video_formats)})"
+                task_type = Task.Type.TRANSCRIBE
+                soft_sub = True
+            case BatchTaskTypeEnum.TRANSLATE.value:   # Transcribe + Translate
+                filter_str = f"{self.tr('音频文件或视频文件')} ({' '.join(audio_formats + video_formats)})"
+                task_type = Task.Type.TRANSLATE
+                soft_sub = True
+            case _:
+                pass
 
         files, _ = QFileDialog.getOpenFileNames(self, self.tr("选择文件"), cfg.last_open_dir.value , filter_str)
         for file_path in files:

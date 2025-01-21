@@ -38,18 +38,17 @@ class SubtitleTableModel(QAbstractTableModel):
         return 4
 
     def data(self, index, role):
-        if role == Qt.DisplayRole or role == Qt.EditRole:
-            row = index.row()
-            col = index.column()
-            item = list(self._data.values())[row]
-            if col == 0:
-                return QTime(0, 0, 0).addMSecs(item['start_time']).toString('hh:mm:ss.zzz')
-            elif col == 1:
-                return QTime(0, 0, 0).addMSecs(item['end_time']).toString('hh:mm:ss.zzz')
-            elif col == 2:
-                return item['original_subtitle']
-            elif col == 3:
-                return item['translated_subtitle']
+        if role == Qt.ItemDataRole.DisplayRole or role == Qt.ItemDataRole.EditRole:
+            item = list(self._data.values())[index.row()]
+            match index.column():
+                case 0:
+                    return QTime(0, 0, 0).addMSecs(item['start_time']).toString('hh:mm:ss.zzz')
+                case 1:
+                    return QTime(0, 0, 0).addMSecs(item['end_time']).toString('hh:mm:ss.zzz')
+                case 2:
+                    return item['original_subtitle']
+                case 3:
+                    return item['translated_subtitle']
         return None
 
     def update_data(self, new_data):
@@ -73,41 +72,40 @@ class SubtitleTableModel(QAbstractTableModel):
             max_row = max(updated_rows)
             top_left = self.index(min_row, 2)
             bottom_right = self.index(max_row, 3)
-            self.dataChanged.emit(top_left, bottom_right, [Qt.DisplayRole, Qt.EditRole])
+            self.dataChanged.emit(top_left, bottom_right, [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole])
 
     def update_all(self, data):
         self._data = data
         self.layoutChanged.emit()
 
     def setData(self, index, value, role):
-        if role == Qt.EditRole:
-            row = index.row()
-            col = index.column()
-            item = list(self._data.values())[row]
-            if col == 0:
-                time = QTime.fromString(value, 'hh:mm:ss.zzz')
-                item['start_time'] = QTime(0, 0, 0).msecsTo(time)
-            elif col == 1:
-                time = QTime.fromString(value, 'hh:mm:ss.zzz')
-                item['end_time'] = QTime(0, 0, 0).msecsTo(time)
-            elif col == 2:
-                item['original_subtitle'] = value
-            elif col == 3:
-                item['translated_subtitle'] = value
-            self.dataChanged.emit(index, index, [Qt.DisplayRole, Qt.EditRole])
+        if role == Qt.ItemDataRole.EditRole:
+            item = list(self._data.values())[index.row()]
+            match index.column():
+                case 0:
+                    time = QTime.fromString(value, 'hh:mm:ss.zzz')
+                    item['start_time'] = QTime(0, 0, 0).msecsTo(time)
+                case 1:
+                    time = QTime.fromString(value, 'hh:mm:ss.zzz')
+                    item['end_time'] = QTime(0, 0, 0).msecsTo(time)
+                case 2:
+                    item['original_subtitle'] = value
+                case 3:
+                    item['translated_subtitle'] = value
+            self.dataChanged.emit(index, index, [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole])
             return True
         return False
 
     def flags(self, index):
-        return Qt.ItemIsEditable | Qt.ItemIsEnabled | Qt.ItemIsSelectable
+        return Qt.ItemFlag.ItemIsEditable | Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable
 
     def headerData(self, section, orientation, role):
-        if role == Qt.DisplayRole:
-            if orientation == Qt.Horizontal:
+        if role == Qt.ItemDataRole.DisplayRole:
+            if orientation == Qt.Orientation.Horizontal:
                 headers = [self.tr("开始时间"), self.tr("结束时间"), self.tr("字幕内容"),
                            self.tr("翻译字幕") if cfg.need_translate.value else self.tr("优化字幕")]
                 return headers[section]
-            elif orientation == Qt.Vertical:
+            elif orientation == Qt.Orientation.Vertical:
                 return str(section + 1)
         return None
 
@@ -152,7 +150,7 @@ class SubtitleOptimizationInterface(QWidget):
         self.setAcceptDrops(True)
         self.task = None
         self.custom_prompt_text = cfg.custom_prompt_text.value
-        self.setAttribute(Qt.WA_DeleteOnClose)
+        self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
         self._init_ui()
         self._setup_signals()
         self._update_prompt_button_style()
@@ -244,16 +242,16 @@ class SubtitleOptimizationInterface(QWidget):
         self.subtitle_table.setBorderVisible(True)
         self.subtitle_table.setBorderRadius(8)
         self.subtitle_table.setWordWrap(True)
-        self.subtitle_table.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.subtitle_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.Fixed)
-        self.subtitle_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.Fixed)
+        self.subtitle_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        self.subtitle_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.Fixed)
+        self.subtitle_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Fixed)
         self.subtitle_table.setColumnWidth(0, 120)
         self.subtitle_table.setColumnWidth(1, 120)
         self.subtitle_table.verticalHeader().setDefaultSectionSize(50)
-        self.subtitle_table.setEditTriggers(QAbstractItemView.DoubleClicked | QAbstractItemView.EditKeyPressed)
+        self.subtitle_table.setEditTriggers(QAbstractItemView.EditTrigger.DoubleClicked | QAbstractItemView.EditTrigger.EditKeyPressed)
         self.subtitle_table.clicked.connect(self.on_subtitle_clicked)
         # 添加右键菜单支持
-        self.subtitle_table.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.subtitle_table.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.subtitle_table.customContextMenuRequested.connect(self.show_context_menu)
         self.main_layout.addWidget(self.subtitle_table)
 
@@ -267,7 +265,7 @@ class SubtitleOptimizationInterface(QWidget):
 
         # 设置状态标签的最小宽度为 100，并居中对齐
         self.status_label.setMinimumWidth(100)
-        self.status_label.setAlignment(Qt.AlignCenter)
+        self.status_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         # 添加取消按钮
         self.cancel_button = PushButton(self.tr("取消"), self, icon=FIF.CANCEL)
@@ -972,8 +970,8 @@ class PromptDialog(MessageBoxBase):
 
 if __name__ == "__main__":
     QApplication.setHighDpiScaleFactorRoundingPolicy(Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
-    QApplication.setAttribute(Qt.AA_EnableHighDpiScaling)
-    QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps)
+    QApplication.setAttribute(Qt.ApplicationAttribute.AA_EnableHighDpiScaling)
+    QApplication.setAttribute(Qt.ApplicationAttribute.AA_UseHighDpiPixmaps)
 
     app = QApplication(sys.argv)
     window = SubtitleOptimizationInterface()

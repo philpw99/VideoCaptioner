@@ -8,7 +8,8 @@ from PyQt5.QtCore import QObject
 
 class BatchTaskTypeEnum(Enum):
     """ 批量任务类型 """
-    TRANSCRIBE = "Create Subtitle from Audio/Video"
+    TRANSCRIBE = "Create Transcription from Audio/Video"
+    TRANSLATE = "Transcribe + Translate Audio/Video"
     SOFT = "Create Soft Subtitle Video"
     HARD = "Create Hard Subtitle Video"
 
@@ -480,6 +481,7 @@ class FasterWhisperModelEnum(Enum):
     LARGE_V1 = "large-v1"
     LARGE_V2 = "large-v2"
     LARGE_V3 = "large-v3"
+    LARGE_V3_T = "large-v3-turbo"
 
 @dataclass
 class Task:
@@ -508,6 +510,7 @@ class Task:
     class Type(Enum):
         # 任务类型：transcribe or generate subtitle
         TRANSCRIBE = "Get Subtitle From Video/Audio"
+        TRANSLATE = "Transcribe Video/Audio then Translate"
         SUBTITLE = "Add Subtitle To Video"
         OPTIMIZE = "Optimize + Translate Subtitles"
         SYNTHESIS = "Combine Subtitle with Video"

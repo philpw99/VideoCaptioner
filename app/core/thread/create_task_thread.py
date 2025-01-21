@@ -29,20 +29,24 @@ class CreateTaskThread(QThread):
 
     def run(self):
         try:
-            if self.task_type == Task.Type.SUBTITLE:
-                self.create_file_task(self.file_path, self.soft_sub)
-            elif self.task_type == Task.Type.URL:
-                self.create_url_task(self.file_path, self.soft_sub)
-            elif self.task_type == Task.Type.TRANSCRIBE:
-                self.create_transcription_task(self.file_path)
-            else:
-                raise ValueError("No matching task type.")
+            match self.task_type:
+                case Task.Type.SUBTITLE:
+                    self.create_file_task(self.file_path, self.soft_sub, need_video = True)
+                case Task.Type.URL:
+                    # Here whether to do the final video synthesis depends on config value
+                    self.create_url_task(self.file_path, self.soft_sub, cfg.need_video.value)
+                case Task.Type.TRANSCRIBE:
+                    self.create_transcription_task(self.file_path)
+                case Task.Type.TRANSLATE:
+                    self.create_file_task(self.file_path, self.soft_sub, need_video = False)
+                case _:
+                    ValueError("No matching task type.")
         except Exception as e:
             logger.exception("创建任务失败: %s", str(e))
             self.progress.emit(0, self.tr("创建任务失败"))
             self.error.emit(str(e))
 
-    def create_file_task(self, file_path, soft_sub: bool):
+    def create_file_task(self, file_path, soft_sub: bool, need_video: bool):
         logger.info("\n===================")
         logger.info(f"开始创建文件任务：{file_path}")
         # 使用 Path 对象处理路径
@@ -56,23 +60,15 @@ class CreateTaskThread(QThread):
         video_info = get_video_info(file_path, thumbnail_path=thumbnail_path)
         video_info = VideoInfo(**video_info)
 
-        # Philip: If need translation, no need to do subtitle fix
-        # Translation should have priority over fixing.
-        if cfg.need_translate.value:
-            result_subtitle_type = "【翻译字幕】"
-        elif cfg.need_optimize.value:
-            result_subtitle_type = "【修正字幕】"
-        else:
-            result_subtitle_type = "【字幕】"
-
-        if cfg.transcribe_model.value == TranscribeModelEnum.WHISPER:
-            whisper_type = f"-{cfg.whisper_model.value.value}-{cfg.transcribe_language.value.value}"
-        elif cfg.transcribe_model.value == TranscribeModelEnum.WHISPER_API:
-            whisper_type = f"-{cfg.whisper_api_model.value}-{cfg.transcribe_language.value.value}"
-        elif cfg.transcribe_model.value == TranscribeModelEnum.FASTER_WHISPER:
-            whisper_type = f"-{cfg.faster_whisper_model.value.value}-{cfg.transcribe_language.value.value}"
-        else:
-            whisper_type = ""
+        match cfg.transcribe_model.value:
+            case TranscribeModelEnum.WHISPER:
+                whisper_type = f"-{cfg.whisper_model.value.value}-{cfg.transcribe_language.value.value}"
+            case TranscribeModelEnum.WHISPER_API:
+                whisper_type = f"-{cfg.whisper_api_model.value}-{cfg.transcribe_language.value.value}"
+            case TranscribeModelEnum.FASTER_WHISPER:
+                whisper_type = f"-{cfg.faster_whisper_model.value.value}-{cfg.transcribe_language.value.value}"
+            case _:
+                whisper_type = ""
 
         # 定义各个路径
         original_subtitle_save_path = task_work_dir / f"{self.tr("【原始字幕】")}{file_name}-{cfg.transcribe_model.value.value}{whisper_type}.srt"
@@ -82,7 +78,7 @@ class CreateTaskThread(QThread):
         # 音频处理
         audio_save_path = task_work_dir / f"{self.tr("【音频】")}{file_name}.wav"
         audio_format = "pcm_s16le"    # for all other audio format
-        if video_info.audio_codec in ["aac", "mp3", "pcm"]:
+        if video_info.audio_codec in ["mp3", "pcm"]:
             audio_format = "copy"
 
         if cfg.subtitle_output_format.value.value == "ass":
@@ -93,10 +89,7 @@ class CreateTaskThread(QThread):
         else:
             subtitle_style_srt = None
 
-        if cfg.transcribe_model.value in [TranscribeModelEnum.JIANYING, TranscribeModelEnum.BIJIAN]:
-            need_word_time_stamp = True
-        else:
-            need_word_time_stamp = False
+        need_word_time_stamp = cfg.transcribe_model.value in [TranscribeModelEnum.JIANYING, TranscribeModelEnum.BIJIAN]
 
         # 创建 Task 对象
         task = Task(
@@ -149,7 +142,7 @@ class CreateTaskThread(QThread):
             video_save_path=str(video_save_path),
             soft_subtitle=soft_sub,
             subtitle_style_srt=subtitle_style_srt,
-            need_video=cfg.need_video.value,
+            need_video=need_video,
             vertical_offset=cfg.vertical_offset.value,
             type=Task.Type.SUBTITLE,
         )
@@ -157,7 +150,7 @@ class CreateTaskThread(QThread):
         self.progress.emit(100, self.tr("创建任务完成"))
         logger.info(f"文件任务创建完成：{task}")
 
-    def create_url_task(self, url, soft_sub: bool):
+    def create_url_task(self, url, soft_sub: bool, need_video: bool):
         logger.info("\n===================")
         logger.info(f"开始创建URL任务：{url}")
         self.progress.emit(5, self.tr("正在获取视频信息"))
@@ -184,14 +177,15 @@ class CreateTaskThread(QThread):
         task_work_dir = file_full_path.parent
         file_name = file_full_path.stem
 
-        if cfg.transcribe_model.value == TranscribeModelEnum.WHISPER:
-            whisper_type = f"{cfg.whisper_model.value.value}-{cfg.transcribe_language.value.value}"
-        elif cfg.transcribe_model.value == TranscribeModelEnum.WHISPER_API:
-            whisper_type = f"{cfg.whisper_api_model.value}-{cfg.transcribe_language.value.value}"
-        elif cfg.transcribe_model.value == TranscribeModelEnum.FASTER_WHISPER:
-            whisper_type = f"{cfg.faster_whisper_model.value.value}-{cfg.transcribe_language.value.value}"
-        else:
-            whisper_type = ""
+        match cfg.transcribe_model.value:
+            case TranscribeModelEnum.WHISPER:
+                whisper_type = f"{cfg.whisper_model.value.value}-{cfg.transcribe_language.value.value}"
+            case TranscribeModelEnum.WHISPER_API:
+                whisper_type = f"{cfg.whisper_api_model.value}-{cfg.transcribe_language.value.value}"
+            case TranscribeModelEnum.FASTER_WHISPER:
+                whisper_type = f"{cfg.faster_whisper_model.value.value}-{cfg.transcribe_language.value.value}"
+            case _:
+                whisper_type = ""
 
         # 定义各个路径
         audio_save_path = task_work_dir / f"{self.tr("【音频】")}{Path(video_file_path).stem}.wav"
@@ -201,7 +195,7 @@ class CreateTaskThread(QThread):
 
         # 音频处理
         audio_format = "pcm_s16le"    # for all other audio format
-        if video_info.audio_codec in ["aac", "mp3", "pcm"]:
+        if video_info.audio_codec in ["mp3", "pcm"]:
             audio_format = "copy"
 
         if cfg.transcribe_model.value in [TranscribeModelEnum.JIANYING, TranscribeModelEnum.BIJIAN]:
@@ -268,7 +262,7 @@ class CreateTaskThread(QThread):
             video_save_path=str(video_save_path),
             soft_subtitle=soft_sub,
             subtitle_style_srt=subtitle_style_srt,
-            need_video=cfg.need_video.value,
+            need_video=need_video,
             vertical_offset=cfg.vertical_offset.value,
             task=Task.Type.SUBTITLE,
         )
@@ -288,20 +282,21 @@ class CreateTaskThread(QThread):
         video_info = get_video_info(file_path, thumbnail_path=str(thumbnail_path))
         video_info = VideoInfo(**video_info)
 
-        # 定义各个路径        
-        if cfg.transcribe_model.value == TranscribeModelEnum.WHISPER:
-            whisper_type = f"{cfg.whisper_model.value.value}-{cfg.transcribe_language.value.value}"
-        elif cfg.transcribe_model.value == TranscribeModelEnum.WHISPER_API:
-            whisper_type = f"{cfg.whisper_api_model.value.value}-{cfg.transcribe_language.value.value}"
-        elif cfg.transcribe_model.value == TranscribeModelEnum.FASTER_WHISPER:
-            whisper_type = f"{cfg.faster_whisper_model.value.value}-{cfg.transcribe_language.value.value}"
-        else:
-            whisper_type = ""
-
+        # 定义各个路径
+        match cfg.transcribe_model.value:
+            case TranscribeModelEnum.WHISPER.value:
+                whisper_type = f"{cfg.whisper_model.value.value}-{cfg.transcribe_language.value.value}"
+            case TranscribeModelEnum.WHISPER_API.value:
+                whisper_type = f"{cfg.whisper_api_model.value.value}-{cfg.transcribe_language.value.value}"
+            case TranscribeModelEnum.FASTER_WHISPER.value:
+                whisper_type = f"{cfg.faster_whisper_model.value.value}-{cfg.transcribe_language.value.value}"
+            case _:
+                whisper_type = ""
+            
         # 音频处理
         audio_save_path = task_work_dir / f"Audio_{file_name}.wav"
         audio_format = "pcm_s16le"    # for all other audio format
-        if video_info.audio_codec in ["aac", "mp3", "pcm"]:
+        if video_info.audio_codec in ["mp3", "pcm"]:
             audio_format = "copy"
 
         audio_save_path = task_work_dir / f"Audio_{file_name}.wav"
@@ -358,9 +353,8 @@ class CreateTaskThread(QThread):
             subtitle_layout=cfg.subtitle_layout.value,
             max_word_count_cjk=cfg.max_word_count_cjk.value,
             max_word_count_english=cfg.max_word_count_english.value,
-            # Added by Philip
             type=Task.Type.TRANSCRIBE,  # Transcribe only, no video generation.
-            # End add
+            # Don't set need_video here because it can be part of subtitle pipeline
         )
         self.finished.emit(task)
         logger.info(f"转录任务创建完成：{task}")
@@ -412,6 +406,7 @@ class CreateTaskThread(QThread):
             max_word_count_english=cfg.max_word_count_english.value,
             subtitle_style_srt=subtitle_style_srt,
             type=Task.Type.OPTIMIZE,
+            # Don't set need_video here because it can be part of subtitle pipeline
         )
         logger.info(f"字幕优化任务创建完成：{task}")
         return task
@@ -436,7 +431,7 @@ class CreateTaskThread(QThread):
             video_save_path=str(video_save_path),
             soft_subtitle=cfg.soft_subtitle.value,
             type=Task.Type.SYNTHESIS,
-            need_video=True,
+            need_video=True,    # Just in case, because synthesis always generate a video
         )
         logger.info(f"视频合成任务创建完成：{task}")
         return task

@@ -29,7 +29,7 @@ from ..core.thread.modelscope_download_thread import ModelscopeDownloadThread
 # 在文件开头添加常量定义
 FASTER_WHISPER_PROGRAMS = [
     {
-        "label": "GPU + CPU 版本",
+        "label": "GPU + CPU 版本 r194.5",
         "value": "faster-whisper-gpu.7z",
         "type": "GPU",
         "size": "1.35 GB",
@@ -93,6 +93,13 @@ FASTER_WHISPER_MODELS = [
         "size": "3145728",
         "downloadLink": "https://huggingface.co/Systran/faster-whisper-large-v3",
         "modelScopeLink": "pengzhendong/faster-whisper-large-v3",
+    },
+    {
+        "label": "Large-v3-turbo",
+        "value": "faster-whisper-large-v3-turbo",
+        "size": "1739466",
+        "downloadLink": "https://huggingface.co/Purfview/faster-whisper-large-v3-turbo",
+        "modelScopeLink": "pengzhendong/faster-whisper-large-v3-turbo"
     }
 ]
 
