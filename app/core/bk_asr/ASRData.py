@@ -3,7 +3,7 @@ import re
 from typing import List, Tuple
 from pathlib import Path
 import math
-from ...common.config import SubtitleLayoutEnum as SubEnum
+from ...core.entities import SubtitleLayoutEnum as SubEnum
 
 class ASRDataSeg:
     def __init__(self, text: str, start_time: int, end_time: int):
@@ -139,7 +139,7 @@ class ASRData:
         self.segments = new_segments
 
 
-    def save(self, save_path: str, ass_style: str = None, layout: str = SubEnum.ONLY_TRANSLATE.name) -> None:
+    def save(self, save_path: str, ass_style: str = None, layout: SubEnum = SubEnum.ONLY_ORIGINAL) -> None:
         """Save the ASRData to a file"""
         Path(save_path).parent.mkdir(parents=True, exist_ok=True)
         # Cannot use match/case here. Too much extra calculations.
@@ -155,7 +155,7 @@ class ASRData:
         else:
             raise ValueError(f"Unsupported file extension: {save_path}")
 
-    def to_txt(self, save_path=None, layout: str = SubEnum.ONLY_TRANSLATE.name) -> str:
+    def to_txt(self, save_path=None, layout: SubEnum = SubEnum.ONLY_TRANSLATE) -> str:
         """Convert to plain text subtitle format (without timestamps)"""
         result = []
         for seg in self.segments:
@@ -167,13 +167,13 @@ class ASRData:
 
             # 根据字幕类型组织文本
             match layout:
-                case SubEnum.ORIGINAL_ON_TOP.name:
+                case SubEnum.ORIGINAL_ON_TOP:
                     text = f"{original}\n{translated}" if translated else original
-                case SubEnum.TRANSLATE_ON_TOP.name:
+                case SubEnum.TRANSLATE_ON_TOP:
                     text = f"{translated}\n{original}" if translated else original
-                case SubEnum.ONLY_ORIGINAL.name:
+                case SubEnum.ONLY_ORIGINAL:
                     text = original
-                case SubEnum.ONLY_TRANSLATE.name:
+                case SubEnum.ONLY_TRANSLATE:
                     text = translated if translated else original
                 case _:
                     text = seg.transcript
@@ -185,7 +185,7 @@ class ASRData:
                 f.write("\n".join(result))
         return text
 
-    def to_srt(self, layout: str = SubEnum.ONLY_TRANSLATE.name, save_path=None) -> str:
+    def to_srt(self, layout: SubEnum = SubEnum.ONLY_TRANSLATE, save_path=None) -> str:
         """Convert to SRT subtitle format"""
         srt_lines = []
         for n, seg in enumerate(self.segments, 1):
@@ -197,13 +197,13 @@ class ASRData:
 
             # 根据字幕类型组织文本
             match layout:
-                case SubEnum.ORIGINAL_ON_TOP.name:
+                case SubEnum.ORIGINAL_ON_TOP:
                     text = f"{original}\n{translated}" if translated else original
-                case SubEnum.TRANSLATE_ON_TOP.name:
+                case SubEnum.TRANSLATE_ON_TOP:
                     text = f"{translated}\n{original}" if translated else original
-                case SubEnum.ONLY_ORIGINAL.name:
+                case SubEnum.ONLY_ORIGINAL:
                     text = original
-                case SubEnum.ONLY_TRANSLATE.name:
+                case SubEnum.ONLY_TRANSLATE:
                     text = translated if translated else original
                 case _:
                     text = seg.transcript
@@ -242,7 +242,7 @@ class ASRData:
             }
         return result_json
 
-    def to_ass(self, style_str: str = None, layout: str = SubEnum.ONLY_TRANSLATE.name, save_path: str = None) -> str:
+    def to_ass(self, style_str: str = None, layout: SubEnum = SubEnum.ONLY_TRANSLATE, save_path: str = None) -> str:
         """转换为ASS字幕格式
         
         Args:
@@ -282,20 +282,22 @@ class ASRData:
             start_time, end_time = seg.to_ass_ts()
             if "\n" in seg.text:
                 original, translate = seg.text.split("\n", 1)
+            else:
+                original = seg.text
 
-                match layout:
-                    case SubEnum.ORIGINAL_ON_TOP.name if translate:
-                        ass_content += dialogue_template.format(start_time, end_time, "Secondary", translate)
-                        ass_content += dialogue_template.format(start_time, end_time, "Default", original)
-                    case SubEnum.TRANSLATE_ON_TOP.name if translate:
-                        ass_content += dialogue_template.format(start_time, end_time, "Secondary", original)
-                        ass_content += dialogue_template.format(start_time, end_time, "Default", translate)
-                    case SubEnum.ONLY_ORIGINAL.name:
-                        ass_content += dialogue_template.format(start_time, end_time, "Default", original)
-                    case SubEnum.ONLY_TRANSLATE.name if translate:
-                        ass_content += dialogue_template.format(start_time, end_time, "Default", translate)
-                    case _:
-                        ass_content += dialogue_template.format(start_time, end_time, "Default", seg.text)
+            match layout:
+                case SubEnum.ORIGINAL_ON_TOP if translate:
+                    ass_content += dialogue_template.format(start_time, end_time, "Secondary", translate)
+                    ass_content += dialogue_template.format(start_time, end_time, "Default", original)
+                case SubEnum.TRANSLATE_ON_TOP if translate:
+                    ass_content += dialogue_template.format(start_time, end_time, "Secondary", original)
+                    ass_content += dialogue_template.format(start_time, end_time, "Default", translate)
+                case SubEnum.ONLY_ORIGINAL:
+                    ass_content += dialogue_template.format(start_time, end_time, "Default", original)
+                case SubEnum.ONLY_TRANSLATE if translate:
+                    ass_content += dialogue_template.format(start_time, end_time, "Default", translate)
+                case _:
+                    ass_content += dialogue_template.format(start_time, end_time, "Default", original)
 
         if save_path:
             Path(save_path).parent.mkdir(parents=True, exist_ok=True)
@@ -361,7 +363,6 @@ class ASRData:
     def add_minimum_len(self, min_len_ms=1500):
         # Set each sentence's minimum time length. Default is 1.5 seconds.
         # This method doesn't work with word segments, but it will be applied anyway
-        
         for i in range(len(self.segments)-1):
             seg = self.segments[i]
             if seg.end_time - seg.start_time < min_len_ms:

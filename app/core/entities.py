@@ -4,24 +4,44 @@ from dataclasses import dataclass, field
 from enum import Enum
 from random import randint
 from typing import Optional
-from PyQt5.QtCore import QObject
 
-class BatchTaskTypeEnum(Enum):
+
+class MuEnum(Enum):
+    """ Mutable Enum. Unlike regular Enum, its values can be set again. """
+    def setValue(self, newValue):
+        # So far it works fine. Maybe it won't work in the furture.
+        # Use on members like myEnum.member.setValue(newValue)
+        oldValue = self.value
+        self._value_ = newValue
+        v2m_dict = self.__class__.__dict__['_value2member_map_']
+        v2m_dict.pop( oldValue, None )
+        v2m_dict[newValue] = self
+
+class BatchTaskTypeEnum(MuEnum):
     """ 批量任务类型 """
     TRANSCRIBE = "Create Transcription from Audio/Video"
     TRANSLATE = "Transcribe + Translate Audio/Video"
     SOFT = "Create Soft Subtitle Video"
     HARD = "Create Hard Subtitle Video"
 
-class SubtitleLayoutEnum(Enum):
+class SubtitleLayoutEnum(MuEnum):
     """ 字幕布局 """
     ONLY_ORIGINAL = "Original Only"
     ONLY_TRANSLATE = "Translated Only"
     ORIGINAL_ON_TOP = "Original On Top"
     TRANSLATE_ON_TOP = "Translated On Top"
+    @classmethod
+    def add_member(cls, name, value):
+        if name not in cls.__members__:
+            member = object.__new__(cls)
+            member._value_ = value
+            member._name_ = name
+            cls.__members__[name] = member
+        else:
+            raise ValueError(f"Member '{name}' already exists")
 
 
-class InternetTranslateEnum(Enum):
+class InternetTranslateEnum(MuEnum):
     """网络翻译"""
     GOOGLE = "Google Translate"
 
@@ -223,7 +243,7 @@ class TargetLanguageEnum(Enum):
     CANTONESE = "Cantonese"
 
 
-class TodoWhenDoneEnum(Enum):
+class TodoWhenDoneEnum(MuEnum):
     """ 批量处理完成后需做事情 """
     NOTHING = "Nothing"
     SUSPEND = "Suspend the computer"
@@ -485,7 +505,7 @@ class FasterWhisperModelEnum(Enum):
 
 @dataclass
 class Task:
-    class Status(Enum):
+    class Status(MuEnum):
         """ 任务状态 (下载、转录、优化、翻译、生成) """
         PENDING = "Pending"
         DOWNLOADING = "Downloading"
@@ -503,11 +523,11 @@ class Task:
         FAILED = "Failed"
         CANCELED = "Canceled"
 
-    class Source(Enum):
+    class Source(MuEnum):
         FILE_IMPORT = "File Import"
         URL_IMPORT = "URL Import"
 
-    class Type(Enum):
+    class Type(MuEnum):
         # 任务类型：transcribe or generate subtitle
         TRANSCRIBE = "Get Subtitle From Video/Audio"
         TRANSLATE = "Transcribe Video/Audio then Translate"
@@ -539,7 +559,7 @@ class Task:
     audio_save_path: Optional[str] = None
 
     # 转录（转录模型）
-    transcribe_model: Optional[TranscribeModelEnum] = TranscribeModelEnum.JIANYING.value
+    transcribe_model: Optional[TranscribeModelEnum] = TranscribeModelEnum.JIANYING
     transcribe_language: Optional[TranscribeLanguageEnum] = LANGUAGES[TranscribeLanguageEnum.ENGLISH.value]
     use_asr_cache: bool = True
     need_word_time_stamp: bool = False

@@ -36,7 +36,7 @@ class HomeInterface(QWidget):
         self.video_synthesis_interface = VideoSynthesisInterface(self)
 
         self.addSubInterface(self.task_creation_interface, 'TaskCreationInterface', self.tr('任务创建'))
-        self.addSubInterface(self.transcription_interface, 'TranscriptionInterface', self.tr('语音转录'))
+        self.addSubInterface(self.transcription_interface, 'TranscriptionInterface', self.tr('语音转录/日志'))
         self.addSubInterface(self.subtitle_optimization_interface, 'SubtitleOptimizationInterface',
                              self.tr('字幕优化与翻译'))
         self.addSubInterface(self.video_synthesis_interface, 'VideoSynthesisInterface', self.tr('字幕视频合成'))
@@ -53,21 +53,22 @@ class HomeInterface(QWidget):
         self.transcription_interface.finished.connect(self.switch_to_subtitle_optimization)
         self.subtitle_optimization_interface.finished.connect(self.switch_to_video_synthesis)
 
-    def switch_to_transcription(self, task):
+    def switch_to_transcription(self, task: Task | None):
         # 切换到转录界面
         self.transcription_interface.set_task(task)
         self.transcription_interface.process()
         self.stackedWidget.setCurrentWidget(self.transcription_interface)
         self.pivot.setCurrentItem('TranscriptionInterface')
 
-    def switch_to_subtitle_optimization(self, task):
+    def switch_to_subtitle_optimization(self, task: Task | None):
         # 切换到字幕优化界面
-        self.subtitle_optimization_interface.set_task(task)
-        self.subtitle_optimization_interface.process()
-        self.stackedWidget.setCurrentWidget(self.subtitle_optimization_interface)
-        self.pivot.setCurrentItem('SubtitleOptimizationInterface')
+        if task.need_optimize or task.need_translate:
+            self.subtitle_optimization_interface.set_task(task)
+            self.subtitle_optimization_interface.process()
+            self.stackedWidget.setCurrentWidget(self.subtitle_optimization_interface)
+            self.pivot.setCurrentItem('SubtitleOptimizationInterface')
 
-    def switch_to_video_synthesis(self, task):
+    def switch_to_video_synthesis(self, task: Task | None):
         # 切换到视频合成界面
         self.video_synthesis_interface.set_task(task)
         self.video_synthesis_interface.process()

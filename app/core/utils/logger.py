@@ -1,12 +1,22 @@
 import logging
 import logging.handlers
 from pathlib import Path
+from ...common.signal_bus import signalBus
 
 from urllib3.exceptions import InsecureRequestWarning
 
 from ...config import LOG_PATH, LOG_LEVEL
 
+class LogHandler(logging.Handler):
+    def __init__(self):
+        super().__init__()
+        pass
 
+    def emit(self, record):
+        message = self.format(record)
+        signalBus.app_log_signal.emit(message)
+
+app_log_handler = LogHandler()
 
 def setup_logger(name: str, 
                 level: int = LOG_LEVEL,
@@ -58,6 +68,10 @@ def setup_logger(name: str,
             file_handler.setLevel(level)
             file_handler.setFormatter(level_formatter)
             logger.addHandler(file_handler)
+
+        # Add logger for 
+        logger.addHandler(app_log_handler)
+
 
     # 设置特定库的日志级别为ERROR以减少日志噪音
     error_loggers = ["urllib3", "requests", "openai", "httpx", "httpcore", "ssl", "certifi"]

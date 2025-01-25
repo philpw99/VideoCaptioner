@@ -1,13 +1,14 @@
 # coding:utf-8
 from enum import Enum
 
-from PyQt5.QtCore import QLocale, QObject
+from PyQt5.QtCore import QLocale
 from PyQt5.QtGui import QColor
 from qfluentwidgets import (qconfig, QConfig, ConfigItem, OptionsConfigItem, BoolValidator,
                             OptionsValidator, RangeConfigItem, RangeValidator,
                             Theme, FolderValidator, ConfigSerializer, EnumSerializer)
 
 from app.config import WORK_PATH, SETTINGS_PATH
+from .enums import EnumExSerializer, EnumOptionsValidator
 from ..core.entities import (
     TargetLanguageEnum,
     TranscribeModelEnum,
@@ -20,9 +21,6 @@ from ..core.entities import (
     SubtitleLayoutEnum,
     InternetTranslateEnum,
 )
-from ..components.EnumComboBoxSettingCard import EnumExSerializer, EnumOptionsValidator
-
-qoConfig = QObject()    # qo means QObject
 
 class Language(Enum):
     """ 软件语言 """
@@ -168,9 +166,10 @@ class Config(QConfig):
 
     # ------------------- 字幕样式配置 -------------------
     subtitle_style_name = ConfigItem("SubtitleStyle", "StyleName", "default")
+    
     subtitle_layout = OptionsConfigItem(
         "SubtitleStyle", "Layout",
-        SubtitleLayoutEnum.ONLY_TRANSLATE.name,
+        SubtitleLayoutEnum.ONLY_TRANSLATE,
         EnumOptionsValidator(SubtitleLayoutEnum),
         EnumExSerializer(SubtitleLayoutEnum)
     )
@@ -240,7 +239,7 @@ class Config(QConfig):
     todo_when_done = OptionsConfigItem(
         "All",
         "ToDo_When_Done",
-        "NOTHING",
+        TodoWhenDoneEnum.NOTHING,
         EnumOptionsValidator(TodoWhenDoneEnum),
         EnumExSerializer(TodoWhenDoneEnum)
     )

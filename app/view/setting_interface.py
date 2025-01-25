@@ -11,16 +11,16 @@ from qfluentwidgets import (SettingCardGroup, SwitchSettingCard, OptionsSettingC
 
 from app.components.WhisperAPISettingDialog import WhisperAPISettingDialog
 from app.config import VERSION, YEAR, AUTHOR, HELP_URL, FEEDBACK_URL, RELEASE_URL
-from app.core.entities import TranscribeModelEnum
-from app.core.thread.version_manager_thread import VersionManager
-from ..common.config import cfg, InternetTranslateEnum, SubtitleLayoutEnum
+from app.core.entities import TranscribeModelEnum, SubtitleLayoutEnum, InternetTranslateEnum
+from ..common.config import cfg
 from ..components.EditComboBoxSettingCard import EditComboBoxSettingCard
-from ..components.EnumComboBoxSettingCard import *
+from ..components.EnumComboBoxSettingCard import EnumComboBoxSettingCard
 from ..components.LineEditSettingCard import LineEditSettingCard
 from ..core.utils.test_opanai import test_openai, get_openai_models
 from ..components.WhisperSettingDialog import WhisperSettingDialog
 from ..components.FasterWhisperSettingDialog import FasterWhisperSettingDialog
 from ..common.signal_bus import signalBus
+
 
 class SettingInterface(ScrollArea):
     """ 设置界面 """

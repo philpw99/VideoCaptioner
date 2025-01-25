@@ -6,7 +6,7 @@ from urllib.parse import urlparse, ParseResult
 
 from PyQt5.QtCore import pyqtSignal, Qt, QStandardPaths
 from PyQt5.QtGui import QPixmap, QDragEnterEvent, QDropEvent
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QApplication, QLabel, QFileDialog
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QApplication, QLabel, QFileDialog, QMessageBox
 from qfluentwidgets import LineEdit, ProgressBar, PushButton, InfoBar, InfoBarPosition, BodyLabel, ToolButton, HyperlinkButton
 from qfluentwidgets import FluentIcon, FluentStyleSheet, ComboBoxSettingCard
 from qfluentwidgets import FluentIcon as FIF
@@ -287,7 +287,7 @@ class TaskCreationInterface(QWidget):
         self.target_language_card.comboBox.setCurrentText(language)
 
     def setup_values(self):
-        self.transcription_model_card.setValue(cfg.transcribe_model.value)
+        self.transcription_model_card.setValue(cfg.transcribe_model.value.value)
         self.target_language_card.setValue(cfg.target_language.value.value)
         self.subtitle_optimization_card.setChecked(cfg.need_optimize.value)
         self.subtitle_translation_card.setChecked(cfg.need_translate.value)
@@ -340,7 +340,6 @@ class TaskCreationInterface(QWidget):
         if self.start_button._icon == FluentIcon.FOLDER:
             if cfg.last_open_dir.value != "":
                 open_path = cfg.last_open_dir.value
-                cfg.save()
             else:
                 open_path = QStandardPaths.writableLocation(QStandardPaths.DesktopLocation)
             
@@ -361,15 +360,29 @@ class TaskCreationInterface(QWidget):
                 
                 self.search_input.setText(file_path)                
             return
-        
+
+        if cfg.transcribe_model.value == TranscribeModelEnum.FASTER_WHISPER \
+                and cfg.faster_whisper_one_word.value \
+                and ( not cfg.api_base.value or not cfg.api_key.value ):
+            mbox = QMessageBox(self)
+            mbox.setWindowTitle(self.tr("API Base or API Key is not set."))
+            mbox.setText(self.tr("You use FasterWhisper and using split word feature.\n" \
+                                + "It requires working LLM settings.\n" \
+                                + "So please set up the 'API Base' and 'API Key' values in Settings before start the process."))
+            mbox.show()
+            return
+
         need_whisper_settings = cfg.transcribe_model.value in [
             TranscribeModelEnum.WHISPER, 
             TranscribeModelEnum.WHISPER_API,
             TranscribeModelEnum.FASTER_WHISPER
         ]
+
+        
         if need_whisper_settings and not self.show_whisper_settings():
             return
 
+            
         self.process()
 
     def on_search_input_changed(self):
@@ -434,7 +447,15 @@ class TaskCreationInterface(QWidget):
             return False
 
     def _process_file(self, file_path):
-        self.create_task_thread = CreateTaskThread(file_path, Task.Type.SUBTITLE, cfg.soft_subtitle.value)
+        if self.subtitle_optimization_card.switchButton.isChecked():
+            task_type = Task.Type.OPTIMIZE
+        elif self.subtitle_translation_card.switchButton.isChecked():
+            task_type = Task.Type.TRANSLATE
+        else:
+            task_type = Task.Type.TRANSCRIBE
+
+        self.create_task_thread = CreateTaskThread(file_path, task_type, cfg.soft_subtitle.value)
+        
         self.create_task_thread.finished.connect(self.on_create_task_finished)
         self.create_task_thread.progress.connect(self.on_create_task_progress)
         self.create_task_thread.start()

@@ -56,24 +56,11 @@ class SubtitleOptimizationThread(QThread):
 
     def _setup_api_config(self):
         """设置API配置，返回base_url, api_key, llm_model, thread_num, batch_size"""
-        if self.task.base_url:
-            if not test_openai(self.task.base_url, self.task.api_key, self.task.llm_model)[0]:
-                raise Exception(self.tr("OpenAI API 测试失败, 请检查设置"))
-            return (self.task.base_url, self.task.api_key, self.task.llm_model, 
-                   self.task.thread_num, self.task.batch_size)
+        if not test_openai(self.task.base_url, self.task.api_key, self.task.llm_model)[0]:
+            raise Exception(self.tr("OpenAI API 测试失败, 请检查设置"))
+        return (self.task.base_url, self.task.api_key, self.task.llm_model, 
+                self.task.thread_num, self.task.batch_size)
         
-        logger.info("尝试使用自带的API配置")
-        # 遍历配置字典找到第一个可用的API
-        for config in FREE_API_CONFIGS.values():
-            if not self.valid_limit():
-                raise Exception(self.tr("公益服务有限！请配置自己的API!"))
-            if test_openai(config["base_url"], config["api_key"], config["llm_model"])[0]:
-                self.set_limit()
-                return (config["base_url"], config["api_key"], config["llm_model"],
-                       config["thread_num"], config["batch_size"])
-        
-        logger.error("自带的API配置暂时不可用，请配置自己的API")
-        raise Exception(self.tr("自带的API配置暂时不可用，请配置自己的大模型API"))
 
     def run(self):
         doingOptimizing = False
@@ -93,7 +80,7 @@ class SubtitleOptimizationThread(QThread):
             target_language = self.task.target_language
             need_translate = self.task.need_translate
             need_optimize = self.task.need_optimize
-            need_summarize = True
+            need_summarize = True if need_optimize else False
             subtitle_style_srt = self.task.subtitle_style_srt
             subtitle_layout = self.task.subtitle_layout
             max_word_count_cjk = self.task.max_word_count_cjk
@@ -128,11 +115,10 @@ class SubtitleOptimizationThread(QThread):
 
             asr_data = from_subtitle_file(str_path)
 
+            """
             # 检查是否需要合并重新断句
-            is_word_split = asr_data.is_word_timestamp()
-            if not is_word_split and need_split and self.task.faster_whisper_one_word:
-                asr_data.split_to_word_segments()
-            if is_word_split:
+            # Right now this will be done right after transcribing.
+            if asr_data.is_word_timestamp():
                 self.progress.emit(15, self.tr("字幕断句..."))
                 logger.info("正在字幕断句...")
                 asr_data = merge_segments(asr_data, model=llm_model, 
@@ -141,8 +127,7 @@ class SubtitleOptimizationThread(QThread):
                                         max_word_count_english=max_word_count_english)
                 asr_data.save(save_path=split_path)
                 self.update_all.emit(asr_data.to_json())
-
-                
+            """
 
             # 制作成请求llm接口的格式 {{"1": "original_subtitle"},...}
             subtitle_json = {str(k): v["original_subtitle"] for k, v in asr_data.to_json().items()}
@@ -228,27 +213,6 @@ class SubtitleOptimizationThread(QThread):
                     self.llm_result_logger.removeHandler(handler)
             if doingOptimizing:
                 cfg.gbDoingOptimizing = False
-
-    def set_limit(self):
-        self.settings = QSettings(QSettings.IniFormat, QSettings.UserScope,
-                                  'VideoCaptioner', 'VideoCaptioner')
-        current_date = time.strftime('%Y-%m-%d')
-        last_date = self.settings.value('llm/last_date', '')
-        if current_date != last_date:
-            self.settings.setValue('llm/last_date', current_date)
-            self.settings.setValue('llm/daily_calls', 0)
-            self.settings.sync()  # 强制写入
-    
-    def valid_limit(self):
-        self.settings = QSettings(QSettings.IniFormat, QSettings.UserScope,
-                                  'VideoCaptioner', 'VideoCaptioner')
-        daily_calls = int(self.settings.value('llm/daily_calls', 0))
-        if daily_calls >= self.MAX_DAILY_LLM_CALLS:
-            return False
-        self.settings.setValue('llm/daily_calls', daily_calls + 1)
-        self.settings.sync()  # 强制写入
-        print(self.settings.value('llm/daily_calls', 0))
-        return True
 
     def callback(self, result: Dict):
         self.finished_subtitle_length += len(result)

@@ -6,8 +6,10 @@ Author: Weifeng
 """
 import os
 import sys
+import json
 import traceback
 from datetime import datetime
+from app.config import RESOURCE_PATH, APPDATA_PATH
 
 # Add project root directory to Python path
 project_root = os.path.dirname(os.path.abspath(__file__))
@@ -21,15 +23,15 @@ os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = plugin_path
 for file in os.listdir():
     if file.startswith("app") and file.endswith(".pyd"):
         os.remove(file)
+ 
 
 from PyQt5.QtCore import Qt, QTranslator
 from PyQt5.QtWidgets import QApplication
-from qfluentwidgets import FluentTranslator
 
 from app.common.config import cfg
 from app.common.enums import Enums_Translate
 from app.view.main_window import MainWindow
-from app.config import RESOURCE_PATH
+
 from app.core.utils import logger
 
 
@@ -55,11 +57,9 @@ app.setAttribute(Qt.AA_DontCreateNativeWidgetSiblings)
 
 # Internationalization (Multi-language)
 locale = cfg.get(cfg.language).value
-# translator = FluentTranslator(locale)
 myTranslator = QTranslator()
 translations_path = RESOURCE_PATH / "translations" / f"VideoCaptioner_{locale.name()}.qm"
 myTranslator.load(str(translations_path))
-# app.installTranslator(translator)
 app.installTranslator(myTranslator)
 
 # Set the enums to new translated values

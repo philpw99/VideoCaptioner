@@ -18,6 +18,9 @@ class SignalBus(QObject):
     need_video_changed = pyqtSignal(bool)
     soft_subtitle_changed = pyqtSignal(bool)
 
+    # App log signal
+    app_log_signal = pyqtSignal(str)
+
     # 新增视频控制相关信号
     video_play = pyqtSignal()  # 播放信号
     video_pause = pyqtSignal()  # 暂停信号

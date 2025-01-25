@@ -7,10 +7,11 @@ import subprocess
 from pathlib import Path
 
 from PyQt5.QtCore import *
-from PyQt5.QtGui import QPixmap, QFont, QDragEnterEvent, QDropEvent
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QApplication, QLabel, QFileDialog
+from PyQt5.QtGui import QPixmap, QFont, QDragEnterEvent, QDropEvent, QColor
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QApplication, QLabel, QPlainTextEdit
 from qfluentwidgets import CardWidget, PrimaryPushButton, PushButton, InfoBar, BodyLabel, PillPushButton, setFont, \
         ProgressRing, InfoBarPosition
+from qfluentwidgets.common.config import isDarkTheme
 
 from ..components.FasterWhisperSettingDialog import FasterWhisperSettingDialog
 from ..components.WhisperSettingDialog import WhisperSettingDialog
@@ -22,9 +23,53 @@ from ..core.entities import LANGUAGES, Task, VideoInfo
 from ..core.entities import SupportedVideoFormats, SupportedAudioFormats
 from ..core.thread.transcript_thread import TranscriptThread
 from ..core.entities import TranscribeModelEnum
+from ..common.signal_bus import signalBus
 
 DEFAULT_THUMBNAIL_PATH = RESOURCE_PATH / "assets" / "default_thumbnail.jpg"
 
+class ProcessLogInfoCard(CardWidget):
+    console_line = pyqtSignal(Task)
+    task: Task|None = None
+    
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setup_ui()
+        self.setup_signals()
+    
+    def setup_ui(self):
+        self.cardLayout = QVBoxLayout(self)
+        self.cardLayout.setContentsMargins(20,15,20,15)
+        # Layout for log
+        self.log_toolbar_layout = QHBoxLayout(self)
+        self.log_label = BodyLabel(self)
+        self.log_clear_button = PushButton(self.tr("Clear"),self)
+        self.log_toolbar_layout.addWidget(self.log_label)
+        self.log_toolbar_layout.addStretch(1)
+        self.log_toolbar_layout.addWidget(self.log_clear_button)
+        self.log_label.setText(self.tr("程序日志:"))
+
+        # Log area
+        self.process_log = QPlainTextEdit(self)
+        self.process_log.setReadOnly(True)
+        self.process_log.setMinimumWidth(200)
+        text_color = "#cccccc" if isDarkTheme() else "#000000"
+        self.process_log.setStyleSheet(f"QPlainTextEdit{{background:transparent; font-size:12px; color:{text_color}}}")
+
+        self.cardLayout.addLayout(self.log_toolbar_layout)
+        self.cardLayout.addWidget(self.process_log)
+    
+    def addLine(self, text: str):
+        # After adding a message
+        self.process_log.appendPlainText(text)
+        self.process_log.verticalScrollBar().setValue(self.process_log.verticalScrollBar().maximum())
+
+    def clearLog(self):
+        self.process_log.clear()
+
+    def setup_signals(self):
+        self.log_clear_button.clicked.connect(self.clearLog)
+        # Let other thread send lines to the log
+        signalBus.app_log_signal.connect(self.addLine)
 
 class VideoInfoCard(CardWidget):
     finished = pyqtSignal(Task)
@@ -142,24 +187,26 @@ class VideoInfoCard(CardWidget):
 
     def show_whisper_settings(self):
         """显示Whisper设置对话框"""
-        if cfg.transcribe_model.value == TranscribeModelEnum.WHISPER.value:
-            dialog = WhisperSettingDialog(self.window())
-            if dialog.exec_():
-                return True
-        elif cfg.transcribe_model.value == TranscribeModelEnum.WHISPER_API.value:
-            dialog = WhisperAPISettingDialog(self.window())
-            if dialog.exec_():
-                return True
-        elif cfg.transcribe_model.value == TranscribeModelEnum.FASTER_WHISPER.value:
-            dialog = FasterWhisperSettingDialog(self.window())
-            if dialog.exec_():
-                return True
-        return False
+        match cfg.transcribe_model.value.value:
+            case TranscribeModelEnum.WHISPER.value:
+                dialog = WhisperSettingDialog(self.window())
+                if dialog.exec_():
+                    return True
+            case TranscribeModelEnum.WHISPER_API.value:
+                dialog = WhisperAPISettingDialog(self.window())
+                if dialog.exec_():
+                    return True
+            case TranscribeModelEnum.FASTER_WHISPER.value:
+                dialog = FasterWhisperSettingDialog(self.window())
+                if dialog.exec_():
+                    return True
+            case _:
+                return False
 
     def on_start_button_clicked(self):
         """开始转录按钮点击事件"""
         if self.task.status == Task.Status.TRANSCRIBING:
-            need_whisper_settings = cfg.transcribe_model.value in [
+            need_whisper_settings = cfg.transcribe_model.value.value in [
                 TranscribeModelEnum.WHISPER.value,
                 TranscribeModelEnum.WHISPER_API.value,
                 TranscribeModelEnum.FASTER_WHISPER.value
@@ -243,7 +290,7 @@ class VideoInfoCard(CardWidget):
         """转录完成处理"""
         self.start_button.setEnabled(True)
         self.start_button.setText(self.tr("转录完成"))
-        if self.task.status == Task.Status.PENDING:
+        if self.task.status not in [Task.Status.CANCELED, Task.Status.COMPLETED, Task.Status.FAILED]:
             self.finished.emit(task)
 
     def reset_ui(self):
@@ -281,16 +328,14 @@ class TranscriptionInterface(QWidget):
         self.main_layout = QVBoxLayout(self)
         self.main_layout.setObjectName("main_layout")
         self.main_layout.setSpacing(20)
-
+        self.process_log_card = ProcessLogInfoCard(self)
         self.video_info_card = VideoInfoCard(self)
-        self.main_layout.addWidget(self.video_info_card)
 
-        self.file_select_button = PushButton(self.tr("选择视频文件"), self)
-        self.main_layout.addWidget(self.file_select_button, alignment=Qt.AlignmentFlag.AlignCenter)
+        self.main_layout.addWidget(self.video_info_card)
+        self.main_layout.addWidget(self.process_log_card)
 
     def _setup_signals(self):
         """设置信号连接"""
-        self.file_select_button.clicked.connect(self._on_file_select)
         self.video_info_card.finished.connect(self._on_transcript_finished)
 
     def _on_transcript_finished(self, task):
@@ -303,32 +348,6 @@ class TranscriptionInterface(QWidget):
             position=InfoBarPosition.BOTTOM,
             parent=self.parent()
         )
-
-    def _on_file_select(self):
-        """文件选择处理"""
-        file_dialog = QFileDialog()
-        file_dialog.setFileMode(QFileDialog.FileMode.ExistingFile)
-
-        # 构建文件过滤器
-        video_formats = " ".join(f"*.{fmt.value}" for fmt in SupportedVideoFormats)
-        audio_formats = " ".join(f"*.{fmt.value}" for fmt in SupportedAudioFormats)
-        filter_str = f"{self.tr('媒体文件')} ({video_formats} {audio_formats});;{self.tr('视频文件')} ({video_formats});;{self.tr('音频文件')} ({audio_formats})"
-
-        if cfg.last_open_dir.value != "":
-            open_path = cfg.last_open_dir.value
-            cfg.save()
-        else:
-            open_path = QStandardPaths.writableLocation(QStandardPaths.StandardLocation.DesktopLocation)
-            
-        file_path, _ = file_dialog.getOpenFileName(self, self.tr("选择媒体文件"), open_path, filter_str)
-        if file_path:
-            # Save this file's directory for later use
-            file_dir = str( Path(file_path).parent )
-            if file_dir != cfg.last_open_dir.value:
-                cfg.last_open_dir.value = file_dir
-                cfg.save()
-
-            self.create_task(file_path)
 
     def create_task(self, file_path):
         """创建任务"""

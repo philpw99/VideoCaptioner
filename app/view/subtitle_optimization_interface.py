@@ -17,9 +17,9 @@ from PyQt5.QtCore import QUrl
 from app.config import SUBTITLE_STYLE_PATH
 
 from ..core.thread.subtitle_optimization_thread import SubtitleOptimizationThread
-from ..common.config import cfg, SubtitleLayoutEnum
+from ..common.config import cfg
 from ..core.bk_asr.ASRData import from_subtitle_file, from_json
-from ..core.entities import OutputSubtitleFormatEnum, SupportedSubtitleFormats
+from ..core.entities import OutputSubtitleFormatEnum, SupportedSubtitleFormats, SubtitleLayoutEnum
 from ..core.entities import Task
 from ..core.thread.create_task_thread import CreateTaskThread
 from ..common.signal_bus import signalBus
@@ -184,8 +184,8 @@ class SubtitleOptimizationInterface(QWidget):
         # 添加字幕排布下拉框
         self.layout_combobox = ComboBox(self)
         self.layout_combobox.addItems([layout.value for layout in SubtitleLayoutEnum])
-        key = cfg.subtitle_layout.value
-        self.layout_combobox.setCurrentText(SubtitleLayoutEnum[key].value)
+        sub_enum = cfg.subtitle_layout.value
+        self.layout_combobox.setCurrentText(sub_enum.value)
 
         self.left_layout.addWidget(self.save_button)
         self.left_layout.addWidget(self.format_combobox)
@@ -355,13 +355,12 @@ class SubtitleOptimizationInterface(QWidget):
             value: 新的字幕布局
         """
         # 更新配置中的字幕布局
-        key = None
-        for item in SubtitleLayoutEnum:
-            if item.value == value:
-                key = item.name
-        if key:
-            cfg.subtitle_layout.value = key
-            # 更新下拉框的当前文本为新的布局
+        enum = SubtitleLayoutEnum(value)    # Get the enum from value
+        if enum:
+            if cfg.subtitle_layout.value != enum:
+                cfg.subtitle_layout.value = enum
+                # 更新下拉框的当前文本为新的布局
+                cfg.save()
             self.layout_combobox.setCurrentText(value)
 
     def create_task(self, file_path):

@@ -18,7 +18,7 @@ from qframelesswindow import FramelessWindow, StandardTitleBar
 from ..config import RESOURCE_PATH
 from ..common.config import cfg
 from ..common.signal_bus import signalBus
-from ..components.EnumComboBoxSettingCard import EnumComboBoxSettingCard, EnumOptionsValidator, EnumExSerializer
+
 from ..core.entities import SupportedVideoFormats, SupportedAudioFormats, TodoWhenDoneEnum, SupportedSubtitleFormats, SupportedImageFormats
 from ..core.entities import Task, VideoInfo, BatchTaskTypeEnum
 from ..core.thread.create_task_thread import CreateTaskThread
@@ -91,8 +91,8 @@ class BatchProcessInterface(QWidget):
         self.todo_when_done_label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignCenter )
         self.todo_when_done_combobox = ComboBox()
         self.todo_when_done_combobox.addItems(item.value for item in TodoWhenDoneEnum)
-        todoKey = cfg.todo_when_done.value
-        self.todo_when_done_combobox.setCurrentText(TodoWhenDoneEnum[todoKey].value)  # Doing nothing
+        todoEnum = cfg.todo_when_done.value
+        self.todo_when_done_combobox.setCurrentText(todoEnum.value)  # Doing nothing
         
         self.top_layout.addWidget(self.start_all_button)
         self.top_layout.addWidget(self.cancel_button)
@@ -150,13 +150,7 @@ class BatchProcessInterface(QWidget):
             self.task_type_combo.setCurrentText(BatchTaskTypeEnum.TRANSCRIBE.value)
 
     def todo_when_done_changed(self, text: str):
-        todoKey = None
-        for key in TodoWhenDoneEnum:
-            if  key.value == text:
-                todoKey = key.name
-                break
-        if todoKey:
-            cfg.set(cfg.todo_when_done, todoKey)
+        cfg.set(cfg.todo_when_done, TodoWhenDoneEnum(text))
 
     def clear_all_tasks(self):
         """清空所有任务"""
@@ -487,22 +481,32 @@ class BatchProcessInterface(QWidget):
             file_ext = os.path.splitext(file_path)[1][1:].lower()
 
             # 根据任务类型检查文件格式
-            if self.task_type_combo.currentText() in [BatchTaskTypeEnum.SOFT.value, BatchTaskTypeEnum.HARD.value]:
-                # Create soft or hard sub video
-                supported_formats = {fmt.value for fmt in SupportedVideoFormats}
-                task_type = Task.Type.SUBTITLE
-            else:
-                # Create subtitle only
-                supported_formats = {fmt.value for fmt in SupportedVideoFormats} | {fmt.value for fmt in SupportedAudioFormats}
-                task_type = Task.Type.TRANSCRIBE
-
+            match self.task_type_combo.currentText():
+                case BatchTaskTypeEnum.HARD.value:
+                    # Create hard sub video
+                    supported_formats = {fmt.value for fmt in SupportedVideoFormats}
+                    task_type = Task.Type.SUBTITLE
+                    soft_sub = False
+                case BatchTaskTypeEnum.SOFT.value:
+                    # Create soft sub video
+                    supported_formats = {fmt.value for fmt in SupportedVideoFormats}
+                    task_type = Task.Type.SUBTITLE
+                    soft_sub = True
+                case BatchTaskTypeEnum.TRANSLATE.value:
+                    # Create Optimize+Translate / Single Sentence Translate / Google Translate sub
+                    supported_formats = {fmt.value for fmt in SupportedVideoFormats} | {fmt.value for fmt in SupportedAudioFormats}
+                    task_type = Task.Type.TRANSLATE
+                    soft_sub = True
+                case BatchTaskTypeEnum.TRANSCRIBE.value:
+                    # Create transcrptions only
+                    supported_formats = {fmt.value for fmt in SupportedVideoFormats} | {fmt.value for fmt in SupportedAudioFormats}
+                    task_type = Task.Type.TRANSCRIBE
+                    soft_sub = True
+            
             if file_ext in supported_formats:
-                if self.task_type_combo.currentText() == BatchTaskTypeEnum.HARD.value:
-                    self.create_task(file_path, task_type, False)    # Hard coded subtitles
-                else:
-                    self.create_task(file_path, task_type, True)   # Soft coded subtitles
+                self.create_task(file_path, task_type, soft_sub)
             else:
-                error_msg = self.tr("请拖入视频文件") if self.task_type_combo.currentText() == BatchTaskTypeEnum.TRANSCRIBE.value else self.tr("请拖入音频或视频文件")
+                error_msg = self.tr("请拖入视频文件") if task_type in [ BatchTaskTypeEnum.SOFT or BatchTaskTypeEnum.HARD ] else self.tr("请拖入音频或视频文件")
                 InfoBar.error(
                     self.tr(f"格式错误") + file_ext,
                     error_msg,
@@ -661,20 +665,20 @@ class TaskInfoCard(CardWidget):
         strategy_text = ""
         if self.task.need_optimize or self.task.need_translate:
             if self.task.need_optimize:
-                strategy_text += self.tr("翻译方式：智能多线程优化+翻译，目标：") + str(self.task.target_language) + " "
+                strategy_text += self.tr("翻译方式：智能多线程优化+翻译，目标: ") + str(self.task.target_language) + " "
             if self.task.need_translate:
-                strategy_text += self.tr("翻译方式：智能单线程单句翻译，目标：") + self.task.target_language + " "
-            strategy_text += self.tr("，使用的LLM 模型：") + self.task.llm_model + ""
+                strategy_text += self.tr("翻译方式：智能单线程单句翻译，目标: ") + self.task.target_language + " "
+            strategy_text += self.tr(", 使用的LLM 模型: ") + self.task.llm_model + ""
             if self.task.soft_subtitle:
-                strategy_text += self.tr("字幕类型：软字幕 ")
+                strategy_text += self.tr(" 字幕类型：软字幕 ")
             else:
-                strategy_text += self.tr("字幕类型：硬字幕 ")
+                strategy_text += self.tr(" 字幕类型：硬字幕 ")
             if self.task.portrait:
-                strategy_text += self.tr("竖屏模式：开启 ")
+                strategy_text += self.tr(" 竖屏模式：开启 ")
             if self.task.portrait_background:
-                strategy_text += "\n" + self.tr("竖屏背景：") + self.task.portrait_background
+                strategy_text += "\n" + self.tr(" 竖屏背景: ") + self.task.portrait_background
 
-        tooltip = self.tr("任务类型：") + self.task.type.value + "  " + self.tr("转录模型：") + self.task.transcribe_model + "\n"
+        tooltip = self.tr("任务类型: ") + self.task.type.value + "  " + self.tr("转录模型: ") + self.task.transcribe_model.value + "\n"
         if len(self.task.file_path) > 100:
             tooltip += self.tr("文件: ") + self.task.file_path[:50] + "..." + Path(self.task.file_path).name + "\n"
         else:

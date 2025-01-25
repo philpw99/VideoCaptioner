@@ -11,13 +11,14 @@ from qfluentwidgets import (ScrollArea, SettingCardGroup, LineEdit, MessageBoxBa
                             PushSettingCard, FluentIcon as FIF, CardWidget, BodyLabel, ImageLabel,
                             InfoBar, InfoBarPosition)
 
-from ..common.config import cfg, SubtitleLayoutEnum
+from ..common.config import cfg
 from ..components.MySettingCard import SpinBoxSettingCard, ComboBoxSettingCard, ColorSettingCard, \
     DoubleSpinBoxSettingCard
-from ..components.EnumComboBoxSettingCard import *
+from ..components.EnumComboBoxSettingCard import EnumComboBoxSettingCard
 from ..core.utils.subtitle_preview import generate_preview
 from ..config import SUBTITLE_STYLE_PATH
 from ..common.signal_bus import signalBus
+from ..core.entities import SubtitleLayoutEnum
 
 PERVIEW_TEXTS = {
     "长文本": ("This is a long text used for testing subtitle preview.",
@@ -320,10 +321,10 @@ class SubtitleStyleInterface(QWidget):
     def __setValues(self):
         """设置初始值"""
         # 设置字幕排布
-        key = cfg.get(cfg.subtitle_layout)
-        self.layoutCard.comboBox.setCurrentText(SubtitleLayoutEnum[key].value)
+        enum = cfg.get(cfg.subtitle_layout)     # It should get the enum, not the name or value
+        self.layoutCard.comboBox.setCurrentText(enum.value)
         # 设置字幕样式
-        self.styleNameComboBox.comboBox.setCurrentText(cfg.get(cfg.subtitle_style_name))
+        self.styleNameComboBox.comboBox.setCurrentText(cfg.subtitle_style_name.value)
 
         # 获取系统字体,设置comboBox的选项
         fontDatabase = QFontDatabase()
@@ -354,7 +355,7 @@ class SubtitleStyleInterface(QWidget):
         # 字幕排布
         self.layoutCard.currentTextChanged.connect(self.onSettingChanged)
         self.layoutCard.currentTextChanged.connect(
-            lambda: cfg.set(cfg.subtitle_layout, self.getLayoutKey(self.layoutCard.comboBox.currentText())))
+            lambda: cfg.set(cfg.subtitle_layout, SubtitleLayoutEnum(self.layoutCard.comboBox.currentText())))
         
         # 垂直间距
         self.verticalSpacingCard.spinBox.valueChanged.connect(self.onSettingChanged)
@@ -388,12 +389,6 @@ class SubtitleStyleInterface(QWidget):
         self.layoutCard.currentTextChanged.connect(signalBus.on_subtitle_layout_changed)
         signalBus.subtitle_layout_changed.connect(self.on_subtitle_layout_changed)
 
-    def getLayoutKey(self, value: str):
-        for item in SubtitleLayoutEnum:
-            if item.value == value:
-                return item.name
-        return SubtitleLayoutEnum.ONLY_TRANSLATE.name
-
     def on_open_style_folder_clicked(self):
         """打开样式文件夹"""
         if sys.platform == "win32":
@@ -404,7 +399,7 @@ class SubtitleStyleInterface(QWidget):
             subprocess.run(["xdg-open", SUBTITLE_STYLE_PATH])
 
     def on_subtitle_layout_changed(self, layout: str):
-        cfg.subtitle_layout.value = self.getLayoutKey(layout)
+        cfg.subtitle_layout.value = SubtitleLayoutEnum(layout)
         self.layoutCard.comboBox.setCurrentText(layout)
 
     def onSettingChanged(self):
@@ -485,11 +480,11 @@ class SubtitleStyleInterface(QWidget):
             case SubtitleLayoutEnum.TRANSLATE_ON_TOP.value:
                 main_text, sub_text = sub_text, main_text
             case SubtitleLayoutEnum.ORIGINAL_ON_TOP.value:
-                main_text, sub_text = main_text, sub_text
+                pass
             case SubtitleLayoutEnum.ONLY_TRANSLATE.value:
                 main_text, sub_text = sub_text, None
             case SubtitleLayoutEnum.ONLY_ORIGINAL.value:
-                main_text, sub_text = main_text, None
+                sub_text = None
 
         # 创建预览线程
         self.preview_thread = PreviewThread(style_str, (main_text, sub_text))
