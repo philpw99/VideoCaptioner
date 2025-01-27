@@ -283,7 +283,7 @@ class ASRData:
             if "\n" in seg.text:
                 original, translate = seg.text.split("\n", 1)
             else:
-                original = seg.text
+                original, translate = seg.text, None
 
             match layout:
                 case SubEnum.ORIGINAL_ON_TOP if translate:

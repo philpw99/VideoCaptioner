@@ -10,8 +10,8 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import QDragEnterEvent, QDropEvent, QColor
 from PyQt5.QtWidgets import QAbstractItemView
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QApplication, QHeaderView, QFileDialog, QMessageBox
-from qfluentwidgets import ComboBox, PrimaryPushButton, ProgressBar, PushButton, InfoBar, BodyLabel, TableView, ToolButton, TextEdit, MessageBoxBase, RoundMenu, Action, FluentIcon as FIF
-from qfluentwidgets import InfoBarPosition
+from qfluentwidgets import ComboBox, PrimaryPushButton, ProgressBar, PushButton, InfoBar, BodyLabel, FluentIcon as FIF
+from qfluentwidgets import InfoBarPosition, TableView, ToolButton, TextEdit, MessageBoxBase, RoundMenu, Action
 from PyQt5.QtCore import QUrl
 
 from app.config import SUBTITLE_STYLE_PATH
@@ -19,7 +19,7 @@ from app.config import SUBTITLE_STYLE_PATH
 from ..core.thread.subtitle_optimization_thread import SubtitleOptimizationThread
 from ..common.config import cfg
 from ..core.bk_asr.ASRData import from_subtitle_file, from_json
-from ..core.entities import OutputSubtitleFormatEnum, SupportedSubtitleFormats, SubtitleLayoutEnum
+from ..core.entities import OutputSubtitleFormatEnum, SupportedSubtitleFormats, SubtitleLayoutEnum, TranslateMethodEnum
 from ..core.entities import Task
 from ..core.thread.create_task_thread import CreateTaskThread
 from ..common.signal_bus import signalBus
@@ -103,7 +103,7 @@ class SubtitleTableModel(QAbstractTableModel):
         if role == Qt.ItemDataRole.DisplayRole:
             if orientation == Qt.Orientation.Horizontal:
                 headers = [self.tr("开始时间"), self.tr("结束时间"), self.tr("字幕内容"),
-                           self.tr("翻译字幕") if cfg.need_translate.value else self.tr("优化字幕")]
+                           self.tr("翻译字幕")]
                 return headers[section]
             elif orientation == Qt.Orientation.Vertical:
                 return str(section + 1)
@@ -356,14 +356,12 @@ class SubtitleOptimizationInterface(QWidget):
         """
         # 更新配置中的字幕布局
         enum = SubtitleLayoutEnum(value)    # Get the enum from value
-        if enum:
-            if cfg.subtitle_layout.value != enum:
-                cfg.subtitle_layout.value = enum
-                # 更新下拉框的当前文本为新的布局
-                cfg.save()
+        if cfg.subtitle_layout.value != enum:
+            # 更新下拉框的当前文本为新的布局
+            cfg.set(cfg.subtitle_layout, enum, True)
             self.layout_combobox.setCurrentText(value)
 
-    def create_task(self, file_path):
+    def create_task(self, file_str: str):
         """
         创建任务
 
@@ -376,7 +374,32 @@ class SubtitleOptimizationInterface(QWidget):
             创建的任务对象。
         """
         # 创建一个字幕优化任务
-        self.task = CreateTaskThread.create_subtitle_optimization_task(file_path)
+        if cfg.translate_method.value == TranslateMethodEnum.NONE:
+            method = TranslateMethodEnum.OPTIMIZE
+        else:
+            method = cfg.translate_method.value
+        
+        if not self.task:
+            # No task exists, create a new one
+            task_thread = CreateTaskThread(
+                file_str,
+                Task.Type.TRANSLATE,
+                need_translate=True,
+                translate_method=method,
+                soft_sub=cfg.soft_subtitle.value,
+            )
+            self.task = task_thread.create_file_task(file_str, Task.Type.TRANSLATE, True, method, cfg.soft_subtitle.value, False)
+            
+        else:
+            # Task already exists, update it
+            self.task = CreateTaskThread.create_file_task(file_str, Task.Type.TRANSLATE, True, method, cfg.soft_subtitle.value, False)
+            
+        # 设置任务的原始字幕保存路径
+        self.task.original_subtitle_save_path = file_str
+        root, _ = os.path.splitext(file_str)
+        cfg.subtitle_output_format
+        self.task.result_subtitle_save_path = root + "_result." + cfg.subtitle_output_format.value.value
+        
         # 返回创建的任务对象
         return self.task
 
@@ -457,10 +480,8 @@ class SubtitleOptimizationInterface(QWidget):
 
     def _update_task_config(self):
         """更新任务配置"""
-        # 更新任务的需要优化标志
-        self.task.need_optimize = cfg.need_optimize.value
         # 更新任务的需要翻译标志
-        self.task.need_translate = cfg.need_translate.value
+        self.task.need_translate = cfg.translate_method.value != TranslateMethodEnum.NONE
         # 更新任务的 API 密钥
         self.task.api_key = cfg.api_key.value
         # 更新任务的 API 基础 URL
@@ -963,7 +984,7 @@ class PromptDialog(MessageBoxBase):
     def save_prompt(self):
         # 在点击确定按钮时保存提示文本到配置
         prompt_text = self.text_edit.toPlainText()
-        cfg.set(cfg.custom_prompt_text, prompt_text)
+        cfg.set(cfg.custom_prompt_text, prompt_text, True)
         print(cfg.custom_prompt_text.value)
 
 

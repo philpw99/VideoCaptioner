@@ -47,13 +47,9 @@ class SubtitlePipelineThread(QThread):
                 return
 
             # 2. 字幕优化/翻译
-            # self.task.status = Task.Status.OPTIMIZING
-            if self.task.need_optimize or self.task.need_translate:
-                if self.task.need_optimize:
-                    self.progress.emit(40, self.tr("开始优化+翻译字幕"))
-                else:
-                    self.progress.emit(40, self.tr("开始单句翻译字幕"))
-                
+            # self.task.status = Task.Status.TRANSLATING
+            if self.task.need_translate:
+                self.progress.emit(40, self.tr("开始优化+翻译字幕"))
                 optimization_thread = SubtitleOptimizationThread(self.task)
                 optimization_thread.progress.connect(lambda value, msg: self.progress.emit(int(40 + value * 0.2), msg))
                 optimization_thread.error.connect(handle_error)

@@ -322,11 +322,3 @@ class WhisperSettingDialog(MessageBoxBase):
                 position=InfoBarPosition.BOTTOM
             )
             return
-        if cfg.transcribe_language.value == TranscribeLanguageEnum.JAPANESE:
-            InfoBar.warning(
-                self.tr("请注意身体！！"),
-                self.tr("小心肝儿,注意身体哦~"),
-                duration=2000,
-                parent=self.window(),
-                position=InfoBarPosition.BOTTOM
-            )

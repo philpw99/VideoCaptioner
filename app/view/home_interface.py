@@ -19,8 +19,8 @@ class HomeInterface(QWidget):
         # 设置对象名称和样式
         self.setObjectName('HomeInterface')
         self.setStyleSheet("""
-            HomeInterface{background: white}
-        """)
+            HomeInterface{background: #333}
+        """)  # Dark grey
 
         # 创建分段控件和堆叠控件
         self.pivot = SegmentedWidget(self)
@@ -61,21 +61,22 @@ class HomeInterface(QWidget):
         self.pivot.setCurrentItem('TranscriptionInterface')
 
     def switch_to_subtitle_optimization(self, task: Task | None):
-        # 切换到字幕优化界面
-        if task.need_optimize or task.need_translate:
-            self.subtitle_optimization_interface.set_task(task)
+        # 切换到字幕优化/翻译界面 但不执行
+        self.subtitle_optimization_interface.set_task(task)
+        if task.type != Task.Type.TRANSCRIBE:
             self.subtitle_optimization_interface.process()
-            self.stackedWidget.setCurrentWidget(self.subtitle_optimization_interface)
-            self.pivot.setCurrentItem('SubtitleOptimizationInterface')
+        self.stackedWidget.setCurrentWidget(self.subtitle_optimization_interface)
+        self.pivot.setCurrentItem('SubtitleOptimizationInterface')
 
     def switch_to_video_synthesis(self, task: Task | None):
-        # 切换到视频合成界面
+        # 切换到视频合成界面 但不执行
         self.video_synthesis_interface.set_task(task)
-        self.video_synthesis_interface.process()
+        if task.type == Task.Type.SUBTITLE:
+            self.video_synthesis_interface.process()
         self.stackedWidget.setCurrentWidget(self.video_synthesis_interface)
         self.pivot.setCurrentItem('VideoSynthesisInterface')
 
-    def addSubInterface(self, widget, objectName, text):
+    def addSubInterface(self, widget: QWidget, objectName: str, text: str):
         # 添加子界面到堆叠控件和分段控件
         widget.setObjectName(objectName)
         self.stackedWidget.addWidget(widget)

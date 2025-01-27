@@ -1,7 +1,7 @@
 # coding:utf-8
 from enum import Enum
 
-from PyQt5.QtCore import QLocale
+from PyQt5.QtCore import QLocale, QMutex
 from PyQt5.QtGui import QColor
 from qfluentwidgets import (qconfig, QConfig, ConfigItem, OptionsConfigItem, BoolValidator,
                             OptionsValidator, RangeConfigItem, RangeValidator,
@@ -19,7 +19,7 @@ from ..core.entities import (
     OutputSubtitleFormatEnum,
     TodoWhenDoneEnum,
     SubtitleLayoutEnum,
-    InternetTranslateEnum,
+    TranslateMethodEnum
 )
 
 class Language(Enum):
@@ -32,20 +32,18 @@ class Language(Enum):
 class LanguageSerializer(ConfigSerializer):
     """ Language serializer """
 
-    def serialize(self, language):
+    def serialize(self, language: Language):
         return language.value.name() if language != Language.AUTO else "Auto"
 
     def deserialize(self, value: str):
         return Language(QLocale(value)) if value != "Auto" else Language.AUTO
 
+mutAudioRecording = QMutex()
+mutTranscribing = QMutex()
+mutTranslating = QMutex()
+mutSynthezing = QMutex()
 
 class Config(QConfig):
-    # Global variables here. g as global, b as bool
-    gbDoingAudioRecoding = False
-    gbDoingTranscribing = False
-    gbDoingOptimizing = False
-    gbDoingSynthesis = False
-    
     """ 应用配置 """
     # ------------------- LLM 配置 -------------------
     api_key = ConfigItem("LLM", "API_Key", "")
@@ -139,15 +137,11 @@ class Config(QConfig):
     whisper_api_prompt = ConfigItem("WhisperAPI", "WhisperApiPrompt", "")
 
     # ------------------- 字幕配置 -------------------
-    need_optimize = ConfigItem("Subtitle", "NeedOptimize", True, BoolValidator())
-    need_translate = ConfigItem("Subtitle", "NeedTranslate", False, BoolValidator())
-    use_internet_translate = ConfigItem("Subtitle","UseInternetTranslate", False, BoolValidator())
-    use_internet_translate_method = OptionsConfigItem(
-        "Subtitle","UseInternetTranslateMethod",
-        InternetTranslateEnum.GOOGLE.value,
-        OptionsValidator(InternetTranslateEnum),
-        EnumSerializer(InternetTranslateEnum)
-    )
+    translate_method = OptionsConfigItem("Subtitle","Translate Method",
+                                            TranslateMethodEnum.NONE,
+                                            EnumOptionsValidator(TranslateMethodEnum),
+                                            EnumExSerializer(TranslateMethodEnum)
+                                        )
     target_language = OptionsConfigItem(
         "Subtitle", "TargetLanguage",
         TargetLanguageEnum.CHINESE_SIMPLIFIED.value,
@@ -185,7 +179,7 @@ class Config(QConfig):
         OptionsValidator(OutputSubtitleFormatEnum),
         EnumSerializer(OutputSubtitleFormatEnum)
     )
-    subtitle_file_prefix = ConfigItem("Subtitle", "FilePrefix", "")
+    subtitle_file_prefix = ConfigItem("Subtitle", "FilePrefix", "Out-")
     subtitle_file_suffix = ConfigItem("Subtitle", "FileSuffix", "")
 
     # ------------------- 字幕最低时长配置 -------------------
@@ -225,6 +219,10 @@ class Config(QConfig):
         OptionsValidator(Language),
         LanguageSerializer(),
         restart=True
+    )
+
+    no_thumbnail = ConfigItem(
+        "MainWindow", "NoThumbnail", False, BoolValidator()
     )
 
     # ------------------- 更新配置 -------------------

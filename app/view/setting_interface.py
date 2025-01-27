@@ -11,7 +11,7 @@ from qfluentwidgets import (SettingCardGroup, SwitchSettingCard, OptionsSettingC
 
 from app.components.WhisperAPISettingDialog import WhisperAPISettingDialog
 from app.config import VERSION, YEAR, AUTHOR, HELP_URL, FEEDBACK_URL, RELEASE_URL
-from app.core.entities import TranscribeModelEnum, SubtitleLayoutEnum, InternetTranslateEnum
+from app.core.entities import TranscribeModelEnum, SubtitleLayoutEnum, TranslateMethodEnum
 from ..common.config import cfg
 from ..components.EditComboBoxSettingCard import EditComboBoxSettingCard
 from ..components.EnumComboBoxSettingCard import EnumComboBoxSettingCard
@@ -104,35 +104,14 @@ class SettingInterface(ScrollArea):
 
         # 翻译与优化配置
         self.translateGroup = SettingCardGroup(self.tr("翻译与优化"), self.scrollWidget)
-        self.subtitleCorrectCard = SwitchSettingCard(
-            FIF.EDIT,
-            self.tr('字幕校正'),
-            self.tr('是否对生成的字幕进行校正'),
-            cfg.need_optimize,
-            self.translateGroup
-        )
-        self.subtitleTranslateCard = SwitchSettingCard(
-            FIF.LANGUAGE,
-            self.tr('人工智能字幕翻译'),
-            self.tr('是否对生成的字幕进行AI大模型智能翻译（包含校正过程）'),
-            cfg.need_translate,
-            self.translateGroup
-        )
-        self.internetTranslateCard = SwitchSettingCard(
-            FIF.GLOBE,
-            self.tr('网络翻译'),
-            self.tr('使用互联网的免费翻译服务'),
-            cfg.use_internet_translate,
-            self.translateGroup
-        )
         
-        self.internetTranslateMethodCard = ComboBoxSettingCard(
-            cfg.use_internet_translate_method,
-            FIF.LINK,
-            self.tr("网络翻译选择"),
-            self.tr("选择免费翻译服务网站"),
-            texts = [method.value for method in InternetTranslateEnum],
-            parent= self.translateGroup
+        self.subtitleTranslateCard = EnumComboBoxSettingCard(
+            cfg.translate_method,
+            FIF.SPEAKERS,
+            self.tr('字幕翻译'),
+            self.tr('是否对转录生成的字幕进行翻译/或者不翻译'),
+            TranslateMethodEnum,
+            self.translateGroup
         )
         
         self.targetLanguageCard = ComboBoxSettingCard(
@@ -287,6 +266,14 @@ class SettingInterface(ScrollArea):
             texts=['简体中文', '繁體中文', 'English', self.tr('使用系统设置')],
             parent=self.personalGroup
         )
+        
+        self.noThumbnailCard = SwitchSettingCard(
+            FIF.PHOTO,
+            self.tr("No Thumbnails"),
+            self.tr("Don't show thumbnails for NSFW reasons."),
+            cfg.no_thumbnail,
+            parent=self.personalGroup
+        )
 
         # 应用信息
         self.aboutGroup = SettingCardGroup(self.tr('关于'), self.scrollWidget)
@@ -361,10 +348,7 @@ class SettingInterface(ScrollArea):
         self.llmGroup.addSettingCard(self.batchSizeCard)
         self.llmGroup.addSettingCard(self.threadNumCard)
 
-        self.translateGroup.addSettingCard(self.subtitleCorrectCard)
         self.translateGroup.addSettingCard(self.subtitleTranslateCard)
-        self.translateGroup.addSettingCard(self.internetTranslateCard)
-        self.translateGroup.addSettingCard(self.internetTranslateMethodCard)
         self.translateGroup.addSettingCard(self.targetLanguageCard)
 
         self.subtitleGroup.addSettingCard(self.subtitleStyleCard)
@@ -384,6 +368,7 @@ class SettingInterface(ScrollArea):
         self.personalGroup.addSettingCard(self.themeColorCard)
         self.personalGroup.addSettingCard(self.zoomCard)
         self.personalGroup.addSettingCard(self.languageCard)
+        self.personalGroup.addSettingCard(self.noThumbnailCard)
 
         self.aboutGroup.addSettingCard(self.helpCard)
         self.aboutGroup.addSettingCard(self.feedbackCard)
@@ -428,23 +413,23 @@ class SettingInterface(ScrollArea):
         self.aboutCard.clicked.connect(self.checkUpdate)
 
         # 全局 signalBus
-        self.subtitleCorrectCard.checkedChanged.connect(signalBus.on_subtitle_optimization_changed)
+
+        # Local to signalBus
         self.subtitleLayoutCard.comboBox.currentTextChanged.connect(signalBus.on_subtitle_layout_changed)
-        self.subtitleTranslateCard.checkedChanged.connect(signalBus.on_subtitle_translation_changed)
-        self.internetTranslateCard.checkedChanged.connect(signalBus.on_internet_translation_changed)
-        self.internetTranslateMethodCard.comboBox.currentTextChanged.connect(signalBus.on_internet_translation_method_changed)
+        self.subtitleTranslateCard.comboBox.currentTextChanged.connect(signalBus.on_translation_method_changed)
         self.targetLanguageCard.comboBox.currentTextChanged.connect(signalBus.on_target_language_changed)
         self.softSubtitleCard.checkedChanged.connect(signalBus.on_soft_subtitle_changed)
         self.needVideoCard.checkedChanged.connect(signalBus.on_need_video_changed)
         # self.languageCard.comboBox.currentTextChanged.connect(signalBus.on_language_changed)
         
-        signalBus.subtitle_optimization_changed.connect(self.subtitleCorrectCard.setChecked)
+        # signalBus to local
         signalBus.subtitle_layout_changed.connect(self.subtitleLayoutCard.comboBox.setCurrentText)
-        signalBus.subtitle_translation_changed.connect(self.subtitleTranslateCard.setChecked)
-        signalBus.internet_translation_changed.connect(self.internetTranslateCard.setChecked)
-        signalBus.internet_translation_method_changed.connect(self.internetTranslateMethodCard.comboBox.setCurrentText)
+        signalBus.translation_method_changed.connect(self.subtitleTranslateCard.comboBox.setCurrentText)
         signalBus.target_language_changed.connect(self.targetLanguageCard.comboBox.setCurrentText)
         signalBus.language_changed.connect(self.languageCard.comboBox.setCurrentText)
+        signalBus.need_video_changed.connect(self.needVideoCard.switchButton.setChecked)
+        signalBus.soft_subtitle_changed.connect(self.softSubtitleCard.switchButton.setChecked)
+        signalBus.transcription_model_changed.connect(self.transcribeModelCard.comboBox.setCurrentText)
         
     def show_whisper_settings(self):
         """显示Whisper设置对话框"""

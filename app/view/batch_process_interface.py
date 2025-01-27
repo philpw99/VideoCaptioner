@@ -20,7 +20,7 @@ from ..common.config import cfg
 from ..common.signal_bus import signalBus
 
 from ..core.entities import SupportedVideoFormats, SupportedAudioFormats, TodoWhenDoneEnum, SupportedSubtitleFormats, SupportedImageFormats
-from ..core.entities import Task, VideoInfo, BatchTaskTypeEnum
+from ..core.entities import Task, VideoInfo, BatchTaskTypeEnum, TranslateMethodEnum
 from ..core.thread.create_task_thread import CreateTaskThread
 from ..core.thread.subtitle_pipeline_thread import SubtitlePipelineThread
 from ..core.thread.transcript_thread import TranscriptThread
@@ -49,11 +49,11 @@ class BatchProcessInterface(QWidget):
         self.setWindowTitle(self.tr("批量处理"))
         self.setAcceptDrops(True)
 
-        self.tasks = []
-        self.task_cards = []
+        self.tasks: list[Task] = []
+        self.task_cards: list[TaskInfoCard] = []
         self.processing = False
         self.lock = Lock()
-        self.create_threads = []
+        self.create_threads: list[CreateTaskThread] = []
         self.setup_ui()
         self._initStyle()
         self.setup_signals()
@@ -126,28 +126,34 @@ class BatchProcessInterface(QWidget):
         """)
 
     def setup_signals(self):
+        # Local
         self.add_file_button.clicked.connect(self.on_add_file)
         self.clear_all_button.clicked.connect(self.clear_all_tasks)
         self.start_all_button.clicked.connect(self.start_batch_process)
         self.cancel_button.clicked.connect(self.cancel_batch_process)
         self.todo_when_done_combobox.currentTextChanged.connect(self.todo_when_done_changed)
         
+        # From signalBus to local
         signalBus.need_video_changed.connect(self.set_default_task_type)
+        signalBus.translation_method_changed.connect(self.set_default_task_type)
         signalBus.soft_subtitle_changed.connect(self.set_default_task_type)
 
     def set_default_task_type(self, whatever):
         # Set it according to the configuration
-        if cfg.need_video.value:    
+        if cfg.need_video.value:
+            # Has video.
             if cfg.soft_subtitle.value:
                 # Create soft sub video
                 self.task_type_combo.setCurrentText(BatchTaskTypeEnum.SOFT.value)
             else:
                 # Create hard sub video
                 self.task_type_combo.setCurrentText(BatchTaskTypeEnum.HARD.value)
-        elif cfg.need_translate.value:
-            self.task_type_combo.setCurrentText(BatchTaskTypeEnum.TRANSLATE.value)
-        else:
+        elif cfg.translate_method.value == TranslateMethodEnum.NONE:
+            # No video. No translation.
             self.task_type_combo.setCurrentText(BatchTaskTypeEnum.TRANSCRIBE.value)
+        else:
+            # No video. Need translation.
+            self.task_type_combo.setCurrentText(BatchTaskTypeEnum.TRANSLATE.value)
 
     def todo_when_done_changed(self, text: str):
         cfg.set(cfg.todo_when_done, TodoWhenDoneEnum(text))
@@ -198,7 +204,7 @@ class BatchProcessInterface(QWidget):
         InfoBar.info(
             self.tr("开始处理"),
             self.tr("开始批量处理任务"),
-            duration=2000,
+            duration=5000,
             position=InfoBarPosition.BOTTOM,
             parent=self
         )
@@ -206,9 +212,9 @@ class BatchProcessInterface(QWidget):
         # 查找头两个未完成的任务并开始处理
         c = 1
         for task_card in self.task_cards:
-            if task_card.task.status not in [Task.Status.COMPLETED, Task.Status.FAILED]:
-                if c == 2:  # Add a 5 second pause between 1 and 2
-                    time.sleep(5)
+            if task_card.task.status == Task.Status.PENDING:
+                if c == 2:  # Add a 2 second pause between 1 and 2
+                    time.sleep(2)
                 task_card.finished.connect(self.on_task_finished)
                 task_card.error.connect(self.on_task_error)
                 task_card.start()
@@ -381,8 +387,8 @@ class BatchProcessInterface(QWidget):
         if files:
             file_dir = str( Path(files[0]).parent )
             if file_dir != cfg.last_open_dir.value:
-                cfg.last_open_dir.value = file_dir
-                cfg.save()
+                cfg.set( cfg.last_open_dir, file_dir, True)
+
 
     def create_task(self, file_path, task_type: Task.Type, soft_sub: bool):
         """创建新任务"""
@@ -397,8 +403,28 @@ class BatchProcessInterface(QWidget):
                     parent=self
                 )
                 return
-
-        create_thread = CreateTaskThread(file_path, task_type, soft_sub)
+        
+        need_translate = False
+        need_video = False
+        match task_type:
+            case Task.Type.SUBTITLE:
+                need_video = True
+                need_translate = False if cfg.translate_method.value == TranslateMethodEnum.NONE else False
+            case Task.Type.TRANSCRIBE:
+                need_video = False
+                need_translate = False
+            case Task.Type.TRANSLATE:
+                need_video = cfg.need_video.value
+                need_translate = True
+        
+        create_thread = CreateTaskThread(
+                            file_path,
+                            task_type,
+                            need_translate,
+                            cfg.translate_method.value,
+                            soft_sub,
+                            need_video,
+                        )
         create_thread.finished.connect(self.add_task_card)
         create_thread.finished.connect(lambda: self.cleanup_thread(create_thread))
         self.create_threads.append(create_thread)
@@ -529,7 +555,7 @@ class TaskInfoCard(CardWidget):
         self.task: Task = None
         self.setup_ui()
         self.setup_signals()
-        self.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.customContextMenuRequested.connect(self.show_context_menu)
         self.installEventFilter(ToolTipFilter(self, 100, ToolTipPosition.BOTTOM))
 
@@ -663,20 +689,35 @@ class TaskInfoCard(CardWidget):
         # 设置整体tooltip
         
         strategy_text = ""
-        if self.task.need_optimize or self.task.need_translate:
-            if self.task.need_optimize:
-                strategy_text += self.tr("翻译方式：智能多线程优化+翻译，目标: ") + str(self.task.target_language) + " "
-            if self.task.need_translate:
-                strategy_text += self.tr("翻译方式：智能单线程单句翻译，目标: ") + self.task.target_language + " "
+        if self.task.need_translate:
+            match self.task.translate_method:
+                case TranslateMethodEnum.OPTIMIZE:
+                    strategy_text += self.tr("翻译方式：智能多线程优化+翻译，目标: "
+                                            ) + str(self.task.target_language) + " "
+                case TranslateMethodEnum.SINGLE_SENTENCE:
+                    strategy_text += self.tr("翻译方式：智能单线程单句翻译，目标: "
+                                             ) + self.task.target_language + " "
+                case TranslateMethodEnum.GOOGLE:
+                    strategy_text += self.tr("翻译方式：谷歌批量翻译，目标: "
+                                             ) + self.task.target_language + " "
+
             strategy_text += self.tr(", 使用的LLM 模型: ") + self.task.llm_model + ""
-            if self.task.soft_subtitle:
-                strategy_text += self.tr(" 字幕类型：软字幕 ")
-            else:
-                strategy_text += self.tr(" 字幕类型：硬字幕 ")
-            if self.task.portrait:
-                strategy_text += self.tr(" 竖屏模式：开启 ")
-            if self.task.portrait_background:
-                strategy_text += "\n" + self.tr(" 竖屏背景: ") + self.task.portrait_background
+
+        # if self.task.need_video:
+        #     if self.task.soft_subtitle:
+        #         strategy_text += self.tr(" 任务：视频加软字幕 ")
+        #     else:
+        #         strategy_text += self.tr(" 任务：视频加硬字幕 ")
+        # else:   # No video
+        #     if self.task.type == Task.Type.TRANSCRIBE:
+        #         strategy_text += self.tr(" 任务：语言转录 ")
+        #     elif self.task.type == Task.Type.TRANSLATE:
+        #         strategy_text += self.tr(" 任务：生成字幕文件 ")
+
+        if self.task.portrait:
+            strategy_text += self.tr(" 竖屏模式：开启 ")
+        if self.task.portrait_background:
+            strategy_text += "\n" + self.tr(" 竖屏背景: ") + self.task.portrait_background
 
         tooltip = self.tr("任务类型: ") + self.task.type.value + "  " + self.tr("转录模型: ") + self.task.transcribe_model.value + "\n"
         if len(self.task.file_path) > 100:
@@ -689,7 +730,7 @@ class TaskInfoCard(CardWidget):
 
     def update_thumbnail(self, thumbnail_path):
         """更新视频缩略图"""
-        if not Path(thumbnail_path).exists():
+        if not Path(thumbnail_path).exists() or cfg.no_thumbnail.value:
             thumbnail_path = RESOURCE_PATH / "assets" / "audio-thumbnail.png"
 
         pixmap = QPixmap(str(thumbnail_path)).scaled(
@@ -852,20 +893,21 @@ class TaskInfoCard(CardWidget):
         self.progress_ring.resume()
 
         # 开始转录过程
-        if self.task.type == Task.Type.TRANSCRIBE:
-            self.transcript_thread = TranscriptThread(self.task)
-            self.transcript_thread.finished.connect(self.on_finished)
-            self.transcript_thread.progress.connect(self.on_progress)
-            self.transcript_thread.error.connect(self.on_error)
-            self.transcript_thread.start()
-        elif self.task.type == Task.Type.SUBTITLE:
-            self.subtitle_thread = SubtitlePipelineThread(self.task)
-            self.subtitle_thread.finished.connect(self.on_finished)
-            self.subtitle_thread.progress.connect(self.on_progress)
-            self.subtitle_thread.error.connect(self.on_error)
-            self.subtitle_thread.start()
-        else:
-            self.on_error(self.tr("任务类型错误"))
+        match self.task.type:
+            case Task.Type.TRANSCRIBE:
+                self.transcript_thread = TranscriptThread(self.task)
+                self.transcript_thread.finished.connect(self.on_finished)
+                self.transcript_thread.progress.connect(self.on_progress)
+                self.transcript_thread.error.connect(self.on_error)
+                self.transcript_thread.start()
+            case Task.Type.SUBTITLE | Task.Type.TRANSLATE:
+                self.subtitle_thread = SubtitlePipelineThread(self.task)
+                self.subtitle_thread.finished.connect(self.on_finished)
+                self.subtitle_thread.progress.connect(self.on_progress)
+                self.subtitle_thread.error.connect(self.on_error)
+                self.subtitle_thread.start()
+            case _:
+                self.on_error(self.tr("任务类型错误"))
 
     def on_open_folder_clicked(self):
         """打开文件夹按钮点击事件"""

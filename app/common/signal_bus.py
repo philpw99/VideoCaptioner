@@ -3,21 +3,18 @@ from PyQt5.QtCore import QObject, pyqtSignal, QUrl
 class SignalBus(QObject):
     # 字幕排布信号
     subtitle_layout_changed = pyqtSignal(str)
-    # 字幕优化信号
-    subtitle_optimization_changed = pyqtSignal(bool)
-    # 字幕AI翻译信号
-    subtitle_translation_changed = pyqtSignal(bool)
     # 翻译语言
     target_language_changed = pyqtSignal(str)
     # 界面语言
     language_changed = pyqtSignal(str)
     # 使用网络翻译
-    internet_translation_changed = pyqtSignal(bool)
-    internet_translation_method_changed = pyqtSignal(bool)
-    # 
+    translation_method_changed = pyqtSignal(str)
+    # 合成视频信号
     need_video_changed = pyqtSignal(bool)
+    # 软字幕信号
     soft_subtitle_changed = pyqtSignal(bool)
-
+    # 转录方式信号
+    transcription_model_changed = pyqtSignal(str)
     # App log signal
     app_log_signal = pyqtSignal(str)
 
@@ -29,6 +26,9 @@ class SignalBus(QObject):
     video_segment_play = pyqtSignal(int, int)  # 播放片段信号，参数为开始和结束时间(ms)
     video_subtitle_added = pyqtSignal(str)  # 添加字幕文件信号
 
+    def on_transcription_model_changed(self, model:str):
+        self.transcription_model_changed.emit(model)
+    
     def on_need_video_changed(self, needVideo: bool):
         self.need_video_changed.emit(needVideo)
     
@@ -38,31 +38,8 @@ class SignalBus(QObject):
     def on_subtitle_layout_changed(self, layout: str):
         self.subtitle_layout_changed.emit(layout)
 
-    def on_subtitle_optimization_changed(self, optimization: bool):
-        if optimization:
-            # 如果开启字幕优化+翻译，则关闭批量单句翻译
-            self.subtitle_translation_changed.emit(False)
-            self.internet_translation_changed.emit(False)
-        self.subtitle_optimization_changed.emit(optimization)
-
-    def on_subtitle_translation_changed(self, translation: bool):
-        if translation:
-            # 如果开启批量单句字幕翻译,则关闭字幕优化+翻译
-            self.subtitle_optimization_changed.emit(False)
-            self.internet_translation_changed.emit(False)
-        self.subtitle_translation_changed.emit(translation)
-
-    def on_internet_translation_changed(self, isInternetTranslate: bool):
-        """由人工智能变成网络翻译，或者相反"""
-        if isInternetTranslate:
-            # If use internet translate, disable subtitle optimization and AI translation
-            signalBus.subtitle_optimization_changed.emit(False)
-            signalBus.subtitle_translation_changed.emit(False)
-        self.internet_translation_changed.emit(isInternetTranslate)
-
-    def on_internet_translation_method_changed(self, index: int):
-        # 网络翻译方式列表，暂时只有谷歌翻译
-        pass
+    def on_translation_method_changed(self, value: str):
+        self.translation_method_changed.emit(value)
     
     def on_target_language_changed(self, language: str):
         self.target_language_changed.emit(language)

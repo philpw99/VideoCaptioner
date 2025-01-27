@@ -99,6 +99,7 @@ class VideoInfoCard(CardWidget):
         self.video_thumbnail.setFixedSize(208, 117)
         self.video_thumbnail.setStyleSheet("background-color: #1E1F22;")
         self.video_thumbnail.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        
         pixmap = QPixmap(default_thumbnail_path).scaled(
             self.video_thumbnail.size(),
             Qt.AspectRatioMode.KeepAspectRatio,
@@ -120,9 +121,9 @@ class VideoInfoCard(CardWidget):
         self.details_layout = QHBoxLayout()
         self.details_layout.setSpacing(15)
 
-        self.resolution_info = self.create_pill_button(self.tr("画质"), 110)
-        self.file_size_info = self.create_pill_button(self.tr("文件大小"), 110)
-        self.duration_info = self.create_pill_button(self.tr("时长"), 100)
+        self.resolution_info = self.create_pill_button(self.tr("画质"), 130)
+        self.file_size_info = self.create_pill_button(self.tr("文件大小"), 130)
+        self.duration_info = self.create_pill_button(self.tr("时长"), 130)
 
         self.progress_ring = ProgressRing(self)
         self.progress_ring.setFixedSize(20, 20)
@@ -171,15 +172,17 @@ class VideoInfoCard(CardWidget):
 
     def update_thumbnail(self, thumbnail_path):
         """更新视频缩略图"""
-        if not Path(thumbnail_path).exists():
-            thumbnail_path = RESOURCE_PATH / "assets" / "audio-thumbnail.png"
+        if not cfg.no_thumbnail.value:
+            # It's ok to set the thumbnail.
+            if not Path(thumbnail_path).exists():
+                thumbnail_path = RESOURCE_PATH / "assets" / "audio-thumbnail.png"
 
-        pixmap = QPixmap(str(thumbnail_path)).scaled(
-            self.video_thumbnail.size(),
-            Qt.AspectRatioMode.KeepAspectRatio,
-            Qt.TransformationMode.SmoothTransformation
-        )
-        self.video_thumbnail.setPixmap(pixmap)
+            pixmap = QPixmap(str(thumbnail_path)).scaled(
+                self.video_thumbnail.size(),
+                Qt.AspectRatioMode.KeepAspectRatio,
+                Qt.TransformationMode.SmoothTransformation
+            )
+            self.video_thumbnail.setPixmap(pixmap)
 
     def setup_signals(self):
         self.start_button.clicked.connect(self.on_start_button_clicked)

@@ -20,7 +20,7 @@ from ..utils.video_utils import video2audio
 from ..utils.logger import setup_logger
 from ..utils.test_opanai import test_openai
 from ...config import MODEL_PATH
-from ...common.config import cfg
+from ...common.config import cfg, mutAudioRecording, mutTranscribing
 from ...core.thread.subtitle_optimization_thread import FREE_API_CONFIGS
 
 logger = setup_logger("transcript_thread")
@@ -44,8 +44,6 @@ class TranscriptThread(QThread):
         self.task = task
 
     def run(self):
-        doingAudio = False
-        doingTranscribe = False
         try:
             logger.info(f"\n===========转录任务开始===========")
             logger.info(f"时间：{time.strftime("%d %b %Y %H:%M:%S")}")
@@ -65,41 +63,35 @@ class TranscriptThread(QThread):
                 raise ValueError(self.tr("视频路径不能为空"))
 
             # 如果音频在制作中，等待
-            if cfg.gbDoingAudioRecoding:
+            if not mutAudioRecording.tryLock(1):
                 # Some task is doing audio recoding.
                 self.progress.emit(0, self.tr("等待其他音频处理结束"))
                 self.task.status = Task.Status.WAITINGAUDIO
-                while cfg.gbDoingAudioRecoding:
-                    time.sleep(1)
+                mutAudioRecording.lock()
                     
             # 转换为音频
             self.progress.emit(5, self.tr("转换音频中"))
             logger.info("开始转换音频")
             self.task.status = Task.Status.TRANSCODING
 
-            cfg.gbDoingAudioRecoding = True    # 开始转音频
-            doingAudio = True
             audio_save_path = Path(self.task.audio_save_path)
             is_success = video2audio(str(video_path), output_file=str(audio_save_path), format= self.task.audio_format)
-            cfg.gbDoingAudioRecoding = False   # 完成
-            doingAudio = False
+            mutAudioRecording.unlock()
             if not is_success:
                 logger.error("音频转换失败")
                 raise RuntimeError(self.tr("音频转换失败"))
 
             # 如果音频在转录中，等待
-            if cfg.gbDoingTranscribing:
+            if not mutTranscribing.tryLock(1):
                 # Some task is doing transcribing.
                 self.progress.emit(0, self.tr("等待其他转录结束"))
                 self.task.status = Task.Status.WAITINGTRANSCRIBE
-                while cfg.gbDoingTranscribing:
-                    time.sleep(1)
+                mutTranscribing.lock()
 
             self.task.status = Task.Status.TRANSCRIBING
             self.progress.emit(20, self.tr("语音转录中"))
             logger.info("开始语音转录")
-            cfg.gbDoingTranscribing = True
-            doingTranscribe = True
+
 
             # 获取ASR模型
             asr_class = self.ASR_MODELS.get(self.task.transcribe_model) # Use the Enum instead of Enum.value
@@ -174,7 +166,7 @@ class TranscriptThread(QThread):
                 if not asr_data:
                     # word merging failed
                     raise ValueError(self.tr("智能断句失败，请检查你的大模型Base URL和API Key是否有效。"))
-                
+
             # Check if asr_data needs to add minimum length
             if cfg.subtitle_enable_sentence_minimum_time.value:
                 asr_data.add_minimum_len(cfg.subtitle_sentence_minimum_time.value)
@@ -209,18 +201,15 @@ class TranscriptThread(QThread):
             except Exception as e:
                 logger.error("删除音频文件或封面失败: %s", str(e))
 
-            doingTranscribe = False
             self.progress.emit(100, self.tr("转录完成"))
             self.finished.emit(self.task)
-            cfg.gbDoingTranscribing = False
+            mutTranscribing.unlock()
+
         except Exception as e:
             logger.exception("转录过程中发生错误: %s", str(e))
             self.error.emit(str(e))
             self.progress.emit(100, self.tr("转录失败"))
-            if doingAudio:
-                cfg.gbDoingAudioRecoding = False
-            if doingTranscribe:
-                cfg.gbDoingTranscribing = False
+            mutTranscribing.unlock()
 
     def progress_callback(self, value, message):
         progress = min(20 + (value * 0.8), 100)

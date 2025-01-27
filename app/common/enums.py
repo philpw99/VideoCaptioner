@@ -2,7 +2,7 @@
 from enum import Enum
 from PyQt5.QtCore import QObject
 from qfluentwidgets import ConfigValidator, ConfigSerializer
-from ..core.entities import SubtitleLayoutEnum, InternetTranslateEnum, TodoWhenDoneEnum, Task, BatchTaskTypeEnum
+from ..core.entities import SubtitleLayoutEnum, TodoWhenDoneEnum, Task, BatchTaskTypeEnum, TranslateMethodEnum
 
 class EnumOptionsValidator(ConfigValidator):
     """ Enum Options validator """
@@ -48,9 +48,12 @@ def Enums_Translate():
     SubtitleLayoutEnum.ONLY_TRANSLATE.setValue( qoEnums.tr("Translated Only") )
     SubtitleLayoutEnum.ORIGINAL_ON_TOP.setValue( qoEnums.tr("Original on Top") )
     SubtitleLayoutEnum.TRANSLATE_ON_TOP.setValue( qoEnums.tr("Translated on Top"))
-
-    InternetTranslateEnum.GOOGLE.setValue( qoEnums.tr("Google Translate"))
     
+    TranslateMethodEnum.OPTIMIZE.setValue( qoEnums.tr("Optimize Translate") )
+    TranslateMethodEnum.GOOGLE.setValue( qoEnums.tr("Google Translate") )
+    TranslateMethodEnum.SINGLE_SENTENCE.setValue( qoEnums.tr("Single Sentence Translate") )
+    TranslateMethodEnum.NONE.setValue( qoEnums.tr("No Translation") )
+
     TodoWhenDoneEnum.NOTHING.setValue( qoEnums.tr("Nothing"))
     TodoWhenDoneEnum.EXIT.setValue( qoEnums.tr("Exit The Program"))
     TodoWhenDoneEnum.SHUTDOWN.setValue( qoEnums.tr("Shutdown The Computer"))
@@ -67,15 +70,15 @@ def Enums_Translate():
     Task.Status.TRANSCODING.setValue( qoEnums.tr("Transcoding"))
     Task.Status.TRANSLATING.setValue( qoEnums.tr("Translating"))
     Task.Status.WAITINGAUDIO.setValue( qoEnums.tr("Waiting for audio transcoding"))
-    Task.Status.WAITINGOPTIMIZE.setValue( qoEnums.tr("Waiting for optimization"))
+    Task.Status.WAITINGTRANSLATE.setValue( qoEnums.tr("Waiting for translating."))
     Task.Status.WAITINGSYNTHESIS.setValue( qoEnums.tr("Waiting for video synthesis"))
     Task.Status.WAITINGTRANSCRIBE.setValue( qoEnums.tr("Waiting for transcripting"))
 
     Task.Source.FILE_IMPORT.setValue( qoEnums.tr("File Import"))
     Task.Source.URL_IMPORT.setValue( qoEnums.tr("URL Import"))
     
-    Task.Type.OPTIMIZE.setValue( qoEnums.tr("Optimize + Translate Subtitles"))
     Task.Type.SUBTITLE.setValue( qoEnums.tr("Add Subtitle To Video"))
     Task.Type.SYNTHESIS.setValue( qoEnums.tr("Combine Subtitle with Video"))
     Task.Type.TRANSCRIBE.setValue( qoEnums.tr("Get Subtitle From Video/Audio"))
+    Task.Type.TRANSLATE.setValue(qoEnums.tr("Add Translated Sub To Video"))
     Task.Type.URL.setValue( qoEnums.tr("Download Video from URL then Add Subtitle"))

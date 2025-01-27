@@ -7,7 +7,7 @@ import requests
 import yt_dlp
 from PyQt5.QtCore import QThread, pyqtSignal, QObject
 
-from ..entities import Task, TranscribeModelEnum, VideoInfo, LANGUAGES
+from ..entities import Task, TranscribeModelEnum, TranslateMethodEnum, VideoInfo, LANGUAGES
 from ..utils.video_utils import get_video_info
 from ...common.config import cfg
 from ..utils.logger import setup_logger
@@ -21,24 +21,44 @@ class CreateTaskThread(QThread):
     progress = pyqtSignal(int, str)
     error = pyqtSignal(str)
 
-    def __init__(self, file_path, task_type: Task.Type, soft_sub: bool = True):
+    def __init__(self, file_path,
+                 task_type: Task.Type,
+                 need_translate: bool = False,
+                 translate_method: TranslateMethodEnum = None,
+                 soft_sub: bool = True,
+                 need_video: bool = False,
+                 url: str = None):
         super().__init__()
         self.file_path = file_path
         self.task_type = task_type
+        self.need_translate = need_translate
+        self.translate_method = translate_method
         self.soft_sub = soft_sub
+        self.need_video = need_video
+        self.url = url
 
     def run(self):
         try:
             match self.task_type:
-                case Task.Type.SUBTITLE:
-                    self.create_file_task(self.file_path, self.task_type, self.soft_sub, need_video = True)
+                case Task.Type.SUBTITLE | Task.Type.TRANSLATE:
+                    self.create_file_task(self.file_path,
+                                            task_type=self.task_type,
+                                            soft_sub=self.soft_sub,
+                                            need_translate = self.need_translate,
+                                            translate_method = self.translate_method,
+                                            need_video =self.need_video
+                                        )
+
                 case Task.Type.URL:
                     # Here whether to do the final video synthesis depends on config value
-                    self.create_url_task(self.file_path, self.task_type, self.soft_sub, cfg.need_video.value)
+                    self.create_url_task(need_translate=self.need_translate,
+                                         translate_method = self.translate_method,
+                                         url=self.url,
+                                         soft_sub=self.soft_sub,
+                                         need_video=cfg.need_video.value,
+                                         )
                 case Task.Type.TRANSCRIBE:
-                    self.create_transcription_task(self.file_path, self.task_type)
-                case Task.Type.TRANSLATE:
-                    self.create_file_task(self.file_path, self.task_type, self.soft_sub, need_video = False)
+                    self.create_transcription_task(self.file_path)
                 case _:
                     ValueError("No matching task type.")
         except Exception as e:
@@ -46,7 +66,13 @@ class CreateTaskThread(QThread):
             self.progress.emit(0, self.tr("创建任务失败"))
             self.error.emit(str(e))
 
-    def create_file_task(self, file_path, task_type: Task.Type, soft_sub: bool, need_video: bool):
+    def create_file_task(self,
+                         file_path: str,
+                         task_type: Task.Type,
+                         need_translate: bool,
+                         translate_method: TranslateMethodEnum,
+                         soft_sub: bool,
+                         need_video: bool):
         logger.info("\n===================")
         logger.info(f"开始创建文件任务：{file_path}")
         # 使用 Path 对象处理路径
@@ -91,24 +117,6 @@ class CreateTaskThread(QThread):
 
         need_word_time_stamp = cfg.transcribe_model.value.value in [TranscribeModelEnum.JIANYING.value, TranscribeModelEnum.BIJIAN.value]
 
-        match task_type:
-            case Task.Type.OPTIMIZE:
-                need_optimze = True
-                need_translate = True
-            case Task.Type.TRANSLATE:
-                need_optimze = False
-                need_translate = True
-            case Task.Type.TRANSCRIBE:
-                need_optimze = False
-                need_translate = False
-            case Task.Type.SUBTITLE:
-                need_optimze = cfg.need_optimize.value
-                need_translate = cfg.need_translate.value
-            case Task.Type.URL:
-                need_optimze = cfg.need_optimize.value
-                need_translate = cfg.need_translate.value
-
-                
         # 创建 Task 对象
         task = Task(
             id=0,
@@ -151,7 +159,7 @@ class CreateTaskThread(QThread):
             api_key=cfg.api_key.value,
             llm_model=cfg.model.value,
             need_translate=need_translate,
-            need_optimize=need_optimze,
+            translate_method=translate_method,
             max_word_count_cjk=cfg.max_word_count_cjk.value,
             max_word_count_english=cfg.max_word_count_english.value,
             need_split=cfg.need_split.value,
@@ -167,8 +175,14 @@ class CreateTaskThread(QThread):
         self.finished.emit(task)
         self.progress.emit(100, self.tr("创建任务完成"))
         logger.info(f"文件任务创建完成：{task}")
+        return task
 
-    def create_url_task(self, task_type: Task.Type, url, soft_sub: bool, need_video: bool):
+    def create_url_task(self,
+                        need_translate: bool,
+                        translate_method: TranslateMethodEnum,
+                        url: str,
+                        soft_sub: bool,
+                        need_video: bool):
         logger.info("\n===================")
         logger.info(f"开始创建URL任务：{url}")
         self.progress.emit(5, self.tr("正在获取视频信息"))
@@ -188,7 +202,7 @@ class CreateTaskThread(QThread):
             audio_codec=info_dict.get('acodec', ''),
             audio_sampling_rate=info_dict.get('asr', 0),
             thumbnail_path=thumbnail_file_path,
-            type = task_type
+            type = Task.Type.URL,
         )
 
         # 使用 Path 对象处理路径
@@ -271,8 +285,8 @@ class CreateTaskThread(QThread):
             base_url=cfg.api_base.value,
             api_key=cfg.api_key.value,
             llm_model=cfg.model.value,
-            need_translate=cfg.need_translate.value,
-            need_optimize=cfg.need_optimize.value,
+            need_translate=need_translate,
+            translate_method=translate_method,
             max_word_count_cjk=cfg.max_word_count_cjk.value,
             max_word_count_english=cfg.max_word_count_english.value,
             need_split=cfg.need_split.value,
@@ -283,12 +297,13 @@ class CreateTaskThread(QThread):
             subtitle_style_srt=subtitle_style_srt,
             need_video=need_video,
             vertical_offset=cfg.vertical_offset.value,
-            task=Task.Type.SUBTITLE,
+            task=Task.Type.URL,
         )
         self.finished.emit(task)
         logger.info(f"URL任务创建完成：{task}")
+        return task
 
-    def create_transcription_task(self, file_path, task_type: Task.Type):
+    def create_transcription_task(self, file_path):
         logger.info(f"开始创建转录任务：{file_path}")
 
         # task_work_dir = Path(file_path).parent
@@ -378,66 +393,13 @@ class CreateTaskThread(QThread):
             max_word_count_english=cfg.max_word_count_english.value,
             need_video=False,
             soft_subtitle=True,
-            need_optimize=False,
+            translate_method=None,
             need_translate=False,
-            type=task_type,  # It should be Transcribe only, no video generation.
+            type=Task.Type.TRANSCRIBE,  # It should be Transcribe only, no video generation.
             # Don't set need_video here because it can be part of subtitle pipeline
         )
         self.finished.emit(task)
         logger.info(f"转录任务创建完成：{task}")
-
-    def create_subtitle_optimization_task(file_path, task_type: Task.Type):
-        # This includes optimize+ translate and single translate
-        logger.info(f"开始创建字幕优化翻译任务：{file_path}")
-        file_full_path = Path(file_path)
-        task_work_dir = Path(file_path).parent
-
-        need_optimze = True if task_type == Task.Type.OPTIMIZE else False
-        
-        if need_optimze:
-            result_subtitle_type = qoCreateTask.tr("【反思+翻译字幕】")
-        else:
-            result_subtitle_type = qoCreateTask.tr("【单句翻译字幕】")
-            
-        logger.info(f"字幕类型: {result_subtitle_type}")
-
-        original_subtitle_save_path = task_work_dir / file_path
-        result_subtitle_save_path = file_full_path.parent / ( cfg.subtitle_file_prefix.value + file_full_path.stem + cfg.subtitle_file_suffix.value + "." + cfg.subtitle_output_format.value.value )
-
-        ass_style_name = cfg.subtitle_style_name.value
-        ass_style_path = SUBTITLE_STYLE_PATH / f"{ass_style_name}.txt"
-        if ass_style_path.exists():
-            subtitle_style_srt = ass_style_path.read_text(encoding="utf-8")
-        else:
-            subtitle_style_srt = None
-
-        # 创建 Task 对象
-        task = Task(
-            id=0,
-            queued_at=datetime.datetime.now(),
-            started_at=datetime.datetime.now(),
-            completed_at=None,
-            status=Task.Status.OPTIMIZING,
-            work_dir=str(task_work_dir),
-            target_language=cfg.target_language.value.value,
-            original_subtitle_save_path=str(original_subtitle_save_path),
-            base_url=cfg.api_base.value,
-            api_key=cfg.api_key.value,
-            llm_model=cfg.model.value,
-            need_translate=True,
-            need_optimize=need_optimze,
-            result_subtitle_save_path=str(result_subtitle_save_path),
-            thread_num=cfg.thread_num.value,
-            batch_size=cfg.batch_size.value,
-            subtitle_layout=cfg.subtitle_layout.value,
-            need_split=cfg.need_split.value,
-            max_word_count_cjk=cfg.max_word_count_cjk.value,
-            max_word_count_english=cfg.max_word_count_english.value,
-            subtitle_style_srt=subtitle_style_srt,
-            type=task_type,
-            # Don't set need_video here because it can be part of subtitle pipeline
-        )
-        logger.info(f"字幕优化任务创建完成：{task}")
         return task
 
     def create_video_synthesis_task(subtitle_file, video_file, soft_sub: bool):

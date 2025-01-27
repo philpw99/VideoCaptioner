@@ -24,26 +24,21 @@ class BatchTaskTypeEnum(MuEnum):
     SOFT = "Create Soft Subtitle Video"
     HARD = "Create Hard Subtitle Video"
 
+
 class SubtitleLayoutEnum(MuEnum):
     """ 字幕布局 """
     ONLY_ORIGINAL = "Original Only"
     ONLY_TRANSLATE = "Translated Only"
     ORIGINAL_ON_TOP = "Original On Top"
     TRANSLATE_ON_TOP = "Translated On Top"
-    @classmethod
-    def add_member(cls, name, value):
-        if name not in cls.__members__:
-            member = object.__new__(cls)
-            member._value_ = value
-            member._name_ = name
-            cls.__members__[name] = member
-        else:
-            raise ValueError(f"Member '{name}' already exists")
 
 
-class InternetTranslateEnum(MuEnum):
-    """网络翻译"""
-    GOOGLE = "Google Translate"
+class TranslateMethodEnum(MuEnum):
+    """翻译方式"""
+    OPTIMIZE = "大模型优化+翻译"
+    SINGLE_SENTENCE = "大模型单句翻译"
+    GOOGLE = "谷歌翻译"
+    NONE = "不翻译"
 
 
 class SupportedImageFormats(Enum):
@@ -253,7 +248,8 @@ class TodoWhenDoneEnum(MuEnum):
 class TranscribeLanguageEnum(Enum):
     """ 转录语言 """
     ENGLISH = "English"
-    CHINESE = "中文"
+    CHINESE_SIMPLIFIED = "简体中文"
+    CHINESE_TRADITIONAL = "繁体中文"
     JAPANESE = "Japanese"
     KOREAN = "Korean"
     YUE = "粤语"
@@ -352,11 +348,14 @@ class TranscribeLanguageEnum(Enum):
     BASHKIR = "Bashkir"
     JAVANESE = "Javanese"
     SUNDANESE = "Sundanese"
-    CANTONESE = "Cantonese"
+    CANTONESE = "粤语"
 
 LANGUAGES = {
     "英语": "en",
     "中文": "zh",
+    "简体中文": "zh-cn",
+    "繁体中文": "zh-tw",
+    "粤语": "yue",
     "日本語": "ja",
     "德语": "de",
     "粤语": "yue",
@@ -511,7 +510,7 @@ class Task:
         DOWNLOADING = "Downloading"
         WAITINGAUDIO = "Waiting for audio transcoding"
         WAITINGTRANSCRIBE = "Waiting for transcribing"
-        WAITINGOPTIMIZE = "Waiting for optimizing"
+        WAITINGTRANSLATE = "Waiting for translating"
         WAITINGSYNTHESIS = "Waiting for synthesizing"
         TRANSCODING = "Transcoding"
         TRANSCRIBING = "Transcribing"
@@ -529,12 +528,12 @@ class Task:
 
     class Type(MuEnum):
         # 任务类型：transcribe or generate subtitle
-        TRANSCRIBE = "Get Subtitle From Video/Audio"
-        TRANSLATE = "Transcribe Video/Audio then Translate"
-        SUBTITLE = "Add Subtitle To Video"
-        OPTIMIZE = "Optimize + Translate Subtitles"
-        SYNTHESIS = "Combine Subtitle with Video"
-        URL = "Download Video from URL then Add Subtitle"
+        TRANSCRIBE = "Get Subtitle From Video/Audio"        # Get sub by whisper, save directly as srt or ass
+        TRANSLATE = "Transcribe Video/Audio then Translate" # Get sub then translate it, save sub as file
+        SUBTITLE = "Add Subtitle To Video"                  # Get sub then save it into the video file. Soft or hard.
+        SYNTHESIS = "Combine Subtitle with Video"           # Combine sub with video only.
+        URL = "Download Video from URL then Add Subtitle"   # Download video, get sub then translat then add it to video
+        
         
     # 任务信息
     id: int = field(default_factory=lambda: randint(0, 100_000_000))
@@ -589,7 +588,7 @@ class Task:
     api_key: Optional[str] = None
     llm_model: Optional[str] = None
     need_translate: bool = False
-    need_optimize: bool = False
+    translate_method: Optional[TranslateMethodEnum] = None   # Optimize, single translate or google
     result_subtitle_save_path: Optional[str] = None
     thread_num: int = 10
     batch_size: int = 10

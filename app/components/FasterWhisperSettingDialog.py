@@ -29,11 +29,11 @@ from ..core.thread.modelscope_download_thread import ModelscopeDownloadThread
 # 在文件开头添加常量定义
 FASTER_WHISPER_PROGRAMS = [
     {
-        "label": "GPU + CPU 版本 r194.5",
+        "label": "GPU + CPU 版本 r245.2",
         "value": "faster-whisper-gpu.7z",
         "type": "GPU",
         "size": "1.35 GB",
-        "downloadLink": "https://modelscope.cn/models/bkfengg/whisper-cpp/resolve/master/Faster-Whisper-XXL_r194.5_windows.7z",
+        "downloadLink": "https://github.com/Purfview/whisper-standalone-win/releases/download/Faster-Whisper-XXL/Faster-Whisper-XXL_r245.2_windows.7z",
     },
     {
         "label": "CPU版本",
@@ -834,7 +834,19 @@ class FasterWhisperSettingDialog(MessageBoxBase):
         self.manage_model_card.linkButton.clicked.connect(self._show_model_manager)
         self.yesButton.clicked.connect(self._on_yes_button_clicked)
         self.vad_filter_card.checkedChanged.connect(self._on_vad_filter_changed)
+        self.one_word_card.switchButton.checkedChanged.connect(self._on_one_word_changed)
+        self.translate_to_english_card.checkedChanged.connect(self._on_translate_to_english_changed)
         
+    def _on_one_word_changed(self, checked: bool):
+        cfg.faster_whisper_one_word.value = checked
+        if checked:
+            self.translate_to_english_card.setChecked(False)
+    
+    def _on_translate_to_english_changed(self, checked: bool):
+        cfg.faster_whisper_translate_to_english.value = checked
+        if checked:
+            self.one_word_card.setChecked(False)
+    
     def _on_vad_filter_changed(self, checked: bool):
         """VAD过滤开关状态改变时的处理"""
         self.vad_threshold_card.setEnabled(checked)
@@ -864,15 +876,6 @@ class FasterWhisperSettingDialog(MessageBoxBase):
                 position=InfoBarPosition.BOTTOM
             )
         
-        if cfg.transcribe_language.value == TranscribeLanguageEnum.JAPANESE:
-            InfoBar.warning(
-                self.tr("请注意身体！！"),
-                self.tr("小心肝儿,注意身体哦~"),
-                duration=2000,
-                parent=self.window(),
-                position=InfoBarPosition.BOTTOM
-            )
-
     def _check_faster_whisper(self):
         """检查 faster-whisper 程序是否存在，如不存在则显示下载对话框"""
         has_program, _ = check_faster_whisper_exists()

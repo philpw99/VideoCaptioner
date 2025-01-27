@@ -8,13 +8,13 @@ from PyQt5.QtCore import pyqtSignal, Qt, QStandardPaths
 from PyQt5.QtGui import QPixmap, QDragEnterEvent, QDropEvent
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QApplication, QLabel, QFileDialog, QMessageBox
 from qfluentwidgets import LineEdit, ProgressBar, PushButton, InfoBar, InfoBarPosition, BodyLabel, ToolButton, HyperlinkButton
-from qfluentwidgets import FluentIcon, FluentStyleSheet, ComboBoxSettingCard
+from qfluentwidgets import FluentIcon, FluentStyleSheet, ComboBoxSettingCard, SwitchSettingCard
 from qfluentwidgets import FluentIcon as FIF
 
-from ..common.config import cfg, InternetTranslateEnum
+from ..common.config import cfg, Language, LanguageSerializer
 from ..components.SimpleSettingCard import ComboBoxSimpleSettingCard, SwitchButtonSimpleSettingCard
-from ..core.entities import SupportedAudioFormats, SupportedVideoFormats
-from ..core.entities import TargetLanguageEnum, TranscribeModelEnum, Task
+from ..core.entities import SupportedAudioFormats, SupportedVideoFormats, OutputSubtitleFormatEnum, SubtitleLayoutEnum
+from ..core.entities import TargetLanguageEnum, TranscribeModelEnum, Task, TranslateMethodEnum, LANGUAGES
 from ..core.thread.create_task_thread import CreateTaskThread
 from ..config import APPDATA_PATH, ASSETS_PATH, VERSION
 from ..components.WhisperSettingDialog import WhisperSettingDialog
@@ -22,6 +22,7 @@ from ..components.WhisperAPISettingDialog import WhisperAPISettingDialog
 from .log_window import LogWindow
 from ..common.signal_bus import signalBus
 from ..components.FasterWhisperSettingDialog import FasterWhisperSettingDialog
+from ..components.EnumComboBoxSettingCard import EnumComboBoxSettingCard
 
 
 LOGO_PATH = ASSETS_PATH / "logo.png"
@@ -83,24 +84,34 @@ class TaskCreationInterface(QWidget):
         transcription_layout.addWidget(self.whisper_setting_button)
         transcription_container.setLayout(transcription_layout)
 
-        # 创建字幕修正+翻译卡片
-        self.subtitle_optimization_card = SwitchButtonSimpleSettingCard(
-            self.tr("人工智能字幕修正+翻译"),
-            self.tr("使用AI大模型进行字幕修正（格式、错字、标点等），如果源字幕和目标字幕不同则翻译，需要充足Token。"),
+        # 创建视频合成开关
+        self.video_synthesis_card = SwitchButtonSimpleSettingCard(
+            self.tr("字幕视频合成"),
+            self.tr("是否把字幕合成到视频里面。"),
             self
         )
 
-        # 创建字幕单句翻译卡片
-        self.subtitle_translation_card = SwitchButtonSimpleSettingCard(
-            self.tr("人工智能单句字幕翻译"),
-            self.tr("使用AI大模型进行单句字幕翻译，可以少用Token。"),
+        # 创建软硬字幕开关，这需要打开视频合成开关
+        self.soft_subtitle_card = SwitchButtonSimpleSettingCard(
+            self.tr("软字幕"),
+            self.tr("是否合成软字幕视频，关掉则会合成硬字幕"),
+            self
+        )
+
+
+        # 创建字幕翻译方式卡片
+        self.translation_method_card = ComboBoxSimpleSettingCard(
+            self.tr("字幕翻译方式"),
+            self.tr("选择字幕翻译方式，或者不翻译。"),
+            [enum.value for enum in TranslateMethodEnum],
             self
         )
 
         self.config_layout1.addWidget(transcription_container)
-        self.config_layout1.addWidget(self.subtitle_optimization_card)
-        self.config_layout1.addWidget(self.subtitle_translation_card)
-
+        self.config_layout1.addWidget(self.video_synthesis_card)
+        self.config_layout1.addWidget(self.soft_subtitle_card)
+        self.config_layout1.addWidget(self.translation_method_card)
+        
         config_container1 = QWidget()
         config_container1.setLayout(self.config_layout1)
         config_container1.setFixedHeight(70)
@@ -114,16 +125,17 @@ class TaskCreationInterface(QWidget):
             self
         )
         
-        self.internet_translate_card = SwitchButtonSimpleSettingCard(
-            self.tr("使用网络翻译"),
-            self.tr("使用免费网络翻译服务"),
+        self.target_format_card = ComboBoxSimpleSettingCard(
+            self.tr("字幕输出格式"),
+            self.tr("字幕文件的后缀名"),
+            [enum.value for enum in OutputSubtitleFormatEnum],
             self
         )
         
-        self.internet_translate_method_card = ComboBoxSimpleSettingCard(
-            self.tr("Internet Translate"),
-            self.tr("Use translation service like Google Translate."),
-            [language.value for language in InternetTranslateEnum],
+        self.subtitle_layout_card = ComboBoxSimpleSettingCard(
+            self.tr("字幕布局"),
+            self.tr("原文在上，译文在上，或者其它布局"),
+            [enum.value for enum in SubtitleLayoutEnum],
             self
         )
 
@@ -131,8 +143,8 @@ class TaskCreationInterface(QWidget):
         self.config_layout2.setObjectName("config_layout2")
         self.config_layout2.setSpacing(20)
         self.config_layout2.addWidget(self.target_language_card)
-        self.config_layout2.addWidget(self.internet_translate_card)
-        self.config_layout2.addWidget(self.internet_translate_method_card)
+        self.config_layout2.addWidget(self.target_format_card)
+        self.config_layout2.addWidget(self.subtitle_layout_card)
         
         config_container2 = QWidget()
         config_container2.setLayout(self.config_layout2)
@@ -255,85 +267,159 @@ class TaskCreationInterface(QWidget):
         self.main_layout.addWidget(bottom_container)
 
     def setup_signals(self):
+        # Local
         self.start_button.clicked.connect(self.on_start_clicked)
         self.search_input.textChanged.connect(self.on_search_input_changed)
         self.log_button.clicked.connect(self.show_log_window)
-        self.transcription_model_card.comboBox.currentIndexChanged.connect(
-            self.on_transcription_model_changed
-        )
 
-        self.subtitle_optimization_card.switchButton.checkedChanged.connect(signalBus.on_subtitle_optimization_changed)
-        self.subtitle_translation_card.switchButton.checkedChanged.connect(signalBus.on_subtitle_translation_changed)
-        self.target_language_card.comboBox.currentTextChanged.connect(signalBus.on_target_language_changed)
-        self.internet_translate_card.switchButton.checkedChanged.connect(signalBus.on_internet_translation_changed)
-        self.internet_translate_method_card.comboBox.currentTextChanged.connect(signalBus.on_internet_translation_method_changed)
-        self.languageCard.comboBox.currentTextChanged.connect(signalBus.on_language_changed)
+        # Local to signalBus
+        self.transcription_model_card.comboBox.currentTextChanged.connect(
+            signalBus.on_transcription_model_changed
+        )
+        self.translation_method_card.comboBox.currentTextChanged.connect(
+            signalBus.on_translation_method_changed
+        )
+        self.video_synthesis_card.switchButton.checkedChanged.connect(
+            signalBus.on_need_video_changed
+        )
+        self.soft_subtitle_card.switchButton.checkedChanged.connect(
+            signalBus.on_soft_subtitle_changed
+        )
+        self.subtitle_layout_card.comboBox.currentTextChanged.connect(
+            signalBus.on_subtitle_layout_changed
+        )
+        self.target_language_card.comboBox.currentTextChanged.connect(
+            signalBus.on_target_language_changed
+        )
+        self.languageCard.comboBox.currentTextChanged.connect(
+            signalBus.on_language_changed
+        )
         
-        signalBus.subtitle_optimization_changed.connect(self.on_subtitle_optimization_changed)
-        signalBus.subtitle_translation_changed.connect(self.on_subtitle_translation_changed)
-        signalBus.internet_translation_changed.connect(self.on_internet_translation_changed)
-        signalBus.internet_translation_method_changed.connect(self.on_internet_translation_method_changed)
+        
+        # Signal bus to local
+        signalBus.soft_subtitle_changed.connect(self.on_soft_subtitle_changed)
+        signalBus.subtitle_layout_changed.connect(self.on_subtitle_layout_changed)
+        signalBus.need_video_changed.connect(self.on_video_synthesis_changed)
+        signalBus.translation_method_changed.connect(self.on_translate_method_changed)
+        signalBus.transcription_model_changed.connect(self.on_transcription_model_changed)
         signalBus.target_language_changed.connect(self.on_target_language_changed)
         signalBus.language_changed.connect(self.on_language_changed)
 
-    def on_subtitle_optimization_changed(self, optimization: bool):
-        """当字幕优化状态改变时触发"""
-        self.subtitle_optimization_card.setChecked(optimization)
+    def on_subtitle_layout_changed(self, value: str):
+        enum = SubtitleLayoutEnum(value)
+        if cfg.subtitle_layout.value != enum:
+            cfg.set(cfg.subtitle_layout, enum, True)    # Save the new setting
+        comboBox = self.subtitle_layout_card.comboBox
+        if comboBox.currentText() != enum.value:
+            comboBox.setCurrentText(enum.value)
 
-    def on_subtitle_translation_changed(self, translation: bool ):
-        self.subtitle_translation_card.setChecked(translation)
+
+    def on_translate_method_changed(self, value: str):
+        """当字幕翻译方式改变时触发"""
+        # Set configItem to the new enum
+        enum = TranslateMethodEnum(value)
+        if cfg.translate_method.value != enum:
+            cfg.set(cfg.translate_method, enum, True)
+        comboBox = self.translation_method_card.comboBox
+        if comboBox.currentText() != enum.value:
+            comboBox.setCurrentText(enum.value)
+
+        if enum == TranslateMethodEnum.NONE:
+            self.soft_subtitle_card.setDisabled(True)
+            self.target_language_card.setDisabled(True)
+            self.subtitle_layout_card.setDisabled(True)
+        else:
+            self.soft_subtitle_card.setDisabled(False)
+            self.target_language_card.setDisabled(False)
+            self.subtitle_layout_card.setDisabled(False)
+
+    def on_soft_subtitle_changed(self, enable: bool):
+        if cfg.soft_subtitle.value != enable:
+            cfg.set(cfg.soft_subtitle, enable, True)    # Save it.
+        switch = self.soft_subtitle_card.switchButton
+        if switch.isChecked() != enable:
+            switch.setChecked(enable)
+        
+    def on_video_synthesis_changed(self, enable: bool):
+        if cfg.need_video.value != enable:
+            cfg.set(cfg.need_video, enable, True)       # Save it.
+        switch = self.video_synthesis_card.switchButton
+        if switch.isChecked() != enable:
+            switch.setChecked(enable)
+        self.soft_subtitle_card.setEnabled(enable)
 
     def on_target_language_changed(self, language: str):
-        self.target_language_card.comboBox.setCurrentText(language)
+        enum = TargetLanguageEnum(language)
+        if cfg.target_language.value != enum:
+            cfg.set(cfg.target_language, enum, True)
+        comboBox = self.target_language_card.comboBox
+        if comboBox.currentText() != enum.value:
+            comboBox.setCurrentText(enum.value)
+
+    def on_transcription_model_changed(self, value: str):
+        """当转录模型改变时触发"""
+        enum = TranscribeModelEnum(value)
+        if cfg.transcribe_model.value != enum:
+            cfg.set(cfg.transcribe_model, enum, True)
+        comboBox = self.transcription_model_card.comboBox
+        if comboBox.currentText != enum.value:
+            comboBox.setCurrentText(enum.value)
+        self.whisper_setting_button.setVisible( self.is_using_whisper())
+            
 
     def setup_values(self):
-        self.transcription_model_card.setValue(cfg.transcribe_model.value.value)
-        self.target_language_card.setValue(cfg.target_language.value.value)
-        self.subtitle_optimization_card.setChecked(cfg.need_optimize.value)
-        self.subtitle_translation_card.setChecked(cfg.need_translate.value)
-        # self.target_language_card.setEnabled(self.subtitle_translation_card.isChecked())
-        self.internet_translate_card.setChecked(cfg.use_internet_translate.value)
-        self.internet_translate_method_card.comboBox.setCurrentText(cfg.use_internet_translate_method.value.value)
-        self.internet_translate_method_card.setDisabled(not cfg.use_internet_translate.value)
+        self.transcription_model_card.comboBox.setCurrentText(cfg.transcribe_model.value.value)
+        self.translation_method_card.comboBox.setCurrentText(cfg.translate_method.value.value)
+        self.video_synthesis_card.setChecked(cfg.need_video.value)
+        self.soft_subtitle_card.setChecked( cfg.soft_subtitle.value )
+        if not cfg.need_video.value:
+            self.soft_subtitle_card.setDisabled(True)
+        self.target_language_card.comboBox.setCurrentText(cfg.target_language.value.value)
+        self.target_format_card.comboBox.setCurrentText(cfg.subtitle_output_format.value.value)
+        self.subtitle_layout_card.comboBox.setCurrentText(cfg.subtitle_layout.value.value)
+
+       
         self.search_input.setText("")
-        self.whisper_setting_button.setVisible(
-            self.transcription_model_card.value() == TranscribeModelEnum.WHISPER.value or
-            self.transcription_model_card.value() == TranscribeModelEnum.WHISPER_API.value or
-            self.transcription_model_card.value() == TranscribeModelEnum.FASTER_WHISPER.value
-        )
-        if cfg.api_base == "":
+        self.whisper_setting_button.setVisible( self.is_using_whisper())
+
+        if self.is_base_url_needed():
             InfoBar.warning(
-                self.tr("警告"),
-                self.tr("为确保字幕修正的准确性，建议到设置中配置自己的API"),
-                duration=6000,
+                self.tr("警告，需要配置 Base URL！"),
+                self.tr("你需要去设置中配置自己的Base URL，API Key和LLM Model。"),
+                duration=10000,
                 parent=self,
                 position=InfoBarPosition.BOTTOM_RIGHT
         )
 
-    def on_transcription_model_changed(self, value):
-        """当转录模型改变时触发"""
-        if value in [model.value for model in TranscribeModelEnum]:
-            cfg.set(cfg.transcribe_model, value)
-            self.whisper_setting_button.setVisible(
-                value == TranscribeModelEnum.WHISPER.value or
-                value == TranscribeModelEnum.WHISPER_API.value or
-                value == TranscribeModelEnum.FASTER_WHISPER.value
-            )
+    def is_base_url_needed(self) -> bool:
+        # Find out if LLM model will be used.
+        if cfg.translate_method.value in [
+            TranslateMethodEnum.OPTIMIZE,
+            TranslateMethodEnum.SINGLE_SENTENCE
+            ] or (self.is_using_whisper() and cfg.faster_whisper_one_word.value
+            ) and cfg.api_base == "" :
+            return True
+
+    def is_using_whisper(self) -> bool:
+        return  cfg.transcribe_model.value in [
+                TranscribeModelEnum.WHISPER,
+                TranscribeModelEnum.WHISPER_API,
+                TranscribeModelEnum.FASTER_WHISPER,
+            ]
+        
 
     def show_whisper_settings(self):
         """显示Whisper设置对话框"""
-        if self.transcription_model_card.value() == TranscribeModelEnum.WHISPER.value:
-            dialog = WhisperSettingDialog(self.window())
-            if dialog.exec_():
-                return True
-        elif self.transcription_model_card.value() == TranscribeModelEnum.WHISPER_API.value:
-            dialog = WhisperAPISettingDialog(self.window())
-            if dialog.exec_():
-                return True
-        elif self.transcription_model_card.value() == TranscribeModelEnum.FASTER_WHISPER.value:
-            dialog = FasterWhisperSettingDialog(self.window())
-            if dialog.exec_():
-                return True
+        match cfg.transcribe_model.value:
+            case TranscribeModelEnum.WHISPER:
+                if WhisperSettingDialog(self.window()).exec_():
+                    return True
+            case TranscribeModelEnum.WHISPER_API:
+                if WhisperAPISettingDialog(self.window()).exec_():
+                    return True
+            case TranscribeModelEnum.FASTER_WHISPER:
+                if FasterWhisperSettingDialog(self.window()).exec_():
+                    return True
         return False
 
     def on_start_clicked(self):
@@ -355,23 +441,23 @@ class TaskCreationInterface(QWidget):
                 # Save this file's directory for later use
                 file_dir = str( Path(file_path).parent )
                 if file_dir != cfg.last_open_dir.value:
-                    cfg.last_open_dir.value = file_dir
-                    cfg.save()
+                    cfg.set(cfg.last_open_dir, file_dir,True)   # Set and save.
                 
                 self.search_input.setText(file_path)                
             return
 
-        if cfg.transcribe_model.value == TranscribeModelEnum.FASTER_WHISPER \
-                and cfg.faster_whisper_one_word.value \
-                and ( not cfg.api_base.value or not cfg.api_key.value ):
-            mbox = QMessageBox(self)
-            mbox.setWindowTitle(self.tr("API Base or API Key is not set."))
-            mbox.setText(self.tr("You use FasterWhisper and using split word feature.\n" \
-                                + "It requires working LLM settings.\n" \
-                                + "So please set up the 'API Base' and 'API Key' values in Settings before start the process."))
-            mbox.show()
+        if self.is_base_url_needed():
+            InfoBar.warning(
+                self.tr("警告，需要配置 Base URL！"),
+                self.tr("你需要去设置中配置自己的Base URL，API Key和LLM Model。"),
+                duration=10000,
+                parent=self,
+                position=InfoBarPosition.BOTTOM_RIGHT
+            )
             return
 
+        """
+        # There is no need to show faster whisper's settings again.
         need_whisper_settings = cfg.transcribe_model.value in [
             TranscribeModelEnum.WHISPER, 
             TranscribeModelEnum.WHISPER_API,
@@ -381,7 +467,7 @@ class TaskCreationInterface(QWidget):
         
         if need_whisper_settings and not self.show_whisper_settings():
             return
-
+        """
             
         self.process()
 
@@ -396,19 +482,16 @@ class TaskCreationInterface(QWidget):
 
     def dropEvent(self, event: QDropEvent):
         files = [u.toLocalFile() for u in event.mimeData().urls()]
-        for file_path in files:
+        for file in files:
+            file_path = Path(file)
             if not os.path.isfile(file_path):
                 continue
-
-            file_ext = os.path.splitext(file_path)[1][1:].lower()
 
             # 检查文件格式是否支持
             supported_formats = {fmt.value for fmt in SupportedVideoFormats} | {fmt.value for fmt in
                                                                                 SupportedAudioFormats}
-            is_supported = file_ext in supported_formats
-
-            if is_supported:
-                self.search_input.setText(file_path)
+            if file_path.suffix[1:] in supported_formats:
+                self.search_input.setText(file)
                 self.status_label.setText(self.tr("导入成功"))
                 InfoBar.success(
                     self.tr("导入成功"),
@@ -419,7 +502,7 @@ class TaskCreationInterface(QWidget):
                 break
             else:
                 InfoBar.error(
-                    self.tr(f"格式错误") + file_ext,
+                    self.tr(f"格式错误: ") + file_path.suffix,
                     self.tr("不支持该文件格式"),
                     duration=3000,
                     parent=self
@@ -446,15 +529,24 @@ class TaskCreationInterface(QWidget):
         except ValueError:
             return False
 
-    def _process_file(self, file_path):
-        if self.subtitle_optimization_card.switchButton.isChecked():
-            task_type = Task.Type.OPTIMIZE
-        elif self.subtitle_translation_card.switchButton.isChecked():
-            task_type = Task.Type.TRANSLATE
+    def _process_file(self, file_path: str):
+        need_translate = cfg.translate_method.value != TranslateMethodEnum.NONE
+        
+        if cfg.need_video.value:
+            task_type = Task.Type.SUBTITLE      # Save it to video, with translate or not
+        elif not need_translate:
+            task_type = Task.Type.TRANSCRIBE    # No translate and no synthesis
         else:
-            task_type = Task.Type.TRANSCRIBE
-
-        self.create_task_thread = CreateTaskThread(file_path, task_type, cfg.soft_subtitle.value)
+            task_type = Task.Type.TRANSLATE     # Save translated sub files only
+        
+        self.create_task_thread = CreateTaskThread(
+            file_path,
+            task_type,
+            need_translate=need_translate,
+            translate_method= cfg.translate_method.value,
+            soft_sub=cfg.soft_subtitle.value,
+            need_video=cfg.need_video.value,
+            )
         
         self.create_task_thread.finished.connect(self.on_create_task_finished)
         self.create_task_thread.progress.connect(self.on_create_task_progress)
@@ -470,7 +562,19 @@ class TaskCreationInterface(QWidget):
                 duration=5000,
                 parent=self
             )
-        self.create_task_thread = CreateTaskThread(url, Task.Type.URL, cfg.soft_subtitle.value)
+        
+        need_translate = cfg.translate_method.value == TranslateMethodEnum.NONE
+        
+        self.create_task_thread = CreateTaskThread(
+            None,
+            Task.Type.URL,
+            need_translate=need_translate,
+            translate_method= cfg.translate_method.value,
+            soft_sub=cfg.soft_subtitle.value,
+            need_video=cfg.need_video.value,
+            url=url
+            )
+        
         self.create_task_thread.finished.connect(self.on_create_task_finished)
         self.create_task_thread.progress.connect(self.on_create_task_progress)
         self.create_task_thread.error.connect(self.on_create_task_error)
@@ -525,22 +629,25 @@ class TaskCreationInterface(QWidget):
                 parent=self
             )
 
-    def on_internet_translation_changed(self, check: bool):
-        """由人工智能变成网络翻译，或者相反"""
-        # If use internet translate, disable subtitle optimization and AI translation
-        self.internet_translate_card.setChecked(check)
-        self.internet_translate_method_card.setDisabled(not check)
 
-    def on_internet_translation_method_changed(self, index: int):
-        if index != self.internet_translate_method_card.comboBox.currentIndex():
-            self.internet_translate_method_card.comboBox.setCurrentIndex(index)
-
-    def on_language_changed(self, language):
+    def on_language_changed(self, language: str):
+        if language == self.tr('使用系统设置'):
+            locale = ""
+        else:
+            locale = LANGUAGES[language]
+        
+        ls = LanguageSerializer()
+        lang = ls.deserialize(locale)
+        if cfg.language.value != lang:
+            cfg.set(cfg.language, lang, True)  # Set and save
+        comboBox = self.languageCard.comboBox
+        if comboBox.currentText() != language:
+            comboBox.setCurrentText(language)
         """ 显示重启提示 """
         InfoBar.success(
             self.tr('更新成功 :' + language),
             self.tr('配置将在重启后生效'),
-            duration=2000,
+            duration=5000,
             parent=self
         )
 

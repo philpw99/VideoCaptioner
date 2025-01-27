@@ -1,19 +1,20 @@
 import datetime
 import os
 from pathlib import Path
-import time
+import asyncio
 from typing import Dict
 
 from PyQt5.QtCore import QThread, pyqtSignal, QSettings
 
 from ..subtitle_processor.optimizer import SubtitleOptimizer
 from ..subtitle_processor.summarizer import SubtitleSummarizer
+from ..subtitle_processor.gtranslator import googleTranslate
 from ..bk_asr.ASRData import from_subtitle_file
-from ..entities import Task
+from ..entities import Task, TranslateMethodEnum
 from ..subtitle_processor.spliter import merge_segments
 from ..utils.test_opanai import test_openai
 from ..utils.logger import setup_logger
-from ...common.config import cfg
+from ...common.config import cfg, mutTranslating
 
 # 配置日志
 logger = setup_logger("subtitle_optimization_thread")
@@ -63,30 +64,26 @@ class SubtitleOptimizationThread(QThread):
         
 
     def run(self):
-        doingOptimizing = False
         try:
             logger.info(f"\n===========字幕优化/翻译任务开始===========")
             logger.info(f"时间：{datetime.datetime.now()}")
             
             # 获取API配置
-            self.progress.emit(2, self.tr("开始验证API配置..."))
-            base_url, api_key, llm_model, thread_num, batch_size = self._setup_api_config()
-            logger.info(f"使用 {llm_model} 作为LLM模型")
-            os.environ['OPENAI_BASE_URL'] = base_url
-            os.environ['OPENAI_API_KEY'] = api_key
+            if self.task.translate_method != TranslateMethodEnum.GOOGLE:
+                print("translate method:" + str(self.task.translate_method.value))
+                self.progress.emit(2, self.tr("开始验证API配置..."))
+                base_url, api_key, llm_model, thread_num, batch_size = self._setup_api_config()
+                logger.info(f"使用 {llm_model} 作为LLM模型")
+                os.environ['OPENAI_BASE_URL'] = base_url
+                os.environ['OPENAI_API_KEY'] = api_key
 
             str_path = self.task.original_subtitle_save_path
             result_subtitle_save_path = self.task.result_subtitle_save_path
             target_language = self.task.target_language
-            need_translate = self.task.need_translate
-            need_optimize = self.task.need_optimize
-            need_summarize = True if need_optimize else False
+            need_summarize = True if cfg.translate_method.value == TranslateMethodEnum.OPTIMIZE else False
             subtitle_style_srt = self.task.subtitle_style_srt
             subtitle_layout = self.task.subtitle_layout
-            max_word_count_cjk = self.task.max_word_count_cjk
-            max_word_count_english = self.task.max_word_count_english
             need_split=self.task.need_split
-            split_path = str(Path(result_subtitle_save_path).parent / f"【智能断句】{Path(str_path).stem}.srt")
             need_remove_punctuation = cfg.needs_remove_punctuation.value
 
             # 检查
@@ -94,17 +91,14 @@ class SubtitleOptimizationThread(QThread):
             assert Path(str_path).exists(), self.tr("字幕文件路径不存在")
             assert Path(str_path).suffix in ['.srt', '.vtt', '.ass'], self.tr("字幕文件格式不支持")
 
-            if cfg.gbDoingOptimizing:
-                self.task.status = Task.Status.WAITINGOPTIMIZE
+            # 锁定翻译独占权
+            if not mutTranslating.tryLock(1):
+                self.task.status = Task.Status.WAITINGTRANSLATE
                 self.progress.emit(5, self.tr("等待优化/翻译字幕"))
                 logger.info("有别的任务在进行优化/翻译字幕，等待其完成")
-                while cfg.gbDoingOptimizing:
-                    time.sleep(1)
+                mutTranslating.lock()  # Wait forever
             
-            cfg.gbDoingOptimizing = True
-            doingOptimizing = True
-            
-            if self.task.need_optimize:
+            if self.task.translate_method == TranslateMethodEnum.OPTIMIZE:
                 self.task.status = Task.Status.OPTIMIZING
                 self.progress.emit(10, self.tr("开始优化字幕..."))
 
@@ -132,45 +126,54 @@ class SubtitleOptimizationThread(QThread):
             # 制作成请求llm接口的格式 {{"1": "original_subtitle"},...}
             subtitle_json = {str(k): v["original_subtitle"] for k, v in asr_data.to_json().items()}
             self.subtitle_length = len(subtitle_json)
-            if need_optimize:
-                summarize_result = self.custom_prompt_text.strip()
-                self.progress.emit(20, self.tr("总结字幕..."))
-                if need_summarize and not summarize_result:
-                    summarizer = SubtitleSummarizer(model=llm_model)
-                    summarize_result = summarizer.summarize(asr_data.to_txt())
-                logger.info(f"总结字幕内容:{summarize_result}")
-                
+            
+            match self.task.translate_method:
+                case TranslateMethodEnum.OPTIMIZE:
+                    summarize_result = self.custom_prompt_text.strip()
+                    self.progress.emit(20, self.tr("总结字幕..."))
+                    if need_summarize and not summarize_result:
+                        summarizer = SubtitleSummarizer(model=llm_model)
+                        summarize_result = summarizer.summarize(asr_data.to_txt())
+                    logger.info(f"总结字幕内容:{summarize_result}")
+                    
 
-                self.progress.emit(30, self.tr("优化+翻译..."))
-                logger.info("正在优化+翻译...")
-                need_reflect = False if "glm-4-flash" in llm_model.lower() else True
-                self.optimizer = SubtitleOptimizer(
-                    summary_content=summarize_result,
-                    model=llm_model,
-                    target_language=target_language,
-                    batch_num=batch_size,
-                    thread_num=thread_num,
-                    llm_result_logger=self.llm_result_logger,
-                    need_remove_punctuation=need_remove_punctuation,
-                    cjk_only=True
-                )
-                optimizer_result = self.optimizer.optimizer_multi_thread(subtitle_json, translate=True,
-                                                                            reflect=need_reflect,
-                                                                            callback=self.callback)
-            elif need_translate:
-                self.progress.emit(30, self.tr("批量翻译单句字幕..."))
-                logger.info("正在批量翻译单句字幕...")
-                self.optimizer = SubtitleOptimizer(
-                    model=llm_model,
-                    batch_num=batch_size,
-                    # thread_num=thread_num,
-                    thread_num=1,
-                    llm_result_logger=self.llm_result_logger
-                )
-                optimizer_result = self.optimizer.translate_single_batch(subtitle_json, callback=self.callback)
+                    self.progress.emit(30, self.tr("优化+翻译..."))
+                    logger.info("正在优化+翻译...")
+                    need_reflect = False if "glm-4-flash" in llm_model.lower() else True
+                    self.optimizer = SubtitleOptimizer(
+                        summary_content=summarize_result,
+                        model=llm_model,
+                        target_language=target_language,
+                        batch_num=batch_size,
+                        thread_num=thread_num,
+                        llm_result_logger=self.llm_result_logger,
+                        need_remove_punctuation=need_remove_punctuation,
+                        cjk_only=True
+                    )
+                    translate_result = self.optimizer.optimizer_multi_thread(subtitle_json, translate=True,
+                                                                                reflect=need_reflect,
+                                                                                callback=self.callback)
 
+                case TranslateMethodEnum.SINGLE_SENTENCE:
+                    self.progress.emit(30, self.tr("批量翻译单句字幕..."))
+                    logger.info("正在批量翻译单句字幕...")
+                    self.optimizer = SubtitleOptimizer(
+                        model=llm_model,
+                        batch_num=batch_size,
+                        # thread_num=thread_num,
+                        thread_num=1,
+                        llm_result_logger=self.llm_result_logger
+                    )
+                    translate_result = self.optimizer.translate_single_batch(subtitle_json, callback=self.callback)
+                case TranslateMethodEnum.GOOGLE:
+                    self.progress.emit(30, self.tr("批量谷歌翻译字幕..."))
+                    logger.info("正在批量谷歌翻译字幕...")
+
+                    
+                    translate_result = asyncio.run(googleTranslate(subtitle_json, callback=self.callback))
+                    
             # 加入优化或者翻译后的字幕
-            for i, subtitle_text in optimizer_result.items():
+            for i, subtitle_text in translate_result.items():
                 seg = asr_data.segments[int(i) - 1]
                 seg.text = seg.text + "\n" + subtitle_text
 
@@ -182,12 +185,9 @@ class SubtitleOptimizationThread(QThread):
                                 layout=subtitle_layout)
             logger.info(f"字幕优化/翻译完成，保存到 {result_subtitle_save_path}")
 
-            # 删除断句文件
-            if os.path.exists(split_path):
-                os.remove(split_path)
             # 保存srt文件
-            if self.task.video_info:
-                save_srt_path = Path(self.task.work_dir) / f"【卡卡】{Path(self.task.video_info.file_name).stem}.srt"
+            if self.task.video_info and self.task.need_video:
+                save_srt_path = Path(self.task.work_dir) / f"VideoSub_{Path(self.task.video_info.file_name).stem}.srt"
                 asr_data.to_srt(save_path=str(save_srt_path), layout=subtitle_layout)
 
             # stop the llm logging in working dir
@@ -200,8 +200,7 @@ class SubtitleOptimizationThread(QThread):
             self.progress.emit(100, self.tr("优化/翻译完成"))
             logger.info("优化/翻译完成")
             self.finished.emit(self.task)
-            cfg.gbDoingOptimizing = False
-            doingOptimizing = False
+            mutTranslating.unlock()
         except Exception as e:
             logger.exception(f"优化失败: {str(e)}")
             self.error.emit(str(e))
@@ -211,8 +210,7 @@ class SubtitleOptimizationThread(QThread):
                     if handler.close: # Has close method
                         handler.close()
                     self.llm_result_logger.removeHandler(handler)
-            if doingOptimizing:
-                cfg.gbDoingOptimizing = False
+            mutTranslating.unlock()
 
     def callback(self, result: Dict):
         self.finished_subtitle_length += len(result)
@@ -221,8 +219,7 @@ class SubtitleOptimizationThread(QThread):
         self.update.emit(result)
 
     def stop(self):
-        if cfg.gbDoingOptimizing:
-            cfg.gbDoingOptimizing = False
+        mutTranslating.unlock()
         if hasattr(self, 'optimizer'):
             self.optimizer.stop()
         self.terminate()
