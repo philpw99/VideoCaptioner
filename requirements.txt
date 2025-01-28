@@ -11,3 +11,5 @@ PyQt-Fluent-Widgets
 yt_dlp
 
 modelscope
+
+googleTrans

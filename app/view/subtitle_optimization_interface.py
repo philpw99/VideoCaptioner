@@ -388,11 +388,22 @@ class SubtitleOptimizationInterface(QWidget):
                 translate_method=method,
                 soft_sub=cfg.soft_subtitle.value,
             )
-            self.task = task_thread.create_file_task(file_str, Task.Type.TRANSLATE, True, method, cfg.soft_subtitle.value, False)
-            
+            self.task = task_thread.create_file_task(
+                file_path=file_str, 
+                task_type=Task.Type.TRANSLATE,
+                need_translate=True,
+                translate_method=method,
+                soft_sub=cfg.soft_subtitle.value,
+                need_video=False)
         else:
             # Task already exists, update it
-            self.task = CreateTaskThread.create_file_task(file_str, Task.Type.TRANSLATE, True, method, cfg.soft_subtitle.value, False)
+            self.task = CreateTaskThread.create_file_task(
+                file_path=file_str,
+                task_type=Task.Type.TRANSLATE,
+                need_translate=True,
+                translate_method=method,
+                soft_sub=cfg.soft_subtitle.value,
+                need_video=False)
             
         # 设置任务的原始字幕保存路径
         self.task.original_subtitle_save_path = file_str
