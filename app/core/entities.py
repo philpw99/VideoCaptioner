@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from random import randint
 from typing import Optional
-
+from ..core.thread.create_task_thread import CreateTaskThread
 
 class MuEnum(Enum):
     """ Mutable Enum. Unlike regular Enum, its values can be set again. """
@@ -542,6 +542,7 @@ class Task:
     completed_at: Optional[datetime.datetime] = None
     status: Status = Status.PENDING
     type: Type = Type.SUBTITLE
+    task_thread: CreateTaskThread = None
     fraction_downloaded: float = 0.0
     work_dir: Optional[str] = None
 

@@ -446,6 +446,7 @@ class TaskCreationInterface(QWidget):
                 self.search_input.setText(file_path)                
             return
 
+        # Start to excute the task, but check base url first.
         if self.is_base_url_needed():
             InfoBar.warning(
                 self.tr("警告，需要配置 Base URL！"),
