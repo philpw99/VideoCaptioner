@@ -39,24 +39,29 @@ class ProcessLogInfoCard(CardWidget):
     def setup_ui(self):
         self.cardLayout = QVBoxLayout(self)
         self.cardLayout.setContentsMargins(20,15,20,15)
-        # Layout for log
-        self.log_toolbar_layout = QHBoxLayout(self)
-        self.log_label = BodyLabel(self)
-        self.log_clear_button = PushButton(self.tr("Clear"),self)
-        self.log_toolbar_layout.addWidget(self.log_label)
-        self.log_toolbar_layout.addStretch(1)
-        self.log_toolbar_layout.addWidget(self.log_clear_button)
-        self.log_label.setText(self.tr("程序日志:"))
-
+        self.setup_log_toolbar_layout()
         # Log area
         self.process_log = QPlainTextEdit(self)
         self.process_log.setReadOnly(True)
         self.process_log.setMinimumWidth(200)
         text_color = "#cccccc" if isDarkTheme() else "#000000"
         self.process_log.setStyleSheet(f"QPlainTextEdit{{background:transparent; font-size:12px; color:{text_color}}}")
+        self.cardLayout.addWidget(self.process_log)
+
+    def setup_log_toolbar_layout(self):
+        # Layout for log
+        self.log_toolbar_layout = QHBoxLayout()
+        self.log_label = BodyLabel(self)
+        self.log_clear_button = PushButton(self.tr("Clear"),self)
+
+        self.log_toolbar_layout.addWidget(self.log_label)
+        self.log_toolbar_layout.addStretch(1)
+        self.log_toolbar_layout.addWidget(self.log_clear_button)
+        self.log_label.setText(self.tr("程序日志:"))
 
         self.cardLayout.addLayout(self.log_toolbar_layout)
-        self.cardLayout.addWidget(self.process_log)
+
+
     
     def addLine(self, text: str):
         # After adding a message

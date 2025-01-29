@@ -1,5 +1,7 @@
 ﻿requests
 
+psutil
+
 openai
 
 retry
