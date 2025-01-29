@@ -149,6 +149,7 @@ class SubtitleOptimizationInterface(QWidget):
         #改end
         self.setAcceptDrops(True)
         self.task = None
+        self.task_thread = None
         self.custom_prompt_text = cfg.custom_prompt_text.value
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
         self._init_ui()
@@ -377,38 +378,30 @@ class SubtitleOptimizationInterface(QWidget):
         if cfg.translate_method.value == TranslateMethodEnum.NONE:
             method = TranslateMethodEnum.OPTIMIZE
         else:
-            method = cfg.translate_method.value
-        
-        if not self.task:
-            # No task exists, create a new one
-            task_thread = CreateTaskThread(
+            method = cfg.translate_method.value     # Optimize, single line or google
+
+        if not self.task_thread:
+            # No task thread exists, create a new one
+            # A task requires a task thread.
+            self.task_thread = CreateTaskThread(
                 file_str,
                 Task.Type.TRANSLATE,
                 need_translate=True,
                 translate_method=method,
                 soft_sub=cfg.soft_subtitle.value,
             )
-            self.task = task_thread.create_file_task(
-                file_path=file_str, 
-                task_type=Task.Type.TRANSLATE,
-                need_translate=True,
-                translate_method=method,
-                soft_sub=cfg.soft_subtitle.value,
-                need_video=False)
-        else:
-            # Task already exists, update it
-            self.task = CreateTaskThread.create_file_task(
-                file_path=file_str,
-                task_type=Task.Type.TRANSLATE,
-                need_translate=True,
-                translate_method=method,
-                soft_sub=cfg.soft_subtitle.value,
-                need_video=False)
+
+        self.task = self.task_thread.create_file_task(
+            file_path=file_str,
+            task_type=Task.Type.TRANSLATE,
+            need_translate=True,
+            translate_method=method,
+            soft_sub=cfg.soft_subtitle.value,
+            need_video=False)
             
         # 设置任务的原始字幕保存路径
         self.task.original_subtitle_save_path = file_str
         root, _ = os.path.splitext(file_str)
-        cfg.subtitle_output_format
         self.task.result_subtitle_save_path = root + "_result." + cfg.subtitle_output_format.value.value
         
         # 返回创建的任务对象
@@ -651,10 +644,10 @@ class SubtitleOptimizationInterface(QWidget):
         filter_str = f"{self.tr('字幕文件')} ({subtitle_formats})"
         file_paths, _ = QFileDialog.getOpenFileNames(self, self.tr("选择字幕文件"), "", filter_str)
         if file_paths:
-            # for file_path in file_paths:
-            #     self.file_select_button.setProperty("selected_file", file_path)
-            #     self.load_subtitle_file(file_path)
-            #     self.process()
+            for file_path in file_paths:
+                self.file_select_button.setProperty("selected_file", file_path)
+                self.load_subtitle_file(file_path)
+                self.process()
             
             self.file_queue.extend(file_paths)  # 将文件路径加入队列
             self._process_next_file()  # 开始处理队列中的第一个文件

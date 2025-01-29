@@ -171,6 +171,7 @@ class CreateTaskThread(QThread):
             need_video=need_video,
             vertical_offset=cfg.vertical_offset.value,
             type=task_type,
+            task_thread=self,
         )
         self.finished.emit(task)
         self.progress.emit(100, self.tr("创建任务完成"))
@@ -298,6 +299,7 @@ class CreateTaskThread(QThread):
             need_video=need_video,
             vertical_offset=cfg.vertical_offset.value,
             task=Task.Type.URL,
+            task_thread=self,
         )
         self.finished.emit(task)
         logger.info(f"URL任务创建完成：{task}")
@@ -397,6 +399,7 @@ class CreateTaskThread(QThread):
             need_translate=False,
             type=Task.Type.TRANSCRIBE,  # It should be Transcribe only, no video generation.
             # Don't set need_video here because it can be part of subtitle pipeline
+            task_thread=self,
         )
         self.finished.emit(task)
         logger.info(f"转录任务创建完成：{task}")
@@ -423,6 +426,7 @@ class CreateTaskThread(QThread):
             soft_subtitle=cfg.soft_subtitle.value,
             type=Task.Type.SYNTHESIS,
             need_video=True,    # Just in case, because synthesis always generate a video
+            task_thread=self,
         )
         logger.info(f"视频合成任务创建完成：{task}")
         return task
