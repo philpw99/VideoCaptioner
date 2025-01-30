@@ -405,7 +405,7 @@ class CreateTaskThread(QThread):
         logger.info(f"转录任务创建完成：{task}")
         return task
 
-    def create_video_synthesis_task(subtitle_file, video_file, soft_sub: bool):
+    def create_video_synthesis_task(self, subtitle_file, video_file, soft_sub: bool):
         logger.info(f"开始创建视频合成任务：{subtitle_file} {video_file}")
         subtitle_file = Path(subtitle_file.strip()).as_posix()
         video_file = Path(video_file.strip()).as_posix()
