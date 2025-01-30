@@ -91,14 +91,14 @@ class SettingInterface(ScrollArea):
             cfg.batch_size,
             FIF.ALIGNMENT,
             self.tr('批处理大小'),
-            self.tr('每批处理字幕的数量，建议为 10 的倍数'),
+            self.tr('优化翻译下，每批处理字幕的数量，建议为 10 的倍数'),
             parent=self.llmGroup
         )
         self.threadNumCard = RangeSettingCard(
             cfg.thread_num,
             FIF.SPEED_HIGH,
             self.tr('线程数'),
-            self.tr('模型并行处理的数量，模型服务商允许的情况下建议尽可能大'),
+            self.tr('优化翻译下，模型并行处理的数量，模型服务商允许的情况下建议尽可能大'),
             parent=self.llmGroup
         )
 
@@ -109,7 +109,7 @@ class SettingInterface(ScrollArea):
             cfg.translate_method,
             FIF.SPEAKERS,
             self.tr('字幕翻译'),
-            self.tr('是否对转录生成的字幕进行翻译/或者不翻译'),
+            self.tr('是否对转录生成的字幕进行翻译/或者不翻译。优化翻译和单句翻译需要配置Base URL，谷歌翻译则不需要。'),
             TranslateMethodEnum,
             self.translateGroup
         )

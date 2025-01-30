@@ -216,17 +216,17 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/create_task_thread.py" line="175"/>
+        <location filename="../../app/core/thread/create_task_thread.py" line="177"/>
         <source>创建任务完成</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/create_task_thread.py" line="186"/>
+        <location filename="../../app/core/thread/create_task_thread.py" line="189"/>
         <source>正在获取视频信息</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/create_task_thread.py" line="189"/>
+        <location filename="../../app/core/thread/create_task_thread.py" line="192"/>
         <source>下载视频完成</source>
         <translation></translation>
     </message>
@@ -731,12 +731,12 @@
 <context>
     <name>ProcessLogInfoCard</name>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="45"/>
+        <location filename="../../app/view/transcription_interface.py" line="55"/>
         <source>Clear</source>
         <translation>清除</translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="49"/>
+        <location filename="../../app/view/transcription_interface.py" line="60"/>
         <source>程序日志:</source>
         <translation></translation>
     </message>
@@ -744,23 +744,23 @@
 <context>
     <name>PromptDialog</name>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="944"/>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="949"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="959"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="964"/>
         <source>文稿提示</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="955"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="970"/>
         <source>请输入文稿提示（优化字幕或者翻译字幕的提示参考）</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="967"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="982"/>
         <source>确定</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="968"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="983"/>
         <source>取消</source>
         <translation></translation>
     </message>
@@ -861,18 +861,8 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="94"/>
-        <source>每批处理字幕的数量，建议为 10 的倍数</source>
-        <translation></translation>
-    </message>
-    <message>
         <location filename="../../app/view/setting_interface.py" line="100"/>
         <source>线程数</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../../app/view/setting_interface.py" line="101"/>
-        <source>模型并行处理的数量，模型服务商允许的情况下建议尽可能大</source>
         <translation></translation>
     </message>
     <message>
@@ -951,8 +941,18 @@
         <translation></translation>
     </message>
     <message>
+        <location filename="../../app/view/setting_interface.py" line="94"/>
+        <source>优化翻译下，每批处理字幕的数量，建议为 10 的倍数</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../app/view/setting_interface.py" line="101"/>
+        <source>优化翻译下，模型并行处理的数量，模型服务商允许的情况下建议尽可能大</source>
+        <translation></translation>
+    </message>
+    <message>
         <location filename="../../app/view/setting_interface.py" line="112"/>
-        <source>是否对转录生成的字幕进行翻译/或者不翻译</source>
+        <source>是否对转录生成的字幕进行翻译/或者不翻译。优化翻译和单句翻译需要配置Base URL，谷歌翻译则不需要。</source>
         <translation></translation>
     </message>
     <message>
@@ -1243,174 +1243,174 @@
 <context>
     <name>SubtitleOptimizationInterface</name>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="178"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="179"/>
         <source>保存</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="198"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="199"/>
         <source>Batch</source>
         <translation>批量</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="203"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="204"/>
         <source>选择SRT文件</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="204"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="205"/>
         <source>文稿提示</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="214"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="215"/>
         <source>开始</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="264"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="265"/>
         <source>请拖入字幕文件</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="271"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="272"/>
         <source>取消</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="424"/>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="726"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="441"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="741"/>
         <source>已加载文件</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="432"/>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="655"/>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="700"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="449"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="670"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="715"/>
         <source>警告</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="433"/>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="656"/>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="700"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="450"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="671"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="715"/>
         <source>请先加载字幕文件</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="466"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="483"/>
         <source>开始优化</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="466"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="483"/>
         <source>开始优化字幕</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="507"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="522"/>
         <source>优化完成</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="508"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="523"/>
         <source>优化完成字幕...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="531"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="546"/>
         <source>优化失败</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="590"/>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="630"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="605"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="645"/>
         <source>选择字幕文件</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="622"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="637"/>
         <source>No API Key or API Base set</source>
         <translation>没有API 密匙或者API 入口网址</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="623"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="638"/>
         <source>批量字幕处理占用大量服务器资源，因此必须要使用自己的API KEY &amp; BASE，免得公益服务器无法工作，请见谅。
 具体设定在程序左下角的‘设定’里。</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="666"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="681"/>
         <source>保存字幕文件</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="685"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="700"/>
         <source>保存成功</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="686"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="701"/>
         <source>字幕已保存至:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="692"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="707"/>
         <source>保存失败</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="693"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="708"/>
         <source>保存字幕文件失败: </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="748"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="763"/>
         <source>导入成功</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="749"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="764"/>
         <source>成功导入</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="756"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="771"/>
         <source>格式错误</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="757"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="772"/>
         <source>支持的字幕格式:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="831"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="846"/>
         <source>合并</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="904"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="919"/>
         <source>合并成功</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="905"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="920"/>
         <source>已成功合并选中的字幕行</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="931"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="946"/>
         <source>已取消优化</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="933"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="948"/>
         <source>已取消</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="934"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="949"/>
         <source>字幕优化已取消</source>
         <translation></translation>
     </message>
@@ -1423,67 +1423,67 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="72"/>
+        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="74"/>
         <source>开始验证API配置...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="89"/>
+        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="91"/>
         <source>字幕文件路径为空</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="90"/>
+        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="92"/>
         <source>字幕文件路径不存在</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="93"/>
+        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="95"/>
         <source>字幕文件格式不支持</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="95"/>
+        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="97"/>
         <source>等待优化/翻译字幕</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="101"/>
+        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="103"/>
         <source>开始优化字幕...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="131"/>
+        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="133"/>
         <source>总结字幕...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="138"/>
+        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="140"/>
         <source>优化+翻译...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="156"/>
+        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="158"/>
         <source>批量翻译单句字幕...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="167"/>
+        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="169"/>
         <source>批量谷歌翻译字幕...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="198"/>
+        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="200"/>
         <source>优化/翻译完成</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="205"/>
+        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="207"/>
         <source>优化失败</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="216"/>
+        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="218"/>
         <source>{0}% 处理字幕</source>
         <translation></translation>
     </message>
@@ -1922,11 +1922,12 @@
     </message>
     <message>
         <location filename="../../app/view/task_creation_interface.py" line="254"/>
+        <location filename="../../app/view/task_creation_interface.py" line="636"/>
         <source>使用系统设置</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="560"/>
+        <location filename="../../app/view/task_creation_interface.py" line="561"/>
         <source>警告</source>
         <translation></translation>
     </message>
@@ -1936,13 +1937,13 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="495"/>
-        <location filename="../../app/view/task_creation_interface.py" line="497"/>
+        <location filename="../../app/view/task_creation_interface.py" line="496"/>
+        <location filename="../../app/view/task_creation_interface.py" line="498"/>
         <source>导入成功</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="498"/>
+        <location filename="../../app/view/task_creation_interface.py" line="499"/>
         <source>导入媒体文件成功</source>
         <translation></translation>
     </message>
@@ -1998,65 +1999,65 @@
     </message>
     <message>
         <location filename="../../app/view/task_creation_interface.py" line="387"/>
-        <location filename="../../app/view/task_creation_interface.py" line="451"/>
+        <location filename="../../app/view/task_creation_interface.py" line="452"/>
         <source>警告，需要配置 Base URL！</source>
         <translation></translation>
     </message>
     <message>
         <location filename="../../app/view/task_creation_interface.py" line="388"/>
-        <location filename="../../app/view/task_creation_interface.py" line="452"/>
+        <location filename="../../app/view/task_creation_interface.py" line="453"/>
         <source>你需要去设置中配置自己的Base URL，API Key和LLM Model。</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="505"/>
+        <location filename="../../app/view/task_creation_interface.py" line="506"/>
         <source>格式错误: </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="506"/>
+        <location filename="../../app/view/task_creation_interface.py" line="507"/>
         <source>不支持该文件格式</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="519"/>
-        <location filename="../../app/view/task_creation_interface.py" line="603"/>
-        <location filename="../../app/view/task_creation_interface.py" line="626"/>
+        <location filename="../../app/view/task_creation_interface.py" line="520"/>
+        <location filename="../../app/view/task_creation_interface.py" line="604"/>
+        <location filename="../../app/view/task_creation_interface.py" line="627"/>
         <source>错误</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="520"/>
+        <location filename="../../app/view/task_creation_interface.py" line="521"/>
         <source>请输入有效的文件路径或视频URL</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="561"/>
+        <location filename="../../app/view/task_creation_interface.py" line="562"/>
         <source>建议配置cookies.txt文件，以可以下载高清视频</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="588"/>
+        <location filename="../../app/view/task_creation_interface.py" line="589"/>
         <source>任务创建成功</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="589"/>
+        <location filename="../../app/view/task_creation_interface.py" line="590"/>
         <source>开始自动处理...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="627"/>
+        <location filename="../../app/view/task_creation_interface.py" line="628"/>
         <source>请输入音视频文件路径或URL</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="641"/>
+        <location filename="../../app/view/task_creation_interface.py" line="649"/>
         <source>更新成功 :</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="642"/>
+        <location filename="../../app/view/task_creation_interface.py" line="650"/>
         <source>配置将在重启后生效</source>
         <translation></translation>
     </message>
@@ -2375,32 +2376,32 @@
 <context>
     <name>TranscriptionInterface</name>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="348"/>
+        <location filename="../../app/view/transcription_interface.py" line="353"/>
         <source>转录完成</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="349"/>
+        <location filename="../../app/view/transcription_interface.py" line="354"/>
         <source>开始字幕优化...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="395"/>
+        <location filename="../../app/view/transcription_interface.py" line="400"/>
         <source>导入成功</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="396"/>
+        <location filename="../../app/view/transcription_interface.py" line="401"/>
         <source>开始语音转文字</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="403"/>
+        <location filename="../../app/view/transcription_interface.py" line="408"/>
         <source>格式错误</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="404"/>
+        <location filename="../../app/view/transcription_interface.py" line="409"/>
         <source>请拖入音频或视频文件</source>
         <translation></translation>
     </message>
@@ -2408,73 +2409,73 @@
 <context>
     <name>VideoInfoCard</name>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="116"/>
+        <location filename="../../app/view/transcription_interface.py" line="121"/>
         <source>请拖入音频或视频文件</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="124"/>
+        <location filename="../../app/view/transcription_interface.py" line="129"/>
         <source>画质</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="125"/>
+        <location filename="../../app/view/transcription_interface.py" line="130"/>
         <source>文件大小</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="126"/>
+        <location filename="../../app/view/transcription_interface.py" line="131"/>
         <source>时长</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="150"/>
+        <location filename="../../app/view/transcription_interface.py" line="155"/>
         <source>打开文件夹</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="151"/>
-        <location filename="../../app/view/transcription_interface.py" line="302"/>
+        <location filename="../../app/view/transcription_interface.py" line="156"/>
+        <location filename="../../app/view/transcription_interface.py" line="307"/>
         <source>开始转录</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="165"/>
+        <location filename="../../app/view/transcription_interface.py" line="170"/>
         <source>画质: </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="167"/>
+        <location filename="../../app/view/transcription_interface.py" line="172"/>
         <source>大小: </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="169"/>
+        <location filename="../../app/view/transcription_interface.py" line="174"/>
         <source>时长: </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="237"/>
+        <location filename="../../app/view/transcription_interface.py" line="242"/>
         <source>警告</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="238"/>
+        <location filename="../../app/view/transcription_interface.py" line="243"/>
         <source>没有可用的字幕文件夹</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="283"/>
+        <location filename="../../app/view/transcription_interface.py" line="288"/>
         <source>重新转录</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="286"/>
+        <location filename="../../app/view/transcription_interface.py" line="291"/>
         <source>转录失败</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="295"/>
+        <location filename="../../app/view/transcription_interface.py" line="300"/>
         <source>转录完成</source>
         <translation></translation>
     </message>
