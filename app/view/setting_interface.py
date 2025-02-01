@@ -1,4 +1,5 @@
-import webbrowser
+import webbrowser, json
+from urllib.parse import urlparse
 from PyQt5.QtCore import Qt, QUrl, pyqtSignal, QThread
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QWidget, QLabel, QFileDialog
@@ -10,12 +11,13 @@ from qfluentwidgets import (SettingCardGroup, SwitchSettingCard, OptionsSettingC
                             setTheme, setThemeColor )
 
 from app.components.WhisperAPISettingDialog import WhisperAPISettingDialog
-from app.config import VERSION, YEAR, AUTHOR, HELP_URL, FEEDBACK_URL, RELEASE_URL
+from app.config import VERSION, YEAR, AUTHOR, HELP_URL, FEEDBACK_URL, RELEASE_URL, APPDATA_PATH
 from app.core.entities import TranscribeModelEnum, SubtitleLayoutEnum, TranslateMethodEnum
 from ..common.config import cfg
 from ..components.EditComboBoxSettingCard import EditComboBoxSettingCard
 from ..components.EnumComboBoxSettingCard import EnumComboBoxSettingCard
 from ..components.LineEditSettingCard import LineEditSettingCard
+from ..components.MySettingCard import SaveSettingComboCard
 from ..core.utils.test_opanai import test_openai, get_openai_models
 from ..components.WhisperSettingDialog import WhisperSettingDialog
 from ..components.FasterWhisperSettingDialog import FasterWhisperSettingDialog
@@ -99,6 +101,13 @@ class SettingInterface(ScrollArea):
             FIF.SPEED_HIGH,
             self.tr('线程数'),
             self.tr('优化翻译下，模型并行处理的数量，模型服务商允许的情况下建议尽可能大'),
+            parent=self.llmGroup
+        )
+        self.saveLLMSettingsCard = SaveSettingComboCard(
+            self.tr("Save"),
+            FIF.SAVE,
+            self.tr("Save LLM Settings"),
+            self.tr("Save current LLM Settings to use in the future."),
             parent=self.llmGroup
         )
 
@@ -333,6 +342,7 @@ class SettingInterface(ScrollArea):
         # 初始化布局
         self.__initLayout()
         self.__connectSignalToSlot()
+        self.load_llm_list()
 
     def __initLayout(self):
         self.settingLabel.move(36, 30)
@@ -347,6 +357,7 @@ class SettingInterface(ScrollArea):
         self.llmGroup.addSettingCard(self.checkLLMConnectionCard)
         self.llmGroup.addSettingCard(self.batchSizeCard)
         self.llmGroup.addSettingCard(self.threadNumCard)
+        self.llmGroup.addSettingCard(self.saveLLMSettingsCard)
 
         self.translateGroup.addSettingCard(self.subtitleTranslateCard)
         self.translateGroup.addSettingCard(self.targetLanguageCard)
@@ -394,10 +405,16 @@ class SettingInterface(ScrollArea):
 
         # 检查 LLM 连接
         self.checkLLMConnectionCard.clicked.connect(self.checkLLMConnection)
+        
+        # 保存 LLM 设定
+        self.saveLLMSettingsCard.saveClicked.connect(self.save_llm_settings)
+
+        # 载入 LLM 设定
+        self.saveLLMSettingsCard.textChanged.connect(self.load_llm_settings)
 
         # 保存路径
         self.savePathCard.clicked.connect(self.__onsavePathCardClicked)
-
+        
         # 字幕样式修改跳转
         self.subtitleStyleCard.linkButton.clicked.connect(
             lambda: self.window().switchTo(self.window().subtitleStyleInterface))
@@ -430,6 +447,65 @@ class SettingInterface(ScrollArea):
         signalBus.need_video_changed.connect(self.needVideoCard.switchButton.setChecked)
         signalBus.soft_subtitle_changed.connect(self.softSubtitleCard.switchButton.setChecked)
         signalBus.transcription_model_changed.connect(self.transcribeModelCard.comboBox.setCurrentText)
+    
+    def load_llm_list(self):
+        save_file = APPDATA_PATH / "llm.json"
+        if not save_file.exists():
+            return
+        with open(save_file,"r") as f:
+            data_json = json.load(f)
+        
+        comboBox = self.saveLLMSettingsCard.comboBox
+        comboBox.clear()
+        comboBox.addItems(list(data_json))   # list(data_json) will list all keys in Dict
+   
+    def save_llm_settings(self):
+        # 显示 llm 保存对话框
+        if not cfg.api_base.value:
+            return
+        oBaseUrl = urlparse(cfg.api_base.value)
+        if not oBaseUrl or not oBaseUrl.hostname:
+            return
+        
+        setting_json = {"BaseURL": cfg.api_base.value,
+                        "ApiKey": cfg.api_key.value, 
+                        "BatchSize": cfg.batch_size.value,
+                        "ThreadNum": cfg.thread_num.value,
+                        }
+        
+        save_file = APPDATA_PATH / "llm.json"
+        if save_file.exists():
+            with open(save_file, "r") as f:
+                data = f.read()
+                data_json = json.loads(data)
+        else:
+            data_json = {}
+        
+        with open(save_file, "w") as f:
+            data_json[oBaseUrl.hostname] = setting_json   # The key is the host name
+            json.dump(data_json, f, indent=4)
+
+        # Update the list
+        self.saveLLMSettingsCard.comboBox.clear()
+        self.saveLLMSettingsCard.comboBox.addItems(list(data_json))
+        self.saveLLMSettingsCard.comboBox.setCurrentText(oBaseUrl.hostname)
+        
+    def load_llm_settings(self, host):
+        save_file = APPDATA_PATH / "llm.json"
+        with open(save_file,"r") as f:
+            data = f.read()
+        if not data:
+            InfoBar.error(self.tr("Error Reading llm.json"), self.tr("Cannot open LLM settins file: AppData/llm.json"))
+            return
+        setting_json = json.loads(data)[host]
+        if not setting_json:
+            InfoBar.error(self.tr(f"Error getting {host} settings"), self.tr(f"Cannot get {host} settings from AppData/llm.json") )
+            return
+        self.apiBaseCard.setValue(setting_json["BaseURL"])
+        self.apiKeyCard.setValue(setting_json["ApiKey"])
+        self.batchSizeCard.setValue(setting_json["BatchSize"])
+        self.threadNumCard.setValue(setting_json["ThreadNum"])
+        
         
     def show_whisper_settings(self):
         """显示Whisper设置对话框"""

@@ -1,12 +1,3 @@
-import asyncio
-from googletrans import Translator
+test = { "1": "aaa" , "2": "bbb"}
+print( list(test))
 
-async def main():
-    gTranslator = Translator()
-
-    task = asyncio.create_task(gTranslator.translate("This is a test", dest = "zh-cn", src="en"))
-    await task
-    if task.result()._response.is_success:
-        print (task._result.text)
-
-asyncio.run(main())

@@ -133,7 +133,7 @@ class Config(QConfig):
     # ------------------- Whisper API 配置 -------------------
     whisper_api_base = ConfigItem("WhisperAPI", "WhisperApiBase", "")
     whisper_api_key = ConfigItem("WhisperAPI", "WhisperApiKey", "")
-    whisper_api_model = OptionsConfigItem("WhisperAPI", "WhisperApiModel", "")
+    whisper_api_model = ConfigItem("WhisperAPI", "WhisperApiModel","")
     whisper_api_prompt = ConfigItem("WhisperAPI", "WhisperApiPrompt", "")
 
     # ------------------- 字幕配置 -------------------

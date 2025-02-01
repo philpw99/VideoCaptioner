@@ -104,6 +104,8 @@ def add_subtitles(
         subtitle_file: str,
         output: str,
         duration: int,
+        input_width: int = None,
+        input_height: int = None,
         output_width: int = None,
         output_height: int = None,
         quality: Literal[
@@ -111,15 +113,19 @@ def add_subtitles(
         vcodec: str = 'libx264',
         soft_subtitle: bool = False,
         portrait: bool = False,
-        portrait_background: str = None,
+        background: str = None,
         vertical_offset: int = 0,
         zoom_video: int = 100,
         zoom_subtitle: int = 100,
         progress_callback: callable = None
 ) -> None:
+    """ Add subtitles to videos by hard coding method.
+    """
+    
     assert Path(input_file).is_file(), qoVideo.tr("输入文件不存在")
     assert Path(subtitle_file).is_file(), qoVideo.tr("字幕文件不存在")
 
+    
     # 移动到临时文件  Fix: 路径错误
     temp_dir = Path(tempfile.gettempdir()) / "VideoCaptioner"
     temp_dir.mkdir(exist_ok=True)
@@ -191,10 +197,12 @@ def add_subtitles(
             '-i', input_file,
         ])
         
-        print (f"portrait: {portrait}, background{portrait_background}\n" \
-            +f"output_width: {output_width}, output_height: {output_height}, duration{duration}")
+        # print (f"portrait: {portrait}, background{background}\n" \
+        #    +f"output_width: {output_width}, output_height: {output_height}, duration{duration}")
         
-        if portrait and output_width and output_height:
+        
+        if portrait and input_width > input_height:
+            # Landscape convert to portrait mode.
             # output_height = 1920, output_width = 1080, squeeze_height = 606
             squeeze_height = int( output_width * output_width / output_height /2) * 2   # The original video's height after rotating.
             # Zoom of video and subtitles, all need to be multiple of 2
@@ -210,10 +218,42 @@ def add_subtitles(
             video_x = (output_width - output_width_video) // 2
             video_y = (output_height - output_height_video) // 2
             
-            
-            if portrait_background:
+            if background:
                 cmd.extend([
-                    '-i', portrait_background,
+                    '-i', background,
+                ])
+                # With picture background
+                vf = f"[1:v]trim=0:{duration},scale={output_width}:{output_height}[bg];" \
+                    + f"color=d={duration}:c=black@0:s={squeeze_width_subtitle}x{output_height_subtitle}," \
+                    + f"subtitles='{subtitle_file}':alpha=1[sub];[0:v]scale={squeeze_width_video}:{output_height_video}[fg];" \
+                    + f"[bg][fg]overlay={video_x}:{video_y}[out];[out][sub]overlay={subtitle_x}:{subtitle_y+vertical_offset},setsar=1"
+                
+            else:   # Blur background
+                vf = f"[0:v]avgblur=sizeX=40:sizeY=40,scale={output_width}x{output_height}:flags=fast_bilinear[bg];" \
+                    + f"color=d={duration}:c=black@0:s={squeeze_width_subtitle}x{output_height_subtitle}," \
+                    + f"subtitles='{subtitle_file}':alpha=1[sub];[0:v]scale={squeeze_width_video}:{output_height_video}[fg];" \
+                    + f"[bg][fg]overlay={video_x}:{video_y}[out];[out][sub]overlay={subtitle_x}:{subtitle_y+vertical_offset},setsar=1"
+        
+        elif (not portrait) and input_width < input_height:
+            # Landscape mode. Convert from portrait video.
+            # output_height = 1080, output_width = 1920, squeeze_width = 607
+            squeeze_width = int( output_height * output_height / output_width /2) * 2   # The original video's height after rotating.
+            # Zoom of video and subtitles, all need to be multiple of 2
+            output_width_subtitle = int(squeeze_width * zoom_subtitle // 200) * 2
+            output_height_subtitle = int(output_height * zoom_subtitle // 200) * 2
+            squeeze_width_subtitle = int( squeeze_width * zoom_subtitle // 200 ) * 2
+            subtitle_x = (output_width - squeeze_width_subtitle) //2
+            subtitle_y = (output_height - output_height_subtitle) // 2
+            
+            output_width_video = int(squeeze_width * zoom_video // 200) * 2
+            output_height_video = int(output_height * zoom_video // 200) * 2
+            squeeze_width_video = int(squeeze_width * zoom_video // 200) * 2
+            video_x = (output_width - output_width_video) // 2
+            video_y = (output_height - output_height_video) // 2
+
+            if background: 
+                cmd.extend([
+                    '-i', background,
                 ])
                 # With picture background
                 vf = f"[1:v]trim=0:{duration},scale={output_width}:{output_height}[bg];" \
@@ -226,8 +266,14 @@ def add_subtitles(
                     + f"color=d={duration}:c=black@0:s={output_width_subtitle}x{squeeze_height_subtitle}," \
                     + f"subtitles='{subtitle_file}':alpha=1[sub];[0:v]scale={output_width_video}:{squeeze_height_video}[fg];" \
                     + f"[bg][fg]overlay={video_x}:{video_y}[out];[out][sub]overlay={subtitle_x}:{subtitle_y+vertical_offset},setsar=1"
+            
         else:
-            # Just landscape subtitle
+            # Landscape or Portrait mode. No convert
+            # Zoom of video and subtitles, all need to be multiple of 2
+            output_width_subtitle = int(output_width * zoom_subtitle // 200) * 2
+            output_height_subtitle = int(output_height * zoom_subtitle // 200) * 2
+            subtitle_x, subtitle_y = 0, 0
+
             vf = f"color=d={duration}:c=black@0:s={output_width_subtitle}x{output_height_subtitle}," \
                 + f"subtitles='{subtitle_file}':alpha=1[sub];[0:v][sub]overlay={subtitle_x}:{subtitle_y+vertical_offset},setsar=1"
             

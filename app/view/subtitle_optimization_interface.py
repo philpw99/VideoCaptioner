@@ -486,6 +486,10 @@ class SubtitleOptimizationInterface(QWidget):
         """更新任务配置"""
         # 更新任务的需要翻译标志
         self.task.need_translate = cfg.translate_method.value != TranslateMethodEnum.NONE
+        # 更新任务的翻译方式
+        self.task.translate_method = cfg.translate_method.value
+        self.task.original_language = cfg.transcribe_language.value.value
+
         # 更新任务的 API 密钥
         self.task.api_key = cfg.api_key.value
         # 更新任务的 API 基础 URL

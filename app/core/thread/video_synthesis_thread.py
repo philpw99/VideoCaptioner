@@ -70,10 +70,17 @@ class VideoSynthesisThread(QThread):
                 width = w
                 height = h
             
-            add_subtitles(video_file, subtitle_file, video_save_path, soft_subtitle=soft_subtitle,
-                          output_width=width, output_height=height, portrait=self.task.portrait,
+            add_subtitles(input_file=video_file,
+                          subtitle_file=subtitle_file,
+                          output=video_save_path,
+                          soft_subtitle=soft_subtitle,
+                          input_width=w,
+                          input_height=h,
+                          output_width=width,
+                          output_height=height,
+                          portrait=self.task.portrait,
                           vertical_offset=self.task.vertical_offset,
-                          portrait_background=self.task.portrait_background,
+                          background=self.task.portrait_background,
                           duration=duration,
                           zoom_video=self.task.zoom_video,
                           zoom_subtitle=self.task.zoom_subtitle,

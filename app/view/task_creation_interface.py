@@ -23,6 +23,7 @@ from .log_window import LogWindow
 from ..common.signal_bus import signalBus
 from ..components.FasterWhisperSettingDialog import FasterWhisperSettingDialog
 from ..components.EnumComboBoxSettingCard import EnumComboBoxSettingCard
+from ..core.utils.test_opanai import test_openai
 
 
 LOGO_PATH = ASSETS_PATH / "logo.png"
@@ -382,7 +383,7 @@ class TaskCreationInterface(QWidget):
         self.search_input.setText("")
         self.whisper_setting_button.setVisible( self.is_using_whisper())
 
-        if self.is_base_url_needed():
+        if self.is_base_url_needed() and not cfg.api_base.value:
             InfoBar.warning(
                 self.tr("警告，需要配置 Base URL！"),
                 self.tr("你需要去设置中配置自己的Base URL，API Key和LLM Model。"),
@@ -396,8 +397,7 @@ class TaskCreationInterface(QWidget):
         if cfg.translate_method.value in [
             TranslateMethodEnum.OPTIMIZE,
             TranslateMethodEnum.SINGLE_SENTENCE
-            ] or (self.is_using_whisper() and cfg.faster_whisper_one_word.value
-            ) and cfg.api_base == "" :
+            ] or (self.is_using_whisper() and cfg.faster_whisper_one_word.value):  # Using one word transcribe
             return True
 
     def is_using_whisper(self) -> bool:
@@ -448,14 +448,26 @@ class TaskCreationInterface(QWidget):
 
         # Start to excute the task, but check base url first.
         if self.is_base_url_needed():
-            InfoBar.warning(
-                self.tr("警告，需要配置 Base URL！"),
-                self.tr("你需要去设置中配置自己的Base URL，API Key和LLM Model。"),
-                duration=10000,
-                parent=self,
-                position=InfoBarPosition.BOTTOM_RIGHT
-            )
-            return
+            # Need to use LLM features in this task.
+            if not cfg.api_base.value:
+                InfoBar.error(
+                    self.tr("警告，需要配置 Base URL！"),
+                    self.tr("你需要去设置中配置自己的Base URL，API Key和LLM Model。"),
+                    duration=10000,
+                    parent=self,
+                    position=InfoBarPosition.TOP_RIGHT
+                )
+                return
+            ok, _ = test_openai(cfg.api_base.value, cfg.api_key.value, cfg.model.value)
+            if not ok:
+                InfoBar.error(
+                    self.tr("The LLM is not working."),
+                    self.tr(f"Access to {cfg.api_base.value} failed. Check your LLM connection please."),
+                    duration=10000,
+                    parent=self,
+                    position=InfoBarPosition.TOP_RIGHT
+                )
+                return
 
         """
         # There is no need to show faster whisper's settings again.

@@ -324,7 +324,7 @@ class CreateTaskThread(QThread):
             case TranscribeModelEnum.WHISPER.value:
                 whisper_type = f"{cfg.whisper_model.value.value}-{cfg.transcribe_language.value.value}"
             case TranscribeModelEnum.WHISPER_API.value:
-                whisper_type = f"{cfg.whisper_api_model.value.value}-{cfg.transcribe_language.value.value}"
+                whisper_type = f"{cfg.whisper_api_model.value}-{cfg.transcribe_language.value.value}"
             case TranscribeModelEnum.FASTER_WHISPER.value:
                 whisper_type = f"{cfg.faster_whisper_model.value.value}-{cfg.transcribe_language.value.value}"
             case _:

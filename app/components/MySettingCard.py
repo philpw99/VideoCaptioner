@@ -8,7 +8,7 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (QFrame, QHBoxLayout, QLabel, QToolButton,
                              QVBoxLayout)
 from qfluentwidgets import ComboBox, ColorDialog
-from qfluentwidgets import CompactSpinBox, CompactDoubleSpinBox
+from qfluentwidgets import CompactSpinBox, CompactDoubleSpinBox, PushButton
 from qfluentwidgets.common.config import isDarkTheme
 from qfluentwidgets.common.icon import FluentIcon as FIF
 from qfluentwidgets.common.icon import FluentIconBase, drawIcon
@@ -111,6 +111,33 @@ class SettingCard(QFrame):
 
         painter.drawRoundedRect(self.rect().adjusted(1, 1, -1, -1), 6, 6)
 
+class SaveSettingComboCard(SettingCard):
+    textChanged = pyqtSignal(str)
+    saveClicked = pyqtSignal()
+    
+    def __init__(self, buttonText, icon, title, content=None, items = None, parent=None):
+        super().__init__(icon, title, content, parent)
+        
+        #创建 LLM settings choice.
+        self.pushButton = PushButton(buttonText,self)
+        self.comboBox = ComboBox(self)
+        if items:
+            self.comboBox.addItems( items )
+        
+        self.hBoxLayout.addWidget(self.pushButton, 0, Qt.AlignmentFlag.AlignRight)
+        self.hBoxLayout.addSpacing(8)
+        self.hBoxLayout.addWidget(self.comboBox, 0, Qt.AlignmentFlag.AlignRight)
+        self.hBoxLayout.addSpacing(16)
+        
+        self.pushButton.clicked.connect( self.__onSaveClicked )
+        self.comboBox.currentTextChanged.connect( self.__onTextChanged )
+        
+    def __onSaveClicked(self):
+        self.saveClicked.emit()
+    
+    def __onTextChanged(self, text:str):
+        self.textChanged.emit(text)
+        
 
 class DoubleSpinBoxSettingCard(SettingCard):
     """ 小数输入设置卡片 """
@@ -129,7 +156,7 @@ class DoubleSpinBoxSettingCard(SettingCard):
         self.spinBox.setSingleStep(0.2)  # 设置步长为0.1
 
         # 添加到布局
-        self.hBoxLayout.addWidget(self.spinBox, 0, Qt.AlignRight)
+        self.hBoxLayout.addWidget(self.spinBox, 0, Qt.AlignmentFlag.AlignRight)
         self.hBoxLayout.addSpacing(8)
 
         # 设置初始值和连接信号
