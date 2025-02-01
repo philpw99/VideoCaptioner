@@ -203,7 +203,7 @@
 <context>
     <name>ColorPickerButton</name>
     <message>
-        <location filename="../../app/components/MySettingCard.py" line="295"/>
+        <location filename="../../app/components/MySettingCard.py" line="322"/>
         <source>Choose </source>
         <translation>选择 </translation>
     </message>
@@ -744,23 +744,23 @@
 <context>
     <name>PromptDialog</name>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="959"/>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="964"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="963"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="968"/>
         <source>文稿提示</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="970"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="974"/>
         <source>请输入文稿提示（优化字幕或者翻译字幕的提示参考）</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="982"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="986"/>
         <source>确定</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="983"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="987"/>
         <source>取消</source>
         <translation></translation>
     </message>
@@ -768,451 +768,486 @@
 <context>
     <name>SettingInterface</name>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="30"/>
-        <location filename="../../app/view/setting_interface.py" line="36"/>
+        <location filename="../../app/view/setting_interface.py" line="32"/>
+        <location filename="../../app/view/setting_interface.py" line="38"/>
         <source>设置</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="39"/>
+        <location filename="../../app/view/setting_interface.py" line="41"/>
         <source>转录配置</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="43"/>
+        <location filename="../../app/view/setting_interface.py" line="45"/>
         <source>转录模型</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="44"/>
+        <location filename="../../app/view/setting_interface.py" line="46"/>
         <source>语音转换文字要使用的转录模型</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="50"/>
+        <location filename="../../app/view/setting_interface.py" line="52"/>
         <source>打开 Whisper 设置</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="52"/>
+        <location filename="../../app/view/setting_interface.py" line="54"/>
         <source>Whisper 设置</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="53"/>
+        <location filename="../../app/view/setting_interface.py" line="55"/>
         <source>配置 Whisper 模型和转录语言</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="58"/>
+        <location filename="../../app/view/setting_interface.py" line="60"/>
         <source>LLM 配置</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="62"/>
+        <location filename="../../app/view/setting_interface.py" line="64"/>
         <source>API Key</source>
         <translation>API 密匙</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="63"/>
+        <location filename="../../app/view/setting_interface.py" line="65"/>
         <source>Input your API Key</source>
         <translation>输入你的API密钥</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="70"/>
+        <location filename="../../app/view/setting_interface.py" line="72"/>
         <source>Base URL</source>
         <translation>入口网址</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="71"/>
+        <location filename="../../app/view/setting_interface.py" line="73"/>
         <source>Input OpenAI compatible Base URL ( Needs /v1 in the end. )</source>
         <translation>输入 Open AI 兼容的入口网址 （Base URL， 需要加入最后的 /v1 ）</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="78"/>
+        <location filename="../../app/view/setting_interface.py" line="80"/>
         <source>模型</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="79"/>
+        <location filename="../../app/view/setting_interface.py" line="81"/>
         <source>Enter your model here. Click on &quot;Check Connection&quot; below will fill out model list automatically.</source>
         <translation>在这里输入模型。点击下面的“检查连接”会自动拿到模型列表。</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="84"/>
-        <location filename="../../app/view/setting_interface.py" line="505"/>
-        <location filename="../../app/view/setting_interface.py" line="516"/>
+        <location filename="../../app/view/setting_interface.py" line="86"/>
+        <location filename="../../app/view/setting_interface.py" line="581"/>
+        <location filename="../../app/view/setting_interface.py" line="592"/>
         <source>检查连接</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="86"/>
+        <location filename="../../app/view/setting_interface.py" line="88"/>
         <source>检查 LLM 连接</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="87"/>
+        <location filename="../../app/view/setting_interface.py" line="89"/>
         <source>Click here to verify whether API link working or not, and fetch model list.</source>
         <translation>点击这里去验证API连接是否有效，并且拿到模型列表。</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="93"/>
+        <location filename="../../app/view/setting_interface.py" line="95"/>
         <source>批处理大小</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="100"/>
+        <location filename="../../app/view/setting_interface.py" line="102"/>
         <source>线程数</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="106"/>
+        <location filename="../../app/view/setting_interface.py" line="115"/>
         <source>翻译与优化</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="120"/>
+        <location filename="../../app/view/setting_interface.py" line="129"/>
         <source>目标语言</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="121"/>
+        <location filename="../../app/view/setting_interface.py" line="130"/>
         <source>Choose subtitle&apos;s target translate language</source>
         <translation>选择字幕的目标翻译语言</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="127"/>
+        <location filename="../../app/view/setting_interface.py" line="136"/>
         <source>字幕合成配置</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="130"/>
+        <location filename="../../app/view/setting_interface.py" line="139"/>
         <source>修改</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="132"/>
+        <location filename="../../app/view/setting_interface.py" line="141"/>
         <source>字幕样式</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="133"/>
+        <location filename="../../app/view/setting_interface.py" line="142"/>
         <source>Choose subtitle&apos;s style ( color, size, font ... etc.)</source>
         <translation>选择字幕样式（颜色，大小，字体等）</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="139"/>
+        <location filename="../../app/view/setting_interface.py" line="148"/>
         <source>字幕布局</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="140"/>
+        <location filename="../../app/view/setting_interface.py" line="149"/>
         <source>Choose subtitle&apos;s layout ( Show Original or Translated or both )</source>
         <translation>选择字幕布局（译文在上，原文在上，或者一起）</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="147"/>
+        <location filename="../../app/view/setting_interface.py" line="156"/>
         <source>Need to sythesis video</source>
         <translation>需要合成视频</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="148"/>
+        <location filename="../../app/view/setting_interface.py" line="157"/>
         <source>Do you want to combine the original video and subtitle into a new video.</source>
         <translation>你想要把原视频和生成的字幕合成在一起。</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="155"/>
+        <location filename="../../app/view/setting_interface.py" line="164"/>
         <source>Soft Subtitles</source>
         <translation>软字幕</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="156"/>
+        <location filename="../../app/view/setting_interface.py" line="165"/>
         <source>When synthesising video, add the subtitle as a new track, instead of hard-coding it into video.</source>
         <translation>合成字幕时，把字幕流加入视频，而不是生成带硬字幕的视频。</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="164"/>
+        <location filename="../../app/view/setting_interface.py" line="173"/>
         <source>Target Subtitle Format</source>
         <translation>目标字幕格式</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="111"/>
+        <location filename="../../app/view/setting_interface.py" line="120"/>
         <source>字幕翻译</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="94"/>
+        <location filename="../../app/view/setting_interface.py" line="96"/>
         <source>优化翻译下，每批处理字幕的数量，建议为 10 的倍数</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="101"/>
+        <location filename="../../app/view/setting_interface.py" line="103"/>
         <source>优化翻译下，模型并行处理的数量，模型服务商允许的情况下建议尽可能大</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="112"/>
+        <location filename="../../app/view/setting_interface.py" line="107"/>
+        <source>Save</source>
+        <translation>保存</translation>
+    </message>
+    <message>
+        <location filename="../../app/view/setting_interface.py" line="109"/>
+        <source>Save LLM Settings</source>
+        <translation>保存 LLM 的设定</translation>
+    </message>
+    <message>
+        <location filename="../../app/view/setting_interface.py" line="110"/>
+        <source>Save current LLM Settings to use in the future.</source>
+        <translation>保存当前 LLM 的设定，以方便以后调用。</translation>
+    </message>
+    <message>
+        <location filename="../../app/view/setting_interface.py" line="121"/>
         <source>是否对转录生成的字幕进行翻译/或者不翻译。优化翻译和单句翻译需要配置Base URL，谷歌翻译则不需要。</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="165"/>
+        <location filename="../../app/view/setting_interface.py" line="174"/>
         <source>The format for saving the final subtitle and video systhesis. Use ASS format if you want to see text styles.</source>
         <translation>储存最终字幕文件的格式，也用于视频合成。如果你要看到字幕的特定样式，请选择ASS格式。</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="173"/>
+        <location filename="../../app/view/setting_interface.py" line="182"/>
         <source>Subtitle File Name Prefix</source>
         <translation>字幕文件前缀</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="174"/>
+        <location filename="../../app/view/setting_interface.py" line="183"/>
         <source>Add this string to the front of the subtitle file name.</source>
         <translation>把这字符加到生成字幕文件名的前面。</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="181"/>
+        <location filename="../../app/view/setting_interface.py" line="190"/>
         <source>Subtitle File Name Suffix</source>
         <translation>字幕文件名后缀</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="182"/>
+        <location filename="../../app/view/setting_interface.py" line="191"/>
         <source>Add this string to the end of the subtitle file name.</source>
         <translation>把这字符加到生成字幕文件名的后面。</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="190"/>
+        <location filename="../../app/view/setting_interface.py" line="199"/>
         <source>Enable Minimum Subtitle Sentence Time</source>
         <translation>启动最小句子时长功能</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="191"/>
+        <location filename="../../app/view/setting_interface.py" line="200"/>
         <source>Enable the feature to add time to subtitle sentences so they won&apos;t be too short. </source>
         <translation>启动后，字幕的每一句的显示时间都有个最低时长。 </translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="199"/>
+        <location filename="../../app/view/setting_interface.py" line="208"/>
         <source>Mimimum Subtitle Sentence Time</source>
         <translation>最低字幕句子时长</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="200"/>
+        <location filename="../../app/view/setting_interface.py" line="209"/>
         <source>In milliseconds, the minimum time each sentence should at least have.</source>
         <translation>以千分之一秒为单位，每一句的显示时间最少为。</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="207"/>
+        <location filename="../../app/view/setting_interface.py" line="216"/>
         <source>Subtitle Time Offset</source>
         <translation>字幕时间轴调整</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="208"/>
+        <location filename="../../app/view/setting_interface.py" line="217"/>
         <source>In milliseconds, the offset to apply to all subtitle timings.</source>
         <translation>以千分之一秒为单位，调整整个字幕的时间轴。</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="215"/>
+        <location filename="../../app/view/setting_interface.py" line="224"/>
         <source>Vertical Offset for Subtitles</source>
         <translation>垂直方向字幕的位移</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="216"/>
+        <location filename="../../app/view/setting_interface.py" line="225"/>
         <source>In pixels, the vertical offset to apply to all subtitle positions.</source>
         <translation>以像素为单位，对所有字幕在垂直方向上的位移。</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="221"/>
+        <location filename="../../app/view/setting_interface.py" line="230"/>
         <source>保存配置</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="223"/>
+        <location filename="../../app/view/setting_interface.py" line="232"/>
         <source>工作文件夹</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="225"/>
+        <location filename="../../app/view/setting_interface.py" line="234"/>
         <source>工作目录路径</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="232"/>
+        <location filename="../../app/view/setting_interface.py" line="241"/>
         <source>个性化</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="236"/>
+        <location filename="../../app/view/setting_interface.py" line="245"/>
         <source>应用主题</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="237"/>
+        <location filename="../../app/view/setting_interface.py" line="246"/>
         <source>更改应用程序的外观</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="239"/>
+        <location filename="../../app/view/setting_interface.py" line="248"/>
         <source>浅色</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="239"/>
+        <location filename="../../app/view/setting_interface.py" line="248"/>
         <source>深色</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="241"/>
-        <location filename="../../app/view/setting_interface.py" line="258"/>
-        <location filename="../../app/view/setting_interface.py" line="266"/>
+        <location filename="../../app/view/setting_interface.py" line="250"/>
+        <location filename="../../app/view/setting_interface.py" line="267"/>
+        <location filename="../../app/view/setting_interface.py" line="275"/>
         <source>使用系统设置</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="247"/>
+        <location filename="../../app/view/setting_interface.py" line="256"/>
         <source>主题颜色</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="248"/>
+        <location filename="../../app/view/setting_interface.py" line="257"/>
         <source>更改应用程序的主题颜色</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="254"/>
+        <location filename="../../app/view/setting_interface.py" line="263"/>
         <source>界面缩放</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="255"/>
+        <location filename="../../app/view/setting_interface.py" line="264"/>
         <source>更改小部件和字体的大小</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="264"/>
+        <location filename="../../app/view/setting_interface.py" line="273"/>
         <source>语言</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="265"/>
+        <location filename="../../app/view/setting_interface.py" line="274"/>
         <source>设置您偏好的界面语言</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="272"/>
+        <location filename="../../app/view/setting_interface.py" line="281"/>
         <source>No Thumbnails</source>
         <translation>不显示缩图</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="273"/>
+        <location filename="../../app/view/setting_interface.py" line="282"/>
         <source>Don&apos;t show thumbnails for NSFW reasons.</source>
         <translation>为了工作原因不显示缩图。</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="279"/>
-        <location filename="../../app/view/setting_interface.py" line="298"/>
+        <location filename="../../app/view/setting_interface.py" line="288"/>
+        <location filename="../../app/view/setting_interface.py" line="307"/>
         <source>关于</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="282"/>
+        <location filename="../../app/view/setting_interface.py" line="291"/>
         <source>打开帮助页面</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="284"/>
+        <location filename="../../app/view/setting_interface.py" line="293"/>
         <source>帮助</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="285"/>
+        <location filename="../../app/view/setting_interface.py" line="294"/>
         <source>发现新功能并了解有关VideoCaptioner的使用技巧</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="289"/>
-        <location filename="../../app/view/setting_interface.py" line="291"/>
+        <location filename="../../app/view/setting_interface.py" line="298"/>
+        <location filename="../../app/view/setting_interface.py" line="300"/>
         <source>提供反馈</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="292"/>
+        <location filename="../../app/view/setting_interface.py" line="301"/>
         <source>提供反馈帮助我们改进VideoCaptioner</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="296"/>
+        <location filename="../../app/view/setting_interface.py" line="305"/>
         <source>检查更新</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="299"/>
+        <location filename="../../app/view/setting_interface.py" line="308"/>
         <source>版权所有</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="300"/>
+        <location filename="../../app/view/setting_interface.py" line="309"/>
         <source>版本</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="451"/>
-        <location filename="../../app/view/setting_interface.py" line="481"/>
+        <location filename="../../app/view/setting_interface.py" line="498"/>
+        <source>Error Reading llm.json</source>
+        <translation>错误读取 llm.json 文件</translation>
+    </message>
+    <message>
+        <location filename="../../app/view/setting_interface.py" line="498"/>
+        <source>Cannot open LLM settins file: AppData/llm.json</source>
+        <translation>无法打开 LLM 设定文件： AppData/llm.json</translation>
+    </message>
+    <message>
+        <location filename="../../app/view/setting_interface.py" line="502"/>
+        <source>Error getting {host} settings</source>
+        <translation>无法读取 {host} 设定</translation>
+    </message>
+    <message>
+        <location filename="../../app/view/setting_interface.py" line="502"/>
+        <source>Cannot get {host} settings from AppData/llm.json</source>
+        <translation>无法从 AppData/llm.json 读取到 {host} 的设定</translation>
+    </message>
+    <message>
+        <location filename="../../app/view/setting_interface.py" line="527"/>
+        <location filename="../../app/view/setting_interface.py" line="557"/>
         <source>错误</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="452"/>
+        <location filename="../../app/view/setting_interface.py" line="528"/>
         <source>请先选择Whisper转录模型</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="461"/>
+        <location filename="../../app/view/setting_interface.py" line="537"/>
         <source>更新成功</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="462"/>
+        <location filename="../../app/view/setting_interface.py" line="538"/>
         <source>配置将在重启后生效</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="469"/>
+        <location filename="../../app/view/setting_interface.py" line="545"/>
         <source>选择文件夹</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="482"/>
+        <location filename="../../app/view/setting_interface.py" line="558"/>
         <source>请输入正确的 API Base, 含有 /v1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="490"/>
+        <location filename="../../app/view/setting_interface.py" line="566"/>
         <source>正在检查...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="507"/>
-        <location filename="../../app/view/setting_interface.py" line="529"/>
+        <location filename="../../app/view/setting_interface.py" line="583"/>
+        <location filename="../../app/view/setting_interface.py" line="605"/>
         <source>LLM 连接测试错误</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="522"/>
+        <location filename="../../app/view/setting_interface.py" line="598"/>
         <source>获取模型列表成功:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="523"/>
+        <location filename="../../app/view/setting_interface.py" line="599"/>
         <source>一共</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="523"/>
+        <location filename="../../app/view/setting_interface.py" line="599"/>
         <source>个模型</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="536"/>
+        <location filename="../../app/view/setting_interface.py" line="612"/>
         <source>LLM 连接测试成功</source>
         <translation></translation>
     </message>
@@ -1279,21 +1314,21 @@
     </message>
     <message>
         <location filename="../../app/view/subtitle_optimization_interface.py" line="441"/>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="741"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="745"/>
         <source>已加载文件</source>
         <translation></translation>
     </message>
     <message>
         <location filename="../../app/view/subtitle_optimization_interface.py" line="449"/>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="670"/>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="715"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="674"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="719"/>
         <source>警告</source>
         <translation></translation>
     </message>
     <message>
         <location filename="../../app/view/subtitle_optimization_interface.py" line="450"/>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="671"/>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="715"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="675"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="719"/>
         <source>请先加载字幕文件</source>
         <translation></translation>
     </message>
@@ -1308,109 +1343,109 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="522"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="526"/>
         <source>优化完成</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="523"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="527"/>
         <source>优化完成字幕...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="546"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="550"/>
         <source>优化失败</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="605"/>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="645"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="609"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="649"/>
         <source>选择字幕文件</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="637"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="641"/>
         <source>No API Key or API Base set</source>
         <translation>没有API 密匙或者API 入口网址</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="638"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="642"/>
         <source>批量字幕处理占用大量服务器资源，因此必须要使用自己的API KEY &amp; BASE，免得公益服务器无法工作，请见谅。
 具体设定在程序左下角的‘设定’里。</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="681"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="685"/>
         <source>保存字幕文件</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="700"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="704"/>
         <source>保存成功</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="701"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="705"/>
         <source>字幕已保存至:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="707"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="711"/>
         <source>保存失败</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="708"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="712"/>
         <source>保存字幕文件失败: </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="763"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="767"/>
         <source>导入成功</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="764"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="768"/>
         <source>成功导入</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="771"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="775"/>
         <source>格式错误</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="772"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="776"/>
         <source>支持的字幕格式:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="846"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="850"/>
         <source>合并</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="919"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="923"/>
         <source>合并成功</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="920"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="924"/>
         <source>已成功合并选中的字幕行</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="946"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="950"/>
         <source>已取消优化</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="948"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="952"/>
         <source>已取消</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="949"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="953"/>
         <source>字幕优化已取消</source>
         <translation></translation>
     </message>
@@ -1871,63 +1906,63 @@
 <context>
     <name>TaskCreationInterface</name>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="73"/>
+        <location filename="../../app/view/task_creation_interface.py" line="74"/>
         <source>转录模型</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="74"/>
+        <location filename="../../app/view/task_creation_interface.py" line="75"/>
         <source>语音转换的模型</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="122"/>
+        <location filename="../../app/view/task_creation_interface.py" line="123"/>
         <source>Translate Target</source>
         <translation>翻译目标</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="123"/>
+        <location filename="../../app/view/task_creation_interface.py" line="124"/>
         <source>The final language you want to translate into.</source>
         <translation>最后生成字幕的语言。</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="175"/>
+        <location filename="../../app/view/task_creation_interface.py" line="176"/>
         <source>请拖拽文件或输入视频URL</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="216"/>
+        <location filename="../../app/view/task_creation_interface.py" line="217"/>
         <source>准备就绪</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="235"/>
+        <location filename="../../app/view/task_creation_interface.py" line="236"/>
         <source>查看日志</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="244"/>
+        <location filename="../../app/view/task_creation_interface.py" line="245"/>
         <source>©VideoCaptioner {VERSION} • By Weifeng</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="252"/>
+        <location filename="../../app/view/task_creation_interface.py" line="253"/>
         <source>语言</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="253"/>
+        <location filename="../../app/view/task_creation_interface.py" line="254"/>
         <source>设置您偏好的界面语言</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="254"/>
-        <location filename="../../app/view/task_creation_interface.py" line="636"/>
+        <location filename="../../app/view/task_creation_interface.py" line="255"/>
+        <location filename="../../app/view/task_creation_interface.py" line="648"/>
         <source>使用系统设置</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="561"/>
+        <location filename="../../app/view/task_creation_interface.py" line="573"/>
         <source>警告</source>
         <translation></translation>
     </message>
@@ -1937,127 +1972,137 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="496"/>
-        <location filename="../../app/view/task_creation_interface.py" line="498"/>
+        <location filename="../../app/view/task_creation_interface.py" line="508"/>
+        <location filename="../../app/view/task_creation_interface.py" line="510"/>
         <source>导入成功</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="499"/>
+        <location filename="../../app/view/task_creation_interface.py" line="511"/>
         <source>导入媒体文件成功</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="89"/>
+        <location filename="../../app/view/task_creation_interface.py" line="90"/>
         <source>字幕视频合成</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="90"/>
+        <location filename="../../app/view/task_creation_interface.py" line="91"/>
         <source>是否把字幕合成到视频里面。</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="96"/>
+        <location filename="../../app/view/task_creation_interface.py" line="97"/>
         <source>软字幕</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="97"/>
+        <location filename="../../app/view/task_creation_interface.py" line="98"/>
         <source>是否合成软字幕视频，关掉则会合成硬字幕</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="104"/>
+        <location filename="../../app/view/task_creation_interface.py" line="105"/>
         <source>字幕翻译方式</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="105"/>
+        <location filename="../../app/view/task_creation_interface.py" line="106"/>
         <source>选择字幕翻译方式，或者不翻译。</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="129"/>
+        <location filename="../../app/view/task_creation_interface.py" line="130"/>
         <source>字幕输出格式</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="130"/>
+        <location filename="../../app/view/task_creation_interface.py" line="131"/>
         <source>字幕文件的后缀名</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="136"/>
+        <location filename="../../app/view/task_creation_interface.py" line="137"/>
         <source>字幕布局</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="137"/>
+        <location filename="../../app/view/task_creation_interface.py" line="138"/>
         <source>原文在上，译文在上，或者其它布局</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="387"/>
-        <location filename="../../app/view/task_creation_interface.py" line="452"/>
+        <location filename="../../app/view/task_creation_interface.py" line="388"/>
+        <location filename="../../app/view/task_creation_interface.py" line="454"/>
         <source>警告，需要配置 Base URL！</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="388"/>
-        <location filename="../../app/view/task_creation_interface.py" line="453"/>
+        <location filename="../../app/view/task_creation_interface.py" line="389"/>
+        <location filename="../../app/view/task_creation_interface.py" line="455"/>
         <source>你需要去设置中配置自己的Base URL，API Key和LLM Model。</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="506"/>
+        <location filename="../../app/view/task_creation_interface.py" line="464"/>
+        <source>The LLM is not working.</source>
+        <translation>LLM 不工作。</translation>
+    </message>
+    <message>
+        <location filename="../../app/view/task_creation_interface.py" line="465"/>
+        <source>Access to {cfg.api_base.value} failed. Check your LLM connection please.</source>
+        <translation>尝试调用 {cfg.api_base.value} 失败。请查一下你的 LLM 链接。</translation>
+    </message>
+    <message>
+        <location filename="../../app/view/task_creation_interface.py" line="518"/>
         <source>格式错误: </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="507"/>
+        <location filename="../../app/view/task_creation_interface.py" line="519"/>
         <source>不支持该文件格式</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="520"/>
-        <location filename="../../app/view/task_creation_interface.py" line="604"/>
-        <location filename="../../app/view/task_creation_interface.py" line="627"/>
+        <location filename="../../app/view/task_creation_interface.py" line="532"/>
+        <location filename="../../app/view/task_creation_interface.py" line="616"/>
+        <location filename="../../app/view/task_creation_interface.py" line="639"/>
         <source>错误</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="521"/>
+        <location filename="../../app/view/task_creation_interface.py" line="533"/>
         <source>请输入有效的文件路径或视频URL</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="562"/>
+        <location filename="../../app/view/task_creation_interface.py" line="574"/>
         <source>建议配置cookies.txt文件，以可以下载高清视频</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="589"/>
+        <location filename="../../app/view/task_creation_interface.py" line="601"/>
         <source>任务创建成功</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="590"/>
+        <location filename="../../app/view/task_creation_interface.py" line="602"/>
         <source>开始自动处理...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="628"/>
+        <location filename="../../app/view/task_creation_interface.py" line="640"/>
         <source>请输入音视频文件路径或URL</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="649"/>
+        <location filename="../../app/view/task_creation_interface.py" line="661"/>
         <source>更新成功 :</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="650"/>
+        <location filename="../../app/view/task_creation_interface.py" line="662"/>
         <source>配置将在重启后生效</source>
         <translation></translation>
     </message>
@@ -2672,7 +2717,7 @@
     <name>VideoSynthesisThread</name>
     <message>
         <location filename="../../app/core/thread/video_synthesis_thread.py" line="48"/>
-        <location filename="../../app/core/thread/video_synthesis_thread.py" line="81"/>
+        <location filename="../../app/core/thread/video_synthesis_thread.py" line="88"/>
         <source>合成完成</source>
         <translation></translation>
     </message>
@@ -2687,7 +2732,7 @@
         <translation>等待视频合成</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/video_synthesis_thread.py" line="88"/>
+        <location filename="../../app/core/thread/video_synthesis_thread.py" line="95"/>
         <source>视频合成失败</source>
         <translation></translation>
     </message>
@@ -3054,22 +3099,22 @@
 <context>
     <name>qoVideo</name>
     <message>
-        <location filename="../../app/core/utils/video_utils.py" line="121"/>
+        <location filename="../../app/core/utils/video_utils.py" line="126"/>
         <source>输入文件不存在</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/core/utils/video_utils.py" line="124"/>
+        <location filename="../../app/core/utils/video_utils.py" line="130"/>
         <source>字幕文件不存在</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/core/utils/video_utils.py" line="301"/>
+        <location filename="../../app/core/utils/video_utils.py" line="347"/>
         <source>正在合成</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/core/utils/video_utils.py" line="304"/>
+        <location filename="../../app/core/utils/video_utils.py" line="350"/>
         <source>合成完成</source>
         <translation></translation>
     </message>
