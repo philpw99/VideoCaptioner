@@ -359,7 +359,7 @@ class SubtitleOptimizationInterface(QWidget):
         enum = SubtitleLayoutEnum(value)    # Get the enum from value
         if cfg.subtitle_layout.value != enum:
             # 更新下拉框的当前文本为新的布局
-            cfg.set(cfg.subtitle_layout, enum, True)
+            cfg.subtitle_layout.value = enum
             self.layout_combobox.setCurrentText(value)
 
     def create_task(self, file_str: str):
@@ -600,7 +600,6 @@ class SubtitleOptimizationInterface(QWidget):
         
         if cfg.last_open_dir.value != "":
             open_path = cfg.last_open_dir.value
-            cfg.save()
         else:
             open_path = QStandardPaths.writableLocation(QStandardPaths.DesktopLocation)
         
@@ -611,8 +610,7 @@ class SubtitleOptimizationInterface(QWidget):
             # Save this file's directory for later use
             file_dir = str( Path(file_path).parent )
             if file_dir != cfg.last_open_dir.value:
-                cfg.last_open_dir.value = file_dir
-                cfg.save()
+                cfg.set(cfg.last_open_dir, file_dir)
 
             self.file_select_button.setProperty("selected_file", file_path)
             self.load_subtitle_file(file_path)

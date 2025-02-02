@@ -42,6 +42,9 @@ class TimedMessageBox(QMessageBox):
         super(TimedMessageBox, self).showEvent(event)
 
 class BatchProcessInterface(QWidget):
+    add_tasks_finished = pyqtSignal()
+    file_list = []
+    
     """批量处理界面"""
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -156,7 +159,7 @@ class BatchProcessInterface(QWidget):
             self.task_type_combo.setCurrentText(BatchTaskTypeEnum.TRANSLATE.value)
 
     def todo_when_done_changed(self, text: str):
-        cfg.set(cfg.todo_when_done, TodoWhenDoneEnum(text))
+        cfg.set(cfg.todo_when_done, text)
 
     def clear_all_tasks(self):
         """清空所有任务"""
@@ -223,8 +226,8 @@ class BatchProcessInterface(QWidget):
                     break
 
         # 判断是否所有任务都已完成
-        if all(task_card.task.status in [Task.Status.COMPLETED, Task.Status.FAILED, Task.Status.CANCELED] for task_card in self.task_cards):
-            self.on_batch_finished()
+        # if all(task_card.task.status in [Task.Status.COMPLETED, Task.Status.FAILED, Task.Status.CANCELED] for task_card in self.task_cards):
+        #     self.on_batch_finished()
 
     def cancel_batch_process(self):
         """取消批量处理"""
@@ -263,11 +266,16 @@ class BatchProcessInterface(QWidget):
         c = 0
         for task_card in self.task_cards:
             if task_card.task.status not in [Task.Status.PENDING, Task.Status.COMPLETED, Task.Status.FAILED, Task.Status.CANCELED]:
+                # This task is running.
                 c += 1
+                continue
+            if c >= 2:
+                # Over 2 tasks are running.
+                break
             if task_card.task.status == Task.Status.PENDING:
                 task_card.finished.connect(self.on_task_finished)
-                if c == 1:  # Add a 5 second pause between 1 and 2
-                    time.sleep(5)
+                if c == 1:  # Add a 2 second pause between 1 and 2
+                    time.sleep(2)
                 task_card.start()
                 c += 1
             if c >= 2:  # 2 tasks are running
@@ -309,7 +317,7 @@ class BatchProcessInterface(QWidget):
                     60
                 )
                 ret = qbox.exec()
-                if ret == QMessageBox.StandardButton.Ok:
+                if ret != QMessageBox.StandardButton.Cancel:
                     QCoreApplication.quit() # Exit
             case TodoWhenDoneEnum.SUSPEND.value:
                 qbox = TimedMessageBox(
@@ -318,7 +326,7 @@ class BatchProcessInterface(QWidget):
                     60
                 )
                 ret = qbox.exec()
-                if ret == QMessageBox.StandardButton.Ok:
+                if ret != QMessageBox.StandardButton.Cancel:
                     if sys.platform == 'win32':
                         os.system("rundll32.exe powrprof.dll,SetSuspendState 0,1,0")
                     else:
@@ -330,7 +338,7 @@ class BatchProcessInterface(QWidget):
                     60
                 )
                 ret = qbox.exec()
-                if ret == QMessageBox.StandardButton.Ok:
+                if ret != QMessageBox.StandardButton.Cancel:
                     if sys.platform == 'win32':
                         os.system("shutdown /s /t 1")
                     else:
@@ -457,6 +465,12 @@ class BatchProcessInterface(QWidget):
             parent=self
         )
         
+        # 检查 任务是否为最后一个，如果是则发出信号
+        if self.file_list:      # It's batch processing from command line.
+            if task.file_path == self.file_list[len(self.file_list)-1]:
+                self.file_list = None
+                self.add_tasks_finished.emit()
+        
 
     def remove_task_card(self, task_card):
         """移除任务卡片"""
@@ -534,7 +548,7 @@ class BatchProcessInterface(QWidget):
             else:
                 error_msg = self.tr("请拖入视频文件") if task_type in [ BatchTaskTypeEnum.SOFT or BatchTaskTypeEnum.HARD ] else self.tr("请拖入音频或视频文件")
                 InfoBar.error(
-                    self.tr(f"格式错误") + file_ext,
+                    self.tr("格式错误") + file_ext,
                     error_msg,
                     duration=3000,
                     parent=self
@@ -544,6 +558,53 @@ class BatchProcessInterface(QWidget):
         """关闭事件处理"""
         self.cancel_batch_process()
         super().closeEvent(event)
+
+    def addFiles(self, fileList: list):
+        self.file_list = fileList
+        for file_str in fileList:
+            if not os.path.isfile(file_str):
+                InfoBar.error(
+                    self.tr("File not exist."),
+                    self.tr(f"The file {file_str} is not a valid file."),
+                    duration= 5000,
+                    parent=self,
+                )
+                continue
+            file_ext = os.path.splitext(file_str)[1][1:].lower()
+
+            # 根据任务类型检查文件格式
+            match self.task_type_combo.currentText():
+                case BatchTaskTypeEnum.HARD.value:
+                    # Create hard sub video
+                    supported_formats = {fmt.value for fmt in SupportedVideoFormats}
+                    task_type = Task.Type.SUBTITLE
+                    soft_sub = False
+                case BatchTaskTypeEnum.SOFT.value:
+                    # Create soft sub video
+                    supported_formats = {fmt.value for fmt in SupportedVideoFormats}
+                    task_type = Task.Type.SUBTITLE
+                    soft_sub = True
+                case BatchTaskTypeEnum.TRANSLATE.value:
+                    # Create Optimize+Translate / Single Sentence Translate / Google Translate sub
+                    supported_formats = {fmt.value for fmt in SupportedVideoFormats} | {fmt.value for fmt in SupportedAudioFormats}
+                    task_type = Task.Type.TRANSLATE
+                    soft_sub = True
+                case BatchTaskTypeEnum.TRANSCRIBE.value:
+                    # Create transcrptions only
+                    supported_formats = {fmt.value for fmt in SupportedVideoFormats} | {fmt.value for fmt in SupportedAudioFormats}
+                    task_type = Task.Type.TRANSCRIBE
+                    soft_sub = True
+            
+            if file_ext in supported_formats:
+                self.create_task(file_str, task_type, soft_sub)
+            else:
+                InfoBar.error(
+                    self.tr("File Format Error"),
+                    self.tr(f"This file, {file_str}, has a wrong extension."),
+                    duration=5000,
+                    parent=self,
+                )
+        
 
 class TaskInfoCard(CardWidget):
     finished = pyqtSignal(Task)

@@ -138,9 +138,9 @@ class Config(QConfig):
 
     # ------------------- 字幕配置 -------------------
     translate_method = OptionsConfigItem("Subtitle","Translate Method",
-                                            TranslateMethodEnum.NONE,
-                                            EnumOptionsValidator(TranslateMethodEnum),
-                                            EnumExSerializer(TranslateMethodEnum)
+                                        TranslateMethodEnum.NONE,
+                                        EnumOptionsValidator(TranslateMethodEnum),
+                                        EnumExSerializer(TranslateMethodEnum)
                                         )
     target_language = OptionsConfigItem(
         "Subtitle", "TargetLanguage",
@@ -157,10 +157,19 @@ class Config(QConfig):
     # ------------------- 字幕合成配置 -------------------
     soft_subtitle = ConfigItem("Video", "SoftSubtitle", True, BoolValidator())
     need_video = ConfigItem("Video", "NeedVideo", True, BoolValidator())
+    subtitle_vertical_offset = RangeConfigItem("Video", 
+        "Subtitle on video vertical offset", 0, RangeValidator(-500, 500))
+    portrait = ConfigItem("Video", "Generate video in portrait mode", False, BoolValidator())
+    portrait_background = ConfigItem("Subtittle",
+        "Background for landscrape-to-portrait or portrait-to-landscape video.", ""
+    )
+    zoom_video = RangeConfigItem("Video", "Zoom percent for original video.",
+                            100, RangeValidator(10, 300))
+    zoom_subtitle = RangeConfigItem("Video", "Zoom percent for subtitle on video.",
+                            100, RangeValidator(10, 300))
 
     # ------------------- 字幕样式配置 -------------------
     subtitle_style_name = ConfigItem("SubtitleStyle", "StyleName", "default")
-    
     subtitle_layout = OptionsConfigItem(
         "SubtitleStyle", "Layout",
         SubtitleLayoutEnum.ONLY_TRANSLATE,
@@ -193,17 +202,8 @@ class Config(QConfig):
         1500, RangeValidator(500, 3000)
     )
 
-    time_offset = RangeConfigItem(
-        "Subtitle", "TimeOffset",
-        0,
-        RangeValidator(-5000, 5000)
-    )
+    time_offset = RangeConfigItem("Subtitle", "TimeOffset", 0, RangeValidator(-5000, 5000) )
     
-    vertical_offset = RangeConfigItem(
-        "Subtitle", "VerticalOffset",
-        0, RangeValidator(-500, 500)
-    )
-
     # ------------------- 软件页面配置 -------------------
     micaEnabled = ConfigItem("MainWindow", "MicaEnabled", False, BoolValidator())
     dpiScale = OptionsConfigItem(

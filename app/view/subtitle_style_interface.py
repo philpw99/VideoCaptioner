@@ -354,8 +354,7 @@ class SubtitleStyleInterface(QWidget):
         """连接所有设置变更的信号到预览更新函数"""
         # 字幕排布
         self.layoutCard.currentTextChanged.connect(self.onSettingChanged)
-        self.layoutCard.currentTextChanged.connect(
-            lambda: cfg.set(cfg.subtitle_layout, SubtitleLayoutEnum(self.layoutCard.comboBox.currentText())))
+        self.layoutCard.currentTextChanged.connect(self.on_subtitle_layout_changed)
         
         # 垂直间距
         self.verticalSpacingCard.spinBox.valueChanged.connect(self.onSettingChanged)
@@ -388,6 +387,9 @@ class SubtitleStyleInterface(QWidget):
         # 连接字幕排布信号
         self.layoutCard.currentTextChanged.connect(signalBus.on_subtitle_layout_changed)
         signalBus.subtitle_layout_changed.connect(self.on_subtitle_layout_changed)
+
+    def on_subtitle_layout_changed(self, text):
+        cfg.subtitle_layout.value = SubtitleLayoutEnum(text)
 
     def on_open_style_folder_clicked(self):
         """打开样式文件夹"""

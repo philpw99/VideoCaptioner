@@ -1,3 +1,4 @@
-test = { "1": "aaa" , "2": "bbb"}
-print( list(test))
+test = "1"
+
+print( f"result {type(test)}")
 

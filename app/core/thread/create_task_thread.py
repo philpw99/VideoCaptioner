@@ -169,7 +169,11 @@ class CreateTaskThread(QThread):
             soft_subtitle=soft_sub,
             subtitle_style_srt=subtitle_style_srt,
             need_video=need_video,
-            vertical_offset=cfg.vertical_offset.value,
+            subtitle_vertical_offset=cfg.subtitle_vertical_offset.value,
+            portrait=cfg.portrait.value,
+            portrait_background=cfg.portrait_background.value,
+            zoom_video=cfg.zoom_video.value,
+            zoom_subtitle=cfg.zoom_subtitle.value,
             type=task_type,
             task_thread=self,
         )
@@ -297,7 +301,11 @@ class CreateTaskThread(QThread):
             soft_subtitle=soft_sub,
             subtitle_style_srt=subtitle_style_srt,
             need_video=need_video,
-            vertical_offset=cfg.vertical_offset.value,
+            subtitle_vertical_offset=cfg.subtitle_vertical_offset.value,
+            portrait=cfg.portrait.value,
+            portrait_background=cfg.portrait_background.value,
+            zoom_video=cfg.zoom_video.value,
+            zoom_subtitle=cfg.zoom_subtitle.value,
             task=Task.Type.URL,
             task_thread=self,
         )
@@ -426,6 +434,11 @@ class CreateTaskThread(QThread):
             soft_subtitle=cfg.soft_subtitle.value,
             type=Task.Type.SYNTHESIS,
             need_video=True,    # Just in case, because synthesis always generate a video
+            subtitle_vertical_offset=cfg.subtitle_vertical_offset.value,
+            portrait=cfg.portrait.value,
+            portrait_background=cfg.portrait_background.value,
+            zoom_video=cfg.zoom_video.value,
+            zoom_subtitle=cfg.zoom_subtitle.value,
             task_thread=self,
         )
         logger.info(f"视频合成任务创建完成：{task}")

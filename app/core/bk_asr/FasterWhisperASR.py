@@ -98,6 +98,10 @@ class FasterWhisperASR(BaseASR):
             "--output_format", self.output_format,
         ])
         
+        # 日语尽量以汉字输出
+        if self.language == 'ja':
+            cmd.extend(["--japanese", "kanji"])
+        
         # 输出目录
         if self.output_dir:
             cmd.extend(["-o", str(self.output_dir)])
@@ -112,6 +116,8 @@ class FasterWhisperASR(BaseASR):
             ])
             if self.vad_method:
                 cmd.extend(["--vad_method", self.vad_method])
+        else:
+            cmd.extend(["--vad_filter", "false"])
 
         # 人声分离
         if self.ff_mdx_kim2 and self.faster_whisper_path.name.startswith("faster-whisper-xxl"):
@@ -124,6 +130,8 @@ class FasterWhisperASR(BaseASR):
             self.one_word = 0
         if self.one_word in [0, 1, 2]:
             cmd.extend(["--one_word", str(self.one_word)])
+        else:
+            cmd.append("--sentence")
         
         # 翻译成英语
         if self.translate_to_english:
@@ -140,6 +148,9 @@ class FasterWhisperASR(BaseASR):
                 "--max_comma", str(self.max_comma),
                 "--max_comma_cent", str(self.max_comma_cent)
             ])
+
+        # 关闭声音
+        cmd.append("--beep_off")
         
         # 提示词
         if self.prompt:

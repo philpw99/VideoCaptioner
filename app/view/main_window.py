@@ -15,13 +15,16 @@ from .batch_process_interface import BatchProcessInterface
 from .home_interface import HomeInterface
 from .setting_interface import SettingInterface
 from ..components.DonateDialog import DonateDialog
+from ..core.entities import SubtitleLayoutEnum, TodoWhenDoneEnum, Task, BatchTaskTypeEnum, TranslateMethodEnum
 
 LOGO_PATH = ASSETS_PATH / "logo.png"
 
 class MainWindow(FluentWindow):
 
-    def __init__(self):
+    def __init__(self, argv = []):
         super().__init__()
+        # change the enum values first
+        self.enums_translate()
         self.initWindow()
 
         # 创建子界面
@@ -48,7 +51,17 @@ class MainWindow(FluentWindow):
         # 注册退出处理， 清理进程
         import atexit
         atexit.register(self.stop)
-
+        
+        # 处理 命令行 文件参数
+        if argv:
+            self.switchTo(self.batchProcessInterface)
+            # Set the program to exit after the batch is done.
+            self.batchProcessInterface.todo_when_done_combobox.setCurrentText(TodoWhenDoneEnum.EXIT.value)
+            # Add files to the batch
+            self.batchProcessInterface.addFiles(argv)
+            # Once all the files are added, start the process
+            self.batchProcessInterface.add_tasks_finished.connect(self.on_add_file_finished)
+            
     def initNavigation(self):
         """初始化导航栏"""
         # 添加导航项
@@ -154,3 +167,52 @@ class MainWindow(FluentWindow):
         process = psutil.Process(os.getpid())
         for child in process.children(recursive=True):
             child.kill()
+
+    def on_add_file_finished(self):
+        # Files are all added. Time to run them.
+        self.batchProcessInterface.start_batch_process()
+    
+    def enums_translate(self):
+        BatchTaskTypeEnum.TRANSCRIBE.setValue( self.tr("Create Transcription from Audio/Video") )
+        BatchTaskTypeEnum.TRANSLATE.setValue( self.tr("Transcribe + Translate Audio/Video") )
+        BatchTaskTypeEnum.SOFT.setValue( self.tr("Create Soft Subtitle Video") )
+        BatchTaskTypeEnum.HARD.setValue( self.tr("Create Hard Subtitle Video") )
+        
+        SubtitleLayoutEnum.ONLY_ORIGINAL.setValue( self.tr("Original Only") )
+        SubtitleLayoutEnum.ONLY_TRANSLATE.setValue( self.tr("Translated Only") )
+        SubtitleLayoutEnum.ORIGINAL_ON_TOP.setValue( self.tr("Original on Top") )
+        SubtitleLayoutEnum.TRANSLATE_ON_TOP.setValue( self.tr("Translated on Top"))
+        
+        TranslateMethodEnum.OPTIMIZE.setValue( self.tr("Optimize Translate") )
+        TranslateMethodEnum.GOOGLE.setValue( self.tr("Google Translate") )
+        TranslateMethodEnum.SINGLE_SENTENCE.setValue( self.tr("Single Sentence Translate") )
+        TranslateMethodEnum.NONE.setValue( self.tr("No Translation") )
+
+        TodoWhenDoneEnum.NOTHING.setValue( self.tr("Nothing"))
+        TodoWhenDoneEnum.EXIT.setValue( self.tr("Exit The Program"))
+        TodoWhenDoneEnum.SHUTDOWN.setValue( self.tr("Shutdown The Computer"))
+        TodoWhenDoneEnum.SUSPEND.setValue( self.tr("Suspend The Computer"))
+        
+        Task.Status.CANCELED.setValue( self.tr("Canceled"))
+        Task.Status.COMPLETED.setValue( self.tr("Completed"))
+        Task.Status.DOWNLOADING.setValue( self.tr("Downloading"))
+        Task.Status.FAILED.setValue( self.tr("Failed"))
+        Task.Status.GENERATING.setValue( self.tr("Generating"))
+        Task.Status.OPTIMIZING.setValue( self.tr("Optimizing"))
+        Task.Status.PENDING.setValue( self.tr("Pending"))
+        Task.Status.SYNTHESIZING.setValue( self.tr("Synthesizing"))
+        Task.Status.TRANSCODING.setValue( self.tr("Transcoding"))
+        Task.Status.TRANSLATING.setValue( self.tr("Translating"))
+        Task.Status.WAITINGAUDIO.setValue( self.tr("Waiting for audio transcoding"))
+        Task.Status.WAITINGTRANSLATE.setValue( self.tr("Waiting for translating."))
+        Task.Status.WAITINGSYNTHESIS.setValue( self.tr("Waiting for video synthesis"))
+        Task.Status.WAITINGTRANSCRIBE.setValue( self.tr("Waiting for transcripting"))
+
+        Task.Source.FILE_IMPORT.setValue( self.tr("File Import"))
+        Task.Source.URL_IMPORT.setValue( self.tr("URL Import"))
+        
+        Task.Type.SUBTITLE.setValue( self.tr("Add Subtitle To Video"))
+        Task.Type.SYNTHESIS.setValue( self.tr("Combine Subtitle with Video"))
+        Task.Type.TRANSCRIBE.setValue( self.tr("Get Subtitle From Video/Audio"))
+        Task.Type.TRANSLATE.setValue(self.tr("Add Translated Sub To Video"))
+        Task.Type.URL.setValue( self.tr("Download Video from URL then Add Subtitle"))

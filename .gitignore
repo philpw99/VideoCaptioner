@@ -3,7 +3,6 @@
 !/resource/bin/bin_environment.txt
 
 # 开发环境
-.idea/
 .vscode
 .venv
 *.pyc
@@ -15,6 +14,9 @@
 /test/
 /release/
 /my_content/
+/build/
+/dist/
+/main.spec
 
 # 媒体文件
 *.srt
@@ -24,5 +26,4 @@
 
 # 应用数据
 /AppData/
-/output/
 /work-dir/

@@ -126,6 +126,9 @@ class VadMethodEnum(Enum):
     """ VAD方法 """
     SILERO_V3 = "silero_v3"
     SILERO_V4 = "silero_v4"
+    SILERO_V4_FW = "silero_v4_fw"
+    SILERO_V5 = "silero_v5"
+    SILERO_V5_FW = "silero_v5_fw"
     PYANNOTE_V3 = "pyannote_v3"
     PYANNOTE_ONNX_V3 = "pyannote_onnx_v3"
     AUDITOK = "auditok"
@@ -607,5 +610,5 @@ class Task:
     portrait_background: Optional[str] = None
     zoom_video: int = 100
     zoom_subtitle: int = 100
-    vertical_offset: int = 0
+    subtitle_vertical_offset: int = 0
     

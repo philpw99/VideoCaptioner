@@ -39,13 +39,17 @@ class EnumComboBoxSettingCard(SettingCard):
         
         # 连接信号
         self.comboBox.currentTextChanged.connect(self.__onTextChanged)
-        configItem.valueChanged.connect(self.comboBox.setText)
+        configItem.valueChanged.connect(self.setEnum)
 
     def __onTextChanged(self, text: str):
         """ 当文本改变时触发 """
         self.setValue(text)
         self.currentTextChanged.emit(text)
 
+    def setEnum(self, enum: Enum):
+        qconfig.set(self.configItem, enum)
+        self.comboBox.setText(enum.value)
+        
     def setValue(self, value: str):
         """ 设置值 """
         enum = self.enums(value)    # Get the enum from value

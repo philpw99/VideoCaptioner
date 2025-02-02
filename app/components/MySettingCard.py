@@ -114,26 +114,34 @@ class SettingCard(QFrame):
 class SaveSettingComboCard(SettingCard):
     textChanged = pyqtSignal(str)
     saveClicked = pyqtSignal()
+    deleteClicked = pyqtSignal()
     
-    def __init__(self, buttonText, icon, title, content=None, items = None, parent=None):
+    def __init__(self, icon, title, content=None, items = None, parent=None):
         super().__init__(icon, title, content, parent)
         
         #创建 LLM settings choice.
-        self.pushButton = PushButton(buttonText,self)
+        self.saveButton = PushButton(self.tr("Save"),self)
+        self.deleteButton = PushButton(self.tr("Delete"),self)
         self.comboBox = ComboBox(self)
         if items:
             self.comboBox.addItems( items )
         
-        self.hBoxLayout.addWidget(self.pushButton, 0, Qt.AlignmentFlag.AlignRight)
+        self.hBoxLayout.addWidget(self.saveButton, 0, Qt.AlignmentFlag.AlignRight)
+        self.hBoxLayout.addSpacing(8)
+        self.hBoxLayout.addWidget(self.deleteButton, 0, Qt.AlignmentFlag.AlignRight)
         self.hBoxLayout.addSpacing(8)
         self.hBoxLayout.addWidget(self.comboBox, 0, Qt.AlignmentFlag.AlignRight)
         self.hBoxLayout.addSpacing(16)
         
-        self.pushButton.clicked.connect( self.__onSaveClicked )
+        self.saveButton.clicked.connect( self.__onSaveClicked )
+        self.deleteButton.clicked.connect( self.__onDeleteClicked)
         self.comboBox.currentTextChanged.connect( self.__onTextChanged )
         
     def __onSaveClicked(self):
         self.saveClicked.emit()
+    
+    def __onDeleteClicked(self):
+        self.deleteClicked.emit()
     
     def __onTextChanged(self, text:str):
         self.textChanged.emit(text)

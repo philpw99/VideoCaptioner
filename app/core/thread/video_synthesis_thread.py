@@ -63,10 +63,12 @@ class VideoSynthesisThread(QThread):
                 h = self.task.video_info.height
                 duration = int(self.task.video_info.duration_seconds)
                 
-            if self.task.portrait:
+            if ( self.task.portrait and w > h ) or (not self.task.portrait and w < h):
+                # Need to convert lanscape <-> portrait
                 width = h
                 height = w
             else:
+                # Keep the same mode
                 width = w
                 height = h
             
@@ -79,7 +81,7 @@ class VideoSynthesisThread(QThread):
                           output_width=width,
                           output_height=height,
                           portrait=self.task.portrait,
-                          vertical_offset=self.task.vertical_offset,
+                          vertical_offset=self.task.subtitle_vertical_offset,
                           background=self.task.portrait_background,
                           duration=duration,
                           zoom_video=self.task.zoom_video,

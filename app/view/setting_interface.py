@@ -1,4 +1,5 @@
 import webbrowser, json
+from typing import Dict
 from urllib.parse import urlparse
 from PyQt5.QtCore import Qt, QUrl, pyqtSignal, QThread
 from PyQt5.QtGui import QDesktopServices
@@ -104,7 +105,6 @@ class SettingInterface(ScrollArea):
             parent=self.llmGroup
         )
         self.saveLLMSettingsCard = SaveSettingComboCard(
-            self.tr("Save"),
             FIF.SAVE,
             self.tr("Save LLM Settings"),
             self.tr("Save current LLM Settings to use in the future."),
@@ -132,8 +132,8 @@ class SettingInterface(ScrollArea):
             parent=self.translateGroup
         )
 
-        # 字幕合成配置
-        self.subtitleGroup = SettingCardGroup(self.tr("字幕合成配置"), self.scrollWidget)
+        # 字幕配置
+        self.subtitleGroup = SettingCardGroup(self.tr("字幕配置"), self.scrollWidget)
         self.subtitleStyleCard = HyperlinkCard(
             "",
             self.tr('修改'),
@@ -151,21 +151,6 @@ class SettingInterface(ScrollArea):
             self.subtitleGroup
         )
 
-        self.needVideoCard = SwitchSettingCard(
-            FIF.VIDEO,
-            self.tr('Need to sythesis video'),
-            self.tr('Do you want to combine the original video and subtitle into a new video.'),
-            cfg.need_video,
-            self.subtitleGroup
-        )
-        # 开启软字幕
-        self.softSubtitleCard = SwitchSettingCard(
-            FIF.FONT,
-            self.tr('Soft Subtitles'),
-            self.tr('When synthesising video, add the subtitle as a new track, instead of hard-coding it into video.'),
-            cfg.soft_subtitle,
-            self.subtitleGroup
-        )
         # 保存字幕格式
         self.saveSubtitleFormatCard = ComboBoxSettingCard(
             cfg.subtitle_output_format,
@@ -209,7 +194,7 @@ class SettingInterface(ScrollArea):
             self.tr('In milliseconds, the minimum time each sentence should at least have.'),
             self.subtitleGroup
         )
-        
+
         self.SubtitleTimeOffsetCard = RangeSettingCard(
             cfg.time_offset,
             FIF.STOP_WATCH,
@@ -217,13 +202,66 @@ class SettingInterface(ScrollArea):
             self.tr('In milliseconds, the offset to apply to all subtitle timings.'),
             self.subtitleGroup
         )
+
+        # 视频合成配置
+        self.videoGroup = SettingCardGroup(self.tr("视频合成配置"), self.scrollWidget)
+
+        self.needVideoCard = SwitchSettingCard(
+            FIF.VIDEO,
+            self.tr('Need to sythesis video'),
+            self.tr('Do you want to combine the original video and subtitle into a new video.'),
+            cfg.need_video,
+            self.videoGroup
+        )
+
+        # 开启软字幕
+        self.softSubtitleCard = SwitchSettingCard(
+            FIF.FONT,
+            self.tr('Soft Subtitles'),
+            self.tr('When synthesising video, add the subtitle as a new track, instead of hard-coding it into video.'),
+            cfg.soft_subtitle,
+            self.videoGroup
+        )
         
-        self.VerticalOffsetCard = RangeSettingCard(
-            cfg.vertical_offset,
+        self.subtitleVerticalOffsetCard = RangeSettingCard(
+            cfg.subtitle_vertical_offset,
             FIF.MOVE,
             self.tr('Vertical Offset for Subtitles'),
             self.tr('In pixels, the vertical offset to apply to all subtitle positions.'),
-            self.subtitleGroup
+            self.videoGroup
+        )
+
+        self.videoPortraitCard = SwitchSettingCard(
+            FIF.PHOTO,
+            self.tr("Generate Portrait Video"),
+            self.tr("When synthsizing video, generate a portrait video. When it's off it will generate a landscape video."),
+            cfg.portrait,
+            self.videoGroup
+        )
+
+        self.videoPortraitBackgroundCard = LineEditSettingCard(
+            cfg.portrait_background,
+            FIF.FOLDER,
+            self.tr("Portrait or Landscape Picture Background"),
+            self.tr("When generating a landscape-to-portrait video, or vice versa, add a picture background to it."),
+            "",
+            self.videoGroup
+        )
+
+        self.zoomVideoCard = RangeSettingCard(
+            cfg.zoom_video,
+            FIF.ZOOM_IN,
+            self.tr("Video Zoom Percentage"),
+            self.tr("The scale percent for video zooming in landscape-to-portrait videos."),
+            self.videoGroup
+        )
+
+        self.zoomSubtitleCard = RangeSettingCard(
+            cfg.zoom_subtitle,
+            FIF.ZOOM,
+            self.tr("Subtitle Zoom Percentage"),
+            self.tr("The scale percent for subtitle zooming in the generated video."),
+            self.videoGroup
         )
         
         # 保存配置
@@ -348,42 +386,31 @@ class SettingInterface(ScrollArea):
         self.settingLabel.move(36, 30)
 
         # 添加卡片到组
-        self.transcribeGroup.addSettingCard(self.transcribeModelCard)
-        self.transcribeGroup.addSettingCard(self.whisperSettingCard)
+        self.transcribeGroup.addSettingCards([self.transcribeModelCard,
+            self.whisperSettingCard])
 
-        self.llmGroup.addSettingCard(self.apiKeyCard)
-        self.llmGroup.addSettingCard(self.apiBaseCard)
-        self.llmGroup.addSettingCard(self.modelCard)
-        self.llmGroup.addSettingCard(self.checkLLMConnectionCard)
-        self.llmGroup.addSettingCard(self.batchSizeCard)
-        self.llmGroup.addSettingCard(self.threadNumCard)
-        self.llmGroup.addSettingCard(self.saveLLMSettingsCard)
+        self.llmGroup.addSettingCards([self.apiKeyCard,
+            self.apiBaseCard, self.modelCard, self.checkLLMConnectionCard,
+            self.batchSizeCard, self.threadNumCard, self.saveLLMSettingsCard])
 
-        self.translateGroup.addSettingCard(self.subtitleTranslateCard)
-        self.translateGroup.addSettingCard(self.targetLanguageCard)
+        self.translateGroup.addSettingCards([self.subtitleTranslateCard,
+            self.targetLanguageCard,])
+        
+        self.subtitleGroup.addSettingCards([self.subtitleStyleCard, self.subtitleLayoutCard,
+            self.saveSubtitleFormatCard, self.saveSubtitlePrefixCard,
+            self.saveSubtitleSuffixCard, self.enableSubtitleSentenceMinimumTimeCard,
+            self.SubtitleSentenceMinimumTimeCard, self.SubtitleTimeOffsetCard])
 
-        self.subtitleGroup.addSettingCard(self.subtitleStyleCard)
-        self.subtitleGroup.addSettingCard(self.subtitleLayoutCard)
-        self.subtitleGroup.addSettingCard(self.needVideoCard)
-        self.subtitleGroup.addSettingCard(self.softSubtitleCard)
-        self.subtitleGroup.addSettingCard(self.saveSubtitleFormatCard)
-        self.subtitleGroup.addSettingCard(self.saveSubtitlePrefixCard)
-        self.subtitleGroup.addSettingCard(self.saveSubtitleSuffixCard)
-        self.subtitleGroup.addSettingCard(self.enableSubtitleSentenceMinimumTimeCard)
-        self.subtitleGroup.addSettingCard(self.SubtitleSentenceMinimumTimeCard)
-        self.subtitleGroup.addSettingCard(self.SubtitleTimeOffsetCard)
-        self.subtitleGroup.addSettingCard(self.VerticalOffsetCard)
+        self.videoGroup.addSettingCards([self.needVideoCard, self.softSubtitleCard,
+            self.subtitleVerticalOffsetCard, self.videoPortraitCard,
+            self.videoPortraitBackgroundCard, self.zoomVideoCard, self.zoomSubtitleCard])
+
         self.saveGroup.addSettingCard(self.savePathCard)
 
-        self.personalGroup.addSettingCard(self.themeCard)
-        self.personalGroup.addSettingCard(self.themeColorCard)
-        self.personalGroup.addSettingCard(self.zoomCard)
-        self.personalGroup.addSettingCard(self.languageCard)
-        self.personalGroup.addSettingCard(self.noThumbnailCard)
+        self.personalGroup.addSettingCards([self.themeCard, self.themeColorCard,
+            self.zoomCard, self.languageCard, self.noThumbnailCard])
 
-        self.aboutGroup.addSettingCard(self.helpCard)
-        self.aboutGroup.addSettingCard(self.feedbackCard)
-        self.aboutGroup.addSettingCard(self.aboutCard)
+        self.aboutGroup.addSettingCards([self.helpCard, self.feedbackCard, self.aboutCard])
 
         # 将设置卡片组添加到布局
         self.expandLayout.setSpacing(28)
@@ -392,6 +419,7 @@ class SettingInterface(ScrollArea):
         self.expandLayout.addWidget(self.llmGroup)
         self.expandLayout.addWidget(self.translateGroup)
         self.expandLayout.addWidget(self.subtitleGroup)
+        self.expandLayout.addWidget(self.videoGroup)
         self.expandLayout.addWidget(self.saveGroup)
         self.expandLayout.addWidget(self.personalGroup)
         self.expandLayout.addWidget(self.aboutGroup)
@@ -408,6 +436,9 @@ class SettingInterface(ScrollArea):
         
         # 保存 LLM 设定
         self.saveLLMSettingsCard.saveClicked.connect(self.save_llm_settings)
+        
+        # 删除 LLM 设定
+        self.saveLLMSettingsCard.deleteClicked.connect(self.delete_llm_list)
 
         # 载入 LLM 设定
         self.saveLLMSettingsCard.textChanged.connect(self.load_llm_settings)
@@ -441,12 +472,68 @@ class SettingInterface(ScrollArea):
         
         # signalBus to local
         signalBus.subtitle_layout_changed.connect(self.subtitleLayoutCard.comboBox.setCurrentText)
-        signalBus.translation_method_changed.connect(self.subtitleTranslateCard.comboBox.setCurrentText)
+        signalBus.translation_method_changed.connect(self.on_translation_method_changed)
         signalBus.target_language_changed.connect(self.targetLanguageCard.comboBox.setCurrentText)
         signalBus.language_changed.connect(self.languageCard.comboBox.setCurrentText)
         signalBus.need_video_changed.connect(self.needVideoCard.switchButton.setChecked)
         signalBus.soft_subtitle_changed.connect(self.softSubtitleCard.switchButton.setChecked)
         signalBus.transcription_model_changed.connect(self.transcribeModelCard.comboBox.setCurrentText)
+
+    def on_translation_method_changed(self,text):
+        # print(f"text type:{type(text)}")
+        comboBox = self.subtitleTranslateCard.comboBox
+        if comboBox.currentText() != text:
+            comboBox.setCurrentText(text)
+
+    def delete_llm_list(self):
+        # Delete current llm settings in the combo box.
+        comboBox = self.saveLLMSettingsCard.comboBox
+        key = comboBox.currentText()
+        save_file = APPDATA_PATH / "llm.json"
+        if not save_file.exists():
+            InfoBar.error(self.tr("File llm.json not exist!"),
+                          self.tr("Cannot find the llm.json file."),
+                          duration=5000,
+                          parent=self,
+                          )
+            comboBox.clear()
+            return
+        with open(save_file,"r") as f:
+            data_json: Dict = json.load(f)
+        
+        if len(data_json) == 0:
+            return
+        data_json.pop(key)
+        # Save the new dict
+        with open(save_file, "w") as f:
+            json.dump(data_json, f, indent=4)
+
+        comboBox.clear()
+        if len(data_json) > 0:
+            comboBox.addItems(list(data_json))
+            # Load the current settings
+            key = comboBox.currentText()
+            setting_json = data_json[key]
+            if not setting_json:
+                InfoBar.error(self.tr(f"Error getting {key} settings"),
+                              self.tr(f"Cannot get {key} settings from AppData/llm.json"),
+                              duration=5000,
+                              parent=self,
+                              )
+                return
+            self.apiBaseCard.setValue(setting_json["BaseURL"])
+            self.apiKeyCard.setValue(setting_json["ApiKey"])
+            self.batchSizeCard.setValue(setting_json["BatchSize"])
+            self.threadNumCard.setValue(setting_json["ThreadNum"])
+            
+        
+        InfoBar.info(self.tr("LLM entry deleted."),
+                     self.tr(f"The settings of {key} was deleted."),
+                     duration=5000,
+                     parent=self
+        )
+        
+            
     
     def load_llm_list(self):
         save_file = APPDATA_PATH / "llm.json"
@@ -489,6 +576,12 @@ class SettingInterface(ScrollArea):
         self.saveLLMSettingsCard.comboBox.clear()
         self.saveLLMSettingsCard.comboBox.addItems(list(data_json))
         self.saveLLMSettingsCard.comboBox.setCurrentText(oBaseUrl.hostname)
+        
+        InfoBar.info(self.tr("LLM settings saved."),
+                     self.tr(f"The LLM settings for {oBaseUrl.hostname} was saved."),
+                     duration=5000,
+                     parent=self,
+                     )
         
     def load_llm_settings(self, host):
         save_file = APPDATA_PATH / "llm.json"

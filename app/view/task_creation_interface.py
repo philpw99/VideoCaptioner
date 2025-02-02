@@ -309,10 +309,10 @@ class TaskCreationInterface(QWidget):
     def on_subtitle_layout_changed(self, value: str):
         enum = SubtitleLayoutEnum(value)
         if cfg.subtitle_layout.value != enum:
-            cfg.set(cfg.subtitle_layout, enum, True)    # Save the new setting
+            cfg.subtitle_layout.value = enum
         comboBox = self.subtitle_layout_card.comboBox
-        if comboBox.currentText() != enum.value:
-            comboBox.setCurrentText(enum.value)
+        if comboBox.currentText() != value:
+            comboBox.setCurrentText(value)
 
 
     def on_translate_method_changed(self, value: str):
@@ -320,10 +320,10 @@ class TaskCreationInterface(QWidget):
         # Set configItem to the new enum
         enum = TranslateMethodEnum(value)
         if cfg.translate_method.value != enum:
-            cfg.set(cfg.translate_method, enum, True)
+            cfg.translate_method.value = enum
         comboBox = self.translation_method_card.comboBox
-        if comboBox.currentText() != enum.value:
-            comboBox.setCurrentText(enum.value)
+        if comboBox.currentText() != value:
+            comboBox.setCurrentText(value)
 
         if enum == TranslateMethodEnum.NONE:
             self.soft_subtitle_card.setDisabled(True)
@@ -352,19 +352,19 @@ class TaskCreationInterface(QWidget):
     def on_target_language_changed(self, language: str):
         enum = TargetLanguageEnum(language)
         if cfg.target_language.value != enum:
-            cfg.set(cfg.target_language, enum, True)
+            cfg.target_language.value = enum
         comboBox = self.target_language_card.comboBox
-        if comboBox.currentText() != enum.value:
-            comboBox.setCurrentText(enum.value)
+        if comboBox.currentText() != language:
+            comboBox.setCurrentText(language)
 
     def on_transcription_model_changed(self, value: str):
         """当转录模型改变时触发"""
         enum = TranscribeModelEnum(value)
         if cfg.transcribe_model.value != enum:
-            cfg.set(cfg.transcribe_model, enum, True)
+            cfg.transcribe_model.value = enum
         comboBox = self.transcription_model_card.comboBox
-        if comboBox.currentText != enum.value:
-            comboBox.setCurrentText(enum.value)
+        if comboBox.currentText != value:
+            comboBox.setCurrentText(value)
         self.whisper_setting_button.setVisible( self.is_using_whisper())
             
 
