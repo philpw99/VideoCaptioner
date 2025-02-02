@@ -595,6 +595,7 @@ class TaskCreationInterface(QWidget):
 
     def on_create_task_finished(self, task: Task):
         self.task = task
+        print(f"on_create_task_finish: {task.transcribe_language}")
         if self.task.status == Task.Status.PENDING:
             self.finished.emit(task)
         InfoBar.success(

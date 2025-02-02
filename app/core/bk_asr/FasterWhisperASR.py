@@ -99,7 +99,7 @@ class FasterWhisperASR(BaseASR):
         ])
         
         # 日语尽量以汉字输出
-        if self.language == 'ja':
+        if self.language == 'ja' or self.language.lower() == "japanese":
             cmd.extend(["--japanese", "kanji"])
         
         # 输出目录

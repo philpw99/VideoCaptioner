@@ -7,7 +7,7 @@ import requests
 import yt_dlp
 from PyQt5.QtCore import QThread, pyqtSignal, QObject
 
-from ..entities import Task, TranscribeModelEnum, TranslateMethodEnum, VideoInfo, LANGUAGES
+from ..entities import Task, TranscribeModelEnum, TranslateMethodEnum, VideoInfo, LANGUAGES, WHISPER_LANGUAGES
 from ..utils.video_utils import get_video_info
 from ...common.config import cfg
 from ..utils.logger import setup_logger
@@ -96,6 +96,12 @@ class CreateTaskThread(QThread):
             case _:
                 whisper_type = ""
 
+        if whisper_type:
+            transcribe_language = WHISPER_LANGUAGES[cfg.transcribe_language.value.value]
+        else:
+            transcribe_language = LANGUAGES[cfg.transcribe_language.value.value]
+
+
         # 定义各个路径
         original_subtitle_save_path = task_work_dir / f"{self.tr("【原始字幕】")}{file_name}-{cfg.transcribe_model.value.value}{whisper_type}.srt"
         result_subtitle_save_path = file_dir / ( cfg.subtitle_file_prefix.value + file_name + cfg.subtitle_file_suffix.value + "." + cfg.subtitle_output_format.value.value )
@@ -129,9 +135,9 @@ class CreateTaskThread(QThread):
             file_path=str(Path(self.file_path)),
             url="",
             source=Task.Source.FILE_IMPORT,
-            original_language=cfg.transcribe_language,
-            target_language=cfg.target_language.value.value,
-            transcribe_language=LANGUAGES[cfg.transcribe_language.value.value],
+            original_language=LANGUAGES[cfg.transcribe_language.value.value],
+            target_language=LANGUAGES[cfg.target_language.value.value],
+            transcribe_language=transcribe_language,
             whisper_model=cfg.whisper_model.value.value,
             whisper_api_key=cfg.whisper_api_key.value,
             whisper_api_base=cfg.whisper_api_base.value,
@@ -225,6 +231,12 @@ class CreateTaskThread(QThread):
             case _:
                 whisper_type = ""
 
+        if whisper_type:
+            transcribe_language = WHISPER_LANGUAGES[cfg.transcribe_language.value.value]
+        else:
+            transcribe_language = LANGUAGES[cfg.transcribe_language.value.value]
+
+
         # 定义各个路径
         audio_save_path = task_work_dir / f"{self.tr("【音频】")}{Path(video_file_path).stem}.wav"
         original_subtitle_save_path = task_work_dir / f"{self.tr("【原始字幕】")}{cfg.transcribe_model.value.value}-file_name-{whisper_type}.srt" if not subtitle_file_path else subtitle_file_path
@@ -261,13 +273,13 @@ class CreateTaskThread(QThread):
             file_path=str(Path(video_file_path)),
             url="",
             source=Task.Source.FILE_IMPORT,
-            original_language=cfg.transcribe_language,
-            target_language=cfg.target_language.value,
+            original_language=LANGUAGES[cfg.transcribe_language.value.value],
+            target_language=LANGUAGES[cfg.target_language.value.value],
             video_info=video_info,
             audio_format=audio_format,
             audio_save_path=str(audio_save_path),
             transcribe_model=cfg.transcribe_model.value,
-            transcribe_language=LANGUAGES[cfg.transcribe_language.value.value],
+            transcribe_language=transcribe_language,
             whisper_model=cfg.whisper_model.value.value,
             whisper_api_key=cfg.whisper_api_key.value,
             whisper_api_base=cfg.whisper_api_base.value,
@@ -328,16 +340,22 @@ class CreateTaskThread(QThread):
         video_info = VideoInfo(**video_info)
 
         # 定义各个路径
-        match cfg.transcribe_model.value.value:
-            case TranscribeModelEnum.WHISPER.value:
+        match cfg.transcribe_model.value:
+            case TranscribeModelEnum.WHISPER:
                 whisper_type = f"{cfg.whisper_model.value.value}-{cfg.transcribe_language.value.value}"
-            case TranscribeModelEnum.WHISPER_API.value:
+            case TranscribeModelEnum.WHISPER_API:
                 whisper_type = f"{cfg.whisper_api_model.value}-{cfg.transcribe_language.value.value}"
-            case TranscribeModelEnum.FASTER_WHISPER.value:
+            case TranscribeModelEnum.FASTER_WHISPER:
                 whisper_type = f"{cfg.faster_whisper_model.value.value}-{cfg.transcribe_language.value.value}"
             case _:
                 whisper_type = ""
-            
+        
+        
+        if whisper_type:
+            transcribe_language = WHISPER_LANGUAGES[cfg.transcribe_language.value.value]
+        else:
+            transcribe_language = LANGUAGES[cfg.transcribe_language.value.value]
+           
         # 音频处理
         audio_save_path = task_work_dir / f"Audio_{file_name}.wav"
         audio_format = "pcm_s16le"    # for all other audio format
@@ -356,6 +374,8 @@ class CreateTaskThread(QThread):
         else:
             subtitle_style_srt = None
 
+
+
         # 创建 Task 对象
         task = Task(
             id=0,
@@ -371,9 +391,9 @@ class CreateTaskThread(QThread):
             base_url=cfg.api_base.value,
             api_key=cfg.api_key.value,
             llm_model=cfg.model.value,
-            original_language=cfg.transcribe_language.value,
-            target_language=cfg.transcribe_language.value,
-            transcribe_language=LANGUAGES[cfg.transcribe_language.value.value],
+            original_language=transcribe_language,
+            target_language=transcribe_language,
+            transcribe_language=transcribe_language,
             whisper_model=cfg.whisper_model.value.value,
             whisper_api_key=cfg.whisper_api_key.value,
             whisper_api_base=cfg.whisper_api_base.value,

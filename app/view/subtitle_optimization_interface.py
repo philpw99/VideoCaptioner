@@ -11,7 +11,7 @@ from PyQt5.QtGui import QDragEnterEvent, QDropEvent, QColor
 from PyQt5.QtWidgets import QAbstractItemView
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QApplication, QHeaderView, QFileDialog, QMessageBox
 from qfluentwidgets import ComboBox, PrimaryPushButton, ProgressBar, PushButton, InfoBar, BodyLabel, FluentIcon as FIF
-from qfluentwidgets import InfoBarPosition, TableView, ToolButton, TextEdit, MessageBoxBase, RoundMenu, Action
+from qfluentwidgets import InfoBarPosition, TableView, ToolButton, TextEdit, MessageBoxBase, RoundMenu, Action, LineEdit
 from PyQt5.QtCore import QUrl
 
 from app.config import SUBTITLE_STYLE_PATH
@@ -156,6 +156,9 @@ class SubtitleOptimizationInterface(QWidget):
         self._setup_signals()
         self._update_prompt_button_style()
 
+        # 用于在字幕里寻找字符串
+        self.searchPos: int = None
+
     def _init_ui(self):
         """
         初始化界面布局
@@ -165,10 +168,12 @@ class SubtitleOptimizationInterface(QWidget):
         self.main_layout.setSpacing(20)
 
         self._setup_top_layout()
+        self._setup_search_layout()
         self._setup_subtitle_table()
         self._setup_bottom_layout()
 
     def _setup_top_layout(self):
+        
         """
         设置顶部布局，包含文件选择、保存等按钮
         """
@@ -233,6 +238,32 @@ class SubtitleOptimizationInterface(QWidget):
 
         self.main_layout.addLayout(self.top_layout)
 
+    def _setup_search_layout(self):
+        """
+        设置编辑工具设置，方便批量置换和查找
+        """
+        self.search_layout = QHBoxLayout()
+        self.search_layout.setAlignment(Qt.AlignmentFlag.AlignRight)
+        self.org_text_edit = LineEdit(self)
+        self.org_text_edit.setPlaceholderText(self.tr("Search text here"))
+        self.dst_text_edit = LineEdit(self)
+        self.dst_text_edit.setPlaceholderText(self.tr("Replace text here"))
+        self.search_btn = PushButton(FIF.SEARCH, self.tr("Search"), self)
+        self.replace_btn = PushButton(FIF.REMOVE_FROM, self.tr("Replace"),self)
+        self.replace_all_btn = PushButton(FIF.FILTER, self.tr("Replace All"), self)
+        
+        self.search_layout.addWidget(self.org_text_edit)
+        self.search_layout.addSpacing(8)
+        self.search_layout.addWidget(self.dst_text_edit)
+        self.search_layout.addSpacing(8)
+        self.search_layout.addWidget(self.search_btn)
+        self.search_layout.addSpacing(8)
+        self.search_layout.addWidget(self.replace_btn)
+        self.search_layout.addSpacing(8)
+        self.search_layout.addWidget(self.replace_all_btn)
+        
+        self.main_layout.addLayout(self.search_layout)
+
     def _setup_subtitle_table(self):
         """
         设置字幕表格，包含字幕内容的显示和编辑
@@ -295,10 +326,9 @@ class SubtitleOptimizationInterface(QWidget):
         # 将文件选择按钮的 clicked 信号连接到 on_file_select 方法
         self.file_select_button.clicked.connect(self.on_file_select)
 
-        # 改start
         # 将批量翻译按钮的 clicked 信号连接到 on_batch_file_select 方法
         self.batch_translate_button.clicked.connect(self.on_batch_file_select)
-        #改end
+
 
         # 将保存按钮的 clicked 信号连接到 on_save_clicked 方法
         self.save_button.clicked.connect(self.on_save_clicked)
@@ -314,6 +344,152 @@ class SubtitleOptimizationInterface(QWidget):
         self.subtitle_setting_button.clicked.connect(self.show_subtitle_settings)
         # 将视频播放按钮的 clicked 信号连接到 show_video_player 方法
         self.video_player_button.clicked.connect(self.show_video_player)
+        
+        # 寻找按钮
+        self.search_btn.clicked.connect(self.on_search_clicked)
+        # 替换按钮
+        self.replace_btn.clicked.connect(self.on_replace_clicked)
+        # 替换所有按钮
+        self.replace_all_btn.clicked.connect(self.on_replace_all_clicked)
+
+    def on_search_clicked(self):
+        search = self.org_text_edit.text().lower()
+        if not search or self.model.rowCount == 0:
+            # reset the search pos
+            self.searchPos = None
+            return
+
+        foundKey = None
+        if self.searchPos:
+            # Already found one. Find the next.
+            foundKey, inOrg = self.search_value(search, self.searchPos )
+        else:
+            # Not found yet.
+            foundKey, inOrg = self.search_value(search)
+        
+        if foundKey:
+            # found key is str like "1" , "2", "3"...
+            row = int(foundKey)-1
+            
+            if inOrg:
+                index = self.subtitle_table.model().index(row,2)
+            else:
+                index = self.subtitle_table.model().index(row,3)
+            self.subtitle_table.setCurrentIndex(index)
+            self.searchPos = row
+        else:
+            # End of the search
+            self.searchPos = None
+            InfoBar.info(
+                self.tr("Reach the end"),
+                self.tr("Cannot find more result."),
+                duration=5000,
+                parent=self
+                )
+            
+    def on_replace_clicked(self):
+        # Replace the text in current index
+        search = self.org_text_edit.text()
+        replace = self.dst_text_edit.text()
+        if not search or not replace:
+            InfoBar.warning(
+                self.tr("Missing search or replace text."),
+                self.tr("Need both search and replace text to do the replace."),
+                duration=5000,
+                parent=self
+            )
+            return
+        index = self.subtitle_table.currentIndex().row()
+        if index == -1:   # Not selected row yet.
+            InfoBar.warning(
+                self.tr("No selected row"),
+                self.tr("Currently no row is selected."),
+                duration=5000,
+                parent=self
+            )
+            return
+        key = str(index+1)
+        item = self.model._data[key]
+        original = item["original_subtitle"]
+        translated = item["translated_subtitle"]
+        original = original.replace(search, replace)
+        self.model._data[key]["original_subtitle"] = original
+        if translated:
+            # Has translation
+            translated = translated.replace(search,replace)
+            self.model._data[key]["translated_subtitle"] = translated
+        top_left = self.model.index(index, 2)
+        bottom_right = self.model.index(index,3)
+        self.model.dataChanged.emit(
+            top_left,
+            bottom_right,
+            [Qt.ItemDataRole.DisplayRole, Qt.ItemDataRole.EditRole]
+        )
+        
+            
+    def search_value(self, searchText: str, startIndex:int = None):
+        if startIndex:
+            # index to key +1, search next +1
+            startKey = str( startIndex + 2 )
+        search = searchText.lower()
+        foundStartKey = False
+        for key in self.model._data:
+            if not foundStartKey and startKey:
+                # Loop until the key is found
+                if key != startKey:
+                    continue
+                else:
+                    foundStartKey = True
+            else:
+                # No start key at all.
+                foundStartKey = True
+
+            # Now work with items after the startKey is found
+            org = self.model._data[key]["original_subtitle"]
+            trn = self.model._data[key]["translated_subtitle"]
+
+            if search in org.lower(): # None sensitive search
+                return key, True        # Found in org
+            elif search in trn.lower():
+                return key, False       # Found in translated
+        return None, True
+            
+    def on_replace_all_clicked(self):
+        search = self.org_text_edit.text()
+        replace = self.dst_text_edit.text()
+        if not search or not replace:
+            InfoBar.warning(
+                self.tr("Missing search or replace text."),
+                self.tr("Need both search and replace text to do the replace."),
+                duration=5000,
+                parent=self
+            )
+            return
+        
+        replace_count = 0
+        for key in self.model._data:
+            item = self.model._data[key]
+            original = item["original_subtitle"]
+            translated = item["translated_subtitle"]
+            
+            new_original = original.replace(search, replace)
+            if new_original != original:
+                replace_count += 1
+                item["original_subtitle"]=new_original
+            
+            if translated:
+                new_translated = translated.replace(search, replace)
+                if new_translated != translated:
+                    replace_count += 1
+                    item["translated_subtitle"] = new_translated
+            
+        # Done. Update all.
+        InfoBar.info(self.tr("Replace All is done."),
+                     self.tr(f"Totally replace {replace_count} occurances."),
+                     duration= 5000,
+                     parent=self,
+                     )
+        self.model.layoutChanged.emit()
 
     def show_prompt_dialog(self):
         """
@@ -824,6 +1000,7 @@ class SubtitleOptimizationInterface(QWidget):
 
     def on_subtitle_clicked(self, index):
         row = index.row()
+        self.searchPos = row
         item = list(self.model._data.values())[row]
         start_time = item['start_time']  # 毫秒
         end_time = item['end_time'] - 50 if item['end_time'] - 50 > start_time else item['end_time']

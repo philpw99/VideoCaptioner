@@ -19,7 +19,7 @@ from ..components.WhisperAPISettingDialog import WhisperAPISettingDialog
 from ..config import RESOURCE_PATH
 from ..core.thread.create_task_thread import CreateTaskThread
 from ..common.config import cfg
-from ..core.entities import LANGUAGES, Task, VideoInfo
+from ..core.entities import LANGUAGES, Task, VideoInfo, WHISPER_LANGUAGES
 from ..core.entities import SupportedVideoFormats, SupportedAudioFormats
 from ..core.thread.transcript_thread import TranscriptThread
 from ..core.entities import TranscribeModelEnum
@@ -248,33 +248,11 @@ class VideoInfoCard(CardWidget):
     def start_transcription(self):
         """开始转录过程"""
         self.start_button.setEnabled(False)
-        self._update_task_config()
         self.transcript_thread = TranscriptThread(self.task)
         self.transcript_thread.finished.connect(self.on_transcript_finished)
         self.transcript_thread.progress.connect(self.on_transcript_progress)
         self.transcript_thread.error.connect(self.on_transcript_error)
         self.transcript_thread.start()
-
-    def _update_task_config(self):
-        self.task.target_language = cfg.target_language.value.value
-        self.task.transcribe_language = LANGUAGES[cfg.transcribe_language.value.value]
-        self.task.transcribe_model = cfg.transcribe_model.value
-        self.task.whisper_model = cfg.whisper_model.value.value
-        self.task.whisper_api_key = cfg.whisper_api_key.value
-        self.task.whisper_api_base = cfg.whisper_api_base.value
-        self.task.whisper_api_model = cfg.whisper_api_model.value
-        self.task.whisper_api_prompt = cfg.whisper_api_prompt.value
-        self.task.faster_whisper_model = cfg.faster_whisper_model.value
-        self.task.faster_whisper_model_dir = cfg.faster_whisper_model_dir.value
-        self.task.faster_whisper_device = cfg.faster_whisper_device.value
-        self.task.faster_whisper_vad_filter = cfg.faster_whisper_vad_filter.value
-        self.task.faster_whisper_vad_threshold = cfg.faster_whisper_vad_threshold.value
-        self.task.faster_whisper_vad_method = cfg.faster_whisper_vad_method.value
-        self.task.faster_whisper_ff_mdx_kim2 = cfg.faster_whisper_ff_mdx_kim2.value
-        self.task.faster_whisper_one_word = cfg.faster_whisper_one_word.value
-        self.task.faster_whisper_prompt = cfg.faster_whisper_prompt.value
-        self.task.max_word_count_cjk = cfg.max_word_count_cjk.value
-        self.task.max_word_count_english = cfg.max_word_count_english.value
 
     def on_transcript_progress(self, value, message):
         """更新转录进度"""
