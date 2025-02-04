@@ -131,6 +131,7 @@ Recommended models: For higher quality, consider `Claude-3.5-sonnet` or `gpt-4o`
 | Medium | 1.5 GiB | ~2.1 GB | Recommended minimum for Chinese recognition |
 | Large-v1/v2 | 2.9 GiB | ~3.9 GB | Excellent results, recommended if hardware allows |
 | Large-v3 | 2.9 GiB | ~3.9 GB | Community reports potential hallucination/subtitle repetition issues (Not actually supported) |
+| Large-v3-turbo | 2.9 Gib | ~3.9 GB | Much faster results with little degration compared to Large-V2. Great for transcribing English. |
 
 Note: Models can be downloaded directly within the software in China; supports both GPU and integrated graphics.
 
