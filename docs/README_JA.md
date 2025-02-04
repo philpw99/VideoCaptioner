@@ -4,7 +4,7 @@
   <h1>VideoCaptioner</h1>
   <p>大規模言語モデル(LLM)を基盤とした動画字幕処理アシスタント。音声認識、字幕の分割、最適化、翻訳までの全工程をサポート</p>
 
-  [简体中文](./README_CN.md) / [繁体中文](./README_TW.md) / [英語](./README_EN.md) / 日本語
+  [简体中文](./README_CN.md) / [正体中文](./README_TW.md) / [英語](./README_EN.md) / 日本語
 
 </div>
 
