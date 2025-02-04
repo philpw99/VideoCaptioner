@@ -21,12 +21,11 @@ VideoCaptioner is easy to operate and requires no high-end configuration. It sup
 
 ## 📸 Interface Preview
 
-<div align="center">
-  <img src="https://h1.appinn.me/file/1731487405884_main.png" alt="Software Interface Preview" width="90%" style="border-radius: 5px;">
-</div>
+![Preview1](https://github.com/user-attachments/assets/b752739f-bd14-45cc-b801-f794f1a84b42)
 
-![Page Preview](https://h1.appinn.me/file/1731487410170_preview1.png)
-![Page Preview](https://h1.appinn.me/file/1731487410832_preview2.png)
+![Preview2](https://github.com/user-attachments/assets/c1c47aa6-5ef1-4d7a-8afe-2dbe27ebf771)
+
+![Preview3](https://github.com/user-attachments/assets/53579629-918d-40d3-9f59-86180ed59454)
 
 
 ## 🧪 Testing
@@ -131,6 +130,7 @@ Recommended models: For higher quality, consider `Claude-3.5-sonnet` or `gpt-4o`
 | Medium | 1.5 GiB | ~2.1 GB | Recommended minimum for Chinese recognition |
 | Large-v1/v2 | 2.9 GiB | ~3.9 GB | Excellent results, recommended if hardware allows |
 | Large-v3 | 2.9 GiB | ~3.9 GB | Community reports potential hallucination/subtitle repetition issues (Not actually supported) |
+| Large-v3-turbo | 2.9 Gib | ~3.9 GB | Much faster results with little degration compared to Large-V2. Great for transcribing English. |
 
 Note: Models can be downloaded directly within the software in China; supports both GPU and integrated graphics.
 
@@ -196,44 +196,3 @@ VideoCaptioner/
 
 As a junior student, both my personal abilities and the project still have many shortcomings. The project is continuously being improved. If you encounter any bugs during use, please feel free to submit [Issues](https://github.com/WEIFENG2333/VideoCaptioner/issues) and Pull Requests to help improve the project.
 
-## Changelog
-
-<details>
-<summary>2024.11.23</summary>
-
-- Added Whisper-v3 model support, significantly improving speech recognition accuracy
-- Optimized subtitle segmentation algorithm for more natural reading experience
-- Fixed stability issues when detecting model availability
-</details>
-
-<details>
-<summary>2024.11.20</summary>
-
-- Added support for customizing subtitle position and style
-- Added real-time log viewing for subtitle optimization and translation process
-- Fixed automatic translation issues when using API
-- Optimized video working directory structure for improved file management efficiency
-</details>
-
-<details>
-<summary>2024.11.17</summary>
-
-- Added flexible export of bilingual/monolingual subtitles
-- Added script matching prompt alignment feature
-- Fixed stability issues with subtitle import
-- Fixed model download compatibility issues with non-Chinese paths
-</details>
-
-<details>
-<summary>2024.11.13</summary>
-
-- Added Whisper API call support
-- Added support for importing cookie.txt to download resources from major video platforms
-- Subtitle filenames automatically match video names
-- Added real-time log viewing on software homepage
-- Unified and improved internal software functionality
-</details>
-
-## ⭐ Star History
-
-[![Star History Chart](https://api.star-history.com/svg?repos=WEIFENG2333/VideoCaptioner&type=Date)](https://star-history.com/#WEIFENG2333/VideoCaptioner&Date)
