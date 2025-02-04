@@ -417,7 +417,7 @@ class BatchProcessInterface(QWidget):
         match task_type:
             case Task.Type.SUBTITLE:
                 need_video = True
-                need_translate = False if cfg.translate_method.value == TranslateMethodEnum.NONE else False
+                need_translate = not (cfg.translate_method.value == TranslateMethodEnum.NONE)
             case Task.Type.TRANSCRIBE:
                 need_video = False
                 need_translate = False

@@ -576,7 +576,7 @@ class TaskCreationInterface(QWidget):
                 parent=self
             )
         
-        need_translate = cfg.translate_method.value == TranslateMethodEnum.NONE
+        need_translate = not( cfg.translate_method.value == TranslateMethodEnum.NONE )
         
         self.create_task_thread = CreateTaskThread(
             None,

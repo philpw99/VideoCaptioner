@@ -1,4 +1,6 @@
-test = {"1": "value", "2": "value2"}
+import re
+test = "abcd<think>this is the <translate>aw</translate> result</think>ass"
 
-print( f"key: {None + 1}" )
+out = re.sub(r"<think>.*?</think>", " ", test)
+print (out)
 

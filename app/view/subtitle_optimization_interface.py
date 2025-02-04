@@ -552,6 +552,7 @@ class SubtitleOptimizationInterface(QWidget):
         """
         # 创建一个字幕优化任务
         if cfg.translate_method.value == TranslateMethodEnum.NONE:
+            # It shouldn't be. So set it to optimize.
             method = TranslateMethodEnum.OPTIMIZE
         else:
             method = cfg.translate_method.value     # Optimize, single line or google

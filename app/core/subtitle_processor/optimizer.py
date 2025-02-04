@@ -252,6 +252,9 @@ class SubtitleOptimizer:
         translate_result = {}
         previous_sentence = ""
         previous_translation = ""
+        re_remove_think = re.compile(r".*</think>")
+        re_translate = re.compile(r".*<[Tt]ranslation>(.*?)</[Tt]ranslation>")
+        re_notag = re.compile(r"<.*?>")
         for key, value in original_subtitle.items():
             
             content = SINGLE_BATCH_TRANSLATE_PROMPT.replace("[TargetLanguage]", self.target_language
@@ -273,11 +276,27 @@ class SubtitleOptimizer:
 
             return_text = response.choices[0].message.content
             # logger.info(f"response:{type(return_text)}")
-            previous_translation = return_text
-
-            logger.info(f"{key}. Original: {value}\n{key}. Translated: {return_text}")
             
-            line = {str(key): return_text}  # Create a dictionary with key and translated text
+            # Single line only.
+            return_text = return_text.replace("\n", " ").strip()
+            
+            # Remove all <think> </think> tags
+            text = re.sub(re_remove_think, "", return_text )
+            print(f"after remove think: {text}")
+
+            # Match the first <translate> * </translate> tag.
+            match = re.search(re_translate, text)
+            if match:
+                translated = match.group(1)
+            else:
+                translated = text
+
+            # Remove the remaining tags, just in case.
+            translated = re.sub(re_notag, "", translated)
+
+            previous_translation = translated
+            logger.info(f"{key}. Original: {value}\n{key}. Translated: {translated}")
+            line = {str(key): translated}  # Create a dictionary with key and translated text
 
             if callback:
                 # report the progress
