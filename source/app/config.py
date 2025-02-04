@@ -4,9 +4,10 @@ from pathlib import Path
 
 VERSION = "v1.2.0"
 SUBVERSION = "2.4"
-YEAR = 2024
+YEAR = 2025
 APP_NAME = "VideoCaptioner"
 AUTHOR = "Weifeng"
+COAUTHOR = "Philpw99"
 
 HELP_URL = "https://github.com/WEIFENG2333/VideoCaptioner"
 GITHUB_REPO_URL = "https://github.com/WEIFENG2333/VideoCaptioner"

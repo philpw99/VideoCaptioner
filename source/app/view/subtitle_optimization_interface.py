@@ -557,9 +557,10 @@ class SubtitleOptimizationInterface(QWidget):
         else:
             method = cfg.translate_method.value     # Optimize, single line or google
 
+        thread_created = False
         if not self.task_thread:
             # No task thread exists, create a new one
-            # A task requires a task thread.
+            # A task requires a task thread, but here there is no need to run the thread.
             self.task_thread = CreateTaskThread(
                 file_str,
                 Task.Type.TRANSLATE,
@@ -567,6 +568,7 @@ class SubtitleOptimizationInterface(QWidget):
                 translate_method=method,
                 soft_sub=cfg.soft_subtitle.value,
             )
+            thread_created = True
 
         self.task = self.task_thread.create_file_task(
             file_path=file_str,
@@ -581,6 +583,12 @@ class SubtitleOptimizationInterface(QWidget):
         root, _ = os.path.splitext(file_str)
         self.task.result_subtitle_save_path = root + "_result." + cfg.subtitle_output_format.value.value
         
+        
+        if thread_created:
+            # 这个任务线程是在这个界面建立起来的，需要清除
+            self.task_thread.deleteLater()  # Delete the QThread object
+            self.task_thread = None
+            
         # 返回创建的任务对象
         return self.task
 

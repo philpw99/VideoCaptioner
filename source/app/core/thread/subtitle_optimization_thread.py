@@ -98,10 +98,9 @@ class SubtitleOptimizationThread(QThread):
                 logger.info("有别的任务在进行优化/翻译字幕，等待其完成")
                 mutTranslating.lock()  # Wait forever
             
+            self.task.status = Task.Status.OPTIMIZING
             if self.task.translate_method == TranslateMethodEnum.OPTIMIZE:
-                self.task.status = Task.Status.OPTIMIZING
                 self.progress.emit(10, self.tr("开始优化字幕..."))
-
                 self.llm_result_logger = setup_logger("llm_result", 
                                                     info_fmt="%(message)s",
                                                     log_file=str(Path(str_path).parent / '优化日志.log'),
