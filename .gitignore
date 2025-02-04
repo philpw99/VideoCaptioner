@@ -1,6 +1,5 @@
 # win 二进制文件资源目录
-/resource/bin/
-!/resource/bin/bin_environment.txt
+source/resource/bin/
 
 # 开发环境
 .vscode
@@ -11,19 +10,17 @@
 .*
 
 # 测试和脚本
-/test/
-/release/
-/my_content/
-/build/
-/dist/
-/main.spec
+/source/build/
+/source/dist/
+/source/main.spec
 
 # 媒体文件
 *.srt
+*.ass
 *.mp4
 *.exe
 *.md
 
 # 应用数据
-/AppData/
-/work-dir/
+/source/AppData/
+/source/work-dir/

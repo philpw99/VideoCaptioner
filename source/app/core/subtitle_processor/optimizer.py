@@ -282,7 +282,6 @@ class SubtitleOptimizer:
             
             # Remove all <think> </think> tags
             text = re.sub(re_remove_think, "", return_text )
-            print(f"after remove think: {text}")
 
             # Match the first <translate> * </translate> tag.
             match = re.search(re_translate, text)

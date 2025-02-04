@@ -980,12 +980,22 @@ class TaskInfoCard(CardWidget):
             else:  # Linux
                 subprocess.run(["xdg-open", str( Path(self.task.file_path).parent) ])
         else:
-            InfoBar.warning(
-                self.tr("警告"),
-                self.tr("任务未开始"),
-                duration=2000,
-                parent=self
-            )
+            if self.task:
+                # Task exists, so the file is missing.
+                InfoBar.warning(
+                    self.tr("警告"),
+                    self.tr(f"找不到文件 {self.task.file_path}"),
+                    duration=2000,
+                    parent=self
+                )
+            else:
+                # Task not exists yet.
+                InfoBar.warning(
+                    self.tr("警告"),
+                    self.tr(f"找不到文件{self.task.file_path}"),
+                    duration=2000,
+                    parent=self
+                )
 
     def on_progress(self, value, message):
         """更新转录进度"""
