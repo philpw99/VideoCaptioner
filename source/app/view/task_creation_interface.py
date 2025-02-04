@@ -16,7 +16,7 @@ from ..components.SimpleSettingCard import ComboBoxSimpleSettingCard, SwitchButt
 from ..core.entities import SupportedAudioFormats, SupportedVideoFormats, OutputSubtitleFormatEnum, SubtitleLayoutEnum
 from ..core.entities import TargetLanguageEnum, TranscribeModelEnum, Task, TranslateMethodEnum, LANGUAGES
 from ..core.thread.create_task_thread import CreateTaskThread
-from ..config import APPDATA_PATH, ASSETS_PATH, VERSION
+from ..config import APPDATA_PATH, ASSETS_PATH, VERSION, SUBVERSION
 from ..components.WhisperSettingDialog import WhisperSettingDialog
 from ..components.WhisperAPISettingDialog import WhisperAPISettingDialog
 from .log_window import LogWindow
@@ -242,7 +242,7 @@ class TaskCreationInterface(QWidget):
             }
         """)
         # 添加版权信息标签
-        self.info_label = BodyLabel(self.tr(f"©VideoCaptioner {VERSION} • By Weifeng"), self)
+        self.info_label = BodyLabel(self.tr(f"©VideoCaptioner {VERSION} • By Weifeng, forked {SUBVERSION}  By Philpw99"), self)
         self.info_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.info_label.setStyleSheet("font-size: 12px; color: #888888;")
         

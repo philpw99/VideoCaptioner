@@ -111,7 +111,11 @@ class MainWindow(FluentWindow):
         """打开GitHub"""
         w = MessageBox(
             self.tr('GitHub信息'),
-            self.tr('VideoCaptioner 由本人在课余时间独立开发完成，目前托管在GitHub上，欢迎Star和Fork。项目诚然还有很多地方需要完善，遇到软件的问题或者BUG欢迎提交Issue。\n\n https://github.com/WEIFENG2333/VideoCaptioner'),
+            self.tr("VideoCaptioner 由本人在课余时间独立开发完成， 目前托管在GitHub上， 欢迎Star和Fork。" \
+                + "项目诚然还有很多地方需要完善， 遇到软件的问题或者BUG欢迎提交Issue。\n\n" \
+                + "主项目： https://github.com/WEIFENG2333/VideoCaptioner\n\n" \
+                + "分支： https://github.com/philpw99/VideoCaptioner"
+                ),
             self
         )
         w.yesButton.setText(self.tr('打开 GitHub'))

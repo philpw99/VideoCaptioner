@@ -1,5 +1,5 @@
 # win 二进制文件资源目录
-source/resource/bin/
+/source/resource/bin/
 
 # 开发环境
 .vscode
@@ -13,7 +13,9 @@ source/resource/bin/
 /source/build/
 /source/dist/
 /source/main.spec
-
+/source/work-dir/
+/source/AppData/
+/work-dir/
 # 媒体文件
 *.srt
 *.ass

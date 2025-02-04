@@ -271,6 +271,9 @@ class SubtitleStyleInterface(QWidget):
             self.tr("选择预览使用的背景图片"),
             parent=self.previewGroup
         )
+        # Accomodating the text in English.
+        self.previewImageCard.button.setStyleSheet("QPushButton{padding: 10px;}")
+        
 
     def _initLayout(self):
         """初始化布局"""
