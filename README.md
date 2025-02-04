@@ -4,7 +4,7 @@
   <h1>VideoCaptioner</h1>
   <p>A video subtitle processing assistant based on Large Language Models (LLM), supporting speech recognition, subtitle segmentation, optimization, and translation workflow</p>
 
-  [简体中文](./docs/README_CN.md) / [English](./docs/README_EN.md)
+  [简体中文](./docs/README_CN.md) / [正体中文](./docs/README_TW.md) / [English](./docs/README_EN.md) / [日语](./docs/README_JA.md)
   
 </div>
 
