@@ -1,8 +1,9 @@
 """
-Copyright (c) 2024 [VideoCaptioner]
+Copyright (c) 2025 [VideoCaptioner]
 All rights reserved.
 
 Author: Weifeng
+Forked by: Philpw99
 """
 import os
 import sys

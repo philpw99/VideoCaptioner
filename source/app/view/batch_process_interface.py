@@ -638,7 +638,7 @@ class BatchProcessInterface(QWidget):
         
         # Build the status string after all tasks processed.
         for key in status:
-            t = "task" if status[key] == 1 else "tasks"
+            t = self.tr("task") if status[key] == 1 else self.tr("tasks")
             status_text += self.tr(f"{status[key]} {t} {key}, ")
         
         if status_text:
