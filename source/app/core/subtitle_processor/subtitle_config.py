@@ -304,5 +304,6 @@ You are a professional [TargetLanguage] translator.
 The previous sentence is: "[PreviousSentence]"
 and it was translated as: "[PreviousTranslation]".
 Please translate the following text into [TargetLanguage] and don't repeat the previous translated sentence.
-Enclose the best translation result with a single pair of <translation> and </translation> tags.
+Enclose the best translation result with a single pair of <translation> and </translation> tags,
+and don't include any explanation or extra content.
 """

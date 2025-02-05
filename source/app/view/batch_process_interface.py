@@ -238,6 +238,7 @@ class BatchProcessInterface(QWidget):
         self.update_timer.updateSignal.connect(self.update_win_title)   # Runs every 5 seconds
         self.update_timer.start()
 
+
         # 判断是否所有任务都已完成
         # if all(task_card.task.status in [Task.Status.COMPLETED, Task.Status.FAILED, Task.Status.CANCELED] for task_card in self.task_cards):
         #     self.on_batch_finished()
@@ -263,8 +264,9 @@ class BatchProcessInterface(QWidget):
             position=InfoBarPosition.BOTTOM,
             parent=self
         )
-        self.update_win_title()
-        self.update_timer.quit()
+        
+        self.update_win_title(self.tr("Batch Process Canceled."))
+        self.update_timer.stop()
 
     def on_task_finished(self, task):
         """单个任务完成的处理"""
@@ -326,8 +328,10 @@ class BatchProcessInterface(QWidget):
         self.update_win_title()
     
     def on_batch_finished(self):
-        self.update_timer.quit()
         """批量处理完成的处理"""
+
+        self.update_timer.stop()
+        
         match self.todo_when_done_combobox.currentText():
             case TodoWhenDoneEnum.EXIT.value:
                 qbox = TimedMessageBox(
@@ -971,9 +975,11 @@ class TaskInfoCard(CardWidget):
     def stop(self):
         """停止转录"""
         if self.transcript_thread and self.transcript_thread.isRunning():
-            self.transcript_thread.terminate()
+            self.transcript_thread.quit()
+            # self.transcript_thread.terminate()
         if self.subtitle_thread and self.subtitle_thread.isRunning():
-            self.subtitle_thread.terminate()
+            self.transcript_thread.quit()
+            # self.subtitle_thread.terminate()
         self.reset_ui()
         InfoBar.success(
             self.tr("已取消"),
@@ -1102,10 +1108,15 @@ class UpdateTimer(QThread):
     This emit signal every 5 seconds after batch processing starts.
     """
     updateSignal = pyqtSignal()
-    def __init__(self):
-        super().__init__()
+    run_timer = True
     
     def run(self):
-        while True:
+        self.run_timer = True
+        while self.run_timer:
             self.sleep(5)
             self.updateSignal.emit()
+
+    def stop(self):
+        self.run_timer = False
+
+        

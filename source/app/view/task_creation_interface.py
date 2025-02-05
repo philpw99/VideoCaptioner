@@ -5,10 +5,10 @@ import sys
 from urllib.parse import urlparse, ParseResult
 
 from PyQt5.QtCore import pyqtSignal, Qt, QStandardPaths
-from PyQt5.QtGui import QPixmap, QDragEnterEvent, QDropEvent
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QApplication, QLabel, QFileDialog, QMessageBox
-from qfluentwidgets import LineEdit, ProgressBar, PushButton, InfoBar, InfoBarPosition, BodyLabel, ToolButton, HyperlinkButton
-from qfluentwidgets import FluentIcon, FluentStyleSheet, ComboBoxSettingCard, SwitchSettingCard
+from PyQt5.QtGui import QPixmap, QDragEnterEvent, QDropEvent, QColor
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QApplication, QLabel, QFileDialog
+from qfluentwidgets import LineEdit, ProgressBar, InfoBar, InfoBarPosition, BodyLabel, ToolButton, HyperlinkButton
+from qfluentwidgets import FluentIcon, ComboBoxSettingCard
 from qfluentwidgets import FluentIcon as FIF
 
 from ..common.config import cfg, Language, LanguageSerializer
@@ -22,7 +22,6 @@ from ..components.WhisperAPISettingDialog import WhisperAPISettingDialog
 from .log_window import LogWindow
 from ..common.signal_bus import signalBus
 from ..components.FasterWhisperSettingDialog import FasterWhisperSettingDialog
-from ..components.EnumComboBoxSettingCard import EnumComboBoxSettingCard
 from ..core.utils.test_opanai import test_openai
 
 
@@ -446,6 +445,8 @@ class TaskCreationInterface(QWidget):
                 self.search_input.setText(file_path)                
             return
 
+        self.start_button.setIcon(FIF.STOP_WATCH)
+        self.start_button.repaint()
         # Start to excute the task, but check base url first.
         if self.is_base_url_needed():
             # Need to use LLM features in this task.
@@ -467,22 +468,12 @@ class TaskCreationInterface(QWidget):
                     parent=self,
                     position=InfoBarPosition.TOP_RIGHT
                 )
+                self.start_button.setIcon(FIF.PLAY)
+                self.start_button.repaint()
                 return
-
-        """
-        # There is no need to show faster whisper's settings again.
-        need_whisper_settings = cfg.transcribe_model.value in [
-            TranscribeModelEnum.WHISPER, 
-            TranscribeModelEnum.WHISPER_API,
-            TranscribeModelEnum.FASTER_WHISPER
-        ]
-
-        
-        if need_whisper_settings and not self.show_whisper_settings():
-            return
-        """
             
         self.process()
+
 
     def on_search_input_changed(self):
         if self.search_input.text():
@@ -605,6 +596,8 @@ class TaskCreationInterface(QWidget):
             position=InfoBarPosition.BOTTOM,
             parent=self.parent()
         )
+        self.start_button.setIcon(FIF.PLAY)
+        self.start_button.repaint()
 
     def on_create_task_progress(self, value, status):
         self.progress_bar.show()
