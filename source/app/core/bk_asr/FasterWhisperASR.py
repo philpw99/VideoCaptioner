@@ -14,7 +14,6 @@ from ...config import MODEL_PATH, BIN_PATH
 
 logger = setup_logger("faster_whisper")
 
-
 class FasterWhisperASR(BaseASR):
     def __init__(self, 
                  audio_path: str,

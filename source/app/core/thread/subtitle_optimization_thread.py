@@ -98,7 +98,6 @@ class SubtitleOptimizationThread(QThread):
                 logger.info("有别的任务在进行优化/翻译字幕，等待其完成")
                 mutTranslating.lock()  # Wait forever
             
-            self.task.status = Task.Status.OPTIMIZING
             if self.task.translate_method == TranslateMethodEnum.OPTIMIZE:
                 self.progress.emit(10, self.tr("开始优化字幕..."))
                 self.llm_result_logger = setup_logger("llm_result", 
@@ -128,6 +127,7 @@ class SubtitleOptimizationThread(QThread):
             
             match self.task.translate_method:
                 case TranslateMethodEnum.OPTIMIZE:
+                    self.task.status = Task.Status.OPTIMIZING
                     summarize_result = self.custom_prompt_text.strip()
                     self.progress.emit(20, self.tr("总结字幕..."))
                     if need_summarize and not summarize_result:
@@ -154,6 +154,7 @@ class SubtitleOptimizationThread(QThread):
                                                                                 callback=self.callback)
 
                 case TranslateMethodEnum.SINGLE_SENTENCE:
+                    self.task.status = Task.Status.TRANSLATING
                     self.progress.emit(30, self.tr("批量翻译单句字幕..."))
                     logger.info("正在批量翻译单句字幕...")
                     self.optimizer = SubtitleOptimizer(
@@ -165,10 +166,9 @@ class SubtitleOptimizationThread(QThread):
                     )
                     translate_result = self.optimizer.translate_single_batch(subtitle_json, callback=self.callback)
                 case TranslateMethodEnum.GOOGLE:
+                    self.task.status = Task.Status.TRANSLATING
                     self.progress.emit(30, self.tr("批量谷歌翻译字幕..."))
                     logger.info("正在批量谷歌翻译字幕...")
-
-                    
                     translate_result = asyncio.run(googleTranslate(subtitle_json, callback=self.callback))
                     
             # 加入优化或者翻译后的字幕

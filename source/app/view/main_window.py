@@ -61,7 +61,10 @@ class MainWindow(FluentWindow):
             self.batchProcessInterface.addFiles(argv)
             # Once all the files are added, start the process
             self.batchProcessInterface.add_tasks_finished.connect(self.on_add_file_finished)
-            
+        
+        # Update windows title
+        self.batchProcessInterface.win_title_update.connect(self.setWindowTitle)
+
     def initNavigation(self):
         """初始化导航栏"""
         # 添加导航项
@@ -202,7 +205,7 @@ class MainWindow(FluentWindow):
         Task.Status.DOWNLOADING.setValue( self.tr("Downloading"))
         Task.Status.FAILED.setValue( self.tr("Failed"))
         Task.Status.GENERATING.setValue( self.tr("Generating"))
-        Task.Status.OPTIMIZING.setValue( self.tr("Optimizing"))
+        Task.Status.OPTIMIZING.setValue( self.tr("Optimizing/Translating"))
         Task.Status.PENDING.setValue( self.tr("Pending"))
         Task.Status.SYNTHESIZING.setValue( self.tr("Synthesizing"))
         Task.Status.TRANSCODING.setValue( self.tr("Transcoding"))

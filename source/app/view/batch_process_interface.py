@@ -43,13 +43,17 @@ class TimedMessageBox(QMessageBox):
 
 class BatchProcessInterface(QWidget):
     add_tasks_finished = pyqtSignal()
+    win_title_update = pyqtSignal(str)
     file_list = []
+    org_title = ""
+    
     
     """批量处理界面"""
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setObjectName("BatchProcessInterface")
-        self.setWindowTitle(self.tr("批量处理"))
+        self.org_title = self.tr("批量处理")
+        self.setWindowTitle(self.org_title)
         self.setAcceptDrops(True)
 
         self.tasks: list[Task] = []
@@ -135,6 +139,7 @@ class BatchProcessInterface(QWidget):
         self.start_all_button.clicked.connect(self.start_batch_process)
         self.cancel_button.clicked.connect(self.cancel_batch_process)
         self.todo_when_done_combobox.currentTextChanged.connect(self.todo_when_done_changed)
+        self.add_tasks_finished.connect(self.update_win_title)
         
         # From signalBus to local
         signalBus.need_video_changed.connect(self.set_default_task_type)
@@ -185,6 +190,7 @@ class BatchProcessInterface(QWidget):
             position=InfoBarPosition.BOTTOM,
             parent=self
         )
+        self.update_win_title()
 
     def start_batch_process(self):
         """开始批量处理"""
@@ -220,10 +226,14 @@ class BatchProcessInterface(QWidget):
                     time.sleep(2)
                 task_card.finished.connect(self.on_task_finished)
                 task_card.error.connect(self.on_task_error)
+                task_card.finished.connect(self.update_win_title)
+                task_card.error.connect(self.update_win_title)
                 task_card.start()
                 c += 1
                 if c >= 2:
                     break
+
+        self.update_win_title("Batch process started.")
 
         # 判断是否所有任务都已完成
         # if all(task_card.task.status in [Task.Status.COMPLETED, Task.Status.FAILED, Task.Status.CANCELED] for task_card in self.task_cards):
@@ -250,6 +260,7 @@ class BatchProcessInterface(QWidget):
             position=InfoBarPosition.BOTTOM,
             parent=self
         )
+        self.update_win_title()
 
     def on_task_finished(self, task):
         """单个任务完成的处理"""
@@ -281,6 +292,7 @@ class BatchProcessInterface(QWidget):
             if c >= 2:  # 2 tasks are running
                 break
 
+        self.update_win_title()
         if c == 0:  # No next task at all
             # 所有任务都完成了
             self.on_batch_finished()
@@ -306,6 +318,8 @@ class BatchProcessInterface(QWidget):
         else:
             # 所有任务都完成了
             self.on_batch_finished()
+            
+        self.update_win_title()
     
     def on_batch_finished(self):
         """批量处理完成的处理"""
@@ -360,7 +374,6 @@ class BatchProcessInterface(QWidget):
                     parent=self
                 )
 
-
     def on_add_file(self):
         """添加文件按钮点击事件"""
         # 构建文件过滤器字符串
@@ -396,7 +409,6 @@ class BatchProcessInterface(QWidget):
             file_dir = str( Path(files[0]).parent )
             if file_dir != cfg.last_open_dir.value:
                 cfg.set( cfg.last_open_dir, file_dir, True)
-
 
     def create_task(self, file_path, task_type: Task.Type, soft_sub: bool):
         """创建新任务"""
@@ -443,7 +455,7 @@ class BatchProcessInterface(QWidget):
         if thread in self.create_threads:
             self.create_threads.remove(thread)
             thread.deleteLater()
-
+        
     def add_task_card(self, task: Task):
         """添加新的任务卡片"""
         task_card = TaskInfoCard(self)
@@ -464,13 +476,13 @@ class BatchProcessInterface(QWidget):
             position=InfoBarPosition.BOTTOM,
             parent=self
         )
-        
+        self.update_win_title()
+
         # 检查 任务是否为最后一个，如果是则发出信号
         if self.file_list:      # It's batch processing from command line.
             if task.file_path == self.file_list[len(self.file_list)-1]:
                 self.file_list = None
-                self.add_tasks_finished.emit()
-        
+                
 
     def remove_task_card(self, task_card):
         """移除任务卡片"""
@@ -553,6 +565,7 @@ class BatchProcessInterface(QWidget):
                     duration=3000,
                     parent=self
                 )
+                
 
     def closeEvent(self, event):
         """关闭事件处理"""
@@ -604,6 +617,36 @@ class BatchProcessInterface(QWidget):
                     duration=5000,
                     parent=self,
                 )
+        
+    def update_win_title(self, whatever=None):
+        # Update windows title when the task status is changed.
+        status = {}
+        status_text = ""
+        for task in self.tasks:
+            task_value = status.get(task.status.value)
+            if task_value:
+                # The key already exists
+                status[task.status.value] = task_value + 1
+            else:
+                # No key yet. Set 1 up.
+                status[task.status.value] = 1
+        
+        # Build the status string after all tasks processed.
+        for key in status:
+            status_text += self.tr(f"{status[key]} tasks {key}, ")
+        
+        if status_text:
+            parts = status_text.rsplit(",", 1)
+            status_text = self.tr("Currently ") + ".".join(parts)  # Replace last "," to be "."
+        else:
+            status_text = self.tr("Currently the task list is empty.")
+        
+        if whatever:    # Additional info.
+            status_text = whatever + " " + status_text
+        
+        final_text = self.org_title + " - " + status_text
+        self.setWindowTitle(final_text)
+        self.win_title_update.emit(final_text)
         
 
 class TaskInfoCard(CardWidget):
