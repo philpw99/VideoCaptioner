@@ -7,12 +7,12 @@ import tempfile
 from typing import Literal
 
 from ..utils.logger import setup_logger
-from PyQt5.QtCore import QObject
+from PyQt5.QtCore import QObject, pyqtBoundSignal
 
 logger = setup_logger("video_utils")
 qoVideo = QObject()  # for i18n
 
-def video2audio(input_file: str, output_file: str = "", format: str = "copy") -> bool:
+def video2audio(input_file: str, output_file: str = "", format: str = "copy", allow_running: list = [True]) -> bool:
     """使用ffmpeg将视频转换为音频"""    
     # 创建output目录
     Path(output_file).parent.mkdir(parents=True, exist_ok=True)
@@ -44,15 +44,39 @@ def video2audio(input_file: str, output_file: str = "", format: str = "copy") ->
     logger.info(f"转换为音频执行命令: {' '.join(cmd)}")
     
     try:
-        result = subprocess.run(
-            cmd, 
-            capture_output=True, 
-            check=True, 
-            encoding='utf-8', 
-            errors='replace', 
-            creationflags=subprocess.CREATE_NO_WINDOW if hasattr(subprocess, 'CREATE_NO_WINDOW') else 0,
-            )
-        if result.returncode == 0 and Path(output_file).is_file():
+        process = subprocess.Popen(
+            cmd,
+            stdout= subprocess.PIPE,
+            stderr= subprocess.STDOUT,
+            stdin= subprocess.PIPE,
+            text=True,
+            encoding='utf-8',
+            errors='ignore',
+            creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0
+        )
+        
+        # 等待结束或者中途停止
+        while process.poll() is None:
+            if not allow_running[0]:
+                # Tell ffmpeg to quit
+                process.terminate()
+                logger.error("ffmpeg 执行音频转换时中断")
+                break
+        
+        # 获取所有输出和错误信息
+        process.communicate()
+                
+        # result = subprocess.run(
+        #     cmd, 
+        #     capture_output=True, 
+        #     check=True, 
+        #     encoding='utf-8', 
+        #     errors='replace', 
+        #     creationflags=subprocess.CREATE_NO_WINDOW if hasattr(subprocess, 'CREATE_NO_WINDOW') else 0,
+        #     )
+        # if result.returncode == 0 and Path(output_file).is_file():
+        #     return True
+        if allow_running[0] and process.returncode == 0 and Path(output_file).is_file():
             return True
         else:
             logger.error("音频转换失败")

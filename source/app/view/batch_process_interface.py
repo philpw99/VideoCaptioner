@@ -975,11 +975,14 @@ class TaskInfoCard(CardWidget):
     def stop(self):
         """停止转录"""
         if self.transcript_thread and self.transcript_thread.isRunning():
-            self.transcript_thread.quit()
+            self.transcript_thread.allow_running[0] = False
+            # self.transcript_thread.quit()
             # self.transcript_thread.terminate()
         if self.subtitle_thread and self.subtitle_thread.isRunning():
-            self.transcript_thread.quit()
+            self.subtitle_thread.allow_running[0] = False
+            # self.subtitle_thread.quit()
             # self.subtitle_thread.terminate()
+
         self.reset_ui()
         InfoBar.success(
             self.tr("已取消"),

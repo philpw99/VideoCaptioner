@@ -18,6 +18,7 @@ class SubtitlePipelineThread(QThread):
     progress = pyqtSignal(int, str)  # 进度值, 进度描述
     finished = pyqtSignal(Task)
     error = pyqtSignal(str)
+    allow_running = [True]
 
     def __init__(self, task: Task):
         super().__init__()
@@ -25,6 +26,7 @@ class SubtitlePipelineThread(QThread):
         self.has_error = False
 
     def run(self):
+        self.allow_running[0] = True
         try:
             def handle_error(error_msg):
                 logger.error("pipeline 发生错误: %s", error_msg)
@@ -40,6 +42,7 @@ class SubtitlePipelineThread(QThread):
             transcript_thread = TranscriptThread(self.task)
             transcript_thread.progress.connect(lambda value, msg: self.progress.emit(int(value * 0.4), msg))
             transcript_thread.error.connect(handle_error)
+            transcript_thread.allow_running = self.allow_running
             transcript_thread.run()
 
             if self.has_error:

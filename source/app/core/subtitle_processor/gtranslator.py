@@ -6,7 +6,7 @@ from ...common.config import cfg
 from ..entities import LANGUAGES
 from ..utils.logger import setup_logger
 
-async def googleTranslate(original_subtitle: Dict[int,str], callback = None):
+async def googleTranslate(original_subtitle: Dict[int,str], callback = None, allow_running = None):
     glogger = setup_logger("GoogleTranslate")
     glogger.info("===========Google Translate Starts==========")
     gTranslator = Translator()
@@ -23,6 +23,8 @@ async def googleTranslate(original_subtitle: Dict[int,str], callback = None):
         
     for key, value in original_subtitle.items():
         # text += "#" + str(key)+ " " +value +"\n"
+        if not allow_running[0]:
+            return translate_result
         text += value +"\n"
         i += 1
         if i % batch_num == 0 or i >= length:

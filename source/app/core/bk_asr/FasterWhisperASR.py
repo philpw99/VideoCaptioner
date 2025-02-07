@@ -75,7 +75,7 @@ class FasterWhisperASR(BaseASR):
         self.prompt = prompt
 
         self.process = None
-
+        
     def _build_command(self, audio_path: Path) -> List[str]:
         """构建命令行参数"""
         cmd = [
@@ -168,6 +168,10 @@ class FasterWhisperASR(BaseASR):
         return filtered_segments
 
     def _run(self, callback=None) -> str:
+        if not self.allow_running[0]:
+            logger.error("FasterWhisper 转码前中断")
+            return ""
+        
         if callback is None:
             callback = lambda x, y: None
 
@@ -190,6 +194,7 @@ class FasterWhisperASR(BaseASR):
                 cmd,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
+                stdin=subprocess.PIPE,
                 text=True,
                 encoding='utf-8',
                 errors='ignore',
@@ -219,6 +224,10 @@ class FasterWhisperASR(BaseASR):
                         logger.error(output)
                     else:
                         logger.info(output)
+                if not self.allow_running[0]:
+                    self.process.terminate()
+                    error_msg = "FasterWhisper 转录过程中中断"
+                    
 
             # 获取所有输出和错误信息
             self.process.communicate()

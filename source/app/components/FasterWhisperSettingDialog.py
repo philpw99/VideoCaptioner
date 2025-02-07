@@ -461,7 +461,8 @@ class FasterWhisperDownloadDialog(MessageBoxBase):
         if self.program_download_thread and self.program_download_thread.isRunning():
             self.program_download_thread.stop()
         if self.model_download_thread and self.model_download_thread.isRunning():
-            self.model_download_thread.terminate()
+            self.model_download_thread.quit()
+            # self.model_download_thread.terminate()
         FasterWhisperDownloadDialog.is_downloading = False
         self.reject()
 

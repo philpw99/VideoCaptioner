@@ -83,22 +83,34 @@ class JianYingASR(BaseASR):
         response = requests.post(url, json=payload, headers=headers)
         return response.json()
 
-    def _run(self, callback=None):
+    def _run(self, callback=None, allow_running = None):
+        if allow_running:
+            self.allow_running = allow_running
+
+        if not self.allow_running[0]:
+            logger.error("上传前中断")
+            return
         if callback:
             callback(20, "正在上传...")
         logger.info("正在上传文件...")
         self.upload()
-        
+
+        if not self.allow_running[0]:
+            logger.error("提交任务前中断")
+            return
         if callback:
             callback(50, "提交任务...")
         logger.info("提交任务...")
         query_id = self.submit()
         
+        if not self.allow_running[0]:
+            logger.error("获取结果前中断")
+            return
         if callback:
             callback(60, "获取结果...")
         logger.info("获取结果...")
         resp_data = self.query(query_id)
-        
+
         if callback:
             callback(100, "转录完成")
         logger.info("转录完成")

@@ -1,3 +1,3 @@
-w = "aaa"
-print ( type(w) == str )
+w = [True]
+print ( w[0] )
 

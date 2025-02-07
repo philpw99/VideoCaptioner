@@ -29,6 +29,7 @@ class TranscriptThread(QThread):
     finished = pyqtSignal(Task)
     progress = pyqtSignal(int, str)
     error = pyqtSignal(str)
+    allow_running = [True] # Interrupt the process.
     
     ASR_MODELS = {
         TranscribeModelEnum.JIANYING: JianYingASR,
@@ -73,13 +74,21 @@ class TranscriptThread(QThread):
                 self.task.status = Task.Status.WAITINGAUDIO
                     
             with QMutexLocker(mutAudioRecording):
+                if not self.allow_running[0]:
+                    logger.error("音频转换前中断")
+                    return
                 # 转换为音频
                 self.progress.emit(5, self.tr("转换音频中"))
                 logger.info("开始转换音频")
                 self.task.status = Task.Status.TRANSCODING
 
                 audio_save_path = Path(self.task.audio_save_path)
-                is_success = video2audio(str(video_path), output_file=str(audio_save_path), format= self.task.audio_format)
+               
+                is_success = video2audio(str(video_path),
+                                         output_file=str(audio_save_path),
+                                         format= self.task.audio_format,
+                                         allow_running=self.allow_running
+                                        )
 
             if not is_success:
                 logger.error("音频转换失败")
@@ -94,6 +103,9 @@ class TranscriptThread(QThread):
                 self.task.status = Task.Status.WAITINGTRANSCRIBE
 
             with QMutexLocker(mutTranscribing):
+                if not self.allow_running[0]:
+                    logger.error("语音转录前中断")
+                    return
                 self.task.status = Task.Status.TRANSCRIBING
                 self.progress.emit(20, self.tr("语音转录中"))
                 logger.info("开始语音转录")
@@ -155,7 +167,7 @@ class TranscriptThread(QThread):
                         args["translate_to_english"] = self.task.faster_whisper_translate_to_english
                         args["repetition_penalty"] = self.task.faster_whisper_repetion_penalty
 
-                        self.asr = FasterWhisperASR(self.task.audio_save_path, **args)
+                        self.asr = FasterWhisperASR(self.task.audio_save_path, **args )
                     case TranscribeModelEnum.BIJIAN:
                         self.asr = BcutASR(self.task.audio_save_path, **args)
                     case TranscribeModelEnum.JIANYING:
@@ -163,8 +175,12 @@ class TranscriptThread(QThread):
                     case _:
                         raise ValueError(self.tr("无效的转录模型: ") + str(self.task.transcribe_model.value))
                 
-                asr_data = self.asr.run(callback=self.progress_callback)
+                asr_data = self.asr.run(callback=self.progress_callback, allow_running=self.allow_running)
 
+                if not self.allow_running[0]:
+                    logger.error("字幕断句前中断")
+                    return
+                
                 if asr_data.is_word_timestamp():
                     # The data is in words
                     asr_data = self.merge_words(asr_data)
@@ -183,6 +199,9 @@ class TranscriptThread(QThread):
                         seg.end_time += cfg.time_offset.value
                 
                 # 保存字幕文件
+                if not self.allow_running[0]:
+                    logger.error("字幕保存前中断")
+                    return
                 original_subtitle_path = Path(self.task.original_subtitle_save_path)
                 original_subtitle_path.parent.mkdir(parents=True, exist_ok=True)
                 asr_data.to_srt(save_path=str(original_subtitle_path))

@@ -108,5 +108,6 @@ class DownloadThread(QThread):
             
     def stop(self):
         if self.process:
-            self.process.terminate()
+            self.process.quit()
+            # self.process.terminate()
             self.process.wait()

@@ -293,7 +293,8 @@ class VideoInfoCard(CardWidget):
     
     def stop(self):
         if hasattr(self, 'transcript_thread'):
-            self.transcript_thread.terminate()
+            self.transcript_thread.quit()
+            #self.transcript_thread.terminate()
 
 
 class TranscriptionInterface(QWidget):

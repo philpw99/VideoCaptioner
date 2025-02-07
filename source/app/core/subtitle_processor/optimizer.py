@@ -25,9 +25,9 @@ BATCH_SIZE = 20
 MAX_THREADS = 10
 DEFAULT_MODEL = "gpt-4o-mini"
 
-
 class SubtitleOptimizer:
     """A class for optimize and translating subtitles using OpenAI's API."""
+    allow_running = [True]
 
     def __init__(
         self,
@@ -39,7 +39,8 @@ class SubtitleOptimizer:
         llm_result_logger: logging.Logger = None,
         need_remove_punctuation: bool = True,
         cjk_only: bool = True,
-        single_sentence_translate = False
+        single_sentence_translate = False,
+        allow_running = None
     ) -> None:
         base_url = os.getenv('OPENAI_BASE_URL')
         api_key = os.getenv('OPENAI_API_KEY')
@@ -58,6 +59,9 @@ class SubtitleOptimizer:
         self.need_remove_punctuation = need_remove_punctuation
         self.cjk_only = cjk_only
         self.single_sentence_translate = single_sentence_translate
+
+        if allow_running:
+            self.allow_running = allow_running
 
         # 注册退出处理
         import atexit
@@ -81,12 +85,18 @@ class SubtitleOptimizer:
     def optimizer_multi_thread(self, subtitle_json: Dict[int, str],
                                translate=False,
                                reflect=False,
-                               callback=None):
+                               callback=None,
+                               allow_running=None,
+                               ):
+        if allow_running:       # Pass the reference
+            self.allow_running = allow_running
         batch_num = self.batch_num
         items = list(subtitle_json.items())[:]
         chunks = [dict(items[i:i + batch_num]) for i in range(0, len(items), batch_num)]
 
         def process_chunk(chunk):
+            if not self.allow_running[0]:
+                return
             failed = False
             if translate:
                 try:
@@ -113,6 +123,8 @@ class SubtitleOptimizer:
             return result
 
         results = list(self.executor.map(process_chunk, chunks))
+        if not self.allow_running[0]:
+            logger.error("优化/翻译过程时中断")
 
         # 合并结果
         optimizer_result = {k: v for result in results for k, v in result.items()}
@@ -120,6 +132,9 @@ class SubtitleOptimizer:
     
     @retry.retry(tries=1)
     def optimize(self, original_subtitle: Dict[int, str]) -> Dict[int, str]:
+        if not self.allow_running[0]:
+            logger.error("优化/翻译过程时中断")
+        
         """ Optimize the given subtitle. """
         logger.info(f"[+]正在优化字幕：{next(iter(original_subtitle))} - {next(reversed(original_subtitle))}")
 
@@ -141,10 +156,18 @@ class SubtitleOptimizer:
             self.llm_result_logger.info(f"优化字幕：{original_subtitle[k]}")
             self.llm_result_logger.info(f"优化结果：{optimized_text}")
             self.llm_result_logger.info("===========")
+            if not self.allow_running[0]:
+                logger.error("optimize 优化/翻译过程时中断")
+                break
+
         return aligned_subtitle
 
     @retry.retry(tries=1)
     def translate(self, original_subtitle: Dict[int, str], reflect=False) -> Dict[int, str]:
+        if not self.allow_running[0]:
+            logger.error("单句 优化/翻译过程时中断")
+            return
+
         """优化并翻译给定的字幕。"""
         if reflect:
             return self._reflect_translate(original_subtitle)
@@ -224,27 +247,36 @@ class SubtitleOptimizer:
         return message
 
     def translate_single(self, original_subtitles: Dict[int, str]) -> Dict[int, str]:
+        
         """单条字幕翻译，用于在批量翻译失败时的备选方案"""
         translate_result = {}
+        if not self.allow_running[0]:
+            logger.error("单句 翻译过程时中断")
+            return translate_result
+
         # logger.info(f"org sub:{original_subtitle}")
         for key, value in original_subtitles.items():
-            # try:
-            message = [{"role": "system",
-                        "content": SINGLE_TRANSLATE_PROMPT.replace("[TargetLanguage]", self.target_language)},
-                        {"role": "user", "content": [value]}]
-            response = self.client.chat.completions.create(
-                model=self.model,
-                stream=False,
-                messages=message)
-            logger.info(f"response: {response}\n")
-            translate = response.choices[0].message.content.replace("\n", "")
-            original_text = self.remove_punctuation(value)
-            translated_text = self.remove_punctuation(translate)
-            translate_result[key] = f"{original_text}\n{translated_text}"
-            logger.info(f"单条翻译结果: {translate_result[key]}")
-            # except Exception as e:
-            #     logger.error(f"单条翻译失败: {e.with_traceback()}")
-            #     translate_result[key] = f"{value}\n "
+            try:
+                message = [{"role": "system",
+                            "content": SINGLE_TRANSLATE_PROMPT.replace("[TargetLanguage]", self.target_language)},
+                            {"role": "user", "content": [value]}]
+                response = self.client.chat.completions.create(
+                    model=self.model,
+                    stream=False,
+                    messages=message)
+                logger.info(f"response: {response}\n")
+                translate = response.choices[0].message.content.replace("\n", "")
+                original_text = self.remove_punctuation(value)
+                translated_text = self.remove_punctuation(translate)
+                translate_result[key] = f"{original_text}\n{translated_text}"
+                logger.info(f"单条翻译结果: {translate_result[key]}")
+            
+                if not self.allow_running[0]:
+                    logger.error("单句 翻译过程时中断")
+                    break
+            except Exception as e:
+                 logger.error(f"单条翻译失败: {e.with_traceback()}")
+                 translate_result[key] = f"{value}\n "
         return translate_result
 
     def translate_single_batch(self, original_subtitle: Dict[int,str], callback = None) -> Dict[int,str]:
@@ -256,6 +288,9 @@ class SubtitleOptimizer:
         re_translate = re.compile(r".*<[Tt]ranslation>(.*?)</[Tt]ranslation>")
         re_notag = re.compile(r"<.*?>")
         for key, value in original_subtitle.items():
+            if not self.allow_running[0]:
+                logger.error("单句批量 翻译过程时中断")
+                return translate_result
             
             content = SINGLE_BATCH_TRANSLATE_PROMPT.replace("[TargetLanguage]", self.target_language
                 ).replace( "[PreviousSentence]", previous_sentence
