@@ -21,13 +21,11 @@
 
 ## 📸 界面预览
 
-<div align="center">
-  <img src="https://h1.appinn.me/file/1731487405884_main.png" alt="软件界面预览" width="90%" style="border-radius: 5px;">
-</div>
+![Preview1](https://github.com/user-attachments/assets/b752739f-bd14-45cc-b801-f794f1a84b42)
 
-![页面预览](https://h1.appinn.me/file/1731487410170_preview1.png)
-![页面预览](https://h1.appinn.me/file/1731487410832_preview2.png)
+![Preview2](https://github.com/user-attachments/assets/c1c47aa6-5ef1-4d7a-8afe-2dbe27ebf771)
 
+![Preview3](https://github.com/user-attachments/assets/53579629-918d-40d3-9f59-86180ed59454)
 
 ## 🧪 测试
 
