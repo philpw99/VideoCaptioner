@@ -21,13 +21,11 @@
 
 ## 📸 介面預覽
 
-<div align="center">
-  <img src="https://h1.appinn.me/file/1731487405884_main.png" alt="軟體介面預覽" width="90%" style="border-radius: 5px;">
-</div>
+![Preview1](https://github.com/user-attachments/assets/b752739f-bd14-45cc-b801-f794f1a84b42)
 
-![頁面預覽](https://h1.appinn.me/file/1731487410170_preview1.png)
-![頁面預覽](https://h1.appinn.me/file/1731487410832_preview2.png)
+![Preview2](https://github.com/user-attachments/assets/c1c47aa6-5ef1-4d7a-8afe-2dbe27ebf771)
 
+![Preview3](https://github.com/user-attachments/assets/53579629-918d-40d3-9f59-86180ed59454)
 
 ## 🧪 測試
 
