@@ -19,7 +19,7 @@ class MuEnum(Enum):
 
 class BatchTaskTypeEnum(MuEnum):
     """ 批量任务类型 """
-    TRANSCRIBE = "Create Transcription from Audio/Video"
+    TRANSCRIBE = "Transcribe Audio/Video"
     TRANSLATE = "Transcribe + Translate Audio/Video"
     SOFT = "Create Soft Subtitle Video"
     HARD = "Create Hard Subtitle Video"
@@ -587,7 +587,6 @@ LANGUAGES = {
     "Cantonese": "yue"
 }
 
-
 @dataclass
 class VideoInfo:
     """视频信息类"""
@@ -729,3 +728,5 @@ class Task:
     zoom_subtitle: int = 100
     subtitle_vertical_offset: int = 0
     
+NOT_RUNNING_TASKS = [Task.Status.CANCELED, Task.Status.COMPLETED, Task.Status.FAILED, Task.Status.PENDING]
+

@@ -4,7 +4,7 @@ from PyQt5.QtCore import QUrl, QSize, QThread
 from PyQt5.QtGui import QIcon, QDesktopServices
 from PyQt5.QtWidgets import QApplication
 from qfluentwidgets import FluentIcon as FIF
-from qfluentwidgets import (NavigationAvatarWidget, NavigationItemPosition, MessageBox, FluentWindow,
+from qfluentwidgets import (NavigationAvatarWidget, NavigationItemPosition, MessageBox, FluentWindow, InfoBar,
                             SplashScreen)
 
 from ..config import GITHUB_REPO_URL, ASSETS_PATH
@@ -25,6 +25,8 @@ class MainWindow(FluentWindow):
         super().__init__()
         # change the enum values first
         self.enums_translate()
+        self.announcement = ""
+        self.newVersion = ""
         self.initWindow()
 
         # 创建子界面
@@ -61,7 +63,7 @@ class MainWindow(FluentWindow):
             self.batchProcessInterface.addFiles(argv)
             # Once all the files are added, start the process
             self.batchProcessInterface.add_tasks_finished.connect(self.on_add_file_finished)
-        
+
         # Update windows title
         self.batchProcessInterface.win_title_update.connect(self.setWindowTitle)
 
@@ -132,22 +134,34 @@ class MainWindow(FluentWindow):
 
     def onNewVersion(self, version, force_update, update_info, download_url):
         """新版本提示"""
-        title = '发现新版本' if not force_update else '当前版本已停用'
-        content = f'发现新版本 {version}\n\n{update_info}'
-        w = MessageBox(title, content, self)
-        w.yesButton.setText('立即更新')
-        w.cancelButton.setText('稍后再说' if not force_update else '退出程序')
-        if w.exec():
-            QDesktopServices.openUrl(QUrl(download_url))
-        if force_update:
-            QApplication.quit()
+        self.newVersion = self.tr(f"New version is out {version}\nDownload it here: {download_url}\nOr go to GitHub for the new release.")
+        InfoBar.info(self.tr("New Version Available!"),
+                     self.newVersion,
+                     duration=10000,
+                     parent=self
+                    )
+        # title = '发现新版本' if not force_update else '当前版本已停用'
+        # content = f'发现新版本 {version}\n\n{update_info}'
+        # w = MessageBox(title, content, self)
+        # w.yesButton.setText('立即更新')
+        # w.cancelButton.setText('稍后再说' if not force_update else '退出程序')
+        # if w.exec():
+        #     QDesktopServices.openUrl(QUrl(download_url))
+        # if force_update:
+        #     QApplication.quit()
 
     def onAnnouncement(self, content):
         """显示公告"""
-        w = MessageBox('公告', content, self)
-        w.yesButton.setText('我知道了')
-        w.cancelButton.hide()
-        w.exec()
+        self.announcement = content
+        InfoBar.info(self.tr("New Announcement!"),
+                     content,
+                     duration=10000,
+                     parent=self
+                    )
+        # w = MessageBox('公告', content, self)
+        # w.yesButton.setText('我知道了')
+        # w.cancelButton.hide()
+        # w.exec()
 
     def resizeEvent(self, e):
         super().resizeEvent(e)
@@ -180,7 +194,7 @@ class MainWindow(FluentWindow):
         self.batchProcessInterface.start_batch_process()
     
     def enums_translate(self):
-        BatchTaskTypeEnum.TRANSCRIBE.setValue( self.tr("Create Transcription from Audio/Video") )
+        BatchTaskTypeEnum.TRANSCRIBE.setValue( self.tr("Transcribe Audio/Video") )
         BatchTaskTypeEnum.TRANSLATE.setValue( self.tr("Transcribe + Translate Audio/Video") )
         BatchTaskTypeEnum.SOFT.setValue( self.tr("Create Soft Subtitle Video") )
         BatchTaskTypeEnum.HARD.setValue( self.tr("Create Hard Subtitle Video") )

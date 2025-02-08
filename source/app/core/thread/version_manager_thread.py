@@ -122,14 +122,15 @@ class VersionManager(QObject):
             if version_info['version'] == self.currentVersion.lower():
                 if version_info['update_code']:
                     # 执行更新代码
-                    self.execute_update_code(version_info['update_code'])
+                    # self.execute_update_code(version_info['update_code'])
+                    pass
                 current_version_available = version_info.get('available', True)
                 break
 
         # 如果当前版本不可用，强制更新
-        if not current_version_available:
-            self.forceUpdate = True
-            logger.info("当前版本不可用，设置为强制更新")
+        # if not current_version_available:
+        #     self.forceUpdate = True
+        #     logger.info("当前版本不可用，设置为强制更新")
 
         latest_ver_num = QVersionNumber.fromString(self.latestVersion.split("v")[1])
         current_ver_num = QVersionNumber.fromString(self.currentVersion.split("v")[1])

@@ -76,7 +76,7 @@ class TranscriptThread(QThread):
             with QMutexLocker(mutAudioRecording):
                 if not self.allow_running[0]:
                     logger.error("音频转换前中断")
-                    return
+                    raise RuntimeError(self.tr("音频转换前中断"))
                 # 转换为音频
                 self.progress.emit(5, self.tr("转换音频中"))
                 logger.info("开始转换音频")
@@ -105,7 +105,8 @@ class TranscriptThread(QThread):
             with QMutexLocker(mutTranscribing):
                 if not self.allow_running[0]:
                     logger.error("语音转录前中断")
-                    return
+                    raise RuntimeError(self.tr("转录前中断"))
+
                 self.task.status = Task.Status.TRANSCRIBING
                 self.progress.emit(20, self.tr("语音转录中"))
                 logger.info("开始语音转录")
@@ -179,11 +180,13 @@ class TranscriptThread(QThread):
 
                 if not self.allow_running[0]:
                     logger.error("字幕断句前中断")
-                    return
+                    raise RuntimeError(self.tr("字幕断句前中断"))
                 
                 if asr_data.is_word_timestamp():
                     # The data is in words
                     asr_data = self.merge_words(asr_data)
+                    if not self.allow_running[0]:
+                        raise RuntimeError(self.tr("智能断句被中断"))
                     if not asr_data:
                         # word merging failed
                         raise ValueError(self.tr("智能断句失败，请检查你的大模型Base URL和API Key是否有效。"))
@@ -230,6 +233,7 @@ class TranscriptThread(QThread):
 
         except Exception as e:
             logger.exception("转录过程中发生错误: %s", str(e))
+            self.task.status = Task.Status.FAILED
             self.error.emit(str(e))
             self.progress.emit(100, self.tr("转录失败"))
 
@@ -261,18 +265,15 @@ class TranscriptThread(QThread):
             asr_data = merge_segments(asr_data, model=llm_model, 
                                     num_threads=thread_num, 
                                     max_word_count_cjk=cfg.max_word_count_cjk.value, 
-                                    max_word_count_english=cfg.max_word_count_english.value)
+                                    max_word_count_english=cfg.max_word_count_english.value,
+                                    allow_running=self.allow_running)
             return asr_data     
-            
         except Exception as e:
             logger.exception(f"断句失败: {str(e)}")
             self.error.emit(str(e))
             self.progress.emit(100, self.tr("断句失败"))
-
-
-
   
     # Is the current config is using FasterWhipser and translate to English?
     def isFasterWhisperTranslate(self):
-        return cfg.transcribe_model.value.value == TranscribeModelEnum.FASTER_WHISPER.value and cfg.faster_whisper_translate_to_english.value
+        return cfg.transcribe_model.value == TranscribeModelEnum.FASTER_WHISPER and cfg.faster_whisper_translate_to_english.value
 

@@ -20,7 +20,7 @@ from ..common.config import cfg
 from ..common.signal_bus import signalBus
 
 from ..core.entities import SupportedVideoFormats, SupportedAudioFormats, TodoWhenDoneEnum, SupportedSubtitleFormats, SupportedImageFormats
-from ..core.entities import Task, VideoInfo, BatchTaskTypeEnum, TranslateMethodEnum
+from ..core.entities import Task, VideoInfo, BatchTaskTypeEnum, TranslateMethodEnum, NOT_RUNNING_TASKS
 from ..core.thread.create_task_thread import CreateTaskThread
 from ..core.thread.subtitle_pipeline_thread import SubtitlePipelineThread
 from ..core.thread.transcript_thread import TranscriptThread
@@ -80,11 +80,13 @@ class BatchProcessInterface(QWidget):
 
         # 清空任务按钮
         self.clear_all_button = PushButton(self.tr("清空任务"), self, icon=FIF.DELETE)
+        self.clear_all_button.setToolTip(self.tr("删除所有的任务"))
         self.top_layout.addWidget(self.clear_all_button)
 
         # 任务类型选择
         self.task_type_combo = ComboBox(self)
         self.task_type_combo.addItems(job.value for job in BatchTaskTypeEnum)
+        self.task_type_combo.setToolTip(self.tr("添加新任务时的类型，一般和首页的类型一致，但也可以选其它类型"))
         self.set_default_task_type(True)
             
         self.top_layout.addWidget(self.task_type_combo)
@@ -93,12 +95,15 @@ class BatchProcessInterface(QWidget):
 
         # 添加启动和取消按钮
         self.start_all_button = PrimaryPushButton(self.tr("开始处理"), self, icon=FIF.PLAY)
+        self.start_all_button.setToolTip(self.tr("开始批量音视频处理，将会处理所有处于'等待'或者'取消'状态的任务。"))
         self.cancel_button = PushButton(self.tr("取消"), self, icon=FIF.CLOSE)
+        self.cancel_button.setToolTip(self.tr("停止所有正在运行中的任务"))
         self.cancel_button.setEnabled(False)
         self.todo_when_done_label = BodyLabel(self.tr("After All Done, "))
         self.todo_when_done_label.setAlignment(Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignCenter )
         self.todo_when_done_combobox = ComboBox()
         self.todo_when_done_combobox.addItems(item.value for item in TodoWhenDoneEnum)
+        self.todo_when_done_combobox.setToolTip(self.tr("设定所有任务完成后执行的行动"))
         todoEnum = cfg.todo_when_done.value
         self.todo_when_done_combobox.setCurrentText(todoEnum.value)  # Doing nothing
         
@@ -196,9 +201,9 @@ class BatchProcessInterface(QWidget):
     def start_batch_process(self):
         """开始批量处理"""
         self.processing = True
-        self.start_all_button.setEnabled(False)
+        # self.start_all_button.setEnabled(False)
         self.cancel_button.setEnabled(True)
-        self.add_file_button.setEnabled(False)
+        # self.add_file_button.setEnabled(False)
         self.clear_all_button.setEnabled(False)
 
         if not self.task_cards:
@@ -219,6 +224,11 @@ class BatchProcessInterface(QWidget):
             parent=self
         )
 
+        # Reset all canceled tasks to pending tasks.
+        for task_card in self.task_cards:
+            if task_card.task.status == Task.Status.CANCELED:
+                task_card.task.status = Task.Status.PENDING
+        
         # 查找头两个未完成的任务并开始处理
         c = 1
         for task_card in self.task_cards:
@@ -231,7 +241,7 @@ class BatchProcessInterface(QWidget):
                 task_card.error.connect(self.update_win_title)
                 task_card.start()
                 c += 1
-                if c >= 2:
+                if c > 2:
                     break
 
         self.update_win_title("Batch process started.")
@@ -246,14 +256,14 @@ class BatchProcessInterface(QWidget):
     def cancel_batch_process(self):
         """取消批量处理"""
         self.processing = False
-        self.start_all_button.setEnabled(True)
+        # self.start_all_button.setEnabled(True)
         self.cancel_button.setEnabled(False)
-        self.add_file_button.setEnabled(True)
+        # self.add_file_button.setEnabled(True)
         self.clear_all_button.setEnabled(True)
 
         # 停止所有正在运行的任务
         for task_card in self.task_cards:
-            if task_card.task.status not in [Task.Status.COMPLETED, Task.Status.FAILED, Task.Status.CANCELED, Task.Status.PENDING]:
+            if task_card.task.status not in NOT_RUNNING_TASKS:
                 task_card.stop()
 
         # 显示取消处理的通知
@@ -282,7 +292,7 @@ class BatchProcessInterface(QWidget):
         next_task = None
         c = 0
         for task_card in self.task_cards:
-            if task_card.task.status not in [Task.Status.PENDING, Task.Status.COMPLETED, Task.Status.FAILED, Task.Status.CANCELED]:
+            if task_card.task.status not in NOT_RUNNING_TASKS:
                 # This task is running.
                 c += 1
                 continue
@@ -290,6 +300,7 @@ class BatchProcessInterface(QWidget):
                 # Over 2 tasks are running.
                 break
             if task_card.task.status == Task.Status.PENDING:
+                # Not includes Failed or Completed.
                 task_card.finished.connect(self.on_task_finished)
                 if c == 1:  # Add a 2 second pause between 1 and 2
                     time.sleep(2)
@@ -367,21 +378,21 @@ class BatchProcessInterface(QWidget):
                     else:
                         self.stop()
                         os.system('sudo shutdown now')
-            case _:
-                # Doing nothing.
-                self.processing = False
-                self.start_all_button.setEnabled(True)
-                self.cancel_button.setEnabled(False)
-                self.add_file_button.setEnabled(True)
-                self.clear_all_button.setEnabled(True)
-                # 显示所有任务完成的通知
-                InfoBar.success(
-                    self.tr("全部完成"),
-                    self.tr("所有任务已处理完成"),
-                    duration=3000,
-                    position=InfoBarPosition.BOTTOM,
-                    parent=self
-                )
+
+        # Doing nothing.
+        self.processing = False
+        # self.start_all_button.setEnabled(True)
+        self.cancel_button.setEnabled(False)
+        # self.add_file_button.setEnabled(True)
+        self.clear_all_button.setEnabled(True)
+        # 显示所有任务完成的通知
+        InfoBar.success(
+            self.tr("全部完成"),
+            self.tr("所有任务已处理完成"),
+            duration=3000,
+            position=InfoBarPosition.BOTTOM,
+            parent=self
+        )
 
     def on_add_file(self):
         """添加文件按钮点击事件"""
@@ -475,7 +486,7 @@ class BatchProcessInterface(QWidget):
         self.scroll_layout.addWidget(task_card)
 
         # 当有任务时禁用任务类型选择
-        self.task_type_combo.setEnabled(False)
+        # self.task_type_combo.setEnabled(False)
 
         # 显示成功提示
         InfoBar.success(
@@ -497,7 +508,7 @@ class BatchProcessInterface(QWidget):
         """移除任务卡片"""
         if task_card in self.task_cards:
             # 如果任务正在处理中,不允许删除
-            if self.processing:
+            if not task_card.task.status in NOT_RUNNING_TASKS:
                 InfoBar.warning(
                     self.tr("无法删除"),
                     self.tr("正在处理的任务无法删除"),
@@ -522,8 +533,8 @@ class BatchProcessInterface(QWidget):
             )
 
             # 当没有任务时启用任务类型选择
-            if len(self.task_cards) == 0:  # 因为当前任务还未被移除
-                self.task_type_combo.setEnabled(True)
+            # if len(self.task_cards) == 0:  # 因为当前任务还未被移除
+            #   self.task_type_combo.setEnabled(True)
 
     def dragEnterEvent(self, event):
         """拖拽进入事件处理"""
@@ -897,25 +908,33 @@ class TaskInfoCard(CardWidget):
         # 添加打开字幕选项
         open_subtitle_action = Action(FIF.DOCUMENT, self.tr("打开字幕（双击）"), self)
         open_subtitle_action.triggered.connect(self.open_subtitle)
+        # open_subtitle_action.setToolTip(self.tr("打开并显示该音视频已有的字幕"))
         menu.addAction(open_subtitle_action)
 
         # 添加菜单项
         open_folder_action = Action(FIF.FOLDER, self.tr("打开文件夹"), self)
         open_folder_action.triggered.connect(self.on_open_folder_clicked)
+        # open_folder_action.setToolTip(self.tr("打开该音视频所在的目录"))
         menu.addAction(open_folder_action)
-
-        delete_action = Action(FIF.DELETE, self.tr("删除任务"), self)
-        delete_action.triggered.connect(lambda: self.remove.emit(self))
-        menu.addAction(delete_action)
 
         reprocess_action = Action(FIF.SYNC, self.tr("重新处理"), self)
         reprocess_action.triggered.connect(self.reprocess)
+        # reprocess_action.setToolTip(self.tr("把该音视频单独重新处理一次"))
         menu.addAction(reprocess_action)
 
-        cancel_action = Action(FIF.CLOSE, self.tr("停止任务"), self)
+        cancel_action = Action(FIF.CANCEL, self.tr("取消/停止任务"), self)
         cancel_action.triggered.connect(self.cancel)
+        # cancel_action.setToolTip(self.tr("停止正在运行中的任务，或者设为取消而跳过批处理"))
         menu.addAction(cancel_action)
 
+        delete_action = Action(FIF.DELETE, self.tr("删除任务"), self)
+        delete_action.triggered.connect(lambda: self.remove.emit(self))
+        # delete_action.setToolTip(self.tr("把任务从批处理队列中移除"))
+        menu.addAction(delete_action)
+
+
+
+        
         # 显示菜单
         menu.exec_(self.mapToGlobal(pos))
 
@@ -965,25 +984,31 @@ class TaskInfoCard(CardWidget):
                 parent=self
             )
 
+    def delete(self):
+        self.remove.emit(self)
+
     def cancel(self):
         """修改任务状态"""
         self.stop()
-        self.task.status = Task.Status.PENDING
-        self.finished.emit(self.task)
+        self.task.status = Task.Status.CANCELED
         self.update_tooltip()
+        if not self.task.status in NOT_RUNNING_TASKS:
+            # If the task is running
+            self.finished.emit(self.task)
 
     def stop(self):
         """停止转录"""
-        if self.transcript_thread and self.transcript_thread.isRunning():
+        if self.transcript_thread:
             self.transcript_thread.allow_running[0] = False
             # self.transcript_thread.quit()
             # self.transcript_thread.terminate()
-        if self.subtitle_thread and self.subtitle_thread.isRunning():
+        if self.subtitle_thread:
             self.subtitle_thread.allow_running[0] = False
             # self.subtitle_thread.quit()
             # self.subtitle_thread.terminate()
 
         self.reset_ui()
+
         InfoBar.success(
             self.tr("已取消"),
             self.tr("任务已取消"),
@@ -1003,6 +1028,7 @@ class TaskInfoCard(CardWidget):
             )
             return
 
+        self.task.status = Task.Status.PENDING
         self.progress_ring.show()
         self.progress_ring.setValue(100)
         # self.start_button.setDisabled(True)
@@ -1056,6 +1082,15 @@ class TaskInfoCard(CardWidget):
                     parent=self
                 )
 
+    def is_canceled(self):
+        if self.transcript_thread:
+            allow_running = self.transcript_thread.allow_running[0]
+        elif self.subtitle_thread:
+            allow_running = self.subtitle_thread.allow_running[0]
+        else:
+            allow_running = True
+        return not allow_running
+
     def on_progress(self, value, message):
         """更新转录进度"""
         self.start_button.setText(message)
@@ -1065,19 +1100,28 @@ class TaskInfoCard(CardWidget):
     def on_error(self, error):
         """处理转录错误"""
         self.reset_ui()
-        self.task_state.setLevel(InfoLevel.ERROR)
-        self.task_state.setIcon(FIF.CLOSE)
-        self.progress_ring.error()
-        self.update_tooltip()
+        
+        if self.is_canceled():
+            # An error by cancelling.
+            self.task_state.setLevel(InfoLevel.WARNING)
+            self.progress_ring.setValue(0)
+            self.task.status = Task.Status.CANCELED
+            self.update_tooltip()
+        else:
+            # Other errors.
+            self.task_state.setLevel(InfoLevel.ERROR)
+            self.task_state.setIcon(FIF.CLOSE)
+            self.progress_ring.error()
+            self.task.status = Task.Status.FAILED
 
-        self.task.status = Task.Status.FAILED
-        self.error.emit(error)
-        InfoBar.error(
-            self.tr("转录失败"),
-            self.tr(error),
-            duration=5000,
-            parent=self
-        )
+            self.update_tooltip()
+            self.error.emit(error)
+            InfoBar.error(
+                self.tr("转录失败"),
+                self.tr(error),
+                duration=5000,
+                parent=self
+            )
 
     def on_finished(self, task):
         """转录完成处理"""

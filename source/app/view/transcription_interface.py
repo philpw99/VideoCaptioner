@@ -19,7 +19,7 @@ from ..components.WhisperAPISettingDialog import WhisperAPISettingDialog
 from ..config import RESOURCE_PATH
 from ..core.thread.create_task_thread import CreateTaskThread
 from ..common.config import cfg
-from ..core.entities import LANGUAGES, Task, VideoInfo, WHISPER_LANGUAGES
+from ..core.entities import LANGUAGES, Task, VideoInfo, WHISPER_LANGUAGES, NOT_RUNNING_TASKS
 from ..core.entities import SupportedVideoFormats, SupportedAudioFormats
 from ..core.thread.transcript_thread import TranscriptThread
 from ..core.entities import TranscribeModelEnum
@@ -276,7 +276,7 @@ class VideoInfoCard(CardWidget):
         """转录完成处理"""
         self.start_button.setEnabled(True)
         self.start_button.setText(self.tr("转录完成"))
-        if self.task.status not in [Task.Status.CANCELED, Task.Status.COMPLETED, Task.Status.FAILED]:
+        if self.task.status not in NOT_RUNNING_TASKS:
             self.finished.emit(task)
 
     def reset_ui(self):

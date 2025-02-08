@@ -61,7 +61,7 @@ def video2audio(input_file: str, output_file: str = "", format: str = "copy", al
                 # Tell ffmpeg to quit
                 process.terminate()
                 logger.error("ffmpeg 执行音频转换时中断")
-                break
+                return
         
         # 获取所有输出和错误信息
         process.communicate()
