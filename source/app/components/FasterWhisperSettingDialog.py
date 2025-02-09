@@ -1,4 +1,4 @@
-import sys
+import sys, platform
 import subprocess
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QTableWidgetItem, QHeaderView, QHBoxLayout
@@ -41,7 +41,14 @@ FASTER_WHISPER_PROGRAMS = [
         "type": "CPU",
         "size": "78.7 MB",
         "downloadLink": "https://modelscope.cn/models/bkfengg/whisper-cpp/resolve/master/whisper-faster.exe",
-    }
+    },
+    {
+        "label": "MacOS",
+        "value": "whisper-faster.zip",
+        "type": "MAC",
+        "size": "79.6 MB",
+        "downloadLink": "https://github.com/Purfview/whisper-standalone-win/releases/download/faster-whisper/Whisper-Faster_r186.1_macOS-x86-64.zip"
+    },
 ]
 
 FASTER_WHISPER_MODELS = [
@@ -110,6 +117,7 @@ def check_faster_whisper_exists() -> tuple[bool, list[str]]:
     检查以下两种情况:
     1. bin目录下是否有 faster-whisper.exe
     2. bin目录下是否有 Faster-Whisper-XXL/faster-whisper-xxl.exe
+    3. MacOS: whisper-faster
     
     Returns:
         tuple[bool, list[str]]: (是否存在程序, 已安装的版本列表)
@@ -117,16 +125,22 @@ def check_faster_whisper_exists() -> tuple[bool, list[str]]:
     bin_path = Path(BIN_PATH)
     installed_versions = []
     
-    # 检查 faster-whisper.exe(CPU版本)
-    if (bin_path / "faster-whisper.exe").exists():
-        installed_versions.append("CPU")
-        
-    # 检查 Faster-Whisper-XXL/faster-whisper-xxl.exe(GPU版本)
-    xxl_path = bin_path / "Faster-Whisper-XXL" / "faster-whisper-xxl.exe"
-    if xxl_path.exists():
-        installed_versions.extend(["GPU", "CPU"])
-    installed_versions = list(set(installed_versions))
-        
+    pf = sys.platform
+    if pf == "win32":
+        # 检查 faster-whisper.exe(CPU版本)
+        if (bin_path / "faster-whisper.exe").exists():
+            installed_versions.append("CPU")
+            
+        # 检查 Faster-Whisper-XXL/faster-whisper-xxl.exe(GPU版本)
+        xxl_path = bin_path / "Faster-Whisper-XXL" / "faster-whisper-xxl.exe"
+        if xxl_path.exists():
+            installed_versions.extend(["GPU", "CPU"])
+        installed_versions = list(set(installed_versions))
+    elif pf == "darwin":
+        # check whisper-faster
+        if (bin_path / "whisper-faster").exists():
+            installed_versions.append("MAC")
+
     return bool(installed_versions), installed_versions
 
 # 添加新的解压线程类
@@ -142,11 +156,21 @@ class UnzipThread(QThread):
         
     def run(self):
         try:
-            subprocess.run(
-                ["7z", "x", self.zip_file, f"-o{self.extract_path}", "-y"],
-                check=True,
-                creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
-            )
+            if sys.platform == "darwin":
+                # Don't create path
+                subprocess.run(
+                    ["7z", "e", self.zip_file, f"-o{self.extract_path}", "-y"],
+                    check=True,
+                    creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
+                )
+            else:
+                # Create path
+                subprocess.run(
+                    ["7z", "x", self.zip_file, f"-o{self.extract_path}", "-y"],
+                    check=True,
+                    creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
+                )
+                
             # 删除压缩包
             os.remove(self.zip_file)
             self.finished.emit()
@@ -591,6 +615,7 @@ class FasterWhisperDownloadDialog(MessageBoxBase):
             duration=3000,
             parent=self
         )
+
         self.accept()
         self._cleanup_installation()
 
@@ -863,6 +888,9 @@ class FasterWhisperSettingDialog(MessageBoxBase):
         # 根据安装的版本设置程路径 
         if "GPU" in installed_versions:
             cfg.faster_whisper_program.value = "faster-whisper-xxl.exe"
+        if "MAC" in installed_versions:
+            cfg.faster_whisper_program.value = "whisper-faster"
+            cfg.faster_whisper_vad_method.value = VadMethodEnum.NONE
         else:
             cfg.faster_whisper_program.value = "faster-whisper.exe"
             cfg.faster_whisper_vad_method.value = VadMethodEnum.NONE

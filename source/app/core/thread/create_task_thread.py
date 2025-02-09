@@ -110,8 +110,8 @@ class CreateTaskThread(QThread):
         # 音频处理
         audio_save_path = task_work_dir / f"{self.tr("【音频】")}{file_name}.wav"
         audio_format = "pcm_s16le"    # for all other audio format
-        if video_info.audio_codec in ["mp3", "pcm"]:
-            audio_format = "copy"
+        # if video_info.audio_codec in ["mp3", "pcm"]:
+        #     audio_format = "copy"
 
         if cfg.subtitle_output_format.value.value == "ass":
             ass_style_name = cfg.subtitle_style_name.value
@@ -245,8 +245,8 @@ class CreateTaskThread(QThread):
 
         # 音频处理
         audio_format = "pcm_s16le"    # for all other audio format
-        if video_info.audio_codec in [ "mp3", "pcm"]:
-            audio_format = "copy"
+        # if video_info.audio_codec in [ "mp3", "pcm"]:
+        #     audio_format = "copy"
 
         if cfg.transcribe_model.value.value in [TranscribeModelEnum.JIANYING.value, TranscribeModelEnum.BIJIAN.value]:
             need_word_time_stamp = True
@@ -359,8 +359,8 @@ class CreateTaskThread(QThread):
         # 音频处理
         audio_save_path = task_work_dir / f"Audio_{file_name}.wav"
         audio_format = "pcm_s16le"    # for all other audio format
-        if video_info.audio_codec in [ "mp3", "pcm"]:
-            audio_format = "copy"
+        # if video_info.audio_codec in [ "mp3", "pcm"]:
+        #     audio_format = "copy"
 
         audio_save_path = task_work_dir / f"Audio_{file_name}.wav"
         original_subtitle_save_path = task_work_dir / f"【原始字幕】{file_name}-{cfg.transcribe_model.value.value}-{whisper_type}.srt"

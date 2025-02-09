@@ -4,10 +4,12 @@
 # 开发环境
 .vscode
 .venv
+/venv/
 *.pyc
 */__pycache__/
 *.env
 .*
+*/__MACOSX/
 
 # 测试和脚本
 /source/build/
