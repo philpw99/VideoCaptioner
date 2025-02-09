@@ -83,6 +83,9 @@ class TranscriptThread(QThread):
                 self.task.status = Task.Status.TRANSCODING
 
                 audio_save_path = Path(self.task.audio_save_path)
+                if audio_save_path.exists():
+                    # There is already a wave file with same name.
+                    os.remove(audio_save_path)
                
                 is_success = video2audio(str(video_path),
                                          output_file=str(audio_save_path),

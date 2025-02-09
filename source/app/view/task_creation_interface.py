@@ -319,7 +319,8 @@ class TaskCreationInterface(QWidget):
         # Set configItem to the new enum
         enum = TranslateMethodEnum(value)
         if cfg.translate_method.value != enum:
-            cfg.translate_method.value = enum
+            cfg.set(cfg.translate_method, enum)
+            # cfg.translate_method.value = enum
         comboBox = self.translation_method_card.comboBox
         if comboBox.currentText() != value:
             comboBox.setCurrentText(value)
@@ -370,6 +371,9 @@ class TaskCreationInterface(QWidget):
     def setup_values(self):
         self.transcription_model_card.comboBox.setCurrentText(cfg.transcribe_model.value.value)
         self.translation_method_card.comboBox.setCurrentText(cfg.translate_method.value.value)
+        if cfg.translate_method.value == TranslateMethodEnum.NONE:
+            self.target_language_card.setDisabled(True)
+            self.subtitle_layout_card.setDisabled(True)
         self.video_synthesis_card.setChecked(cfg.need_video.value)
         self.soft_subtitle_card.setChecked( cfg.soft_subtitle.value )
         if not cfg.need_video.value:
