@@ -908,32 +908,24 @@ class TaskInfoCard(CardWidget):
         # 添加打开字幕选项
         open_subtitle_action = Action(FIF.DOCUMENT, self.tr("打开字幕（双击）"), self)
         open_subtitle_action.triggered.connect(self.open_subtitle)
-        # open_subtitle_action.setToolTip(self.tr("打开并显示该音视频已有的字幕"))
         menu.addAction(open_subtitle_action)
 
         # 添加菜单项
         open_folder_action = Action(FIF.FOLDER, self.tr("打开文件夹"), self)
         open_folder_action.triggered.connect(self.on_open_folder_clicked)
-        # open_folder_action.setToolTip(self.tr("打开该音视频所在的目录"))
         menu.addAction(open_folder_action)
-
+        
         reprocess_action = Action(FIF.SYNC, self.tr("重新处理"), self)
         reprocess_action.triggered.connect(self.reprocess)
-        # reprocess_action.setToolTip(self.tr("把该音视频单独重新处理一次"))
         menu.addAction(reprocess_action)
 
         cancel_action = Action(FIF.CANCEL, self.tr("取消/停止任务"), self)
         cancel_action.triggered.connect(self.cancel)
-        # cancel_action.setToolTip(self.tr("停止正在运行中的任务，或者设为取消而跳过批处理"))
         menu.addAction(cancel_action)
 
         delete_action = Action(FIF.DELETE, self.tr("删除任务"), self)
         delete_action.triggered.connect(lambda: self.remove.emit(self))
-        # delete_action.setToolTip(self.tr("把任务从批处理队列中移除"))
         menu.addAction(delete_action)
-
-
-
         
         # 显示菜单
         menu.exec_(self.mapToGlobal(pos))

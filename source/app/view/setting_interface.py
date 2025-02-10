@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QWidget, QLabel, QFileDialog
 from qfluentwidgets import FluentIcon as FIF
 from qfluentwidgets import InfoBar
 from qfluentwidgets import (SettingCardGroup, SwitchSettingCard, OptionsSettingCard, PushSettingCard,
-                            HyperlinkCard, PrimaryPushSettingCard, ScrollArea,
+                            HyperlinkCard, PrimaryPushSettingCard, ScrollArea, 
                             ComboBoxSettingCard, ExpandLayout, CustomColorSettingCard, RangeSettingCard,
                             setTheme, setThemeColor )
 
@@ -19,6 +19,7 @@ from ..components.EditComboBoxSettingCard import EditComboBoxSettingCard
 from ..components.EnumComboBoxSettingCard import EnumComboBoxSettingCard
 from ..components.LineEditSettingCard import LineEditSettingCard
 from ..components.MySettingCard import SaveSettingComboCard
+from ..components.MyDialogs import LineInputDialog
 from ..core.utils.test_opanai import test_openai, get_openai_models
 from ..components.WhisperSettingDialog import WhisperSettingDialog
 from ..components.FasterWhisperSettingDialog import FasterWhisperSettingDialog
@@ -80,7 +81,7 @@ class SettingInterface(ScrollArea):
             FIF.ROBOT,
             self.tr("模型"),
             self.tr("Enter your model here. Click on \"Check Connection\" below will fill out model list automatically."),
-            ["gpt-4o", "gpt-4o-mini"],
+            None,
             self.llmGroup
         )
         self.checkLLMConnectionCard = PushSettingCard(
@@ -435,7 +436,8 @@ class SettingInterface(ScrollArea):
         self.checkLLMConnectionCard.clicked.connect(self.checkLLMConnection)
         
         # 保存 LLM 设定
-        self.saveLLMSettingsCard.saveClicked.connect(self.save_llm_settings)
+        self.saveLLMSettingsCard.saveClicked.connect(lambda: self.save_llm_settings(False))
+        self.saveLLMSettingsCard.saveAsClicked.connect(lambda: self.save_llm_settings(True))
         
         # 删除 LLM 设定
         self.saveLLMSettingsCard.deleteClicked.connect(self.delete_llm_list)
@@ -488,7 +490,7 @@ class SettingInterface(ScrollArea):
     def delete_llm_list(self):
         # Delete current llm settings in the combo box.
         comboBox = self.saveLLMSettingsCard.comboBox
-        key = comboBox.currentText()
+        old_key = comboBox.currentText()
         save_file = APPDATA_PATH / "llm.json"
         if not save_file.exists():
             InfoBar.error(self.tr("File llm.json not exist!"),
@@ -501,19 +503,19 @@ class SettingInterface(ScrollArea):
         with open(save_file,"r") as f:
             data_json: Dict = json.load(f)
         
-        if len(data_json) == 0:
+        if len(data_json) == 0 or len(data_json["llm_list"]) == 0:
             return
-        data_json.pop(key)
+        data_json["llm_list"].pop(old_key)
         # Save the new dict
         with open(save_file, "w") as f:
             json.dump(data_json, f, indent=4)
 
         comboBox.clear()
-        if len(data_json) > 0:
-            comboBox.addItems(list(data_json))
+        if len(data_json["llm_list"]) > 0:
+            comboBox.addItems(list(data_json["llm_list"]))
             # Load the current settings
             key = comboBox.currentText()
-            setting_json = data_json[key]
+            setting_json = data_json["llm_list"][key]
             if not setting_json:
                 InfoBar.error(self.tr(f"Error getting {key} settings"),
                               self.tr(f"Cannot get {key} settings from AppData/llm.json"),
@@ -528,12 +530,10 @@ class SettingInterface(ScrollArea):
             
         
         InfoBar.info(self.tr("LLM entry deleted."),
-                     self.tr(f"The settings of {key} was deleted."),
+                     self.tr(f"The settings of {old_key} was deleted."),
                      duration=5000,
                      parent=self
         )
-        
-            
     
     def load_llm_list(self):
         save_file = APPDATA_PATH / "llm.json"
@@ -544,18 +544,47 @@ class SettingInterface(ScrollArea):
         
         comboBox = self.saveLLMSettingsCard.comboBox
         comboBox.clear()
-        comboBox.addItems(list(data_json))   # list(data_json) will list all keys in Dict
+        comboBox.addItems(list(data_json["llm_list"]))   # list(data_json) will list all keys in Dict
+        
+        oBaseUrl = urlparse(cfg.api_base.value)
+        key = oBaseUrl.hostname
+        if key in list(data_json["model_list"]):
+            comboBox = self.modelCard.comboBox
+            comboBox.clear()
+            comboBox.addItems(data_json["model_list"][key])
+            comboBox.setCurrentText(cfg.model.value)
    
-    def save_llm_settings(self):
-        # 显示 llm 保存对话框
+    def save_llm_settings(self, saveAs = False):
+        """保存 LLM 设定到 llm.json"""
+        
+        data_json = {
+                        "llm_list": {},
+                        "model_list":{},
+                    }
+        
         if not cfg.api_base.value:
             return
         oBaseUrl = urlparse(cfg.api_base.value)
         if not oBaseUrl or not oBaseUrl.hostname:
             return
+
+        # 显示 llm 保存对话框
+        if saveAs:
+            dlg = LineInputDialog(
+                self.tr("Name this LLM Setting"),
+                self.tr("Please input the name for this LLM setting."),
+                self
+            )
+            if dlg.exec():
+                saveKey = dlg.inputLine.text()
+            else:
+                return
+        else:
+            saveKey = oBaseUrl.hostname
         
         setting_json = {"BaseURL": cfg.api_base.value,
                         "ApiKey": cfg.api_key.value, 
+                        "Model": cfg.model.value,
                         "BatchSize": cfg.batch_size.value,
                         "ThreadNum": cfg.thread_num.value,
                         }
@@ -565,37 +594,45 @@ class SettingInterface(ScrollArea):
             with open(save_file, "r") as f:
                 data = f.read()
                 data_json = json.loads(data)
-        else:
-            data_json = {}
-        
+
         with open(save_file, "w") as f:
-            data_json[oBaseUrl.hostname] = setting_json   # The key is the host name
+            data_json["llm_list"][saveKey] = setting_json   # The key usually is the host name
             json.dump(data_json, f, indent=4)
 
         # Update the list
         self.saveLLMSettingsCard.comboBox.clear()
-        self.saveLLMSettingsCard.comboBox.addItems(list(data_json))
-        self.saveLLMSettingsCard.comboBox.setCurrentText(oBaseUrl.hostname)
+        self.saveLLMSettingsCard.comboBox.addItems(list(data_json["llm_list"]))
+        self.saveLLMSettingsCard.comboBox.setCurrentText(saveKey)
         
         InfoBar.info(self.tr("LLM settings saved."),
-                     self.tr(f"The LLM settings for {oBaseUrl.hostname} was saved."),
+                     self.tr(f"The LLM settings for {saveKey} was saved."),
                      duration=5000,
                      parent=self,
                      )
         
-    def load_llm_settings(self, host):
+    def load_llm_settings(self, key):
         save_file = APPDATA_PATH / "llm.json"
         with open(save_file,"r") as f:
             data = f.read()
         if not data:
             InfoBar.error(self.tr("Error Reading llm.json"), self.tr("Cannot open LLM settins file: AppData/llm.json"))
             return
-        setting_json = json.loads(data)[host]
+        data_json = json.loads(data)
+        setting_json = data_json["llm_list"][key]
         if not setting_json:
-            InfoBar.error(self.tr(f"Error getting {host} settings"), self.tr(f"Cannot get {host} settings from AppData/llm.json") )
+            InfoBar.error(self.tr(f"Error getting {key} settings"), self.tr(f"Cannot get {key} settings from AppData/llm.json") )
             return
-        self.apiBaseCard.setValue(setting_json["BaseURL"])
+        
+        url = setting_json["BaseURL"]
+        host = urlparse(url).hostname
+        if host in list(data_json["model_list"]):
+            comboBox = self.modelCard.comboBox
+            comboBox.clear()
+            comboBox.addItems(data_json["model_list"][host])
+        
+        self.apiBaseCard.setValue(url)
         self.apiKeyCard.setValue(setting_json["ApiKey"])
+        self.modelCard.setValue(setting_json["Model"])
         self.batchSizeCard.setValue(setting_json["BatchSize"])
         self.threadNumCard.setValue(setting_json["ThreadNum"])
         
@@ -687,6 +724,24 @@ class SettingInterface(ScrollArea):
             temp = self.modelCard.comboBox.currentText()
             self.modelCard.setItems(models)
             self.modelCard.comboBox.setCurrentText(temp)
+            # Get LLM settings from llm.json
+            
+            save_file = APPDATA_PATH / "llm.json"
+            if not save_file.exists():
+                data_json = {
+                    "llm_list": {},
+                    "model_list": {},
+                }
+            else:    
+                with open(save_file,"r") as f:
+                    data_json = json.load(f)
+                    oBaseUrl = urlparse(cfg.api_base.value)
+                if oBaseUrl.hostname and models:
+                    # save the models in model_list with host as key
+                    data_json["model_list"][oBaseUrl.hostname] = models
+                    with open(save_file,"w") as f:
+                        json.dump(data_json, f, indent=4)
+            
             InfoBar.success(
                 self.tr('获取模型列表成功:'),
                 self.tr('一共') + str(len(models)) + self.tr('个模型'),

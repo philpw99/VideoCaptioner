@@ -14,6 +14,8 @@ GITHUB_REPO_URL = "https://github.com/WEIFENG2333/VideoCaptioner"
 RELEASE_URL = "https://github.com/WEIFENG2333/VideoCaptioner/releases/latest"
 FEEDBACK_URL = "https://github.com/WEIFENG2333/VideoCaptioner/issues"
 
+FFMPEG_DOWNLOAD_URL = "https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-essentials.7z"
+
 # 路径
 ROOT_PATH = Path(__file__).parent
 
