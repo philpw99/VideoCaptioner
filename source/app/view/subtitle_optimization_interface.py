@@ -17,7 +17,7 @@ from PyQt5.QtCore import QUrl
 from app.config import SUBTITLE_STYLE_PATH
 
 from ..core.thread.subtitle_optimization_thread import SubtitleOptimizationThread
-from ..common.config import cfg
+from ..common.config import cfg, INVISIBLE_ORIGINAL, INVISIBLE_TRANSLATED
 from ..core.bk_asr.ASRData import from_subtitle_file, from_json
 from ..core.entities import OutputSubtitleFormatEnum, SupportedSubtitleFormats, SubtitleLayoutEnum, TranslateMethodEnum
 from ..core.entities import Task
@@ -51,16 +51,36 @@ class SubtitleTableModel(QAbstractTableModel):
                     return item['translated_subtitle']
         return None
 
+    def get_original_and_translated(self, text) -> list[str, str]:
+        original, translated = "", ""
+        lines = text.split("\n")
+        trans_mode = False
+        for line in lines:
+            if line[0] == INVISIBLE_ORIGINAL:
+                trans_mode = False  # Now the rest lines are original
+                line = line[1:]
+            elif line[0] == INVISIBLE_TRANSLATED:
+                trans_mode = True   # Now the rest lines are translated
+                line = line[1:]
+            
+            if trans_mode:
+                translated = line if not translated else translated + "\n" + line
+            else:
+                original = line if not original else original + "\n" + line
+                
+        return original, translated
+
     def update_data(self, new_data):
         updated_rows = set()
 
         # 更新内部数据
         for key, value in new_data.items():
+            
             if key in self._data:
                 if "\n" in value:
-                    original_subtitle, translated_subtitle = value.split("\n", 1)
-                    self._data[key]['original_subtitle'] = original_subtitle
-                    self._data[key]['translated_subtitle'] = translated_subtitle
+                    original, translated = self.get_original_and_translated(value)
+                    self._data[key]['original_subtitle'] = original
+                    self._data[key]['translated_subtitle'] = translated
                 else:
                     self._data[key]['translated_subtitle'] = value
                 row = list(self._data.keys()).index(key)
@@ -156,7 +176,7 @@ class SubtitleOptimizationInterface(QWidget):
         self._setup_signals()
         self._update_prompt_button_style()
 
-        # 用于在字幕里寻找字符串
+        # 用于在字幕里寻找字符串,暂时存储找到字符的行数
         self.searchPos: int = None
 
     def _init_ui(self):

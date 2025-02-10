@@ -4,6 +4,7 @@ from typing import List, Tuple
 from pathlib import Path
 import math
 from ...core.entities import SubtitleLayoutEnum as SubEnum
+from ...common.config import INVISIBLE_ORIGINAL, INVISIBLE_TRANSLATED
 
 class ASRDataSeg:
     def __init__(self, text: str, start_time: int, end_time: int):
@@ -155,22 +156,38 @@ class ASRData:
         else:
             raise ValueError(f"Unsupported file extension: {save_path}")
 
+    def get_original_and_translated(self, text) -> list[str, str]:
+        original, translated = "", ""
+        lines = text.split("\n")
+        trans_mode = False
+        for line in lines:
+            if line[0] == INVISIBLE_ORIGINAL:
+                trans_mode = False  # Now the rest lines are original
+                line = line[1:]
+            elif line[0] == INVISIBLE_TRANSLATED:
+                trans_mode = True   # Now the rest lines are translated
+                line = line[1:]
+            
+            if trans_mode:
+                translated = line if not translated else translated + "\n" + line
+            else:
+                original = line if not original else original + "\n" + line
+                
+        return original, translated
+        
+
     def to_txt(self, save_path=None, layout: SubEnum = SubEnum.ONLY_TRANSLATE) -> str:
         """Convert to plain text subtitle format (without timestamps)"""
         result = []
         for seg in self.segments:
-            # 检查是否有换行符
-            if "\n" in seg.transcript:
-                original, translated = seg.transcript.split("\n", 1)
-            else:
-                original, translated = seg.transcript, ""
-
+            # 由特别识别符号识别出原文和译文
+            original, translated = self.get_original_and_translated(seg.transcript)
             # 根据字幕类型组织文本
             match layout:
                 case SubEnum.ORIGINAL_ON_TOP:
-                    text = f"{original}\n{translated}" if translated else original
+                    text = f"{INVISIBLE_ORIGINAL}{original}\n{INVISIBLE_TRANSLATED}{translated}" if translated else original
                 case SubEnum.TRANSLATE_ON_TOP:
-                    text = f"{translated}\n{original}" if translated else original
+                    text = f"{INVISIBLE_TRANSLATED}{translated}\n{INVISIBLE_ORIGINAL}{original}" if translated else original
                 case SubEnum.ONLY_ORIGINAL:
                     text = original
                 case SubEnum.ONLY_TRANSLATE:
@@ -189,18 +206,14 @@ class ASRData:
         """Convert to SRT subtitle format"""
         srt_lines = []
         for n, seg in enumerate(self.segments, 1):
-            # 检查是否有换行符
-            if "\n" in seg.transcript:
-                original, translated = seg.transcript.split("\n", 1)
-            else:
-                original, translated = seg.transcript, ""
-
+            # 由特别符号识别出原文和译文
+            original, translated = self.get_original_and_translated(seg.transcript)
             # 根据字幕类型组织文本
             match layout:
                 case SubEnum.ORIGINAL_ON_TOP:
-                    text = f"{original}\n{translated}" if translated else original
+                    text = f"{INVISIBLE_ORIGINAL}{original}\n{INVISIBLE_TRANSLATED}{translated}" if translated else original
                 case SubEnum.TRANSLATE_ON_TOP:
-                    text = f"{translated}\n{original}" if translated else original
+                    text = f"{INVISIBLE_TRANSLATED}{translated}\n{INVISIBLE_ORIGINAL}{original}" if translated else original
                 case SubEnum.ONLY_ORIGINAL:
                     text = original
                 case SubEnum.ONLY_TRANSLATE:
@@ -229,16 +242,13 @@ class ASRData:
         result_json = {}
         for i, segment in enumerate(self.segments, 1):
             # 检查是否有换行符
-            if "\n" in segment.text:
-                original_subtitle, translated_subtitle = segment.text.split("\n", 1)
-            else:
-                original_subtitle, translated_subtitle = segment.text, ""
+            original, translated = self.get_original_and_translated(segment.transcript)
 
             result_json[str(i)] = {
                 "start_time": segment.start_time,
                 "end_time": segment.end_time,
-                "original_subtitle": original_subtitle,
-                "translated_subtitle": translated_subtitle
+                "original_subtitle": original,
+                "translated_subtitle": translated
             }
         return result_json
 
@@ -280,22 +290,19 @@ class ASRData:
         dialogue_template = 'Dialogue: 0,{},{},{},,0,0,0,,{}\n'
         for seg in self.segments:
             start_time, end_time = seg.to_ass_ts()
-            if "\n" in seg.text:
-                original, translate = seg.text.split("\n", 1)
-            else:
-                original, translate = seg.text, None
+            original, translated = self.get_original_and_translated(seg.transcript)
 
             match layout:
-                case SubEnum.ORIGINAL_ON_TOP if translate:
-                    ass_content += dialogue_template.format(start_time, end_time, "Secondary", translate)
-                    ass_content += dialogue_template.format(start_time, end_time, "Default", original)
-                case SubEnum.TRANSLATE_ON_TOP if translate:
-                    ass_content += dialogue_template.format(start_time, end_time, "Secondary", original)
-                    ass_content += dialogue_template.format(start_time, end_time, "Default", translate)
+                case SubEnum.ORIGINAL_ON_TOP if translated:
+                    ass_content += dialogue_template.format(start_time, end_time, "Secondary", INVISIBLE_TRANSLATED+translated)
+                    ass_content += dialogue_template.format(start_time, end_time, "Default", INVISIBLE_ORIGINAL+original)
+                case SubEnum.TRANSLATE_ON_TOP if translated:
+                    ass_content += dialogue_template.format(start_time, end_time, "Secondary", INVISIBLE_ORIGINAL+original)
+                    ass_content += dialogue_template.format(start_time, end_time, "Default", INVISIBLE_TRANSLATED+translated)
                 case SubEnum.ONLY_ORIGINAL:
                     ass_content += dialogue_template.format(start_time, end_time, "Default", original)
-                case SubEnum.ONLY_TRANSLATE if translate:
-                    ass_content += dialogue_template.format(start_time, end_time, "Default", translate)
+                case SubEnum.ONLY_TRANSLATE if translated:
+                    ass_content += dialogue_template.format(start_time, end_time, "Default", translated)
                 case _:
                     ass_content += dialogue_template.format(start_time, end_time, "Default", original)
 
@@ -415,9 +422,9 @@ def from_json(json_data: dict) -> 'ASRData':
     segments = []
     for i in sorted(json_data.keys(), key=int):
         segment_data = json_data[i]
-        text = segment_data['original_subtitle']
+        text = INVISIBLE_ORIGINAL + segment_data['original_subtitle']
         if segment_data['translated_subtitle']:
-            text += '\n' + segment_data['translated_subtitle']
+            text += '\n' + INVISIBLE_TRANSLATED + segment_data['translated_subtitle']
         segment = ASRDataSeg(
             text=text,
             start_time=segment_data['start_time'],
@@ -440,11 +447,11 @@ def from_srt(srt_str: str) -> 'ASRData':
     blocks = re.split(r'\n\s*\n', srt_str.strip())
 
     # 如果超过90%的块都超过4行，说明可能包含翻译文本
-    blocks_lines_count = [len(block.splitlines()) for block in blocks]
-    if all(count <= 4 for count in blocks_lines_count) and sum(count == 4 for count in blocks_lines_count) / len(blocks_lines_count) > 0.9:
-        has_translated_subtitle = True
-    else:
-        has_translated_subtitle = False
+    # blocks_lines_count = [len(block.splitlines()) for block in blocks]
+    # if all(count <= 4 for count in blocks_lines_count) and sum(count == 4 for count in blocks_lines_count) / len(blocks_lines_count) > 0.9:
+    #     has_translated_subtitle = True
+    # else:
+    #     has_translated_subtitle = False
 
     for block in blocks:
         lines = block.splitlines()
@@ -469,11 +476,8 @@ def from_srt(srt_str: str) -> 'ASRData':
             time_parts[7]
         ])
 
-        if has_translated_subtitle:
-            text = '\n'.join(lines[2:]).strip()
-        else:
-            text = ' '.join(lines[2:])
-
+        text = '\n'.join(lines[2:]).strip()
+            
         segments.append(ASRDataSeg(text, start_time, end_time))
 
     return ASRData(segments)
@@ -523,7 +527,7 @@ def from_vtt(vtt_str: str) -> 'ASRData':
         cleaned_text = re.sub(r'</?c>', '', cleaned_text)
         cleaned_text = cleaned_text.strip()
         
-        if cleaned_text and cleaned_text != " ":
+        if cleaned_text:
             segments.append(ASRDataSeg(cleaned_text, start_time, end_time))
     
     return ASRData(segments)
@@ -620,8 +624,8 @@ def from_ass(ass_str: str) -> 'ASRData':
                 int(seconds) * 1000 + 
                 int(centiseconds) * 10)
     
-    # 检查是否是VideoCaptioner生成的字幕
-    has_translation = "Script generated by VideoCaptioner" in ass_str
+    # # 检查是否是VideoCaptioner生成的字幕
+    # has_translation = "Script generated by VideoCaptioner" in ass_str
     
     # 用于临时存储相同时间戳的字幕
     temp_segments = {}
@@ -643,24 +647,15 @@ def from_ass(ass_str: str) -> 'ASRData':
                 if not text:
                     continue
                     
-                if has_translation:
-                    # 使用时间戳作为键
-                    time_key = f"{start_time}-{end_time}"
-                    if time_key in temp_segments:
-                        # 如果已存在相同时间戳的字幕，合并原文和译文
-                        if style == "Default":
-                            temp_segments[time_key] = f"{text}\n{temp_segments[time_key]}"
-                        else:
-                            temp_segments[time_key] = f"{temp_segments[time_key]}\n{text}"
-                        # 创建新的字幕段并清除临时存储
-                        segments.append(ASRDataSeg(temp_segments[time_key], start_time, end_time))
-                        del temp_segments[time_key]
-                    else:
-                        temp_segments[time_key] = text
+                # 使用时间戳作为键
+                time_key = f"{start_time}-{end_time}"
+                if time_key in temp_segments:
+                    # 如果已存在相同时间戳的字幕，合并原文和译文
+                    temp_segments[time_key] = f"{temp_segments[time_key]}\n{text}"
                 else:
-                    segments.append(ASRDataSeg(text, start_time, end_time))
-    
-    # 处理剩余的未配对字幕
+                    temp_segments[time_key] = text
+                    
+    # 最后一次把所有临时字幕加入
     for time_key, text in temp_segments.items():
         start_time, end_time = map(int, time_key.split('-'))
         segments.append(ASRDataSeg(text, start_time, end_time))

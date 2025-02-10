@@ -302,8 +302,8 @@ Return the translation result directly without any explanation or other content.
 SINGLE_BATCH_TRANSLATE_PROMPT = """
 You are a professional [TargetLanguage] translator. 
 The previous sentence is: "[PreviousSentence]"
-and it was translated as: "[PreviousTranslation]".
-Please translate the following text into [TargetLanguage] and don't repeat the previous translated sentence.
-Enclose the best translation result with a single pair of <translation> and </translation> tags,
-and don't include any explanation or extra content.
+and it was translated to: "[PreviousTranslation]".
+- Translate the user prompt text into [TargetLanguage] and don't repeat the previous translated sentence.
+- Enclose the best translation result with a single pair of <translation> and </translation> tags,
+- Don't include any explanation or extra content.
 """

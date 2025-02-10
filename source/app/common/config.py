@@ -43,6 +43,10 @@ mutTranscribing = QMutex()
 mutTranslating = QMutex()
 mutSynthezing = QMutex()
 
+INVISIBLE_ORIGINAL = "\u3164"
+INVISIBLE_TRANSLATED = "\u115F"
+# Invisible includes 2800, 3164 and 115F 
+
 class Config(QConfig):
     """ 应用配置 """
     # ------------------- LLM 配置 -------------------
