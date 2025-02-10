@@ -118,8 +118,8 @@ class SettingInterface(ScrollArea):
         self.subtitleTranslateCard = EnumComboBoxSettingCard(
             cfg.translate_method,
             FIF.SPEAKERS,
-            self.tr('字幕翻译'),
-            self.tr('是否对转录生成的字幕进行翻译/或者不翻译。优化翻译和单句翻译需要配置Base URL，谷歌翻译则不需要。'),
+            self.tr('字幕优化/翻译方式'),
+            self.tr('是否对转录生成的字幕进行优化/翻译/或者不翻译。优化和翻译需要配置Base URL，谷歌翻译则不需要。'),
             TranslateMethodEnum,
             self.translateGroup
         )
@@ -781,7 +781,7 @@ class LLMConnectionThread(QThread):
         try:
             is_success, message = test_openai(self.api_base, self.api_key, self.model)
             models = get_openai_models(self.api_base, self.api_key)
-            print(models)
+            # print(models)
             self.finished.emit(is_success, message, models)
         except Exception as e:
             self.error.emit(str(e))

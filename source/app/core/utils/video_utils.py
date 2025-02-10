@@ -7,7 +7,7 @@ import tempfile
 from typing import Literal
 
 from ..utils.logger import setup_logger
-from PyQt5.QtCore import QObject, pyqtBoundSignal
+from PyQt5.QtCore import QObject
 
 logger = setup_logger("video_utils")
 qoVideo = QObject()  # for i18n

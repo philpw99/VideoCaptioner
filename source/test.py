@@ -1,17 +1,31 @@
-import json
-w = """
-{
-    "llm_list": {
-        "local2": {
-            "BaseURL": "http://localhost:1234/v1",
-            "ApiKey": "none",
-            "BatchSize": 10,
-            "ThreadNum": 10
-        }
-    },
-    "model_list": {}
-}
-"""
+import os
+from pathlib import Path
+TEMP_SHORT_FOLDER = "C:\\TempVC"
 
-data = json.loads(w)
-print( data["llm_list"]["local2"] )
+def create_temp_folder(input_folder:str) -> bool:
+    """This will create a temporary junction folder
+    Arg:
+        input_folder: the complete path for the folder that needs shorten
+            No need for quotes
+    return:
+        true to be success
+    """
+    
+    # This only works in Windows system.
+    if os.name != "nt":
+        return False
+
+    # Remove old junction
+    if Path(TEMP_SHORT_FOLDER).exists():
+        os.remove(TEMP_SHORT_FOLDER)
+    
+    r = os.system(f"mklink /j {TEMP_SHORT_FOLDER} \"{input_folder}\"")
+    if r == 0:
+        return True
+    else:
+        return False
+
+def remove_temp_folder():
+    os.remove(TEMP_SHORT_FOLDER)
+
+remove_temp_folder()

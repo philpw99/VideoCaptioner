@@ -6,6 +6,7 @@ from .transcript_thread import TranscriptThread
 from .video_synthesis_thread import VideoSynthesisThread
 from ...core.entities import Task
 from ..utils.logger import setup_logger
+from ..utils.temp_folder import TempFolder
 
 logger = setup_logger("subtitle_pipeline_thread")
 
@@ -33,6 +34,15 @@ class SubtitlePipelineThread(QThread):
                 self.has_error = True
                 self.error.emit(error_msg)
 
+            # 文件名是否过长
+            shorten = False
+            if len(self.task.file_path) > 200:
+                old_file = self.task.file_path
+                temp_path = TempFolder()
+                shorten, new_file = temp_path.create_temp_folder(self.task.file_path)
+                if shorten:
+                    self.task.file_path = new_file
+
             # 1. 转录生成字幕
             # self.task.status = Task.Status.TRANSCRIBING
             logger.info(f"\n===========任务开始===========")
@@ -47,6 +57,8 @@ class SubtitlePipelineThread(QThread):
 
             if self.has_error:
                 logger.info("转录过程中发生错误，终止流程")
+                if old_file:
+                    self.task.file_path = old_file
                 return
 
             # 2. 字幕优化/翻译
@@ -59,6 +71,8 @@ class SubtitlePipelineThread(QThread):
                 optimization_thread.run()
 
                 if self.has_error:
+                    if old_file:
+                        self.task.file_path = old_file
                     logger.info("字幕优化/翻译过程中发生错误，终止流程")
                     return
             
@@ -72,6 +86,8 @@ class SubtitlePipelineThread(QThread):
                 synthesis_thread.run()
 
                 if self.has_error:
+                    if old_file:
+                        self.task.file_path = old_file
                     logger.info("视频合成过程中发生错误，终止流程")
                     return
 
@@ -79,8 +95,14 @@ class SubtitlePipelineThread(QThread):
             logger.info("处理完成")
             self.progress.emit(100, self.tr("处理完成"))
             self.finished.emit(self.task)
+            if shorten:
+                self.task.file_path = old_file
+                temp_path.remove_temp_folder()
 
         except Exception as e:
+            if old_file:
+                self.task.file_path = old_file
+                temp_path.remove_temp_folder()
             self.task.status = Task.Status.FAILED
             logger.exception("处理失败: %s", str(e))
             self.error.emit(str(e))
