@@ -11,6 +11,7 @@ from qfluentwidgets import FluentIcon as FIF
 from .SpinBoxSettingCard import DoubleSpinBoxSettingCard
 from ..common.config import cfg
 from ..core.entities import FasterWhisperModelEnum, TranscribeLanguageEnum, WhisperModelEnum, VadMethodEnum
+from ..common.signal_bus import signalBus
 from ..components.LineEditSettingCard import LineEditSettingCard
 from ..components.EditComboBoxSettingCard import EditComboBoxSettingCard
 from ..config import BIN_PATH, CACHE_PATH, MODEL_PATH
@@ -862,6 +863,7 @@ class FasterWhisperSettingDialog(MessageBoxBase):
         self.vad_filter_card.checkedChanged.connect(self._on_vad_filter_changed)
         self.one_word_card.switchButton.checkedChanged.connect(self._on_one_word_changed)
         self.translate_to_english_card.checkedChanged.connect(self._on_translate_to_english_changed)
+        self.language_card.comboBox.currentTextChanged.connect(signalBus.on_original_language_changed)
         
     def _on_one_word_changed(self, checked: bool):
         cfg.faster_whisper_one_word.value = checked

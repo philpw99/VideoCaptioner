@@ -11,7 +11,7 @@ from qfluentwidgets import LineEdit, ProgressBar, InfoBar, InfoBarPosition, Body
 from qfluentwidgets import FluentIcon, ComboBoxSettingCard
 from qfluentwidgets import FluentIcon as FIF
 
-from ..common.config import cfg, Language, LanguageSerializer
+from ..common.config import cfg, Language, LanguageSerializer, TranscribeLanguageEnum
 from ..components.SimpleSettingCard import ComboBoxSimpleSettingCard, SwitchButtonSimpleSettingCard
 from ..core.entities import SupportedAudioFormats, SupportedVideoFormats, OutputSubtitleFormatEnum, SubtitleLayoutEnum
 from ..core.entities import TargetLanguageEnum, TranscribeModelEnum, Task, TranslateMethodEnum, LANGUAGES
@@ -63,8 +63,8 @@ class TaskCreationInterface(QWidget):
         self.config_layout1.setSpacing(20)
 
         # 创建转录模型卡片和设置按钮的容器
-        transcription_container = QWidget()
-        transcription_layout = QHBoxLayout(transcription_container)
+        self.transcription_container = QWidget()
+        transcription_layout = QHBoxLayout(self.transcription_container)
         transcription_layout.setContentsMargins(0, 0, 0, 0)
         transcription_layout.setSpacing(10)
 
@@ -82,22 +82,15 @@ class TaskCreationInterface(QWidget):
         self.whisper_setting_button.clicked.connect(self.show_whisper_settings)
         transcription_layout.addWidget(self.transcription_model_card)
         transcription_layout.addWidget(self.whisper_setting_button)
-        transcription_container.setLayout(transcription_layout)
+        self.transcription_container.setLayout(transcription_layout)
 
-        # 创建视频合成开关
-        self.video_synthesis_card = SwitchButtonSimpleSettingCard(
-            self.tr("字幕视频合成"),
-            self.tr("是否把字幕合成到视频里面。"),
+        # 源语音选择
+        self.original_language_card = ComboBoxSimpleSettingCard(
+            self.tr("源语言"),
+            self.tr("音频的源语言"),
+            [lang.value for lang in TranscribeLanguageEnum],
             self
         )
-
-        # 创建软硬字幕开关，这需要打开视频合成开关
-        self.soft_subtitle_card = SwitchButtonSimpleSettingCard(
-            self.tr("软字幕"),
-            self.tr("是否合成软字幕视频，关掉则会合成硬字幕"),
-            self
-        )
-
 
         # 创建字幕翻译方式卡片
         self.translation_method_card = ComboBoxSimpleSettingCard(
@@ -107,16 +100,7 @@ class TaskCreationInterface(QWidget):
             self
         )
 
-        self.config_layout1.addWidget(transcription_container)
-        self.config_layout1.addWidget(self.video_synthesis_card)
-        self.config_layout1.addWidget(self.soft_subtitle_card)
-        self.config_layout1.addWidget(self.translation_method_card)
-        
-        config_container1 = QWidget()
-        config_container1.setLayout(self.config_layout1)
-        config_container1.setFixedHeight(70)
-        
-        # =========== Second Line of Config Layout ==============
+
         # 创建目标语言卡片
         self.target_language_card = ComboBoxSimpleSettingCard(
             self.tr("Translate Target"),
@@ -124,7 +108,19 @@ class TaskCreationInterface(QWidget):
             [model.value for model in TargetLanguageEnum],
             self
         )
+
+        self.config_layout1.addWidget(self.transcription_container)
+        self.config_layout1.addWidget(self.original_language_card)
+        self.config_layout1.addWidget(self.translation_method_card)
+        self.config_layout1.addWidget(self.target_language_card)
         
+        # Container for main layout
+        self.config_container1 = QWidget()
+        self.config_container1.setLayout(self.config_layout1)
+        self.config_container1.setFixedHeight(70)
+        
+        # =========== Second Line of Config Layout ==============
+        # 字幕输出文件格式
         self.target_format_card = ComboBoxSimpleSettingCard(
             self.tr("字幕输出格式"),
             self.tr("字幕文件的后缀名"),
@@ -132,26 +128,52 @@ class TaskCreationInterface(QWidget):
             self
         )
         
+        # 字幕原文和译文格式
         self.subtitle_layout_card = ComboBoxSimpleSettingCard(
             self.tr("字幕布局"),
             self.tr("原文在上，译文在上，或者其它布局"),
             [enum.value for enum in SubtitleLayoutEnum],
             self
         )
+        
+        # 创建视频合成开关
+        self.video_synthesis_card = SwitchButtonSimpleSettingCard(
+            "",
+            self.tr("是否把字幕合成到视频里面。"),
+            self
+        )
+        self.video_synthesis_card.switchButton.setOffText( self.tr("Save Subtitle Only"))
+        self.video_synthesis_card.switchButton.setOnText( self.tr("Combine Sub + Video"))
+        self.video_synthesis_card.switchButton.setContentsMargins(0,0,16,0)  
+        
+
+        # 创建软硬字幕开关，这需要打开视频合成开关
+        self.soft_subtitle_card = SwitchButtonSimpleSettingCard(
+            "",
+            self.tr("是否合成软字幕视频，关掉则会合成硬字幕"),
+            self
+        )
+        self.soft_subtitle_card.switchButton.setOffText("Hard Subtitle")
+        self.soft_subtitle_card.switchButton.setOnText("Soft Subtitle")
+        self.soft_subtitle_card.switchButton.setContentsMargins(0,0,16,0)
+
 
         self.config_layout2 = QHBoxLayout()
         self.config_layout2.setObjectName("config_layout2")
         self.config_layout2.setSpacing(20)
-        self.config_layout2.addWidget(self.target_language_card)
+
         self.config_layout2.addWidget(self.target_format_card)
         self.config_layout2.addWidget(self.subtitle_layout_card)
+        self.config_layout2.addWidget(self.video_synthesis_card)
+        self.config_layout2.addWidget(self.soft_subtitle_card)
+
+        # Container for main layout
+        self.config_container2 = QWidget()
+        self.config_container2.setLayout(self.config_layout2)
+        self.config_container2.setFixedHeight(70)
         
-        config_container2 = QWidget()
-        config_container2.setLayout(self.config_layout2)
-        config_container2.setFixedHeight(70)
-        
-        self.main_layout.addWidget(config_container1)
-        self.main_layout.addWidget(config_container2)
+        self.main_layout.addWidget(self.config_container1)
+        self.main_layout.addWidget(self.config_container2)
         # self.main_layout.addSpacing(20)
 
     def setup_logo(self):
@@ -166,7 +188,7 @@ class TaskCreationInterface(QWidget):
         self.logo_label.setPixmap(self.logo_pixmap)
         self.logo_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.main_layout.addWidget(self.logo_label)
-        self.main_layout.addSpacing(30)
+        self.main_layout.addSpacing(20)
 
     def setup_search_layout(self):
         self.search_layout = QHBoxLayout()
@@ -207,7 +229,7 @@ class TaskCreationInterface(QWidget):
         self.search_layout.addWidget(self.start_button)
         self.search_layout.setSpacing(10)
         self.main_layout.addLayout(self.search_layout)
-        self.main_layout.addSpacing(50)
+        self.main_layout.addSpacing(30)
 
     def setup_status_layout(self):
         self.status_layout = QVBoxLayout()
@@ -294,7 +316,9 @@ class TaskCreationInterface(QWidget):
         self.languageCard.comboBox.currentTextChanged.connect(
             signalBus.on_language_changed
         )
-        
+        self.original_language_card.comboBox.currentTextChanged.connect(
+            signalBus.on_original_language_changed
+        )
         
         # Signal bus to local
         signalBus.soft_subtitle_changed.connect(self.on_soft_subtitle_changed)
@@ -304,6 +328,15 @@ class TaskCreationInterface(QWidget):
         signalBus.transcription_model_changed.connect(self.on_transcription_model_changed)
         signalBus.target_language_changed.connect(self.on_target_language_changed)
         signalBus.language_changed.connect(self.on_language_changed)
+        signalBus.original_language_changed.connect(self.on_original_language_changed)
+
+    def on_original_language_changed(self, value: str):
+        enum = TranscribeLanguageEnum(value)
+        if cfg.transcribe_language.value != enum:
+            cfg.set(cfg.transcribe_language, enum)
+        comboBox = self.original_language_card.comboBox
+        if comboBox.currentText() != value:
+            comboBox.setCurrentText(value)
 
     def on_subtitle_layout_changed(self, value: str):
         enum = SubtitleLayoutEnum(value)

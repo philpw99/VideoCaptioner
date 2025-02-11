@@ -3,6 +3,8 @@ from PyQt5.QtCore import QObject, pyqtSignal, QUrl
 class SignalBus(QObject):
     # 字幕排布信号
     subtitle_layout_changed = pyqtSignal(str)
+    # 源语音
+    original_language_changed = pyqtSignal(str)
     # 翻译语言
     target_language_changed = pyqtSignal(str)
     # 界面语言
@@ -26,6 +28,9 @@ class SignalBus(QObject):
     video_segment_play = pyqtSignal(int, int)  # 播放片段信号，参数为开始和结束时间(ms)
     video_subtitle_added = pyqtSignal(str)  # 添加字幕文件信号
 
+    def on_original_language_changed(self, language:str):
+        self.original_language_changed.emit(language)
+    
     def on_transcription_model_changed(self, model:str):
         self.transcription_model_changed.emit(model)
     
