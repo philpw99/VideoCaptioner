@@ -254,7 +254,7 @@ class SubtitleOptimizationInterface(QWidget):
         self.replace_btn = PushButton(FIF.REMOVE_FROM, self.tr("Replace"),self)
         self.replace_btn.setToolTip(self.tr("Replace current line of text only in translated subtitles."))
         self.replace_all_btn = PushButton(FIF.FILTER, self.tr("Replace All"), self)
-        self.replace_btn.setToolTip(self.tr("Replace all lines of text in translated subtitles."))
+        self.replace_all_btn.setToolTip(self.tr("Replace all lines of text in translated subtitles."))
         
         self.search_layout.addWidget(self.org_text_edit)
         self.search_layout.addSpacing(8)
