@@ -13,6 +13,7 @@ from ..bk_asr.ASRData import from_subtitle_file
 from ..entities import Task, TranslateMethodEnum
 from ..subtitle_processor.spliter import merge_segments
 from ..utils.test_opanai import test_openai
+from ..utils.subtitles import get_original_and_translated
 from ..utils.logger import setup_logger
 from ...common.config import cfg, mutTranslating, INVISIBLE_ORIGINAL, INVISIBLE_TRANSLATED
 
@@ -172,14 +173,10 @@ class SubtitleOptimizationThread(QThread):
                         
                 # 加入优化或者翻译后的字幕
                 for i, subtitle_text in translate_result.items():
+                    original, translated = get_original_and_translated(subtitle_text)
                     seg = asr_data.segments[int(i) - 1]
                     # If there is an invisible space leading, then it's the translated text.
-                    if seg.text[0] != INVISIBLE_ORIGINAL:
-                        seg.text = INVISIBLE_ORIGINAL + seg.text
-                        
-                    seg.text += "\n" + INVISIBLE_TRANSLATED + subtitle_text
-
-                        
+                    seg.text = INVISIBLE_ORIGINAL + original + "\n" + INVISIBLE_TRANSLATED +translated
 
                 # 保存字幕
                 if result_subtitle_save_path.endswith(".ass"):

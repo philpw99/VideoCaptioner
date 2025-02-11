@@ -635,6 +635,7 @@ class SettingInterface(ScrollArea):
         self.modelCard.setValue(setting_json["Model"])
         self.batchSizeCard.setValue(setting_json["BatchSize"])
         self.threadNumCard.setValue(setting_json["ThreadNum"])
+        cfg.save()
         
         
     def show_whisper_settings(self):

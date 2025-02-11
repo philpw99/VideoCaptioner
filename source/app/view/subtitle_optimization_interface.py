@@ -250,8 +250,11 @@ class SubtitleOptimizationInterface(QWidget):
         self.dst_text_edit = LineEdit(self)
         self.dst_text_edit.setPlaceholderText(self.tr("Replace text here"))
         self.search_btn = PushButton(FIF.SEARCH, self.tr("Search"), self)
+        self.search_btn.setToolTip(self.tr("Search text in both original and translated subtitles."))
         self.replace_btn = PushButton(FIF.REMOVE_FROM, self.tr("Replace"),self)
+        self.replace_btn.setToolTip(self.tr("Replace current line of text only in translated subtitles."))
         self.replace_all_btn = PushButton(FIF.FILTER, self.tr("Replace All"), self)
+        self.replace_btn.setToolTip(self.tr("Replace all lines of text in translated subtitles."))
         
         self.search_layout.addWidget(self.org_text_edit)
         self.search_layout.addSpacing(8)
@@ -411,10 +414,11 @@ class SubtitleOptimizationInterface(QWidget):
             return
         key = str(index+1)
         item = self.model._data[key]
-        original = item["original_subtitle"]
+        # original = item["original_subtitle"]
         translated = item["translated_subtitle"]
-        original = original.replace(search, replace)
-        self.model._data[key]["original_subtitle"] = original
+        # Only replace translated. Original should left untouch
+        # original = original.replace(search, replace)
+        # self.model._data[key]["original_subtitle"] = original
         if translated:
             # Has translation
             translated = translated.replace(search,replace)
@@ -429,9 +433,13 @@ class SubtitleOptimizationInterface(QWidget):
         
             
     def search_value(self, searchText: str, startIndex:int = None):
-        if startIndex:
-            # index to key +1, search next +1
-            startKey = str( startIndex + 2 )
+        if not startIndex:
+            # Search from first line
+            startIndex = 0
+            startKey = "1"
+        else: # index to key +1, search next +1
+            startIndex += 1
+            startKey = str( startIndex + 1 )
         search = searchText.lower()
         foundStartKey = False
         for key in self.model._data:
@@ -470,13 +478,14 @@ class SubtitleOptimizationInterface(QWidget):
         replace_count = 0
         for key in self.model._data:
             item = self.model._data[key]
-            original = item["original_subtitle"]
+            # original = item["original_subtitle"]
             translated = item["translated_subtitle"]
             
-            new_original = original.replace(search, replace)
-            if new_original != original:
-                replace_count += 1
-                item["original_subtitle"]=new_original
+            # Original should be left alone. Only replace the translated.
+            #new_original = original.replace(search, replace)
+            #if new_original != original:
+            #    replace_count += 1
+            #    item["original_subtitle"]=new_original
             
             if translated:
                 new_translated = translated.replace(search, replace)
@@ -663,6 +672,8 @@ class SubtitleOptimizationInterface(QWidget):
         self.subtitle_optimization_thread.error.connect(self.on_subtitle_optimization_error)
         # 设置自定义提示文本
         self.subtitle_optimization_thread.set_custom_prompt_text(self.custom_prompt_text)
+        # 可以执行
+        self.subtitle_optimization_thread.allow_running[0] = True
         # 启动线程
         self.subtitle_optimization_thread.start()
         # 显示优化开始信息

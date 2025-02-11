@@ -272,9 +272,12 @@ class ASRData:
         for seg in self.segments:
             start_time, end_time = seg.to_ass_ts()
             original, translated = get_original_and_translated(seg.transcript)
+            original = "\\N".join( original.split("\n"))
+            translated = "\\N".join(translated.split("\n"))
 
             match layout:
                 case SubEnum.ORIGINAL_ON_TOP if translated:
+                    
                     ass_content += dialogue_template.format(start_time, end_time, "Secondary", INVISIBLE_TRANSLATED+translated)
                     ass_content += dialogue_template.format(start_time, end_time, "Default", INVISIBLE_ORIGINAL+original)
                 case SubEnum.TRANSLATE_ON_TOP if translated:
