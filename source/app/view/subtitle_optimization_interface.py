@@ -24,7 +24,7 @@ from ..core.entities import Task
 from ..core.thread.create_task_thread import CreateTaskThread
 from ..common.signal_bus import signalBus
 from ..components.SubtitleSettingDialog import SubtitleSettingDialog
-
+from ..core.utils.subtitles import get_original_and_translated
 
 class SubtitleTableModel(QAbstractTableModel):
     def __init__(self, data):
@@ -51,25 +51,6 @@ class SubtitleTableModel(QAbstractTableModel):
                     return item['translated_subtitle']
         return None
 
-    def get_original_and_translated(self, text) -> list[str, str]:
-        original, translated = "", ""
-        lines = text.split("\n")
-        trans_mode = False
-        for line in lines:
-            if line[0] == INVISIBLE_ORIGINAL:
-                trans_mode = False  # Now the rest lines are original
-                line = line[1:]
-            elif line[0] == INVISIBLE_TRANSLATED:
-                trans_mode = True   # Now the rest lines are translated
-                line = line[1:]
-            
-            if trans_mode:
-                translated = line if not translated else translated + "\n" + line
-            else:
-                original = line if not original else original + "\n" + line
-                
-        return original, translated
-
     def update_data(self, new_data):
         updated_rows = set()
 
@@ -78,7 +59,7 @@ class SubtitleTableModel(QAbstractTableModel):
             
             if key in self._data:
                 if "\n" in value:
-                    original, translated = self.get_original_and_translated(value)
+                    original, translated = get_original_and_translated(value)
                     self._data[key]['original_subtitle'] = original
                     self._data[key]['translated_subtitle'] = translated
                 else:

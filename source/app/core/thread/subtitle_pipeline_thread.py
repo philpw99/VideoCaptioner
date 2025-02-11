@@ -36,7 +36,8 @@ class SubtitlePipelineThread(QThread):
 
             # 文件名是否过长
             shorten = False
-            if len(self.task.file_path) > 200:
+            if len(self.task.file_path) > 200 and self.task.file_path[1] == ":":
+                # 1. over 200 char long. 2. Need to be local, not network files
                 old_file = self.task.file_path
                 temp_path = TempFolder()
                 shorten, new_file = temp_path.create_temp_folder(self.task.file_path)
@@ -95,7 +96,7 @@ class SubtitlePipelineThread(QThread):
             logger.info("处理完成")
             self.progress.emit(100, self.tr("处理完成"))
             self.finished.emit(self.task)
-            if shorten:
+            if old_file:
                 self.task.file_path = old_file
                 temp_path.remove_temp_folder()
 

@@ -2,7 +2,7 @@ import asyncio, re
 from typing import Dict
 from googletrans import Translator
 
-from ...common.config import cfg
+from ...common.config import cfg, INVISIBLE_TRANSLATED, INVISIBLE_ORIGINAL
 from ..entities import LANGUAGES
 from ..utils.logger import setup_logger
 
@@ -25,28 +25,31 @@ async def googleTranslate(original_subtitle: Dict[int,str], callback = None, all
         # text += "#" + str(key)+ " " +value +"\n"
         if not allow_running[0]:
             return translate_result
-        text += value +"\n"
+        text += "|" + value + "\n" 
         i += 1
+        
         if i % batch_num == 0 or i >= length:
             # Translate every 50 lines or at the end
+            # It only runs after 50 lines are accumulated in text
             glogger.info(f"Translating up to line {i}")
             try:
                 # Doing translate.
                 task = asyncio.create_task( gTranslator.translate(text, src=src, dest=dest ))
                 await task
                 if task.result()._response.is_success:
-                    translated += task.result().text + "\n"
+                    # Add all chunks to translated
+                    translated = task.result().text[1:]
                 else:
                     raise Exception("Getting error result from Google Translate")
             except Exception as e:
                 glogger.error(f"Error doing google translate. {e}")
                 return
 
-            chunk = translated.split("\n")
-            chunk.pop() # Remove the last empty line
+            chunk = translated.split("\n|")
+
             partial_result = {}
             for value in chunk:
-                line: Dict = {str(j): value}
+                line: Dict = {str(j): INVISIBLE_ORIGINAL + original_subtitle[str(j)] + "\n" + INVISIBLE_TRANSLATED + value}
                 j += 1
                 if callback:
                     callback(line)
@@ -56,7 +59,6 @@ async def googleTranslate(original_subtitle: Dict[int,str], callback = None, all
             # reset the text for next round
             text, translated = "",""
             partial_result.clear()
-    
     return translate_result
 
 if __name__ == "__main__":

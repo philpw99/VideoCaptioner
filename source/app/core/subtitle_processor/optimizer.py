@@ -4,7 +4,8 @@ import os
 from concurrent.futures import ThreadPoolExecutor
 import re, json
 from typing import Dict
-
+from ...common.config import INVISIBLE_ORIGINAL,INVISIBLE_TRANSLATED
+from ..utils.subtitles import get_original_and_translated
 import retry
 from openai import OpenAI
 
@@ -95,6 +96,10 @@ class SubtitleOptimizer:
         chunks = [dict(items[i:i + batch_num]) for i in range(0, len(items), batch_num)]
 
         def process_chunk(chunk):
+            for key in chunk:
+                # set chunk to original only
+                chunk[key], _ = get_original_and_translated(chunk[key])
+            
             if not self.allow_running[0]:
                 return
             failed = False
@@ -117,6 +122,10 @@ class SubtitleOptimizer:
                 result = self.translate_single(chunk)
                 failed = False
             
+            for key in result:
+                # Put the invisible label back
+                result[key] = INVISIBLE_ORIGINAL + chunk[key] + "\n" + INVISIBLE_TRANSLATED + result[key]
+
             if callback:
                 if isinstance(result, Dict):
                     callback(result)
@@ -288,6 +297,13 @@ class SubtitleOptimizer:
         re_translate = re.compile(r".*<[Tt]ranslation>(.*?)</[Tt]ranslation>")
         re_notag = re.compile(r"<.*?>")
         for key, value in original_subtitle.items():
+            
+            if "\n" in value:
+                # Only need original, discard the translated
+                original, _ = get_original_and_translated(value)
+            else:
+                original = value
+            
             if not self.allow_running[0]:
                 logger.error("单句批量 翻译过程时中断")
                 return translate_result
@@ -300,9 +316,9 @@ class SubtitleOptimizer:
             
             message = [{"role": "system",
                 "content": content},
-                {"role": "user", "content": value}]
+                {"role": "user", "content": original}]
             
-            previous_sentence = value
+            previous_sentence = original
             
             response = self.client.chat.completions.create(
                 model=self.model,
@@ -331,7 +347,7 @@ class SubtitleOptimizer:
 
             previous_translation = translated
             logger.info(f"{key}. Original: {value}\n{key}. Translated: {translated}")
-            line = {str(key): translated}  # Create a dictionary with key and translated text
+            line = {str(key): INVISIBLE_ORIGINAL+ original + "\n" + INVISIBLE_TRANSLATED + translated}  # Create a dictionary with key and translated text
 
             if callback:
                 # report the progress

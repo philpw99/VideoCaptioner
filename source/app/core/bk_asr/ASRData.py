@@ -5,6 +5,7 @@ from pathlib import Path
 import math
 from ...core.entities import SubtitleLayoutEnum as SubEnum
 from ...common.config import INVISIBLE_ORIGINAL, INVISIBLE_TRANSLATED
+from ..utils.subtitles import get_original_and_translated
 
 class ASRDataSeg:
     def __init__(self, text: str, start_time: int, end_time: int):
@@ -156,32 +157,12 @@ class ASRData:
         else:
             raise ValueError(f"Unsupported file extension: {save_path}")
 
-    def get_original_and_translated(self, text) -> list[str, str]:
-        original, translated = "", ""
-        lines = text.split("\n")
-        trans_mode = False
-        for line in lines:
-            if line[0] == INVISIBLE_ORIGINAL:
-                trans_mode = False  # Now the rest lines are original
-                line = line[1:]
-            elif line[0] == INVISIBLE_TRANSLATED:
-                trans_mode = True   # Now the rest lines are translated
-                line = line[1:]
-            
-            if trans_mode:
-                translated = line if not translated else translated + "\n" + line
-            else:
-                original = line if not original else original + "\n" + line
-                
-        return original, translated
-        
-
     def to_txt(self, save_path=None, layout: SubEnum = SubEnum.ONLY_TRANSLATE) -> str:
         """Convert to plain text subtitle format (without timestamps)"""
         result = []
         for seg in self.segments:
             # 由特别识别符号识别出原文和译文
-            original, translated = self.get_original_and_translated(seg.transcript)
+            original, translated = get_original_and_translated(seg.transcript)
             # 根据字幕类型组织文本
             match layout:
                 case SubEnum.ORIGINAL_ON_TOP:
@@ -207,7 +188,7 @@ class ASRData:
         srt_lines = []
         for n, seg in enumerate(self.segments, 1):
             # 由特别符号识别出原文和译文
-            original, translated = self.get_original_and_translated(seg.transcript)
+            original, translated = get_original_and_translated(seg.transcript)
             # 根据字幕类型组织文本
             match layout:
                 case SubEnum.ORIGINAL_ON_TOP:
@@ -242,7 +223,7 @@ class ASRData:
         result_json = {}
         for i, segment in enumerate(self.segments, 1):
             # 检查是否有换行符
-            original, translated = self.get_original_and_translated(segment.transcript)
+            original, translated = get_original_and_translated(segment.transcript)
 
             result_json[str(i)] = {
                 "start_time": segment.start_time,
@@ -290,7 +271,7 @@ class ASRData:
         dialogue_template = 'Dialogue: 0,{},{},{},,0,0,0,,{}\n'
         for seg in self.segments:
             start_time, end_time = seg.to_ass_ts()
-            original, translated = self.get_original_and_translated(seg.transcript)
+            original, translated = get_original_and_translated(seg.transcript)
 
             match layout:
                 case SubEnum.ORIGINAL_ON_TOP if translated:
