@@ -414,7 +414,7 @@ class TaskCreationInterface(QWidget):
         self.target_language_card.comboBox.setCurrentText(cfg.target_language.value.value)
         self.target_format_card.comboBox.setCurrentText(cfg.subtitle_output_format.value.value)
         self.subtitle_layout_card.comboBox.setCurrentText(cfg.subtitle_layout.value.value)
-
+        self.original_language_card.comboBox.setCurrentText(cfg.transcribe_language.value.value)
        
         self.search_input.setText("")
         self.whisper_setting_button.setVisible( self.is_using_whisper())

@@ -890,7 +890,7 @@ class FasterWhisperSettingDialog(MessageBoxBase):
         # 根据安装的版本设置程路径 
         if "GPU" in installed_versions:
             cfg.faster_whisper_program.value = "faster-whisper-xxl.exe"
-        if "MAC" in installed_versions:
+        elif "MAC" in installed_versions:
             cfg.faster_whisper_program.value = "whisper-faster"
             cfg.faster_whisper_vad_method.value = VadMethodEnum.NONE
         else:

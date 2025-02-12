@@ -380,8 +380,8 @@ class SettingInterface(ScrollArea):
 
         # 初始化布局
         self.__initLayout()
-        self.__connectSignalToSlot()
         self.load_llm_list()
+        self.__connectSignalToSlot()
 
     def __initLayout(self):
         self.settingLabel.move(36, 30)
@@ -536,6 +536,7 @@ class SettingInterface(ScrollArea):
         )
     
     def load_llm_list(self):
+        # Initializing the list.
         save_file = APPDATA_PATH / "llm.json"
         if not save_file.exists():
             return
@@ -545,14 +546,20 @@ class SettingInterface(ScrollArea):
         comboBox = self.saveLLMSettingsCard.comboBox
         comboBox.clear()
         comboBox.addItems(list(data_json["llm_list"]))   # list(data_json) will list all keys in Dict
+        if cfg.llm_preset.value:
+            comboBox.setCurrentText(cfg.llm_preset.value)
         
         oBaseUrl = urlparse(cfg.api_base.value)
         key = oBaseUrl.hostname
         if key in list(data_json["model_list"]):
             comboBox = self.modelCard.comboBox
             comboBox.clear()
+            old_value = cfg.model.value
             comboBox.addItems(data_json["model_list"][key])
-            comboBox.setCurrentText(cfg.model.value)
+            # For some reason, the old value is lost after this.
+            if old_value:
+                # Set the value back.
+                comboBox.setCurrentText(old_value)
    
     def save_llm_settings(self, saveAs = False):
         """保存 LLM 设定到 llm.json"""
@@ -604,6 +611,8 @@ class SettingInterface(ScrollArea):
         self.saveLLMSettingsCard.comboBox.addItems(list(data_json["llm_list"]))
         self.saveLLMSettingsCard.comboBox.setCurrentText(saveKey)
         
+        cfg.set(cfg.llm_preset.value, saveKey)
+        
         InfoBar.info(self.tr("LLM settings saved."),
                      self.tr(f"The LLM settings for {saveKey} was saved."),
                      duration=5000,
@@ -635,6 +644,7 @@ class SettingInterface(ScrollArea):
         self.modelCard.setValue(setting_json["Model"])
         self.batchSizeCard.setValue(setting_json["BatchSize"])
         self.threadNumCard.setValue(setting_json["ThreadNum"])
+        cfg.llm_preset.value = key
         cfg.save()
         
         

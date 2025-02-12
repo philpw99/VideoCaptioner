@@ -60,6 +60,8 @@ class Config(QConfig):
         "LLM", "ThreadNum", 10, RangeValidator(1, 30)
     )
 
+    llm_preset = ConfigItem( "LLM", "LLM_Preset", "" )
+
     # ------------------- 转录配置 -------------------
     transcribe_model = OptionsConfigItem(
         "Transcribe", "TranscribeModel",
