@@ -28,6 +28,7 @@ class SubtitlePipelineThread(QThread):
 
     def run(self):
         self.allow_running[0] = True
+        old_file = None
         try:
             def handle_error(error_msg):
                 logger.error("pipeline 发生错误: %s", error_msg)

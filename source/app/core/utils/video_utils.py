@@ -56,13 +56,20 @@ def video2audio(input_file: str, output_file: str = "", format: str = "copy", al
         )
         
         # 等待结束或者中途停止
+        start_output = False
         while process.poll() is None:
+            output = process.stdout.readline()
+            if output:
+                if output.startswith("Stream mapping:"):
+                    start_output = True
+                if start_output:
+                    logger.info(output.strip())
             if not allow_running[0]:
                 # Tell ffmpeg to quit
                 process.terminate()
                 logger.error("ffmpeg 执行音频转换时中断")
                 return
-        
+
         # 获取所有输出和错误信息
         process.communicate()
                 
@@ -345,11 +352,9 @@ def add_subtitles(
             total_duration = None
             current_time = 0
 
-            while True:
+            while process.poll() is not None:
                 output_line = process.stderr.readline()
-                if not output_line or (process.poll() is not None):
-                    break
-                if not progress_callback:
+                if not output_line or not progress_callback:
                     continue
 
                 if total_duration is None:
@@ -373,11 +378,10 @@ def add_subtitles(
             if progress_callback:
                 progress_callback("100", qoVideo.tr("合成完成"))
             # 检查进程的返回码
-            return_code = process.wait()
-            if return_code != 0:
-                error_info = process.stderr.read()
-                logger.error(f"视频合成失败， {error_info}")
-                raise Exception(return_code)
+            _ , stderr = process.communicate()
+            if process.returncode != 0:
+                logger.error(f"视频合成失败， {stderr}")
+                raise Exception(process.returncode)
             logger.info("视频合成完成")
 
         except Exception as e:
