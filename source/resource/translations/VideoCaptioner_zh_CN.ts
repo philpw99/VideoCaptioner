@@ -1137,8 +1137,8 @@ Or go to GitHub for the new release.</source>
     </message>
     <message>
         <location filename="../../app/view/setting_interface.py" line="88"/>
-        <location filename="../../app/view/setting_interface.py" line="712"/>
-        <location filename="../../app/view/setting_interface.py" line="723"/>
+        <location filename="../../app/view/setting_interface.py" line="722"/>
+        <location filename="../../app/view/setting_interface.py" line="733"/>
         <source>检查连接</source>
         <translation></translation>
     </message>
@@ -1518,13 +1518,13 @@ Or go to GitHub for the new release.</source>
     </message>
     <message>
         <location filename="../../app/view/setting_interface.py" line="520"/>
-        <location filename="../../app/view/setting_interface.py" line="623"/>
+        <location filename="../../app/view/setting_interface.py" line="632"/>
         <source>Error getting {key} settings</source>
         <translation>无法拿到 {key} 的设置</translation>
     </message>
     <message>
         <location filename="../../app/view/setting_interface.py" line="521"/>
-        <location filename="../../app/view/setting_interface.py" line="623"/>
+        <location filename="../../app/view/setting_interface.py" line="632"/>
         <source>Cannot get {key} settings from AppData/llm.json</source>
         <translation>无法从 AppData/llm.json 拿到 {key} 的设置</translation>
     </message>
@@ -1539,94 +1539,94 @@ Or go to GitHub for the new release.</source>
         <translation>有关 {old_key} 的设定已经删除。</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="574"/>
+        <location filename="../../app/view/setting_interface.py" line="581"/>
         <source>Name this LLM Setting</source>
         <translation>命名这个 LLM 设定</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="575"/>
+        <location filename="../../app/view/setting_interface.py" line="582"/>
         <source>Please input the name for this LLM setting.</source>
         <translation>请给这个 LLM 设定一个名字。</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="608"/>
+        <location filename="../../app/view/setting_interface.py" line="617"/>
         <source>The LLM settings for {saveKey} was saved.</source>
         <translation>名字为 {saveKey} 的 LLM 设定已经保存。</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="607"/>
+        <location filename="../../app/view/setting_interface.py" line="616"/>
         <source>LLM settings saved.</source>
         <translation>LLM 设定保存了。</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="618"/>
+        <location filename="../../app/view/setting_interface.py" line="627"/>
         <source>Error Reading llm.json</source>
         <translation>错误读取 llm.json 文件</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="618"/>
+        <location filename="../../app/view/setting_interface.py" line="627"/>
         <source>Cannot open LLM settins file: AppData/llm.json</source>
         <translation>无法打开 LLM 设定文件： AppData/llm.json</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="658"/>
-        <location filename="../../app/view/setting_interface.py" line="688"/>
+        <location filename="../../app/view/setting_interface.py" line="668"/>
+        <location filename="../../app/view/setting_interface.py" line="698"/>
         <source>错误</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="659"/>
+        <location filename="../../app/view/setting_interface.py" line="669"/>
         <source>请先选择Whisper转录模型</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="668"/>
+        <location filename="../../app/view/setting_interface.py" line="678"/>
         <source>更新成功</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="669"/>
+        <location filename="../../app/view/setting_interface.py" line="679"/>
         <source>配置将在重启后生效</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="676"/>
+        <location filename="../../app/view/setting_interface.py" line="686"/>
         <source>选择文件夹</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="689"/>
+        <location filename="../../app/view/setting_interface.py" line="699"/>
         <source>请输入正确的 API Base, 含有 /v1</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="697"/>
+        <location filename="../../app/view/setting_interface.py" line="707"/>
         <source>正在检查...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="714"/>
-        <location filename="../../app/view/setting_interface.py" line="754"/>
+        <location filename="../../app/view/setting_interface.py" line="724"/>
+        <location filename="../../app/view/setting_interface.py" line="764"/>
         <source>LLM 连接测试错误</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="747"/>
+        <location filename="../../app/view/setting_interface.py" line="757"/>
         <source>获取模型列表成功:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="748"/>
+        <location filename="../../app/view/setting_interface.py" line="758"/>
         <source>一共</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="748"/>
+        <location filename="../../app/view/setting_interface.py" line="758"/>
         <source>个模型</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="761"/>
+        <location filename="../../app/view/setting_interface.py" line="771"/>
         <source>LLM 连接测试成功</source>
         <translation></translation>
     </message>
@@ -1987,22 +1987,22 @@ Or go to GitHub for the new release.</source>
 <context>
     <name>SubtitlePipelineThread</name>
     <message>
-        <location filename="../../app/core/thread/subtitle_pipeline_thread.py" line="52"/>
+        <location filename="../../app/core/thread/subtitle_pipeline_thread.py" line="53"/>
         <source>开始转录</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_pipeline_thread.py" line="68"/>
+        <location filename="../../app/core/thread/subtitle_pipeline_thread.py" line="69"/>
         <source>开始优化+翻译字幕</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_pipeline_thread.py" line="83"/>
+        <location filename="../../app/core/thread/subtitle_pipeline_thread.py" line="84"/>
         <source>开始合成视频</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_pipeline_thread.py" line="97"/>
+        <location filename="../../app/core/thread/subtitle_pipeline_thread.py" line="98"/>
         <source>处理完成</source>
         <translation></translation>
     </message>
@@ -2918,32 +2918,32 @@ Or go to GitHub for the new release.</source>
 <context>
     <name>TranscriptionInterface</name>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="332"/>
+        <location filename="../../app/view/transcription_interface.py" line="347"/>
         <source>转录完成</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="333"/>
+        <location filename="../../app/view/transcription_interface.py" line="348"/>
         <source>开始字幕优化...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="379"/>
+        <location filename="../../app/view/transcription_interface.py" line="394"/>
         <source>导入成功</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="380"/>
+        <location filename="../../app/view/transcription_interface.py" line="395"/>
         <source>开始语音转文字</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="387"/>
+        <location filename="../../app/view/transcription_interface.py" line="402"/>
         <source>格式错误</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="388"/>
+        <location filename="../../app/view/transcription_interface.py" line="403"/>
         <source>请拖入音频或视频文件</source>
         <translation></translation>
     </message>
@@ -2951,73 +2951,78 @@ Or go to GitHub for the new release.</source>
 <context>
     <name>VideoInfoCard</name>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="121"/>
+        <location filename="../../app/view/transcription_interface.py" line="122"/>
         <source>请拖入音频或视频文件</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="129"/>
+        <location filename="../../app/view/transcription_interface.py" line="130"/>
         <source>画质</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="130"/>
+        <location filename="../../app/view/transcription_interface.py" line="131"/>
         <source>文件大小</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="131"/>
+        <location filename="../../app/view/transcription_interface.py" line="132"/>
         <source>时长</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="155"/>
+        <location filename="../../app/view/transcription_interface.py" line="156"/>
         <source>打开文件夹</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="156"/>
-        <location filename="../../app/view/transcription_interface.py" line="285"/>
+        <location filename="../../app/view/transcription_interface.py" line="157"/>
+        <location filename="../../app/view/transcription_interface.py" line="300"/>
         <source>开始转录</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="170"/>
-        <source>画质: </source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../../app/view/transcription_interface.py" line="172"/>
-        <source>大小: </source>
+        <location filename="../../app/view/transcription_interface.py" line="158"/>
+        <source>取消</source>
         <translation></translation>
     </message>
     <message>
         <location filename="../../app/view/transcription_interface.py" line="174"/>
+        <source>画质: </source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../app/view/transcription_interface.py" line="176"/>
+        <source>大小: </source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../app/view/transcription_interface.py" line="178"/>
         <source>时长: </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="242"/>
+        <location filename="../../app/view/transcription_interface.py" line="251"/>
         <source>警告</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="243"/>
+        <location filename="../../app/view/transcription_interface.py" line="252"/>
         <source>没有可用的字幕文件夹</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="266"/>
+        <location filename="../../app/view/transcription_interface.py" line="281"/>
         <source>重新转录</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="269"/>
+        <location filename="../../app/view/transcription_interface.py" line="284"/>
         <source>转录失败</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="278"/>
+        <location filename="../../app/view/transcription_interface.py" line="293"/>
         <source>转录完成</source>
         <translation></translation>
     </message>
@@ -3410,22 +3415,22 @@ Or go to GitHub for the new release.</source>
 <context>
     <name>qoVideo</name>
     <message>
-        <location filename="../../app/core/utils/video_utils.py" line="150"/>
+        <location filename="../../app/core/utils/video_utils.py" line="157"/>
         <source>输入文件不存在</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/core/utils/video_utils.py" line="154"/>
+        <location filename="../../app/core/utils/video_utils.py" line="161"/>
         <source>字幕文件不存在</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/core/utils/video_utils.py" line="371"/>
+        <location filename="../../app/core/utils/video_utils.py" line="376"/>
         <source>正在合成</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/core/utils/video_utils.py" line="374"/>
+        <location filename="../../app/core/utils/video_utils.py" line="379"/>
         <source>合成完成</source>
         <translation></translation>
     </message>

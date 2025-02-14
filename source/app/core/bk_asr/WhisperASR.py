@@ -38,6 +38,7 @@ class WhisperASR(BaseASR):
         self.language = language
 
         self.process = None
+        self.allow_running = None
 
     def _make_segments(self, resp_data: str) -> list[ASRDataSeg]:
         asr_data = from_srt(resp_data)
@@ -56,7 +57,7 @@ class WhisperASR(BaseASR):
     def _run(self, callback=None) -> str:
         if callback is None:
             callback = lambda x, y: None
-
+        
         temp_dir = Path(tempfile.gettempdir()) / "bk_asr"
         temp_dir.mkdir(parents=True, exist_ok=True)
 
@@ -77,9 +78,9 @@ class WhisperASR(BaseASR):
                     '-m', str(self.model_path),
                     '-f', str(wav_path),
                     '-l', self.language,
-                    '--output-srt'
+                    '--output-srt',
                 ]
-
+                
                 # 根据版本添加额外参数
                 if not is_const_me_version:
                     whisper_params.extend([
@@ -94,48 +95,57 @@ class WhisperASR(BaseASR):
                         '你好，我们需要使用简体中文，以下是普通话的句子。'
                     ])
 
-                logger.info("完整命令行参数: %s", ' '.join(whisper_params))
+                logger.info("完整命令行参数: %s", " ".join(whisper_params))
 
                 # 启动进程
                 self.process = subprocess.Popen(
                     whisper_params,
+                    # whisper_params,
                     stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
                     text=True,
-                    encoding='utf-8'
+                    encoding='utf-8',
                 )
                 # 获取音频时长
                 total_duration = self.get_audio_duration(self.audio_path) or 600
                 logger.info("音频总时长: %d 秒", total_duration)
 
                 # 处理输出和进度
+                
                 full_output = []
                 while self.process.poll() is None:
                     line = self.process.stdout.readline().strip()
                     if not line:
                         continue
-                    logger.info(line)
-                    full_output.append(line)
-                    
+                    if line:
+                        # read lines one at a time.
+                        logger.info(line)
+                        full_output.append(line)
                     # 简化的进度处理
                     if ' --> ' in line and '[' in line:
-                        try:
-                            time_str = line.split('[')[1].split(' -->')[0].strip()
-                            current_time = sum(float(x) * y for x, y in 
-                                zip(reversed(time_str.split(':')), [1, 60, 3600]))
-                            progress = int(min(current_time / total_duration * 100, 98))
-                            callback(progress, f"{progress}% 正在转换")
-                        except (ValueError, IndexError):
-                            continue
+                        # try:
+                        time_str = line.split('[')[1].split(' -->')[0].strip()
+                        current_time = sum(float(x) * y for x, y in 
+                            zip(reversed(time_str.split(':')), [1, 60, 3600]))
+                        progress = int(min(current_time / total_duration * 100, 98))
+                        callback(progress, f"{progress}% 正在转换")
+                        # except (ValueError, IndexError):
+                            #continue
+                    if not self.allow_running[0]:
+                        # Force exit
+                        self.process.terminate()
+                        raise RuntimeError("Forced exit by user.")
+                    
                 # 等待进程完成
-                stdout, stderr = self.process.communicate()
+                _ , stderr = self.process.communicate()
+                self.process.stdout.close()
                 if self.process.returncode != 0:
                     raise RuntimeError(f"WhisperCPP 执行失败: {stderr}")
-
+                
                 callback(100, "转换完成")
                 
                 # 读取结果文件
-                srt_path = output_path
+                srt_path = output_path.with_suffix(".wav.srt")
                 if not srt_path.exists():
                     raise RuntimeError(f"输出文件未生成: {srt_path}")
                     

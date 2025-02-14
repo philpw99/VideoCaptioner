@@ -79,6 +79,7 @@ class ProcessLogInfoCard(CardWidget):
 class VideoInfoCard(CardWidget):
     finished = pyqtSignal(Task)
     task: Task|None = None
+    transcript_thread = None
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -154,10 +155,13 @@ class VideoInfoCard(CardWidget):
         self.button_layout = QVBoxLayout()
         self.open_folder_button = PushButton(self.tr("打开文件夹"), self)
         self.start_button = PrimaryPushButton(self.tr("开始转录"), self)
+        self.cancel_button = PushButton(self.tr("取消"), self)
         self.button_layout.addWidget(self.open_folder_button)
         self.button_layout.addWidget(self.start_button)
+        self.button_layout.addWidget(self.cancel_button)
 
         self.start_button.setDisabled(True)
+        self.cancel_button.setDisabled(True)
 
         button_widget = QWidget()
         button_widget.setLayout(self.button_layout)
@@ -192,6 +196,7 @@ class VideoInfoCard(CardWidget):
     def setup_signals(self):
         self.start_button.clicked.connect(self.on_start_button_clicked)
         self.open_folder_button.clicked.connect(self.on_open_folder_clicked)
+        self.cancel_button.clicked.connect(self.on_cancel_clicked)
 
     def show_whisper_settings(self):
         """显示Whisper设置对话框"""
@@ -223,8 +228,12 @@ class VideoInfoCard(CardWidget):
                 return
         self.progress_ring.show()
         self.progress_ring.setValue(100)
-        self.start_button.setDisabled(True)
         self.start_transcription()
+
+    def on_cancel_clicked(self):
+        self.transcript_thread.allow_running[0] = False
+        self.cancel_button.setDisabled(True)
+        self.start_button.setEnabled(True)
 
     def on_open_folder_clicked(self):
         """打开文件夹按钮点击事件"""
@@ -247,8 +256,14 @@ class VideoInfoCard(CardWidget):
 
     def start_transcription(self):
         """开始转录过程"""
-        self.start_button.setEnabled(False)
-        self.transcript_thread = TranscriptThread(self.task)
+        self.start_button.setDisabled(True)
+        self.cancel_button.setEnabled(True)
+        if not self.transcript_thread:
+            # Never run before
+            self.transcript_thread = TranscriptThread(self.task)
+        else:
+            # Canceled before. Allow it run again.
+            self.transcript_thread.allow_running[0] = True
         self.transcript_thread.finished.connect(self.on_transcript_finished)
         self.transcript_thread.progress.connect(self.on_transcript_progress)
         self.transcript_thread.error.connect(self.on_transcript_error)
