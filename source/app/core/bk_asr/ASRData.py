@@ -474,22 +474,30 @@ def from_vtt(vtt_str: str) -> 'ASRData':
     :return: ASRData实例
     """
     segments = []
-    # 跳过头部元数据
+    # 分拆数据及跳过头部元数据
     content = vtt_str.split('\n\n')[1:]
     
     timestamp_pattern = re.compile(r'(\d{2}):(\d{2}):(\d{2})\.(\d{3})\s*-->\s*(\d{2}):(\d{2}):(\d{2})\.(\d{3})')
     
+    # the first line should be "1", but can be any other numbers
+    # some WebVTT don't have line number, but some do have.
+    first_block = content[0].split('\n')
+    have_line_number = str(first_block[0]).find("-->") == -1
+    print(f"have line number: {have_line_number}")
+    
     for block in content:
         lines = block.strip().split('\n')
+        
         if len(lines) < 2:
+            # Only 1 line, impossible.
             continue
-            
+        
         # 解析时间戳行
-        timestamp_line = lines[1]
+        timestamp_line = lines[1] if have_line_number else lines[0]
         match = timestamp_pattern.match(timestamp_line)
         if not match:
             continue
-            
+                
         # 提取开始和结束时间
         time_parts = list(map(int, match.groups()))
         start_time = sum([
@@ -504,9 +512,17 @@ def from_vtt(vtt_str: str) -> 'ASRData':
             time_parts[6] * 1000,
             time_parts[7]
         ])
-        
+    
         # 处理文本内容
-        text_line = " ".join(lines[2:])
+        if have_line_number:
+            # First 2 lines are number and time
+            text_line = "\n".join(lines[2:])
+        else:
+            # First line is time
+            text_line = "\n".join(lines[1:])
+
+        print(f"text_line: {text_line}")
+        
         cleaned_text = re.sub(r'<\d{2}:\d{2}:\d{2}\.\d{3}>', '', text_line)
         cleaned_text = re.sub(r'</?c>', '', cleaned_text)
         cleaned_text = cleaned_text.strip()
