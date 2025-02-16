@@ -320,6 +320,10 @@ class TaskCreationInterface(QWidget):
             signalBus.on_original_language_changed
         )
         
+        self.target_format_card.comboBox.currentTextChanged.connect(
+            signalBus.on_subtitle_output_format_changed
+        )
+        
         # Signal bus to local
         signalBus.soft_subtitle_changed.connect(self.on_soft_subtitle_changed)
         signalBus.subtitle_layout_changed.connect(self.on_subtitle_layout_changed)
@@ -329,6 +333,14 @@ class TaskCreationInterface(QWidget):
         signalBus.target_language_changed.connect(self.on_target_language_changed)
         signalBus.language_changed.connect(self.on_language_changed)
         signalBus.original_language_changed.connect(self.on_original_language_changed)
+        signalBus.subititle_output_format_changed.connect(self.on_output_format_changed)
+
+    def on_output_format_changed(self, value:str):
+        if cfg.subtitle_output_format.value != value:
+            cfg.set(cfg.subtitle_output_format, value)
+        comboBox = self.target_format_card.comboBox
+        if comboBox.currentText() != value:
+            comboBox.setCurrentText(value)
 
     def on_original_language_changed(self, value: str):
         enum = TranscribeLanguageEnum(value)
@@ -341,7 +353,7 @@ class TaskCreationInterface(QWidget):
     def on_subtitle_layout_changed(self, value: str):
         enum = SubtitleLayoutEnum(value)
         if cfg.subtitle_layout.value != enum:
-            cfg.subtitle_layout.value = enum
+            cfg.set(cfg.subtitle_layout, enum)
         comboBox = self.subtitle_layout_card.comboBox
         if comboBox.currentText() != value:
             comboBox.setCurrentText(value)
@@ -385,7 +397,7 @@ class TaskCreationInterface(QWidget):
     def on_target_language_changed(self, language: str):
         enum = TargetLanguageEnum(language)
         if cfg.target_language.value != enum:
-            cfg.target_language.value = enum
+            cfg.set(cfg.target_language, enum)
         comboBox = self.target_language_card.comboBox
         if comboBox.currentText() != language:
             comboBox.setCurrentText(language)
@@ -394,7 +406,7 @@ class TaskCreationInterface(QWidget):
         """当转录模型改变时触发"""
         enum = TranscribeModelEnum(value)
         if cfg.transcribe_model.value != enum:
-            cfg.transcribe_model.value = enum
+            cfg.set(cfg.transcribe_model, enum)
         comboBox = self.transcription_model_card.comboBox
         if comboBox.currentText != value:
             comboBox.setCurrentText(value)
@@ -683,7 +695,7 @@ class TaskCreationInterface(QWidget):
         ls = LanguageSerializer()
         lang = ls.deserialize(locale)
         if cfg.language.value != lang:
-            cfg.set(cfg.language, lang, True)  # Set and save
+            cfg.set(cfg.language, lang)  # Set and save
         comboBox = self.languageCard.comboBox
         if comboBox.currentText() != language:
             comboBox.setCurrentText(language)

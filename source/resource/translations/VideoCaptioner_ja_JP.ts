@@ -1137,8 +1137,8 @@ Or go to GitHub for the new release.</source>
     </message>
     <message>
         <location filename="../../app/view/setting_interface.py" line="88"/>
-        <location filename="../../app/view/setting_interface.py" line="722"/>
-        <location filename="../../app/view/setting_interface.py" line="733"/>
+        <location filename="../../app/view/setting_interface.py" line="726"/>
+        <location filename="../../app/view/setting_interface.py" line="737"/>
         <source>检查连接</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1497,54 +1497,54 @@ Or go to GitHub for the new release.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="496"/>
+        <location filename="../../app/view/setting_interface.py" line="500"/>
         <source>File llm.json not exist!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="497"/>
+        <location filename="../../app/view/setting_interface.py" line="501"/>
         <source>Cannot find the llm.json file.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="520"/>
-        <location filename="../../app/view/setting_interface.py" line="632"/>
+        <location filename="../../app/view/setting_interface.py" line="524"/>
+        <location filename="../../app/view/setting_interface.py" line="636"/>
         <source>Error getting {key} settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="521"/>
-        <location filename="../../app/view/setting_interface.py" line="632"/>
+        <location filename="../../app/view/setting_interface.py" line="525"/>
+        <location filename="../../app/view/setting_interface.py" line="636"/>
         <source>Cannot get {key} settings from AppData/llm.json</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="532"/>
+        <location filename="../../app/view/setting_interface.py" line="536"/>
         <source>LLM entry deleted.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="533"/>
+        <location filename="../../app/view/setting_interface.py" line="537"/>
         <source>The settings of {old_key} was deleted.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="581"/>
+        <location filename="../../app/view/setting_interface.py" line="585"/>
         <source>Name this LLM Setting</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="582"/>
+        <location filename="../../app/view/setting_interface.py" line="586"/>
         <source>Please input the name for this LLM setting.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="617"/>
+        <location filename="../../app/view/setting_interface.py" line="621"/>
         <source>The LLM settings for {saveKey} was saved.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="616"/>
+        <location filename="../../app/view/setting_interface.py" line="620"/>
         <source>LLM settings saved.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1559,74 +1559,74 @@ Or go to GitHub for the new release.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="627"/>
+        <location filename="../../app/view/setting_interface.py" line="631"/>
         <source>Error Reading llm.json</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="627"/>
+        <location filename="../../app/view/setting_interface.py" line="631"/>
         <source>Cannot open LLM settins file: AppData/llm.json</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="668"/>
-        <location filename="../../app/view/setting_interface.py" line="698"/>
+        <location filename="../../app/view/setting_interface.py" line="672"/>
+        <location filename="../../app/view/setting_interface.py" line="702"/>
         <source>错误</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="669"/>
+        <location filename="../../app/view/setting_interface.py" line="673"/>
         <source>请先选择Whisper转录模型</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="678"/>
+        <location filename="../../app/view/setting_interface.py" line="682"/>
         <source>更新成功</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="679"/>
+        <location filename="../../app/view/setting_interface.py" line="683"/>
         <source>配置将在重启后生效</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="686"/>
+        <location filename="../../app/view/setting_interface.py" line="690"/>
         <source>选择文件夹</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="699"/>
+        <location filename="../../app/view/setting_interface.py" line="703"/>
         <source>请输入正确的 API Base, 含有 /v1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="707"/>
+        <location filename="../../app/view/setting_interface.py" line="711"/>
         <source>正在检查...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="724"/>
-        <location filename="../../app/view/setting_interface.py" line="764"/>
+        <location filename="../../app/view/setting_interface.py" line="728"/>
+        <location filename="../../app/view/setting_interface.py" line="768"/>
         <source>LLM 连接测试错误</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="757"/>
+        <location filename="../../app/view/setting_interface.py" line="761"/>
         <source>获取模型列表成功:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="758"/>
+        <location filename="../../app/view/setting_interface.py" line="762"/>
         <source>一共</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="758"/>
+        <location filename="../../app/view/setting_interface.py" line="762"/>
         <source>个模型</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="771"/>
+        <location filename="../../app/view/setting_interface.py" line="775"/>
         <source>LLM 连接测试成功</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2478,102 +2478,102 @@ Or go to GitHub for the new release.</source>
     </message>
     <message>
         <location filename="../../app/view/task_creation_interface.py" line="276"/>
-        <location filename="../../app/view/task_creation_interface.py" line="679"/>
+        <location filename="../../app/view/task_creation_interface.py" line="691"/>
         <source>使用系统设置</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="424"/>
-        <location filename="../../app/view/task_creation_interface.py" line="492"/>
+        <location filename="../../app/view/task_creation_interface.py" line="436"/>
+        <location filename="../../app/view/task_creation_interface.py" line="504"/>
         <source>警告，需要配置 Base URL！</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="425"/>
-        <location filename="../../app/view/task_creation_interface.py" line="493"/>
+        <location filename="../../app/view/task_creation_interface.py" line="437"/>
+        <location filename="../../app/view/task_creation_interface.py" line="505"/>
         <source>你需要去设置中配置自己的Base URL，API Key和LLM Model。</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="475"/>
+        <location filename="../../app/view/task_creation_interface.py" line="487"/>
         <source>选择媒体文件</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="502"/>
+        <location filename="../../app/view/task_creation_interface.py" line="514"/>
         <source>The LLM is not working.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="503"/>
+        <location filename="../../app/view/task_creation_interface.py" line="515"/>
         <source>Access to {cfg.api_base.value} failed. Check your LLM connection please.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="536"/>
-        <location filename="../../app/view/task_creation_interface.py" line="538"/>
+        <location filename="../../app/view/task_creation_interface.py" line="548"/>
+        <location filename="../../app/view/task_creation_interface.py" line="550"/>
         <source>导入成功</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="539"/>
+        <location filename="../../app/view/task_creation_interface.py" line="551"/>
         <source>导入媒体文件成功</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="546"/>
+        <location filename="../../app/view/task_creation_interface.py" line="558"/>
         <source>格式错误: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="547"/>
+        <location filename="../../app/view/task_creation_interface.py" line="559"/>
         <source>不支持该文件格式</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="560"/>
-        <location filename="../../app/view/task_creation_interface.py" line="647"/>
-        <location filename="../../app/view/task_creation_interface.py" line="670"/>
+        <location filename="../../app/view/task_creation_interface.py" line="572"/>
+        <location filename="../../app/view/task_creation_interface.py" line="659"/>
+        <location filename="../../app/view/task_creation_interface.py" line="682"/>
         <source>错误</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="561"/>
+        <location filename="../../app/view/task_creation_interface.py" line="573"/>
         <source>请输入有效的文件路径或视频URL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="601"/>
+        <location filename="../../app/view/task_creation_interface.py" line="613"/>
         <source>警告</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="602"/>
+        <location filename="../../app/view/task_creation_interface.py" line="614"/>
         <source>建议配置cookies.txt文件，以可以下载高清视频</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="630"/>
+        <location filename="../../app/view/task_creation_interface.py" line="642"/>
         <source>任务创建成功</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="631"/>
+        <location filename="../../app/view/task_creation_interface.py" line="643"/>
         <source>开始自动处理...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="671"/>
+        <location filename="../../app/view/task_creation_interface.py" line="683"/>
         <source>请输入音视频文件路径或URL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="692"/>
+        <location filename="../../app/view/task_creation_interface.py" line="704"/>
         <source>更新成功 :</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="693"/>
+        <location filename="../../app/view/task_creation_interface.py" line="705"/>
         <source>配置将在重启后生效</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2918,32 +2918,32 @@ Or go to GitHub for the new release.</source>
 <context>
     <name>TranscriptionInterface</name>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="347"/>
+        <location filename="../../app/view/transcription_interface.py" line="348"/>
         <source>转录完成</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="348"/>
+        <location filename="../../app/view/transcription_interface.py" line="349"/>
         <source>开始字幕优化...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="394"/>
+        <location filename="../../app/view/transcription_interface.py" line="395"/>
         <source>导入成功</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="395"/>
+        <location filename="../../app/view/transcription_interface.py" line="396"/>
         <source>开始语音转文字</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="402"/>
+        <location filename="../../app/view/transcription_interface.py" line="403"/>
         <source>格式错误</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="403"/>
+        <location filename="../../app/view/transcription_interface.py" line="404"/>
         <source>请拖入音频或视频文件</source>
         <translation type="unfinished"></translation>
     </message>

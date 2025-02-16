@@ -19,6 +19,8 @@ class SignalBus(QObject):
     transcription_model_changed = pyqtSignal(str)
     # App log signal
     app_log_signal = pyqtSignal(str)
+    # Subtitle output format
+    subititle_output_format_changed = pyqtSignal(str)
 
     # 新增视频控制相关信号
     video_play = pyqtSignal()  # 播放信号
@@ -27,6 +29,9 @@ class SignalBus(QObject):
     video_source_changed = pyqtSignal(QUrl)  # 视频源改变信号
     video_segment_play = pyqtSignal(int, int)  # 播放片段信号，参数为开始和结束时间(ms)
     video_subtitle_added = pyqtSignal(str)  # 添加字幕文件信号
+
+    def on_subtitle_output_format_changed(self, format:str):
+        self.subititle_output_format_changed.emit(format)
 
     def on_original_language_changed(self, language:str):
         self.original_language_changed.emit(language)

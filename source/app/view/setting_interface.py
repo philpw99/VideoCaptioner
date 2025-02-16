@@ -470,6 +470,8 @@ class SettingInterface(ScrollArea):
         self.targetLanguageCard.comboBox.currentTextChanged.connect(signalBus.on_target_language_changed)
         self.softSubtitleCard.checkedChanged.connect(signalBus.on_soft_subtitle_changed)
         self.needVideoCard.checkedChanged.connect(signalBus.on_need_video_changed)
+        self.transcribeModelCard.comboBox.currentTextChanged.connect(signalBus.on_transcription_model_changed)
+        self.saveSubtitleFormatCard.comboBox.currentTextChanged.connect(signalBus.on_subtitle_output_format_changed)
         # self.languageCard.comboBox.currentTextChanged.connect(signalBus.on_language_changed)
         
         # signalBus to local
@@ -480,6 +482,8 @@ class SettingInterface(ScrollArea):
         signalBus.need_video_changed.connect(self.needVideoCard.switchButton.setChecked)
         signalBus.soft_subtitle_changed.connect(self.softSubtitleCard.switchButton.setChecked)
         signalBus.transcription_model_changed.connect(self.transcribeModelCard.comboBox.setCurrentText)
+        signalBus.subititle_output_format_changed.connect(self.saveSubtitleFormatCard.comboBox.setCurrentText)
+        
 
     def on_translation_method_changed(self,text):
         # print(f"text type:{type(text)}")
