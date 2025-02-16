@@ -44,17 +44,14 @@ class SubtitleOptimizationThread(QThread):
     update_all = pyqtSignal(dict)
     error = pyqtSignal(str)
     MAX_DAILY_LLM_CALLS = 50
-    allow_running = [True]
 
-    def __init__(self, task: Task, allow_running = None):
+    def __init__(self, task: Task ):
         super().__init__()
         self.task: Task = task
         self.subtitle_length = 0
         self.finished_subtitle_length = 0
         self.custom_prompt_text = ""
         self.llm_result_logger = None
-        if allow_running:       # Pass the reference
-            self.allow_running = allow_running
 
     def set_custom_prompt_text(self, text: str):
         self.custom_prompt_text = text
@@ -69,7 +66,7 @@ class SubtitleOptimizationThread(QThread):
 
     def run(self):
         try:
-            if not self.allow_running[0]:
+            if not self.task.allow_running[0]:
                 logger.error("字幕优化/翻译前中断")
                 return
             
@@ -146,7 +143,7 @@ class SubtitleOptimizationThread(QThread):
                             llm_result_logger=self.llm_result_logger,
                             need_remove_punctuation=need_remove_punctuation,
                             cjk_only=True,
-                            allow_running=self.allow_running,
+                            allow_running=self.task.allow_running,
                         )
                         translate_result = self.optimizer.optimizer_multi_thread(subtitle_json, translate=True,
                                                                                     reflect=need_reflect,
@@ -162,14 +159,14 @@ class SubtitleOptimizationThread(QThread):
                             # thread_num=thread_num,
                             thread_num=1,
                             llm_result_logger=self.llm_result_logger,
-                            allow_running=self.allow_running,
+                            allow_running=self.task.allow_running,
                         )
                         translate_result = self.optimizer.translate_single_batch(subtitle_json, callback=self.callback)
                     case TranslateMethodEnum.GOOGLE:
                         self.task.status = Task.Status.TRANSLATING
                         self.progress.emit(30, self.tr("批量谷歌翻译字幕..."))
                         logger.info("正在批量谷歌翻译字幕...")
-                        translate_result = asyncio.run(googleTranslate(subtitle_json, callback=self.callback, allow_running=self.allow_running))
+                        translate_result = asyncio.run(googleTranslate(subtitle_json, callback=self.callback, allow_running=self.task.allow_running))
                         
                 # 加入优化或者翻译后的字幕
                 for i, subtitle_text in translate_result.items():
@@ -219,7 +216,7 @@ class SubtitleOptimizationThread(QThread):
         self.update.emit(result)
 
     def stop(self):
-        self.allow_running[0] = False
+        self.task.allow_running[0] = False
         # if hasattr(self, 'optimizer'):
         #     self.optimizer.stop()
         # self.terminate()

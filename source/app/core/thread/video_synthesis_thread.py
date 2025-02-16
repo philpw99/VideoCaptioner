@@ -89,7 +89,9 @@ class VideoSynthesisThread(QThread):
                             duration=duration,
                             zoom_video=self.task.zoom_video,
                             zoom_subtitle=self.task.zoom_subtitle,
-                            progress_callback=self.progress_callback)
+                            progress_callback=self.progress_callback,
+                            allow_running=self.task.allow_running,
+                            )
                 self.progress.emit(100, self.tr("合成完成"))
                 logger.info(f"视频合成完成，保存路径: {video_save_path}")
                 self.finished.emit(self.task)

@@ -231,7 +231,7 @@ class VideoInfoCard(CardWidget):
         self.start_transcription()
 
     def on_cancel_clicked(self):
-        self.transcript_thread.allow_running[0] = False
+        self.transcript_thread.task.allow_running[0] = False
         self.cancel_button.setDisabled(True)
         self.start_button.setEnabled(True)
 
@@ -263,7 +263,7 @@ class VideoInfoCard(CardWidget):
             self.transcript_thread = TranscriptThread(self.task)
         else:
             # Canceled before. Allow it run again.
-            self.transcript_thread.allow_running[0] = True
+            self.transcript_thread.task.allow_running[0] = True
         self.transcript_thread.finished.connect(self.on_transcript_finished)
         self.transcript_thread.progress.connect(self.on_transcript_progress)
         self.transcript_thread.error.connect(self.on_transcript_error)

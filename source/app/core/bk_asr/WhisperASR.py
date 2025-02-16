@@ -38,7 +38,6 @@ class WhisperASR(BaseASR):
         self.language = language
 
         self.process = None
-        self.allow_running = None
 
     def _make_segments(self, resp_data: str) -> list[ASRDataSeg]:
         asr_data = from_srt(resp_data)

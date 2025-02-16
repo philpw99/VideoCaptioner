@@ -374,8 +374,6 @@ class CreateTaskThread(QThread):
         else:
             subtitle_style_srt = None
 
-
-
         # 创建 Task 对象
         task = Task(
             id=0,
@@ -451,7 +449,7 @@ class CreateTaskThread(QThread):
             file_path=str(Path(video_file)),
             original_subtitle_save_path=str(Path(subtitle_file)),
             video_save_path=str(video_save_path),
-            soft_subtitle=cfg.soft_subtitle.value,
+            soft_subtitle=soft_sub,
             type=Task.Type.SYNTHESIS,
             need_video=True,    # Just in case, because synthesis always generate a video
             subtitle_vertical_offset=cfg.subtitle_vertical_offset.value,

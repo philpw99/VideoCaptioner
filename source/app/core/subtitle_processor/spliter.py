@@ -593,7 +593,7 @@ def merge_segments(asr_data: ASRData,
                    num_threads: int = FIXED_NUM_THREADS, 
                    max_word_count_cjk: int = MAX_WORD_COUNT_CJK, 
                    max_word_count_english: int = MAX_WORD_COUNT_ENGLISH,
-                   allow_running = True) -> ASRData:
+                   allow_running = None) -> ASRData:
     """
     合并ASR数据分段
     
@@ -605,6 +605,7 @@ def merge_segments(asr_data: ASRData,
     Returns:
         处理后的ASR数据对象
     """
+    
     # 更新全局的MAX_WORD_COUNT
     global MAX_WORD_COUNT_CJK, MAX_WORD_COUNT_ENGLISH
     MAX_WORD_COUNT_CJK = max_word_count_cjk
@@ -624,7 +625,7 @@ def merge_segments(asr_data: ASRData,
     logger.info("开始并行处理每个分段...")
     with ThreadPoolExecutor(max_workers=num_threads) as executor:
         def process_segment(asr_data_part, allow_running):
-            if not allow_running[0]:
+            if allow_running and not allow_running[0]:
                 return
             try:
                 # raise Exception("test")
@@ -636,7 +637,7 @@ def merge_segments(asr_data: ASRData,
         # 并行处理所有分段
         processed_segments = list(executor.map(process_segment, asr_data_segments, allow_running))
 
-    if not allow_running[0]:
+    if allow_running and not allow_running[0]:
         return
     # 合并所有处理后的分段
     final_segments = []

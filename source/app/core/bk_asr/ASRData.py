@@ -477,14 +477,11 @@ def from_vtt(vtt_str: str) -> 'ASRData':
     # 分拆数据及跳过头部元数据
     content = vtt_str.split('\n\n')[1:]
     
-    timestamp_pattern = re.compile(r'(\d{2}):(\d{2}):(\d{2})\.(\d{3})\s*-->\s*(\d{2}):(\d{2}):(\d{2})\.(\d{3})')
-    
+    timestamp_pattern1 = re.compile(r'(\d{2}):(\d{2})\.(\d{3})\s*-->\s*(\d{2}):(\d{2})\.(\d{3})')
+    timestamp_pattern2 = re.compile(r'(\d{2}):(\d{2}):(\d{2})\.(\d{3})\s*-->\s*(\d{2}):(\d{2}):(\d{2})\.(\d{3})')
     # the first line should be "1", but can be any other numbers
     # some WebVTT don't have line number, but some do have.
-    first_block = content[0].split('\n')
-    have_line_number = str(first_block[0]).find("-->") == -1
-    print(f"have line number: {have_line_number}")
-    
+        
     for block in content:
         lines = block.strip().split('\n')
         
@@ -492,26 +489,53 @@ def from_vtt(vtt_str: str) -> 'ASRData':
             # Only 1 line, impossible.
             continue
         
+        have_line_number = str(lines[0]).find("-->") == -1
+        
         # 解析时间戳行
         timestamp_line = lines[1] if have_line_number else lines[0]
-        match = timestamp_pattern.match(timestamp_line)
+        start_time_str = timestamp_line[:timestamp_line.index(".")]
+        colon_count = start_time_str.count(":")
+        if colon_count == 1:
+            # Have no hours
+            match = timestamp_pattern1.match(timestamp_line)
+        elif colon_count == 2:
+            # Have hours
+            match = timestamp_pattern2.match(timestamp_line)
+        else:
+            # Cannot handle other situation
+            continue
+
         if not match:
             continue
                 
         # 提取开始和结束时间
         time_parts = list(map(int, match.groups()))
-        start_time = sum([
-            time_parts[0] * 3600000,
-            time_parts[1] * 60000, 
-            time_parts[2] * 1000,
-            time_parts[3]
-        ])
-        end_time = sum([
-            time_parts[4] * 3600000,
-            time_parts[5] * 60000,
-            time_parts[6] * 1000,
-            time_parts[7]
-        ])
+        if colon_count == 1:
+            # Have no hours
+            start_time = sum([
+                time_parts[0] * 60000, 
+                time_parts[1] * 1000,
+                time_parts[2]
+            ])
+            end_time = sum([
+                time_parts[3] * 60000,
+                time_parts[4] * 1000,
+                time_parts[5]
+            ])
+        else:
+            # Have hours
+            start_time = sum([
+                time_parts[0] * 3600000,
+                time_parts[1] * 60000, 
+                time_parts[2] * 1000,
+                time_parts[3]
+            ])
+            end_time = sum([
+                time_parts[4] * 3600000,
+                time_parts[5] * 60000,
+                time_parts[6] * 1000,
+                time_parts[7]
+            ])
     
         # 处理文本内容
         if have_line_number:
@@ -521,11 +545,9 @@ def from_vtt(vtt_str: str) -> 'ASRData':
             # First line is time
             text_line = "\n".join(lines[1:])
 
-        print(f"text_line: {text_line}")
-        
-        cleaned_text = re.sub(r'<\d{2}:\d{2}:\d{2}\.\d{3}>', '', text_line)
-        cleaned_text = re.sub(r'</?c>', '', cleaned_text)
-        cleaned_text = cleaned_text.strip()
+        # cleaned_text = re.sub(r'<\d{2}:\d{2}:\d{2}\.\d{3}>', '', text_line)
+        # No more < ... > tags with text
+        cleaned_text = re.sub(r'<.+?>', '', text_line).strip()
         
         if cleaned_text:
             segments.append(ASRDataSeg(cleaned_text, start_time, end_time))

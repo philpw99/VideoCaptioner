@@ -991,11 +991,11 @@ class TaskInfoCard(CardWidget):
     def stop(self):
         """停止转录"""
         if self.transcript_thread:
-            self.transcript_thread.allow_running[0] = False
+            self.transcript_thread.task.allow_running[0] = False
             # self.transcript_thread.quit()
             # self.transcript_thread.terminate()
         if self.subtitle_thread:
-            self.subtitle_thread.allow_running[0] = False
+            self.subtitle_thread.task.allow_running[0] = False
             # self.subtitle_thread.quit()
             # self.subtitle_thread.terminate()
 
@@ -1076,11 +1076,13 @@ class TaskInfoCard(CardWidget):
 
     def is_canceled(self):
         if self.transcript_thread:
-            allow_running = self.transcript_thread.allow_running[0]
+            allow_running = self.transcript_thread.task.allow_running[0]
         elif self.subtitle_thread:
-            allow_running = self.subtitle_thread.allow_running[0]
+            allow_running = self.subtitle_thread.task.allow_running[0]
         else:
             allow_running = True
+        
+        # If allow_running was set to False somehow, it's canceled.
         return not allow_running
 
     def on_progress(self, value, message):

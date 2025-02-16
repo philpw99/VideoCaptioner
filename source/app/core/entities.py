@@ -728,5 +728,8 @@ class Task:
     zoom_subtitle: int = 100
     subtitle_vertical_offset: int = 0
     
+    # 中止任务
+    allow_running = [True]
+    
 NOT_RUNNING_TASKS = [Task.Status.CANCELED, Task.Status.COMPLETED, Task.Status.FAILED, Task.Status.PENDING]
 

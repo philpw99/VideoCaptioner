@@ -12,7 +12,7 @@ from PyQt5.QtCore import QObject
 logger = setup_logger("video_utils")
 qoVideo = QObject()  # for i18n
 
-def video2audio(input_file: str, output_file: str = "", format: str = "copy", allow_running: list = [True]) -> bool:
+def video2audio(input_file: str, output_file: str = "", format: str = "copy", allow_running: list = [True] ) -> bool:
     """使用ffmpeg将视频转换为音频"""    
     # 创建output目录
     Path(output_file).parent.mkdir(parents=True, exist_ok=True)
@@ -148,7 +148,8 @@ def add_subtitles(
         vertical_offset: int = 0,
         zoom_video: int = 100,
         zoom_subtitle: int = 100,
-        progress_callback: callable = None
+        progress_callback: callable = None,
+        allow_running: list = [True],
 ) -> None:
     """ Add subtitles to videos by hard coding method.
     """
@@ -156,6 +157,7 @@ def add_subtitles(
     assert Path(input_file).is_file(), qoVideo.tr("输入文件不存在")
     assert Path(subtitle_file).is_file(), qoVideo.tr("字幕文件不存在")
 
+    strerr = None
     
     # 移动到临时文件  Fix: 路径错误
     temp_dir = Path(tempfile.gettempdir()) / "VideoCaptioner"
@@ -330,7 +332,8 @@ def add_subtitles(
                 process = subprocess.Popen(
                     cmd_str, 
                     stdout=subprocess.PIPE, 
-                    stderr=subprocess.PIPE, 
+                    stdin=subprocess.PIPE,
+                    stderr=subprocess.STDOUT, 
                     text=True, 
                     encoding='utf-8',
                     errors='replace',
@@ -340,7 +343,8 @@ def add_subtitles(
                 process = subprocess.Popen(
                     cmd, 
                     stdout=subprocess.PIPE, 
-                    stderr=subprocess.PIPE, 
+                    stdin=subprocess.PIPE,
+                    stderr=subprocess.STDOUT, 
                     text=True, 
                     encoding='utf-8',
                     errors='replace',
@@ -352,8 +356,8 @@ def add_subtitles(
             total_duration = None
             current_time = 0
 
-            while process.poll() is not None:
-                output_line = process.stderr.readline()
+            while process.poll() is None:
+                output_line = process.stdout.readline().strip()
                 if not output_line or not progress_callback:
                     continue
 
@@ -367,6 +371,7 @@ def add_subtitles(
                 # 解析当前处理时间
                 time_match = re.search(r'time=(\d{2}):(\d{2}):(\d{2}\.\d{2})', output_line)
                 if time_match:
+                    logger.info(output_line)
                     h, m, s = map(float, time_match.groups())
                     current_time = h * 3600 + m * 60 + s
 
@@ -374,11 +379,19 @@ def add_subtitles(
                 if total_duration:
                     progress = (current_time / total_duration) * 100
                     progress_callback(f"{round(progress)}", qoVideo.tr("正在合成"))
+                
+                # 强行终止
+                if not allow_running[0]:
+                    logger.error("视频合成强行中止")
+                    _, stderr = process.communicate(input="q", timeout=5)
+                    
+                    raise Exception(qoVideo.tr("视频合成强行中止"))
 
             if progress_callback:
                 progress_callback("100", qoVideo.tr("合成完成"))
             # 检查进程的返回码
-            _ , stderr = process.communicate()
+            if not stderr:
+                _ , stderr = process.communicate()
             if process.returncode != 0:
                 logger.error(f"视频合成失败， {stderr}")
                 raise Exception(process.returncode)

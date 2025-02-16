@@ -23,7 +23,7 @@ async def googleTranslate(original_subtitle: Dict[int,str], callback = None, all
         
     for key, value in original_subtitle.items():
         # text += "#" + str(key)+ " " +value +"\n"
-        if not allow_running[0]:
+        if allow_running and not allow_running[0]:
             return translate_result
         text += "|" + value + "\n" 
         i += 1

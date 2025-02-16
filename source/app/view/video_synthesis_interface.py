@@ -24,6 +24,7 @@ SUBTITLE_STYLE_DIR = current_dir / "resource" / "subtitle_style"
 
 class VideoSynthesisInterface(QWidget):
     finished = pyqtSignal()
+    processing = False
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -35,6 +36,7 @@ class VideoSynthesisInterface(QWidget):
         self.set_value()
         self.setup_signals()
         self.task = None
+        self.task_thread = None
         self.portrait_background = None
 
     def setup_ui(self):
@@ -245,7 +247,7 @@ class VideoSynthesisInterface(QWidget):
         self.video_button.clicked.connect(self.choose_video_file)
 
         # 合成和文件夹相关信号
-        self.synthesize_button.clicked.connect(self.process)
+        self.synthesize_button.clicked.connect(self.on_synthesis_clicked)
         self.open_folder_button.clicked.connect(self.open_video_folder)
         self.open_work_folder_button.clicked.connect(self.open_work_folder)
         
@@ -310,7 +312,9 @@ class VideoSynthesisInterface(QWidget):
             return None
 
         soft_sub = not self.option_soft_subtitle.isChecked()    # when checked, it's hard sub
-        self.task: Task = CreateTaskThread.create_video_synthesis_task(subtitle_file, video_file, soft_sub)
+        self.task_thread = CreateTaskThread(video_file, Task.Type.SYNTHESIS)
+        self.task: Task = self.task_thread.create_video_synthesis_task( subtitle_file, video_file, soft_sub)
+
         if not soft_sub:
             # Hard coded subtitle
             if self.option_portrait.isChecked():    # portrait sub
@@ -335,13 +339,27 @@ class VideoSynthesisInterface(QWidget):
             self.video_input.setText(self.task.file_path)
             self.subtitle_input.setText(self.task.result_subtitle_save_path)
 
+    def on_synthesis_clicked(self):
+        if self.processing:
+            # Cancel the process
+            if self.task:
+                self.task.allow_running[0] = False
+            self.processing = False
+            self.synthesize_button.setText("Start Synthesis")
+        else:
+            # Start the process
+            self.processing = True
+            self.synthesize_button.setText(self.tr("Cancel Synthesis"))
+            self.process()
+
     def process(self):
-        self.synthesize_button.setEnabled(False)
         self.progress_bar.resume()
         
-        if not self.task:
-            self.task = None
+        if self.task:
+            self.task.allow_running[0] = True
+        else:
             self.create_task()
+
         
         if self.task.file_path != str(Path(self.video_input.text())) \
             or self.task.original_subtitle_save_path != str(Path(self.subtitle_input.text())):
@@ -364,7 +382,8 @@ class VideoSynthesisInterface(QWidget):
             )
 
     def on_video_synthesis_finished(self, task):
-        self.synthesize_button.setEnabled(True)
+        self.synthesize_button.setText(self.tr("Start Synthesis"))
+        self.processing = False
         self.open_video_folder()
         InfoBar.success(
             self.tr("成功"),
@@ -380,7 +399,8 @@ class VideoSynthesisInterface(QWidget):
         self.status_label.setText(message)
 
     def on_video_synthesis_error(self, error):
-        self.synthesize_button.setEnabled(True)
+        self.synthesize_button.setText(self.tr("Start Synthesis"))
+        self.processing = False
         self.progress_bar.error()
         InfoBar.error(
             self.tr("错误"),

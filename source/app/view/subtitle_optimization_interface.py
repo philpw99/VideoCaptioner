@@ -673,7 +673,7 @@ class SubtitleOptimizationInterface(QWidget):
         # 设置自定义提示文本
         self.subtitle_optimization_thread.set_custom_prompt_text(self.custom_prompt_text)
         # 可以执行
-        self.subtitle_optimization_thread.allow_running[0] = True
+        self.subtitle_optimization_thread.task.allow_running[0] = True
         # 启动线程
         self.subtitle_optimization_thread.start()
         # 显示优化开始信息

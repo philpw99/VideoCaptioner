@@ -29,7 +29,6 @@ class TranscriptThread(QThread):
     finished = pyqtSignal(Task)
     progress = pyqtSignal(int, str)
     error = pyqtSignal(str)
-    allow_running = [True] # Interrupt the process.
     
     ASR_MODELS = {
         TranscribeModelEnum.JIANYING: JianYingASR,
@@ -74,7 +73,7 @@ class TranscriptThread(QThread):
                 self.task.status = Task.Status.WAITINGAUDIO
                     
             with QMutexLocker(mutAudioRecording):
-                if not self.allow_running[0]:
+                if not self.task.allow_running[0]:
                     logger.error("音频转换前中断")
                     raise RuntimeError(self.tr("音频转换前中断"))
                 # 转换为音频
@@ -90,7 +89,7 @@ class TranscriptThread(QThread):
                 is_success = video2audio(str(video_path),
                                          output_file=str(audio_save_path),
                                          format= self.task.audio_format,
-                                         allow_running=self.allow_running
+                                         allow_running=self.task.allow_running
                                         )
 
             if not is_success:
@@ -106,7 +105,7 @@ class TranscriptThread(QThread):
                 self.task.status = Task.Status.WAITINGTRANSCRIBE
 
             with QMutexLocker(mutTranscribing):
-                if not self.allow_running[0]:
+                if not self.task.allow_running[0]:
                     logger.error("语音转录前中断")
                     raise RuntimeError(self.tr("转录前中断"))
 
@@ -179,16 +178,16 @@ class TranscriptThread(QThread):
                     case _:
                         raise ValueError(self.tr("无效的转录模型: ") + str(self.task.transcribe_model.value))
                 
-                asr_data = self.asr.run(callback=self.progress_callback, allow_running=self.allow_running)
+                asr_data = self.asr.run(callback=self.progress_callback, allow_running=self.task.allow_running)
 
-                if not self.allow_running[0]:
+                if not self.task.allow_running[0]:
                     logger.error("字幕断句前中断")
                     raise RuntimeError(self.tr("字幕断句前中断"))
                 
                 if asr_data.is_word_timestamp():
                     # The data is in words
                     asr_data = self.merge_words(asr_data)
-                    if not self.allow_running[0]:
+                    if not self.task.allow_running[0]:
                         raise RuntimeError(self.tr("智能断句被中断"))
                     if not asr_data:
                         # word merging failed
@@ -205,7 +204,7 @@ class TranscriptThread(QThread):
                         seg.end_time += cfg.time_offset.value
                 
                 # 保存字幕文件
-                if not self.allow_running[0]:
+                if not self.task.allow_running[0]:
                     logger.error("字幕保存前中断")
                     return
                 original_subtitle_path = Path(self.task.original_subtitle_save_path)
@@ -269,7 +268,7 @@ class TranscriptThread(QThread):
                                     num_threads=thread_num, 
                                     max_word_count_cjk=cfg.max_word_count_cjk.value, 
                                     max_word_count_english=cfg.max_word_count_english.value,
-                                    allow_running=self.allow_running)
+                                    allow_running=self.task.allow_running)
             return asr_data     
         except Exception as e:
             logger.exception(f"断句失败: {str(e)}")
