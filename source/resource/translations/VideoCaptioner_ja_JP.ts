@@ -1914,72 +1914,72 @@ Or go to GitHub for the new release.</source>
 <context>
     <name>SubtitleOptimizationThread</name>
     <message>
-        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="65"/>
+        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="62"/>
         <source>OpenAI API 测试失败, 请检查设置</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="82"/>
+        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="79"/>
         <source>开始验证API配置...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="99"/>
+        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="96"/>
         <source>字幕文件路径为空</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="100"/>
+        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="97"/>
         <source>字幕文件路径不存在</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="103"/>
+        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="100"/>
         <source>字幕文件格式不支持</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="109"/>
+        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="106"/>
         <source>等待优化/翻译字幕</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="114"/>
+        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="111"/>
         <source>开始优化字幕...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="130"/>
+        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="127"/>
         <source>总结字幕...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="137"/>
+        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="134"/>
         <source>优化+翻译...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="157"/>
+        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="154"/>
         <source>批量翻译单句字幕...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="170"/>
+        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="167"/>
         <source>批量谷歌翻译字幕...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="201"/>
+        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="198"/>
         <source>优化/翻译完成</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="208"/>
+        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="205"/>
         <source>优化失败</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="218"/>
+        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="215"/>
         <source>{0}% 处理字幕</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1992,17 +1992,17 @@ Or go to GitHub for the new release.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_pipeline_thread.py" line="69"/>
+        <location filename="../../app/core/thread/subtitle_pipeline_thread.py" line="68"/>
         <source>开始优化+翻译字幕</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_pipeline_thread.py" line="84"/>
+        <location filename="../../app/core/thread/subtitle_pipeline_thread.py" line="83"/>
         <source>开始合成视频</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_pipeline_thread.py" line="98"/>
+        <location filename="../../app/core/thread/subtitle_pipeline_thread.py" line="97"/>
         <source>处理完成</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2816,7 +2816,7 @@ Or go to GitHub for the new release.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="1112"/>
+        <location filename="../../app/view/batch_process_interface.py" line="1114"/>
         <source>转录失败</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2824,93 +2824,93 @@ Or go to GitHub for the new release.</source>
 <context>
     <name>TranscriptThread</name>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="66"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="65"/>
         <source>视频路径不能为空</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="73"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="72"/>
         <source>等待其他音频处理结束</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="79"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="78"/>
         <source>音频转换前中断</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="81"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="80"/>
         <source>转换音频中</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="98"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="97"/>
         <source>音频转换失败</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="105"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="104"/>
         <source>等待其他转录结束</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="111"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="110"/>
         <source>转录前中断</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="114"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="113"/>
         <source>语音转录中</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="121"/>
-        <location filename="../../app/core/thread/transcript_thread.py" line="180"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="120"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="179"/>
         <source>无效的转录模型: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="186"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="185"/>
         <source>字幕断句前中断</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="192"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="191"/>
         <source>智能断句被中断</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="195"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="194"/>
         <source>智能断句失败，请检查你的大模型Base URL和API Key是否有效。</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="234"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="233"/>
         <source>转录完成</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="241"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="240"/>
         <source>转录失败</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="251"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="250"/>
         <source>OpenAI API 测试失败, 请检查设置</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="260"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="259"/>
         <source>开始验证API配置...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="266"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="265"/>
         <source>字幕断句...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="277"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="276"/>
         <source>断句失败</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3030,199 +3030,210 @@ Or go to GitHub for the new release.</source>
 <context>
     <name>VideoSynthesisInterface</name>
     <message>
-        <location filename="../../app/view/video_synthesis_interface.py" line="53"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="55"/>
         <source>字幕文件</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/video_synthesis_interface.py" line="55"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="57"/>
         <source>选择或者拖拽字幕文件</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/video_synthesis_interface.py" line="57"/>
-        <location filename="../../app/view/video_synthesis_interface.py" line="70"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="59"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="72"/>
         <source>浏览</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/video_synthesis_interface.py" line="66"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="68"/>
         <source>视频文件</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/video_synthesis_interface.py" line="68"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="70"/>
         <source>选择或者拖拽视频文件</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/video_synthesis_interface.py" line="78"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="80"/>
         <source>软字幕</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/video_synthesis_interface.py" line="79"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="81"/>
         <source>硬字幕</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/video_synthesis_interface.py" line="80"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="82"/>
         <source>横屏字幕</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/video_synthesis_interface.py" line="81"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="83"/>
         <source>竖屏字幕</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/video_synthesis_interface.py" line="83"/>
-        <location filename="../../app/view/video_synthesis_interface.py" line="171"/>
-        <location filename="../../app/view/video_synthesis_interface.py" line="268"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="85"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="173"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="270"/>
         <source>背景：无</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/video_synthesis_interface.py" line="86"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="88"/>
         <source>垂直偏移量 (px): 100</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/video_synthesis_interface.py" line="95"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="97"/>
         <source>竖屏视频大小: 100%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/video_synthesis_interface.py" line="105"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="107"/>
         <source>竖屏字幕大小: 100%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/video_synthesis_interface.py" line="130"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="132"/>
         <source>开始合成</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/video_synthesis_interface.py" line="131"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="133"/>
         <source>打开视频文件夹</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/video_synthesis_interface.py" line="132"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="134"/>
         <source>Open Work Dir</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/video_synthesis_interface.py" line="144"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="146"/>
         <source>就绪</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/video_synthesis_interface.py" line="154"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="156"/>
         <source>选择背景图片</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/video_synthesis_interface.py" line="158"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="160"/>
         <source>背景：{file_path.name}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/video_synthesis_interface.py" line="164"/>
-        <location filename="../../app/view/video_synthesis_interface.py" line="304"/>
-        <location filename="../../app/view/video_synthesis_interface.py" line="359"/>
-        <location filename="../../app/view/video_synthesis_interface.py" line="386"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="166"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="306"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="377"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="406"/>
         <source>错误</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/video_synthesis_interface.py" line="165"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="167"/>
         <source>无效的文件路径</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/video_synthesis_interface.py" line="198"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="200"/>
         <source>垂直偏移量 (px): </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/video_synthesis_interface.py" line="202"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="204"/>
         <source>竖屏视频大小: {-zoom}%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/video_synthesis_interface.py" line="206"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="208"/>
         <source>竖屏字幕大小: {-zoom}%</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/video_synthesis_interface.py" line="266"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="268"/>
         <source>背景：{bg_path.name}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/video_synthesis_interface.py" line="277"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="279"/>
         <source>选择字幕文件</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/video_synthesis_interface.py" line="291"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="293"/>
         <source>选择视频文件</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/video_synthesis_interface.py" line="305"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="307"/>
         <source>请选择字幕文件和视频文件</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/video_synthesis_interface.py" line="360"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="352"/>
+        <source>Cancel Synthesis</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../app/view/video_synthesis_interface.py" line="378"/>
         <source>无法创建任务</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/video_synthesis_interface.py" line="370"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="385"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="402"/>
+        <source>Start Synthesis</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../app/view/video_synthesis_interface.py" line="389"/>
         <source>成功</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/video_synthesis_interface.py" line="371"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="390"/>
         <source>视频合成已完成</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/video_synthesis_interface.py" line="405"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="425"/>
         <source>警告</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/video_synthesis_interface.py" line="406"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="426"/>
         <source>没有可用的视频文件夹</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/video_synthesis_interface.py" line="438"/>
-        <location filename="../../app/view/video_synthesis_interface.py" line="447"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="458"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="467"/>
         <source>导入成功</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/video_synthesis_interface.py" line="439"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="459"/>
         <source>字幕文件已放入输入框</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/video_synthesis_interface.py" line="448"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="468"/>
         <source>视频文件已输入框</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/video_synthesis_interface.py" line="455"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="475"/>
         <source>格式错误</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/video_synthesis_interface.py" line="456"/>
+        <location filename="../../app/view/video_synthesis_interface.py" line="476"/>
         <source>请拖入视频或者字幕文件</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3236,7 +3247,7 @@ Or go to GitHub for the new release.</source>
     </message>
     <message>
         <location filename="../../app/core/thread/video_synthesis_thread.py" line="51"/>
-        <location filename="../../app/core/thread/video_synthesis_thread.py" line="93"/>
+        <location filename="../../app/core/thread/video_synthesis_thread.py" line="95"/>
         <source>合成完成</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3246,7 +3257,7 @@ Or go to GitHub for the new release.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/video_synthesis_thread.py" line="99"/>
+        <location filename="../../app/core/thread/video_synthesis_thread.py" line="101"/>
         <source>视频合成失败</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3415,22 +3426,27 @@ Or go to GitHub for the new release.</source>
 <context>
     <name>qoVideo</name>
     <message>
-        <location filename="../../app/core/utils/video_utils.py" line="157"/>
+        <location filename="../../app/core/utils/video_utils.py" line="158"/>
         <source>输入文件不存在</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/utils/video_utils.py" line="161"/>
+        <location filename="../../app/core/utils/video_utils.py" line="160"/>
         <source>字幕文件不存在</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/utils/video_utils.py" line="376"/>
+        <location filename="../../app/core/utils/video_utils.py" line="381"/>
         <source>正在合成</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/utils/video_utils.py" line="379"/>
+        <location filename="../../app/core/utils/video_utils.py" line="388"/>
+        <source>视频合成强行中止</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../app/core/utils/video_utils.py" line="391"/>
         <source>合成完成</source>
         <translation type="unfinished"></translation>
     </message>

@@ -226,9 +226,11 @@ class BatchProcessInterface(QWidget):
 
         # Reset all canceled tasks to pending tasks.
         for task_card in self.task_cards:
-            if task_card.task.status == Task.Status.CANCELED:
-                task_card.task.status = Task.Status.PENDING
-        
+            if task_card.task:
+                if task_card.task.status == Task.Status.CANCELED:
+                    task_card.task.status = Task.Status.PENDING
+                task_card.task.allow_running[0] = True
+
         # 查找头两个未完成的任务并开始处理
         c = 1
         for task_card in self.task_cards:
@@ -990,14 +992,10 @@ class TaskInfoCard(CardWidget):
 
     def stop(self):
         """停止转录"""
-        if self.transcript_thread:
-            self.transcript_thread.task.allow_running[0] = False
+        if self.task:
+            self.task.allow_running[0] = False
             # self.transcript_thread.quit()
             # self.transcript_thread.terminate()
-        if self.subtitle_thread:
-            self.subtitle_thread.task.allow_running[0] = False
-            # self.subtitle_thread.quit()
-            # self.subtitle_thread.terminate()
 
         self.reset_ui()
 
@@ -1021,6 +1019,7 @@ class TaskInfoCard(CardWidget):
             return
 
         self.task.status = Task.Status.PENDING
+        self.task.allow_running[0] = True
         self.progress_ring.show()
         self.progress_ring.setValue(100)
         # self.start_button.setDisabled(True)
@@ -1075,10 +1074,8 @@ class TaskInfoCard(CardWidget):
                 )
 
     def is_canceled(self):
-        if self.transcript_thread:
-            allow_running = self.transcript_thread.task.allow_running[0]
-        elif self.subtitle_thread:
-            allow_running = self.subtitle_thread.task.allow_running[0]
+        if self.task:
+            allow_running = self.task.allow_running[0]
         else:
             allow_running = True
         
