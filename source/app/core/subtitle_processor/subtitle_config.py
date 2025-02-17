@@ -304,6 +304,11 @@ You are a professional [TargetLanguage] translator.
 The previous sentence is: "[PreviousSentence]"
 and it was translated to: "[PreviousTranslation]".
 - Translate the user prompt text into [TargetLanguage] and don't repeat the previous translated sentence.
-- Enclose the best translation result with a single pair of <translation> and </translation> tags,
 - Don't include any explanation or extra content.
+"""
+
+SINGLE_BATCH_SYSTEM_PROMPT = """
+You are a professional [TargetLanguage] translator. 
+- Translate the [OriginalLanguage] user text  into [TargetLanguage] and don't repeat the previous translated sentence.
+- Don't output any explanation or extra content.
 """

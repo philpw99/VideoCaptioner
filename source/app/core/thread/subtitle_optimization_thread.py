@@ -84,7 +84,7 @@ class SubtitleOptimizationThread(QThread):
 
             str_path = self.task.original_subtitle_save_path
             result_subtitle_save_path = self.task.result_subtitle_save_path
-            target_language = self.task.target_language
+
             need_summarize = True if cfg.translate_method.value == TranslateMethodEnum.OPTIMIZE else False
             subtitle_style_srt = self.task.subtitle_style_srt
             subtitle_layout = self.task.subtitle_layout
@@ -137,7 +137,8 @@ class SubtitleOptimizationThread(QThread):
                         self.optimizer = SubtitleOptimizer(
                             summary_content=summarize_result,
                             model=llm_model,
-                            target_language=target_language,
+                            target_language=self.task.target_language,
+                            original_language=self.task.original_language,
                             batch_num=batch_size,
                             thread_num=thread_num,
                             llm_result_logger=self.llm_result_logger,
@@ -160,6 +161,8 @@ class SubtitleOptimizationThread(QThread):
                             thread_num=1,
                             llm_result_logger=self.llm_result_logger,
                             allow_running=self.task.allow_running,
+                            target_language=self.task.target_language,
+                            original_language=self.task.original_language,
                         )
                         translate_result = self.optimizer.translate_single_batch(subtitle_json, callback=self.callback)
                     case TranslateMethodEnum.GOOGLE:

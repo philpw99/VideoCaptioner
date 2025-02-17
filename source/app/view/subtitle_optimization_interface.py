@@ -593,7 +593,6 @@ class SubtitleOptimizationInterface(QWidget):
         root, _ = os.path.splitext(file_str)
         self.task.result_subtitle_save_path = root + "_result." + cfg.subtitle_output_format.value.value
         
-        
         if thread_created:
             # 这个任务线程是在这个界面建立起来的，需要清除
             self.task_thread.deleteLater()  # Delete the QThread object

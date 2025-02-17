@@ -14,7 +14,8 @@ from .subtitle_config import (
     OPTIMIZER_PROMPT,
     REFLECT_TRANSLATE_PROMPT,
     SINGLE_TRANSLATE_PROMPT,
-    SINGLE_BATCH_TRANSLATE_PROMPT
+    SINGLE_BATCH_TRANSLATE_PROMPT,
+    SINGLE_BATCH_SYSTEM_PROMPT,
 )
 from ..subtitle_processor.aligner import SubtitleAligner
 from ..utils import json_repair
@@ -29,6 +30,7 @@ DEFAULT_MODEL = "gpt-4o-mini"
 class SubtitleOptimizer:
     """A class for optimize and translating subtitles using OpenAI's API."""
     allow_running = [True]
+    original_language = None
 
     def __init__(
         self,
@@ -41,7 +43,8 @@ class SubtitleOptimizer:
         need_remove_punctuation: bool = True,
         cjk_only: bool = True,
         single_sentence_translate = False,
-        allow_running = None
+        allow_running = None,
+        original_language = None
     ) -> None:
         base_url = os.getenv('OPENAI_BASE_URL')
         api_key = os.getenv('OPENAI_API_KEY')
@@ -64,6 +67,9 @@ class SubtitleOptimizer:
         if allow_running:
             self.allow_running = allow_running
 
+        if original_language:
+            self.original_language = original_language
+            
         # 注册退出处理
         import atexit
         atexit.register(self.stop)
@@ -251,8 +257,8 @@ class SubtitleOptimizer:
         input_content = f"Optimize the following subtitles:\n<input_subtitle>{str(original_subtitle)}</input_subtitle>"
         if self.summary_content:
             input_content += f"\nThe following is reference material related to subtitles, based on which the subtitles will be corrected and optimized.:\n<prompt>{self.summary_content}</prompt>\n"
-        message = [{"role": "system", "content": OPTIMIZER_PROMPT},
-                   {"role": "user", "content": input_content}]
+        message = [{"role": "user", "content": OPTIMIZER_PROMPT},
+                   ]
         return message
 
     def translate_single(self, original_subtitles: Dict[int, str]) -> Dict[int, str]:
@@ -296,6 +302,12 @@ class SubtitleOptimizer:
         re_remove_think = re.compile(r".*</think>")
         re_translate = re.compile(r".*<[Tt]ranslation>(.*?)</[Tt]ranslation>")
         re_notag = re.compile(r"<.*?>")
+        
+        print(f"Target language: {self.target_language}")
+
+        sys_prompt = SINGLE_BATCH_SYSTEM_PROMPT.replace("[TargetLanguage]", self.target_language
+                    ).replace("[OriginalLanguage]", self.original_language)
+        
         for key, value in original_subtitle.items():
             
             if "\n" in value:
@@ -308,16 +320,20 @@ class SubtitleOptimizer:
                 logger.error("单句批量 翻译过程时中断")
                 return translate_result
             
-            content = SINGLE_BATCH_TRANSLATE_PROMPT.replace("[TargetLanguage]", self.target_language
-                ).replace( "[PreviousSentence]", previous_sentence
-                ).replace( "[PreviousTranslation]", previous_translation)
+            # content = SINGLE_BATCH_TRANSLATE_PROMPT.replace("[TargetLanguage]", self.target_language
+            #     ).replace( "[PreviousSentence]", previous_sentence
+            #     ).replace( "[PreviousTranslation]", previous_translation)
             
-            # logger.info(f"prompt:{content}")
+            message =[
+                {"role": "system", "content": sys_prompt},
+                {"role": "user", "content": previous_sentence},
+                {"role": "assistant", "content": previous_translation},
+                {"role": "user", "content": original}
+            ]
             
-            message = [{"role": "system",
-                "content": content},
-                {"role": "user", "content": original}]
-            
+            # message = [{"role": "developer",
+            #     "content": content},
+            #     {"role": "user", "content": original}]
             previous_sentence = original
             
             response = self.client.chat.completions.create(
@@ -335,15 +351,15 @@ class SubtitleOptimizer:
             # Remove all <think> </think> tags
             text = re.sub(re_remove_think, "", return_text )
 
-            # Match the first <translate> * </translate> tag.
-            match = re.search(re_translate, text)
-            if match:
-                translated = match.group(1)
-            else:
-                translated = text
-
             # Remove the remaining tags, just in case.
-            translated = re.sub(re_notag, "", translated)
+            translated = re.sub(re_notag, "", text)
+
+            # Fix the sentence ending problem in Chinese
+            # print (f"original: {self.original_language} target:{self.target_language}")
+            if self.original_language == "English" and self.target_language == "简体中文":
+                if ( original[-1] != "." and translated[-1] == "。") \
+                        or (original[-1] != "?" and translated[-1] == "？") :
+                    translated = translated[:-1]
 
             previous_translation = translated
             logger.info(f"{key}. Original: {value}\n{key}. Translated: {translated}")
