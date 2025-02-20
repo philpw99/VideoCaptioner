@@ -153,7 +153,7 @@ class FasterWhisperASR(BaseASR):
         
         # 提示词
         if self.prompt:
-            cmd.extend(["--prompt", self.prompt])
+            cmd.extend(["--initial_prompt", self.prompt])
 
         return cmd
 

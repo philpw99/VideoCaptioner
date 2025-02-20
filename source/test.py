@@ -1,5 +1,6 @@
-text = "abcdefg"
-if all(x in text for x in ["b","c","h"]):
-    print ("good")
+text = "8"
+if not text or not text.isdigit():
+    print ("no good")
 else:
-    print("not")
+    t = int(text)
+    print(f"test: {t<10}")

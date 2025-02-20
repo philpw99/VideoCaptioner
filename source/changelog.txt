@@ -3,5 +3,6 @@
 	The cancel control is now assigned to tasks instead of threads.
 	Batch processing bugs of canceling got fixed.
 	Improve Single Sentence Translation by using better prompt method.
-
+	Change the FasterWhisper parameter from "--prompt" to "--initial_prompt"
+	Add the feature of setting max line width.
 3.4 Baseline of changes.

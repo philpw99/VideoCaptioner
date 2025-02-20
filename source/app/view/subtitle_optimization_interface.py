@@ -4,14 +4,14 @@ import sys
 import subprocess
 from pathlib import Path
 from collections import deque
-import tempfile
+import tempfile, textwrap, re
 
 from PyQt5.QtCore import *
 from PyQt5.QtGui import QDragEnterEvent, QDropEvent, QColor
 from PyQt5.QtWidgets import QAbstractItemView
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QApplication, QHeaderView, QFileDialog, QMessageBox
 from qfluentwidgets import ComboBox, PrimaryPushButton, ProgressBar, PushButton, InfoBar, BodyLabel, FluentIcon as FIF
-from qfluentwidgets import InfoBarPosition, TableView, ToolButton, TextEdit, MessageBoxBase, RoundMenu, Action, LineEdit
+from qfluentwidgets import InfoBarPosition, TableView, ToolButton, TextEdit, MessageBoxBase, RoundMenu, Action, LineEdit,SwitchButton
 from PyQt5.QtCore import QUrl
 
 from app.config import SUBTITLE_STYLE_PATH
@@ -296,6 +296,16 @@ class SubtitleOptimizationInterface(QWidget):
         设置底部布局，包含进度条和状态标签
         """
         self.bottom_layout = QHBoxLayout()
+        self.max_width_label1 = BodyLabel(self.tr("Maximum line width for"), self)
+        self.max_width_switch = SwitchButton(self)
+        self.max_width_switch.setContentsMargins(0,0,0,0)
+        self.max_width_switch.setOffText(self.tr("Original Text:"))
+        self.max_width_switch.setOnText(self.tr("Translated Text:"))
+        self.max_width_line = LineEdit(self)
+        self.max_width_line.setFixedWidth(50)
+        self.max_width_label2 = BodyLabel(self.tr("characters."),self)
+        self.max_width_apply = PushButton(self.tr("Apply"),self, FIF.ACCEPT)
+        
         self.progress_bar = ProgressBar(self)
         self.status_label = BodyLabel(self.tr("请拖入字幕文件"), self)
 
@@ -311,6 +321,12 @@ class SubtitleOptimizationInterface(QWidget):
         self.cancel_button.clicked.connect(self.cancel_optimization)
 
         # 将进度条添加到底部布局中，并设置其拉伸因子为 1
+        self.bottom_layout.addWidget(self.max_width_label1)
+        self.bottom_layout.addWidget(self.max_width_switch)
+        self.bottom_layout.addWidget(self.max_width_line)
+        self.bottom_layout.addWidget(self.max_width_label2)
+        self.bottom_layout.addWidget(self.max_width_apply)
+        
         self.bottom_layout.addWidget(self.progress_bar, 1)
         # 将状态标签添加到底部布局中
         self.bottom_layout.addWidget(self.status_label)
@@ -355,6 +371,37 @@ class SubtitleOptimizationInterface(QWidget):
         self.replace_btn.clicked.connect(self.on_replace_clicked)
         # 替换所有按钮
         self.replace_all_btn.clicked.connect(self.on_replace_all_clicked)
+
+        # 缩短行长
+        self.max_width_apply.clicked.connect(self.on_max_width_apply_clicked)
+
+    def on_max_width_apply_clicked(self):
+        w = self.max_width_line.text()
+        if not w or not w.isdigit():
+            return
+        width = int(w)
+        if width < 10:
+            InfoBar.warning(
+                self.tr("Line too short"),
+                self.tr("You need to set it to at least 10 characters."),
+                duration=5000,
+                parent=self,
+                )
+            return
+        item = "translated_subtitle" if self.max_width_switch.isChecked() else "original_subtitle"
+        line_re = re.compile(r"(?<=[A-Za-z\.,])\n(?=[a-zA-Z ])")
+        for key in self.model._data:
+            line = self.model._data[key][item]
+            # Replace western alpha line breaks with space
+            line = re.sub(line_re, " ", line)
+            # All other line breaks, including CJK.
+            line = line.replace("\n", "")
+            # Break lines.
+            lines = textwrap.wrap(line, width)
+            # Set new data back.
+            self.model._data[key][item] = "\n".join(lines)
+        # Done, emit the change
+        self.model.layoutChanged.emit()
 
     def on_search_clicked(self):
         search = self.org_text_edit.text().lower()
