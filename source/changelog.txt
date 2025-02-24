@@ -1,3 +1,5 @@
+3.6
+	Fix download url errors and nonestandard webvtt error in some youtube videos.
 3.5
 	Add cancel feature to video synthesis.
 	The cancel control is now assigned to tasks instead of threads.

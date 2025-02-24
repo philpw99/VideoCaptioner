@@ -213,7 +213,6 @@ class CreateTaskThread(QThread):
             audio_codec=info_dict.get('acodec', ''),
             audio_sampling_rate=info_dict.get('asr', 0),
             thumbnail_path=thumbnail_file_path,
-            type = Task.Type.URL,
         )
 
         # 使用 Path 对象处理路径
@@ -253,7 +252,7 @@ class CreateTaskThread(QThread):
         else:
             need_word_time_stamp = False
 
-        if cfg.subtitle_output_format.value.value == "ass" and ass_style_path.exists():
+        if cfg.subtitle_output_format.value.value == "ass":
             ass_style_name = cfg.subtitle_style_name.value
             ass_style_path = SUBTITLE_STYLE_PATH / f"{ass_style_name}.txt"
             if ass_style_path.exists():
@@ -318,7 +317,7 @@ class CreateTaskThread(QThread):
             portrait_background=cfg.portrait_background.value,
             zoom_video=cfg.zoom_video.value,
             zoom_subtitle=cfg.zoom_subtitle.value,
-            task=Task.Type.URL,
+            type=Task.Type.URL,
             task_thread=self,
         )
         self.finished.emit(task)

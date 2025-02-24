@@ -473,12 +473,21 @@ def from_vtt(vtt_str: str) -> 'ASRData':
     :param vtt_str: VTT格式的字幕字符串
     :return: ASRData实例
     """
+    if not vtt_str:
+        return
+    
     segments = []
     # 分拆数据及跳过头部元数据
-    content = vtt_str.split('\n\n')[1:]
+    content = vtt_str.split('\n\n')
+    if content[1].lower() == "webvtt":
+        content = content[1:]
     
     timestamp_pattern1 = re.compile(r'(\d{2}):(\d{2})\.(\d{3})\s*-->\s*(\d{2}):(\d{2})\.(\d{3})')
     timestamp_pattern2 = re.compile(r'(\d{2}):(\d{2}):(\d{2})\.(\d{3})\s*-->\s*(\d{2}):(\d{2}):(\d{2})\.(\d{3})')
+    
+    timestamp_pattern3 = re.compile(r'(\d{2}):(\d{2})\,(\d{3})\s*-->\s*(\d{2}):(\d{2})\,(\d{3})')
+    timestamp_pattern4 = re.compile(r'(\d{2}):(\d{2}):(\d{2})\,(\d{3})\s*-->\s*(\d{2}):(\d{2}):(\d{2})\,(\d{3})')
+    
     # the first line should be "1", but can be any other numbers
     # some WebVTT don't have line number, but some do have.
         
@@ -493,14 +502,23 @@ def from_vtt(vtt_str: str) -> 'ASRData':
         
         # 解析时间戳行
         timestamp_line = lines[1] if have_line_number else lines[0]
-        start_time_str = timestamp_line[:timestamp_line.index(".")]
+        # Some Youtube videos use "," instead of "." for miliseconds.
+        sep = "." if timestamp_line.find(".") != -1 else ","
+        
+        start_time_str = timestamp_line[:timestamp_line.index(sep)]
         colon_count = start_time_str.count(":")
         if colon_count == 1:
             # Have no hours
-            match = timestamp_pattern1.match(timestamp_line)
+            if sep == ".":
+                match = timestamp_pattern1.match(timestamp_line)
+            else:
+                match = timestamp_pattern3.match(timestamp_line)
         elif colon_count == 2:
             # Have hours
-            match = timestamp_pattern2.match(timestamp_line)
+            if sep == ".":
+                match = timestamp_pattern2.match(timestamp_line)
+            else:
+                match = timestamp_pattern4.match(timestamp_line)
         else:
             # Cannot handle other situation
             continue

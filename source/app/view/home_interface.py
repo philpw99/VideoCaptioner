@@ -63,7 +63,7 @@ class HomeInterface(QWidget):
     def switch_to_subtitle_optimization(self, task: Task | None):
         # 切换到字幕优化/翻译界面 但不执行
         self.subtitle_optimization_interface.set_task(task)
-        if task.type != Task.Type.TRANSCRIBE:
+        if task.need_translate:
             self.subtitle_optimization_interface.process()
         self.stackedWidget.setCurrentWidget(self.subtitle_optimization_interface)
         self.pivot.setCurrentItem('SubtitleOptimizationInterface')
