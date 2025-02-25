@@ -291,17 +291,17 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/create_task_thread.py" line="187"/>
+        <location filename="../../app/core/thread/create_task_thread.py" line="189"/>
         <source>创建任务完成</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/create_task_thread.py" line="199"/>
+        <location filename="../../app/core/thread/create_task_thread.py" line="201"/>
         <source>正在获取视频信息</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/create_task_thread.py" line="202"/>
+        <location filename="../../app/core/thread/create_task_thread.py" line="204"/>
         <source>下载视频完成</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1023,23 +1023,23 @@ Or go to GitHub for the new release.</source>
 <context>
     <name>PromptDialog</name>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1200"/>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1205"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1210"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1215"/>
         <source>文稿提示</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1211"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1221"/>
         <source>请输入文稿提示（优化字幕或者翻译字幕的提示参考）</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1223"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1233"/>
         <source>确定</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1224"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1234"/>
         <source>取消</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1667,11 +1667,6 @@ Or go to GitHub for the new release.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="210"/>
-        <source>选择SRT文件</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../app/view/subtitle_optimization_interface.py" line="211"/>
         <source>文稿提示</source>
         <translation type="unfinished"></translation>
@@ -1707,241 +1702,257 @@ Or go to GitHub for the new release.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="255"/>
-        <source>Replace current line of text only in translated subtitles.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../app/view/subtitle_optimization_interface.py" line="256"/>
         <source>Replace All</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="257"/>
-        <source>Replace all lines of text in translated subtitles.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="299"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="304"/>
         <source>Maximum line width for</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="302"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="307"/>
         <source>Original Text:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="303"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="308"/>
         <source>Translated Text:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="306"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="311"/>
         <source>characters.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="307"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="312"/>
         <source>Apply</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="310"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="315"/>
         <source>请拖入字幕文件</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="317"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="322"/>
         <source>取消</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="382"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="390"/>
         <source>Line too short</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="384"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="391"/>
         <source>You need to set it to at least 10 characters.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="430"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="440"/>
         <source>Reach the end</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="431"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="441"/>
         <source>Cannot find more result.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="442"/>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="513"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="453"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="523"/>
         <source>Missing search or replace text.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="443"/>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="514"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="454"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="524"/>
         <source>Need both search and replace text to do the replace.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="451"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="462"/>
         <source>No selected row</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="452"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="463"/>
         <source>Currently no row is selected.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="539"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="549"/>
         <source>Replace All is done.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="540"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="550"/>
         <source>Totally replace {replace_count} occurances.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="677"/>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="981"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="687"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="991"/>
         <source>已加载文件</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="685"/>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="910"/>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="955"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="695"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="920"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="965"/>
         <source>警告</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="686"/>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="911"/>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="955"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="696"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="921"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="965"/>
         <source>请先加载字幕文件</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="721"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="731"/>
         <source>开始优化</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="721"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="731"/>
         <source>开始优化字幕</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="764"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="774"/>
         <source>优化完成</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="765"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="775"/>
         <source>优化完成字幕...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="788"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="798"/>
         <source>优化失败</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="846"/>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="885"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="210"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="856"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="895"/>
         <source>选择字幕文件</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="877"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="255"/>
+        <source>Replace current line of text only in original or translated subtitles.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="257"/>
+        <source>Replace all lines of text in original or translated subtitles.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="259"/>
+        <source>Original</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="260"/>
+        <source>Translated</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="261"/>
+        <source>Set target for replace and replace all button.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="887"/>
         <source>No API Key or API Base set</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="878"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="888"/>
         <source>批量字幕处理占用大量服务器资源，因此必须要使用自己的API KEY &amp; BASE，免得公益服务器无法工作，请见谅。
 具体设定在程序左下角的‘设定’里。</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="921"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="931"/>
         <source>保存字幕文件</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="940"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="950"/>
         <source>保存成功</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="941"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="951"/>
         <source>字幕已保存至:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="947"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="957"/>
         <source>保存失败</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="948"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="958"/>
         <source>保存字幕文件失败: </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1003"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1013"/>
         <source>导入成功</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1004"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1014"/>
         <source>成功导入</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1011"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1021"/>
         <source>格式错误</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1012"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1022"/>
         <source>支持的字幕格式:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1087"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1097"/>
         <source>合并</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1160"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1170"/>
         <source>合并成功</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1161"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1171"/>
         <source>已成功合并选中的字幕行</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1187"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1197"/>
         <source>已取消优化</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1189"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1199"/>
         <source>已取消</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1190"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1200"/>
         <source>字幕优化已取消</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3461,27 +3472,27 @@ Or go to GitHub for the new release.</source>
 <context>
     <name>qoVideo</name>
     <message>
-        <location filename="../../app/core/utils/video_utils.py" line="158"/>
+        <location filename="../../app/core/utils/video_utils.py" line="162"/>
         <source>输入文件不存在</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/utils/video_utils.py" line="160"/>
+        <location filename="../../app/core/utils/video_utils.py" line="164"/>
         <source>字幕文件不存在</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/utils/video_utils.py" line="381"/>
+        <location filename="../../app/core/utils/video_utils.py" line="387"/>
         <source>正在合成</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/utils/video_utils.py" line="388"/>
+        <location filename="../../app/core/utils/video_utils.py" line="394"/>
         <source>视频合成强行中止</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/utils/video_utils.py" line="391"/>
+        <location filename="../../app/core/utils/video_utils.py" line="397"/>
         <source>合成完成</source>
         <translation type="unfinished"></translation>
     </message>

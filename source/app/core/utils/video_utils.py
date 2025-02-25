@@ -7,7 +7,6 @@ import tempfile
 from typing import Literal
 
 from ..utils.logger import setup_logger
-from ..utils.video_utils import check_ffmpeg_available
 from PyQt5.QtCore import QObject
 
 logger = setup_logger("video_utils")

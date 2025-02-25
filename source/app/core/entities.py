@@ -138,7 +138,7 @@ class VadMethodEnum(Enum):
 class TargetLanguageEnum(Enum):
     """ 翻译目标语言 """
     CHINESE_SIMPLIFIED = "简体中文"
-    CHINESE_TRADITIONAL = "繁体中文"
+    CHINESE_TRADITIONAL = "繁體中文"
     ENGLISH = "English"
     JAPANESE = "Japanese"
     KOREAN = "Korean"
@@ -252,7 +252,7 @@ class TranscribeLanguageEnum(Enum):
     """ 转录语言 """
     ENGLISH = "English"
     CHINESE_SIMPLIFIED = "简体中文"
-    CHINESE_TRADITIONAL = "繁体中文"
+    CHINESE_TRADITIONAL = "繁體中文"
     JAPANESE = "Japanese"
     KOREAN = "Korean"
     YUE = "粤语"
@@ -357,7 +357,7 @@ WHISPER_LANGUAGES ={
     "英语": "en",
     "中文": "zh",
     "简体中文": "zh",
-    "繁体中文": "zh",
+    "繁體中文": "yue",
     "日本語": "ja",
     "德语": "de",
     "粤语": "yue",
@@ -474,7 +474,7 @@ LANGUAGES = {
     "英语": "en",
     "中文": "zh",
     "简体中文": "zh-cn",
-    "繁体中文": "zh-tw",
+    "繁體中文": "zh-hk",
     "粤语": "yue",
     "日本語": "ja",
     "德语": "de",
