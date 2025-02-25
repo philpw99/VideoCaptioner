@@ -1,6 +1,9 @@
-text = "8"
-if not text or not text.isdigit():
-    print ("no good")
-else:
-    t = int(text)
-    print(f"test: {t<10}")
+import subprocess
+
+try:
+    process = subprocess.run( ["ffmpegg", "-version"], capture_output=True, text=True)
+    code = process.returncode
+    print(f"return: {code}")
+except FileNotFoundError:
+    print("Not found")
+    

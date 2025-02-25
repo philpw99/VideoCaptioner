@@ -5,6 +5,7 @@ from typing import Optional, Tuple
 
 from app.config import CACHE_PATH, RESOURCE_PATH
 from .logger import setup_logger
+from ..utils.video_utils import check_ffmpeg_available
 
 logger = setup_logger("subtitle_preview")
 
@@ -56,13 +57,14 @@ def ensure_background(bg_path: Path) -> Path:
     if not bg_path.is_file() or not bg_path.exists():
         if not Path(DEFAULT_BG_PATH).exists():
             DEFAULT_BG_PATH.parent.mkdir(parents=True, exist_ok=True)
-            run_subprocess([
-                'ffmpeg', 
-                '-f', 'lavfi', 
-                '-i', 'color=c=black:s=1920x1080', 
-                '-frames:v', '1', 
-                str(DEFAULT_BG_PATH)
-            ])
+            if check_ffmpeg_available():
+                run_subprocess([
+                    'ffmpeg', 
+                    '-f', 'lavfi', 
+                    '-i', 'color=c=black:s=1920x1080', 
+                    '-frames:v', '1', 
+                    str(DEFAULT_BG_PATH)
+                ])
         return Path(DEFAULT_BG_PATH)
     return bg_path
 
@@ -75,16 +77,18 @@ def generate_preview(style_str: str, preview_text: Tuple[str, Optional[str]], bg
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     ass_file_processed = ass_file.replace('\\', '/').replace(':', r'\\:')
-    cmd = [
-        'ffmpeg', 
-        '-y',
-        '-i', str(bg_path),
-        '-vf', f"ass={ass_file_processed}",
-        '-frames:v', '1',
-        str(output_path)
-    ]
-    run_subprocess(cmd)
-    return str(output_path)
+    if check_ffmpeg_available():
+        cmd = [
+            'ffmpeg', 
+            '-y',
+            '-i', str(bg_path),
+            '-vf', f"ass={ass_file_processed}",
+            '-frames:v', '1',
+            str(output_path)
+        ]
+        run_subprocess(cmd)
+        return str(output_path)
+    return None
 
 if __name__ == "__main__":
     style_str = """[V4+ Styles]

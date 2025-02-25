@@ -7,6 +7,7 @@ import tempfile
 from typing import Literal
 
 from ..utils.logger import setup_logger
+from ..utils.video_utils import check_ffmpeg_available
 from PyQt5.QtCore import QObject
 
 logger = setup_logger("video_utils")
@@ -14,6 +15,9 @@ qoVideo = QObject()  # for i18n
 
 def video2audio(input_file: str, output_file: str = "", format: str = "copy", allow_running: list = [True] ) -> bool:
     """使用ffmpeg将视频转换为音频"""    
+    if not check_ffmpeg_available():
+        logger.error("ffmpeg not available to transcode audio.")
+        return False
     # 创建output目录
     Path(output_file).parent.mkdir(parents=True, exist_ok=True)
 
@@ -156,8 +160,10 @@ def add_subtitles(
     
     assert Path(input_file).is_file(), qoVideo.tr("输入文件不存在")
     assert Path(subtitle_file).is_file(), qoVideo.tr("字幕文件不存在")
-
-    strerr = None
+    
+    if not check_ffmpeg_available():
+        logger.error("ffmpeg not available.")
+        return
     
     # 移动到临时文件  Fix: 路径错误
     temp_dir = Path(tempfile.gettempdir()) / "VideoCaptioner"
@@ -488,6 +494,10 @@ def extract_thumbnail(video_path: str, seek_time: float, thumbnail_path: str) ->
         logger.error(f"视频文件不存在: {video_path}")
         return False
 
+    if not check_ffmpeg_available():
+        logger.error(f"ffmpeg not available.")
+        return False
+
     try:
         timestamp = f"{int(seek_time // 3600):02}:{int((seek_time % 3600) // 60):02}:{seek_time % 60:06.3f}"
         # 确保输出目录存在
@@ -526,6 +536,13 @@ def extract_thumbnail(video_path: str, seek_time: float, thumbnail_path: str) ->
 def q(text):
     """Quote a string for use in a shell command."""
     return '"' + text + '"'
+
+def check_ffmpeg_available():
+    try:
+        process = subprocess.run( ["ffmpegg", "-version"], capture_output=True, text=True)
+        return True
+    except FileNotFoundError:
+        return False
 
 if __name__ == "__main__":
     video_path = r"C:\Users\weifeng\Videos\example_video.mp4"

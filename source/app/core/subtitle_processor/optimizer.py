@@ -130,7 +130,12 @@ class SubtitleOptimizer:
             
             for key in result:
                 # Put the invisible label back
-                result[key] = INVISIBLE_ORIGINAL + chunk[key] + "\n" + INVISIBLE_TRANSLATED + result[key]
+                lines = result[key].split("\n")
+                if len(lines) > 1:
+                    translate_line = " ".join(lines[1:]) # The translate result is in the second line.
+                else:
+                    translate_line = lines[0]
+                result[key] = INVISIBLE_ORIGINAL + chunk[key] + "\n" + INVISIBLE_TRANSLATED + translate_line
 
             if callback:
                 if isinstance(result, Dict):
@@ -203,9 +208,16 @@ class SubtitleOptimizer:
         aligned_subtitle = repair_subtitle(original_subtitle, optimized_text)  # 修复字幕对齐问题
         # print(aligned_subtitle)
         # 在 translations 中查找对应的翻译  文本-翻译 映射
-        translations = {item["optimized_subtitle"]: item["revised_translation"] for item in response_content.values()}
-        
         translated_subtitle = {}
+        translations = {}
+        for item in response_content.values():
+            key = item["optimized_subtitle"]
+            revised = item["revised_translation"]
+            # Sometimes the revised_translation is empty.
+            translations[key] = revised if revised else item["translation"]
+            
+        # translations = {item["optimized_subtitle"]: item["revised_translation"] for item in response_content.values()}
+        
         for k, v in aligned_subtitle.items():
             original_text = self.remove_punctuation(v)
             translated_text = self.remove_punctuation(translations.get(v, ' '))
@@ -272,9 +284,9 @@ class SubtitleOptimizer:
         # logger.info(f"org sub:{original_subtitle}")
         for key, value in original_subtitles.items():
             try:
-                message = [{"role": "system",
-                            "content": SINGLE_TRANSLATE_PROMPT.replace("[TargetLanguage]", self.target_language)},
-                            {"role": "user", "content": [value]}]
+                sys_prompt = SINGLE_TRANSLATE_PROMPT.replace("[TargetLanguage]", self.target_language)
+                message = [{"role": "system", "content": sys_prompt},
+                           {"role": "user", "content": value}]
                 response = self.client.chat.completions.create(
                     model=self.model,
                     stream=False,
@@ -290,7 +302,7 @@ class SubtitleOptimizer:
                     logger.error("单句 翻译过程时中断")
                     break
             except Exception as e:
-                 logger.error(f"单条翻译失败: {e.with_traceback()}")
+                 logger.error(f"单条翻译失败: {e}")
                  translate_result[key] = f"{value}\n "
         return translate_result
 

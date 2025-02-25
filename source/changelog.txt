@@ -1,4 +1,8 @@
-3.6
+3.5.2
+	Fix Optimizing/Translation problems.
+	Add replace/replace all target: original or translated
+	Fix a little bug in whisper-cpp to make it compatible with old version.
+3.5.1
 	Fix download url errors and nonestandard webvtt error in some youtube videos.
 3.5
 	Add cancel feature to video synthesis.

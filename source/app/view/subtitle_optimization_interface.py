@@ -207,7 +207,7 @@ class SubtitleOptimizationInterface(QWidget):
 
         # 添加打开文件夹按钮和文件选择按钮
         self.open_folder_button = ToolButton(FIF.FOLDER, self)
-        self.file_select_button = PushButton(self.tr("选择SRT文件"), self, icon=FIF.FOLDER_ADD)
+        self.file_select_button = PushButton(self.tr("选择字幕文件"), self, icon=FIF.FOLDER_ADD)
         self.prompt_button = PushButton(self.tr("文稿提示"), self, icon=FIF.DOCUMENT)
         # 添加字幕设置按钮
         self.subtitle_setting_button = ToolButton(FIF.SETTING, self)
@@ -252,9 +252,13 @@ class SubtitleOptimizationInterface(QWidget):
         self.search_btn = PushButton(FIF.SEARCH, self.tr("Search"), self)
         self.search_btn.setToolTip(self.tr("Search text in both original and translated subtitles."))
         self.replace_btn = PushButton(FIF.REMOVE_FROM, self.tr("Replace"),self)
-        self.replace_btn.setToolTip(self.tr("Replace current line of text only in translated subtitles."))
+        self.replace_btn.setToolTip(self.tr("Replace current line of text only in original or translated subtitles."))
         self.replace_all_btn = PushButton(FIF.FILTER, self.tr("Replace All"), self)
-        self.replace_all_btn.setToolTip(self.tr("Replace all lines of text in translated subtitles."))
+        self.replace_all_btn.setToolTip(self.tr("Replace all lines of text in original or translated subtitles."))
+        self.replace_target = SwitchButton(self)
+        self.replace_target.setOffText(self.tr("Original"))
+        self.replace_target.setOnText(self.tr("Translated"))
+        self.replace_target.setToolTip(self.tr("Set target for replace and replace all button."))
         
         self.search_layout.addWidget(self.org_text_edit)
         self.search_layout.addSpacing(8)
@@ -265,6 +269,7 @@ class SubtitleOptimizationInterface(QWidget):
         self.search_layout.addWidget(self.replace_btn)
         self.search_layout.addSpacing(8)
         self.search_layout.addWidget(self.replace_all_btn)
+        self.search_layout.addWidget(self.replace_target)
         
         self.main_layout.addLayout(self.search_layout)
 
@@ -442,6 +447,7 @@ class SubtitleOptimizationInterface(QWidget):
         # Replace the text in current index
         search = self.org_text_edit.text()
         replace = self.dst_text_edit.text()
+        target = "translated_subtitle" if self.replace_target.checked else "original_subtitle"
         if not search or not replace:
             InfoBar.warning(
                 self.tr("Missing search or replace text."),
@@ -462,14 +468,11 @@ class SubtitleOptimizationInterface(QWidget):
         key = str(index+1)
         item = self.model._data[key]
         # original = item["original_subtitle"]
-        translated = item["translated_subtitle"]
-        # Only replace translated. Original should left untouch
-        # original = original.replace(search, replace)
-        # self.model._data[key]["original_subtitle"] = original
-        if translated:
+        target_text = item[target]
+        if target_text:
             # Has translation
-            translated = translated.replace(search,replace)
-            self.model._data[key]["translated_subtitle"] = translated
+            target_text = target_text.replace(search,replace)
+            self.model._data[key][target] = target_text
         top_left = self.model.index(index, 2)
         bottom_right = self.model.index(index,3)
         self.model.dataChanged.emit(
@@ -513,6 +516,8 @@ class SubtitleOptimizationInterface(QWidget):
     def on_replace_all_clicked(self):
         search = self.org_text_edit.text()
         replace = self.dst_text_edit.text()
+        target = "translated_subtitle" if self.replace_target.checked else "original_subtitle"
+            
         if not search or not replace:
             InfoBar.warning(
                 self.tr("Missing search or replace text."),
@@ -526,7 +531,7 @@ class SubtitleOptimizationInterface(QWidget):
         for key in self.model._data:
             item = self.model._data[key]
             # original = item["original_subtitle"]
-            translated = item["translated_subtitle"]
+            target_text = item[target]
             
             # Original should be left alone. Only replace the translated.
             #new_original = original.replace(search, replace)
@@ -534,11 +539,11 @@ class SubtitleOptimizationInterface(QWidget):
             #    replace_count += 1
             #    item["original_subtitle"]=new_original
             
-            if translated:
-                new_translated = translated.replace(search, replace)
-                if new_translated != translated:
+            if target_text:
+                new_text = target_text.replace(search, replace)
+                if new_text != target_text:
                     replace_count += 1
-                    item["translated_subtitle"] = new_translated
+                    item[target] = new_text
             
         # Done. Update all.
         InfoBar.info(self.tr("Replace All is done."),

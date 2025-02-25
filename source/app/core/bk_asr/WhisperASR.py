@@ -144,9 +144,11 @@ class WhisperASR(BaseASR):
                 callback(100, "转换完成")
                 
                 # 读取结果文件
-                srt_path = output_path.with_suffix(".wav.srt")
+                srt_path = output_path.with_suffix(".srt")
                 if not srt_path.exists():
-                    raise RuntimeError(f"输出文件未生成: {srt_path}")
+                    srt_path = output_path.with_suffix(".wav.srt")
+                    if not srt_path.exists():
+                        raise RuntimeError(f"输出文件未生成: {srt_path}")
                     
                 return srt_path.read_text(encoding='utf-8')
 
