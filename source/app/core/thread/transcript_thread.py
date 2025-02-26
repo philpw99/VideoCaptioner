@@ -245,7 +245,7 @@ class TranscriptThread(QThread):
 
     def _setup_api_config(self):
         """设置API配置，返回base_url, api_key, llm_model, thread_num, batch_size"""
-        print(f"base: {self.task.base_url} key:{self.task.api_key} model:{self.task.llm_model}")
+        logger.info(f"base: {self.task.base_url} key:{self.task.api_key} model:{self.task.llm_model}")
         if not test_openai(self.task.base_url, self.task.api_key, self.task.llm_model)[0]:
             raise Exception(self.tr("OpenAI API 测试失败, 请检查设置"))
         return (self.task.base_url, self.task.api_key, self.task.llm_model, 

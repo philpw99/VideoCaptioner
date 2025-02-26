@@ -1,7 +1,10 @@
+3.5.3
+	App Log will show Base URL / API Key / Model before start using LLM, to help troubleshooting.
 3.5.2
 	Fix Optimizing/Translation problems.
 	Add replace/replace all target: original or translated
 	Fix a little bug in whisper-cpp to make it compatible with old version.
+	Traditional Chinese support.
 3.5.1
 	Fix download url errors and nonestandard webvtt error in some youtube videos.
 3.5
@@ -10,5 +13,5 @@
 	Batch processing bugs of canceling got fixed.
 	Improve Single Sentence Translation by using better prompt method.
 	Change the FasterWhisper parameter from "--prompt" to "--initial_prompt"
-	Add the feature of setting max line width.
+	Add the feature of setting max line width manually in optimizing page.
 3.4 Baseline of changes.
