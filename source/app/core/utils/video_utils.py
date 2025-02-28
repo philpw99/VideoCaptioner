@@ -538,7 +538,7 @@ def q(text):
 
 def check_ffmpeg_available():
     try:
-        process = subprocess.run( ["ffmpegg", "-version"], capture_output=True, text=True)
+        process = subprocess.run( ["ffmpeg", "-version"], capture_output=True, text=True)
         return True
     except FileNotFoundError:
         return False
