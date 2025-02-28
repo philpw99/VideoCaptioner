@@ -44,8 +44,6 @@ class TranscriptThread(QThread):
         self.task = task
 
     def run(self):
-        if self.task.transcribe_language == "zh-cn":
-            raise RuntimeError("Error value!")
         try:
             logger.info(f"\n===========转录任务开始===========")
             logger.info(f"时间：{time.strftime("%d %b %Y %H:%M:%S")}")
