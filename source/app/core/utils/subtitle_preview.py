@@ -65,6 +65,9 @@ def ensure_background(bg_path: Path) -> Path:
                     '-frames:v', '1', 
                     str(DEFAULT_BG_PATH)
                 ])
+            else:
+                logger.error("Ffmpeg not exist to generate preview.")
+                return
         return Path(DEFAULT_BG_PATH)
     return bg_path
 

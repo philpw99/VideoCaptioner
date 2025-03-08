@@ -1,5 +1,12 @@
+3.5.4
+	Add optional fetching imdb info button in the front page.
+	Improve transcribe accuracy by optionally fetching video summary from imdb.
+	Better ffmpeg detection.
 3.5.3
+	Add ffmpeg download and extract feature to reduce the size of the package.
+	Fix video synthesis problem. The synthesis from landscape to portrait process was wrong.
 	App Log will show Base URL / API Key / Model before start using LLM, to help troubleshooting.
+	Remove the FasterWhisper for Intel Mac download package, seems no one is using it.
 3.5.2
 	Fix Optimizing/Translation problems.
 	Add replace/replace all target: original or translated

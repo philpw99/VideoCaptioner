@@ -58,7 +58,7 @@ WHISPER_MODELS = [
         "sha": "fd9727b6e1217c2f614f9b698455c4ffd82463b4"
     },
     {
-        "label": "large-v1",
+        "label": "Large-v1",
         "value": "ggml-large-v1.bin",
         "size": "3.09 GB",
         "downloadLink": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v1.bin",
@@ -66,29 +66,29 @@ WHISPER_MODELS = [
         "sha": "b1caaf735c4cc1429223d5a74f0f4d0b9b59a299"
     },
     {
-        "label": "large-v2",
+        "label": "Large-v2",
         "value": "ggml-large-v2.bin", 
         "size": "3.09 GB",
         "downloadLink": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v2.bin",
         "mirrorLink": "https://www.modelscope.cn/models/cjc1887415157/whisper.cpp/resolve/master/ggml-large-v2.bin",
         "sha": "0f4c8e34f21cf1a914c59d8b3ce882345ad349d6"
     },
-    # {
-    #     "label": "Large(v3)",
-    #     "value": "ggml-large-v3.bin",
-    #     "size": "3.09 GB",
-    #     "downloadLink": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3.bin",
-    #     "mirrorLink": "https://www.modelscope.cn/models/cjc1887415157/whisper.cpp/resolve/master/ggml-large-v3.bin",
-    #     "sha": "ad82bf6a9043ceed055076d0fd39f5f186ff8062"
-    # },
-    # {
-    #     "label": "Distil Large(v3)",
-    #     "value": "ggml-distil-large-v3.bin",
-    #     "size": "1.52 GB",
-    #     "downloadLink": "https://huggingface.co/distil-whisper/distil-large-v3-ggml/resolve/main/ggml-distil-large-v3.bin?download=true",
-    #     "mirrorLink": "https://www.modelscope.cn/models/cjc1887415157/whisper.cpp/resolve/master/ggml-distil-large-v3.bin",
-    #     "sha": "5e61e98bdcf3b9a78516c59bf7d1a10d64cae67a"
-    # }
+    {
+        "label": "Large-v3",
+        "value": "ggml-large-v3.bin",
+        "size": "3.09 GB",
+        "downloadLink": "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-large-v3.bin",
+        "mirrorLink": "https://www.modelscope.cn/models/cjc1887415157/whisper.cpp/resolve/master/ggml-large-v3.bin",
+        "sha": "ad82bf6a9043ceed055076d0fd39f5f186ff8062"
+    },
+    {
+        "label": "Distil-large-v3",
+        "value": "ggml-distil-large-v3.bin",
+        "size": "1.52 GB",
+        "downloadLink": "https://huggingface.co/distil-whisper/distil-large-v3-ggml/resolve/main/ggml-distil-large-v3.bin?download=true",
+        "mirrorLink": "https://www.modelscope.cn/models/cjc1887415157/whisper.cpp/resolve/master/ggml-distil-large-v3.bin",
+        "sha": "5e61e98bdcf3b9a78516c59bf7d1a10d64cae67a"
+    }
 ]
 
 

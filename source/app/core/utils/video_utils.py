@@ -4,6 +4,7 @@ import re
 import shutil
 import subprocess
 import tempfile
+import requests
 from typing import Literal
 
 from ..utils.logger import setup_logger
@@ -214,6 +215,7 @@ def add_subtitles(
             creationflags=subprocess.CREATE_NO_WINDOW if hasattr(subprocess, 'CREATE_NO_WINDOW') else 0,
             )
     else:
+        # 添加硬字幕
         logger.info("使用硬字幕")
         subtitle_file = Path(subtitle_file).as_posix().replace(':', r'\:')
         if Path(output).suffix.lower() == '.webm':
@@ -260,19 +262,20 @@ def add_subtitles(
                 cmd.extend([
                     '-i', background,
                 ])
+
                 # With picture background
                 vf = f"[1:v]trim=0:{duration},scale={output_width}:{output_height}[bg];" \
-                    + f"color=d={duration}:c=black@0:s={squeeze_width_subtitle}x{output_height_subtitle}," \
-                    + f"subtitles='{subtitle_file}':alpha=1[sub];[0:v]scale={squeeze_width_video}:{output_height_video}[fg];" \
+                    + f"color=d={duration}:c=black@0:s={output_width_subtitle}x{squeeze_height_subtitle}," \
+                    + f"subtitles='{subtitle_file}':alpha=1[sub];[0:v]scale={output_width_video}:{squeeze_height_video}[fg];" \
                     + f"[bg][fg]overlay={video_x}:{video_y}[out];[out][sub]overlay={subtitle_x}:{subtitle_y+vertical_offset},setsar=1"
                 
             else:   # Blur background
                 vf = f"[0:v]avgblur=sizeX=40:sizeY=40,scale={output_width}x{output_height}:flags=fast_bilinear[bg];" \
-                    + f"color=d={duration}:c=black@0:s={squeeze_width_subtitle}x{output_height_subtitle}," \
-                    + f"subtitles='{subtitle_file}':alpha=1[sub];[0:v]scale={squeeze_width_video}:{output_height_video}[fg];" \
+                    + f"color=d={duration}:c=black@0:s={output_width_subtitle}x{squeeze_height_subtitle}," \
+                    + f"subtitles='{subtitle_file}':alpha=1[sub];[0:v]scale={output_width_video}:{squeeze_height_video}[fg];" \
                     + f"[bg][fg]overlay={video_x}:{video_y}[out];[out][sub]overlay={subtitle_x}:{subtitle_y+vertical_offset},setsar=1"
         
-        elif (not portrait) and input_width < input_height:
+        elif not portrait and input_width < input_height:
             # Landscape mode. Convert from portrait video.
             # output_height = 1080, output_width = 1920, squeeze_width = 607
             squeeze_width = int( output_height * output_height / output_width /2) * 2   # The original video's height after rotating.
@@ -295,14 +298,14 @@ def add_subtitles(
                 ])
                 # With picture background
                 vf = f"[1:v]trim=0:{duration},scale={output_width}:{output_height}[bg];" \
-                    + f"color=d={duration}:c=black@0:s={output_width_subtitle}x{squeeze_height_subtitle}," \
-                    + f"subtitles='{subtitle_file}':alpha=1[sub];[0:v]scale={output_width_video}:{squeeze_height_video}[fg];" \
+                    + f"color=d={duration}:c=black@0:s={squeeze_width_subtitle}x{output_height_subtitle}," \
+                    + f"subtitles='{subtitle_file}':alpha=1[sub];[0:v]scale={squeeze_width_video}:{output_height_video}[fg];" \
                     + f"[bg][fg]overlay={video_x}:{video_y}[out];[out][sub]overlay={subtitle_x}:{subtitle_y+vertical_offset},setsar=1"
                 
             else:   # Blur background
                 vf = f"[0:v]avgblur=sizeX=40:sizeY=40,scale={output_width}x{output_height}:flags=fast_bilinear[bg];" \
-                    + f"color=d={duration}:c=black@0:s={output_width_subtitle}x{squeeze_height_subtitle}," \
-                    + f"subtitles='{subtitle_file}':alpha=1[sub];[0:v]scale={output_width_video}:{squeeze_height_video}[fg];" \
+                    + f"color=d={duration}:c=black@0:s={squeeze_width_subtitle}x{output_height_subtitle}," \
+                    + f"subtitles='{subtitle_file}':alpha=1[sub];[0:v]scale={squeeze_width_video}:{output_height_video}[fg];" \
                     + f"[bg][fg]overlay={video_x}:{video_y}[out];[out][sub]overlay={subtitle_x}:{subtitle_y+vertical_offset},setsar=1"
             
         else:
@@ -412,7 +415,7 @@ def add_subtitles(
             if temp_subtitle.exists():
                 temp_subtitle.unlink()
 
-def get_video_info(filepath: str, thumbnail_path: str = "") -> dict:
+def get_video_info(filepath: str, thumbnail_path: str = "", post_url: str = None) -> dict:
     try:
         cmd = ["ffmpeg", "-i", filepath]
         logger.info(f"获取视频信息执行命令: {' '.join(cmd)}")
@@ -461,7 +464,14 @@ def get_video_info(filepath: str, thumbnail_path: str = "") -> dict:
             })
             
             if thumbnail_path:
-                if extract_thumbnail(filepath, video_info['duration_seconds'] * 0.3, thumbnail_path):
+                if post_url:
+                    # If there is a post_url from imdb, use it.
+                    img_data = requests.get(post_url).content
+                    with open(thumbnail_path, 'wb') as handler:
+                        handler.write(img_data)
+                    video_info['thumbnail_path'] = thumbnail_path
+                elif extract_thumbnail(filepath, video_info['duration_seconds'] * 0.3, thumbnail_path):
+                    # Get thumbnail from ffmpeg extraction.
                     video_info['thumbnail_path'] = thumbnail_path
         else:
             video_info['thumbnail_path'] = thumbnail_path
@@ -537,11 +547,12 @@ def q(text):
     return '"' + text + '"'
 
 def check_ffmpeg_available():
-    try:
-        process = subprocess.run( ["ffmpeg", "-version"], capture_output=True, text=True)
-        return True
-    except FileNotFoundError:
-        return False
+    return True if shutil.which("ffmpeg") else False
+    # try:
+    #     process = subprocess.run( ["ffmpeg", "-version"], capture_output=True, text=True)
+    #     return True
+    # except FileNotFoundError:
+    #     return False
 
 if __name__ == "__main__":
     video_path = r"C:\Users\weifeng\Videos\example_video.mp4"

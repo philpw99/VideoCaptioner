@@ -77,8 +77,8 @@ class VideoSynthesisInterface(QWidget):
         
         # 附加选项
         self.options_layout = QHBoxLayout()
-        self.option_soft_subtitle = SwitchButton(self.tr("软字幕"), self, indicatorPos=IndicatorPosition.RIGHT)
-        self.option_soft_subtitle.setOnText(self.tr("硬字幕"))
+        self.option_hard_subtitle = SwitchButton(self.tr("软字幕"), self, indicatorPos=IndicatorPosition.RIGHT)
+        self.option_hard_subtitle.setOnText(self.tr("硬字幕"))
         self.option_portrait = SwitchButton(self.tr("横屏字幕"), self, indicatorPos=IndicatorPosition.RIGHT)
         self.option_portrait.setOnText(self.tr("竖屏字幕"))
         self.option_portrait.setDisabled(True)
@@ -113,7 +113,7 @@ class VideoSynthesisInterface(QWidget):
         self.option_zoom_subtitle.setDisabled(True)
 
 
-        self.options_layout.addWidget(self.option_soft_subtitle)
+        self.options_layout.addWidget(self.option_hard_subtitle)
         self.options_layout.addWidget(self.option_portrait)
         self.options_layout.addWidget(self.option_portrait_background)
         self.options_layout.addWidget(self.option_vertical_offset_label)
@@ -182,19 +182,19 @@ class VideoSynthesisInterface(QWidget):
         else:
             label.setTextColor(light=QColor(0,0,0), dark=QColor(255,255,255))
     
-    def on_soft_subtitle_toggled(self, checked):
+    def on_hard_subtitle_toggled(self, checked):
         # checked means enable hard subtitle
-        self.option_portrait.setDisabled(not checked)
-        self.option_portrait_background.setDisabled(not checked)
+        self.option_portrait.setEnabled(checked)
+        self.option_portrait_background.setEnabled(checked)
         
-        self.option_zoom_video.setDisabled(not checked)
+        self.option_zoom_video.setEnabled(checked)
         self.set_bodylabel_disabled(self.option_zoom_video_label, not checked )
-        self.option_zoom_subtitle.setDisabled(not checked)
+        self.option_zoom_subtitle.setEnabled(checked)
         self.set_bodylabel_disabled(self.option_zoom_subtitle_label, not checked )
 
-        self.option_vertical_offset.setDisabled(not checked)
+        self.option_vertical_offset.setEnabled(checked)
         self.set_bodylabel_disabled(self.option_vertical_offset_label, not checked)
-        cfg.set(cfg.soft_subtitle, checked)
+        cfg.set(cfg.soft_subtitle, not checked)
 
     def on_vertical_offset_changed(self, offset):
         self.option_vertical_offset_label.setText(self.tr("垂直偏移量 (px): ") + str(offset) )
@@ -252,7 +252,7 @@ class VideoSynthesisInterface(QWidget):
         self.open_work_folder_button.clicked.connect(self.open_work_folder)
         
         # 字幕选项相关信号
-        self.option_soft_subtitle.checkedChanged.connect(self.on_soft_subtitle_toggled)
+        self.option_hard_subtitle.checkedChanged.connect(self.on_hard_subtitle_toggled)
         self.option_portrait.checkedChanged.connect(self.on_portrait_toggled)
         self.option_portrait_background.clicked.connect(self.on_portrait_background_clicked)
         self.option_vertical_offset.valueChanged.connect(self.on_vertical_offset_changed)
@@ -260,7 +260,8 @@ class VideoSynthesisInterface(QWidget):
         self.option_zoom_subtitle.valueChanged.connect(self.on_zoom_subtitle_changed)
 
     def set_value(self):
-        self.option_soft_subtitle.setChecked(cfg.soft_subtitle.value)
+        # Set values before the signals are set.
+        self.option_hard_subtitle.setChecked(not cfg.soft_subtitle.value)
         self.option_portrait.setChecked(cfg.portrait.value)
         self.portrait_background = cfg.portrait_background.value
         if self.portrait_background:
@@ -271,6 +272,8 @@ class VideoSynthesisInterface(QWidget):
         self.option_vertical_offset.setValue(cfg.subtitle_vertical_offset.value)
         self.option_zoom_video.setValue(-cfg.zoom_video.value)
         self.option_zoom_subtitle.setValue(-cfg.zoom_subtitle.value)
+        # Set enable/disable according to cfg.soft_subtitle.value
+        self.on_hard_subtitle_toggled(not cfg.soft_subtitle.value)
 
     def choose_subtitle_file(self):
         # 构建文件过滤器
@@ -311,7 +314,7 @@ class VideoSynthesisInterface(QWidget):
             )
             return None
 
-        soft_sub = not self.option_soft_subtitle.isChecked()    # when checked, it's hard sub
+        soft_sub = not self.option_hard_subtitle.isChecked()    # when checked, it's hard sub
         self.task_thread = CreateTaskThread(video_file, Task.Type.SYNTHESIS)
         self.task: Task = self.task_thread.create_video_synthesis_task( subtitle_file, video_file, soft_sub)
 
@@ -328,6 +331,7 @@ class VideoSynthesisInterface(QWidget):
 
             self.task.subtitle_vertical_offset = self.option_vertical_offset.value()
         
+        self.task_thread.deleteLater()
         return self.task
 
     def set_task(self, task: Task):
@@ -359,7 +363,6 @@ class VideoSynthesisInterface(QWidget):
             self.task.allow_running[0] = True
         else:
             self.create_task()
-
         
         if self.task.file_path != str(Path(self.video_input.text())) \
             or self.task.original_subtitle_save_path != str(Path(self.subtitle_input.text())):
@@ -393,6 +396,7 @@ class VideoSynthesisInterface(QWidget):
             parent=self
         )
         self.task.status = Task.Status.COMPLETED
+        self.video_synthesis_thread.deleteLater()
 
     def on_video_synthesis_progress(self, progress, message):
         self.progress_bar.setValue(progress)
@@ -409,6 +413,7 @@ class VideoSynthesisInterface(QWidget):
             position=InfoBarPosition.TOP,
             parent=self
         )
+        self.video_synthesis_thread.deleteLater()
 
     def open_video_folder(self):
         video_folder= Path(self.video_input.text()).parent

@@ -27,7 +27,8 @@ class CreateTaskThread(QThread):
                  translate_method: TranslateMethodEnum = None,
                  soft_sub: bool = True,
                  need_video: bool = False,
-                 url: str = None):
+                 url: str = None,
+                 post_url:str = None):
         super().__init__()
         self.file_path = file_path
         self.task_type = task_type
@@ -36,6 +37,7 @@ class CreateTaskThread(QThread):
         self.soft_sub = soft_sub
         self.need_video = need_video
         self.url = url
+        self.post_url = post_url
 
     def run(self):
         try:
@@ -46,7 +48,8 @@ class CreateTaskThread(QThread):
                                             soft_sub=self.soft_sub,
                                             need_translate = self.need_translate,
                                             translate_method = self.translate_method,
-                                            need_video =self.need_video
+                                            need_video =self.need_video,
+                                            post_url=self.post_url,
                                         )
 
                 case Task.Type.URL:
@@ -72,7 +75,9 @@ class CreateTaskThread(QThread):
                          need_translate: bool,
                          translate_method: TranslateMethodEnum,
                          soft_sub: bool,
-                         need_video: bool):
+                         need_video: bool,
+                         post_url: str = None,
+                         ):
         logger.info("\n===================")
         logger.info(f"开始创建文件任务：{file_path}")
         # 使用 Path 对象处理路径
@@ -83,7 +88,7 @@ class CreateTaskThread(QThread):
 
         # 获取 视频/音频 信息
         thumbnail_path = str(task_work_dir / "thumbnail.jpg")
-        video_info = get_video_info(file_path, thumbnail_path=thumbnail_path)
+        video_info = get_video_info(file_path, thumbnail_path=thumbnail_path, post_url=post_url)
         video_info = VideoInfo(**video_info)
 
         match cfg.transcribe_model.value.value:

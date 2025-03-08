@@ -336,16 +336,19 @@ class SubtitleOptimizer:
             #     ).replace( "[PreviousSentence]", previous_sentence
             #     ).replace( "[PreviousTranslation]", previous_translation)
             
-            message =[
-                {"role": "system", "content": sys_prompt},
-                {"role": "user", "content": previous_sentence},
-                {"role": "assistant", "content": previous_translation},
-                {"role": "user", "content": original}
-            ]
+            if previous_sentence:
+                message =[
+                    {"role": "system", "content": sys_prompt},
+                    {"role": "user", "content": previous_sentence},
+                    {"role": "assistant", "content": previous_translation},
+                    {"role": "user", "content": original}
+                ]
+            else:
+                message =[
+                    {"role": "system", "content": sys_prompt},
+                    {"role": "user", "content": original}
+                ]
             
-            # message = [{"role": "developer",
-            #     "content": content},
-            #     {"role": "user", "content": original}]
             previous_sentence = original
             
             response = self.client.chat.completions.create(

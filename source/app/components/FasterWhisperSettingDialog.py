@@ -1,6 +1,6 @@
-import sys, platform
+import sys
 import subprocess
-from PyQt5.QtCore import Qt, QThread, pyqtSignal
+from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QTableWidgetItem, QHeaderView, QHBoxLayout
 from qfluentwidgets import (MessageBoxBase, BodyLabel, SubtitleLabel,
                           SettingCardGroup, InfoBar, InfoBarPosition, 
@@ -13,8 +13,7 @@ from ..common.config import cfg
 from ..core.entities import FasterWhisperModelEnum, TranscribeLanguageEnum, WhisperModelEnum, VadMethodEnum
 from ..common.signal_bus import signalBus
 from ..components.LineEditSettingCard import LineEditSettingCard
-from ..components.EditComboBoxSettingCard import EditComboBoxSettingCard
-from ..config import BIN_PATH, CACHE_PATH, MODEL_PATH
+from ..config import BIN_PATH, MODEL_PATH
 import os
 import subprocess
 import tempfile
@@ -25,6 +24,7 @@ from modelscope.hub.snapshot_download import snapshot_download
 
 from ..core.thread.download_thread import DownloadThread
 from ..core.thread.modelscope_download_thread import ModelscopeDownloadThread
+from ..core.thread.unzip_thread import UnzipThread
 
 
 # 在文件开头添加常量定义
@@ -42,13 +42,6 @@ FASTER_WHISPER_PROGRAMS = [
         "type": "CPU",
         "size": "78.7 MB",
         "downloadLink": "https://modelscope.cn/models/bkfengg/whisper-cpp/resolve/master/whisper-faster.exe",
-    },
-    {
-        "label": "MacOS",
-        "value": "whisper-faster.zip",
-        "type": "MAC",
-        "size": "79.6 MB",
-        "downloadLink": "https://github.com/Purfview/whisper-standalone-win/releases/download/faster-whisper/Whisper-Faster_r186.1_macOS-x86-64.zip"
     },
 ]
 
@@ -118,7 +111,6 @@ def check_faster_whisper_exists() -> tuple[bool, list[str]]:
     检查以下两种情况:
     1. bin目录下是否有 faster-whisper.exe
     2. bin目录下是否有 Faster-Whisper-XXL/faster-whisper-xxl.exe
-    3. MacOS: whisper-faster
     
     Returns:
         tuple[bool, list[str]]: (是否存在程序, 已安装的版本列表)
@@ -126,59 +118,17 @@ def check_faster_whisper_exists() -> tuple[bool, list[str]]:
     bin_path = Path(BIN_PATH)
     installed_versions = []
     
-    pf = sys.platform
-    if pf == "win32":
-        # 检查 faster-whisper.exe(CPU版本)
-        if (bin_path / "faster-whisper.exe").exists():
-            installed_versions.append("CPU")
-            
-        # 检查 Faster-Whisper-XXL/faster-whisper-xxl.exe(GPU版本)
-        xxl_path = bin_path / "Faster-Whisper-XXL" / "faster-whisper-xxl.exe"
-        if xxl_path.exists():
-            installed_versions.extend(["GPU", "CPU"])
-        installed_versions = list(set(installed_versions))
-    elif pf == "darwin":
-        # check whisper-faster
-        if (bin_path / "whisper-faster").exists():
-            installed_versions.append("MAC")
+    # 检查 faster-whisper.exe(CPU版本)
+    if (bin_path / "faster-whisper.exe").exists():
+        installed_versions.append("CPU")
+        
+    # 检查 Faster-Whisper-XXL/faster-whisper-xxl.exe(GPU版本)
+    xxl_path = bin_path / "Faster-Whisper-XXL" / "faster-whisper-xxl.exe"
+    if xxl_path.exists():
+        installed_versions.extend(["GPU", "CPU"])
+    installed_versions = list(set(installed_versions))
 
     return bool(installed_versions), installed_versions
-
-# 添加新的解压线程类
-class UnzipThread(QThread):
-    """7z解压线程"""
-    finished = pyqtSignal()  # 解压完成信号
-    error = pyqtSignal(str)  # 解压错误信号
-    
-    def __init__(self, zip_file, extract_path):
-        super().__init__()
-        self.zip_file = zip_file
-        self.extract_path = extract_path
-        
-    def run(self):
-        try:
-            if sys.platform == "darwin":
-                # Don't create path
-                subprocess.run(
-                    ["7z", "e", self.zip_file, f"-o{self.extract_path}", "-y"],
-                    check=True,
-                    creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
-                )
-            else:
-                # Create path
-                subprocess.run(
-                    ["7z", "x", self.zip_file, f"-o{self.extract_path}", "-y"],
-                    check=True,
-                    creationflags=subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
-                )
-                
-            # 删除压缩包
-            os.remove(self.zip_file)
-            self.finished.emit()
-        except subprocess.CalledProcessError as e:
-            self.error.emit(f"解压失败: {str(e)}")
-        except Exception as e:
-            self.error.emit(str(e))
 
 class FasterWhisperDownloadDialog(MessageBoxBase):
     """Faster Whisper 下载对话框"""
@@ -451,7 +401,7 @@ class FasterWhisperDownloadDialog(MessageBoxBase):
                 self.progress_label.setText(self.tr("正在解压文件..."))
                 
                 # 创建并启动解压线程
-                self.unzip_thread = UnzipThread(save_path, BIN_PATH)
+                self.unzip_thread = UnzipThread(save_path, BIN_PATH)    # Extract all files with path
                 self.unzip_thread.finished.connect(self._finish_program_installation)
                 self.unzip_thread.error.connect(self._on_unzip_error)
                 self.unzip_thread.start()
@@ -890,9 +840,6 @@ class FasterWhisperSettingDialog(MessageBoxBase):
         # 根据安装的版本设置程路径 
         if "GPU" in installed_versions:
             cfg.faster_whisper_program.value = "faster-whisper-xxl.exe"
-        elif "MAC" in installed_versions:
-            cfg.faster_whisper_program.value = "whisper-faster"
-            cfg.faster_whisper_vad_method.value = VadMethodEnum.NONE
         else:
             cfg.faster_whisper_program.value = "faster-whisper.exe"
             cfg.faster_whisper_vad_method.value = VadMethodEnum.NONE

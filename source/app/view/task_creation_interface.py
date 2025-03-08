@@ -7,8 +7,8 @@ from urllib.parse import urlparse, ParseResult
 from PyQt5.QtCore import pyqtSignal, Qt, QStandardPaths
 from PyQt5.QtGui import QPixmap, QDragEnterEvent, QDropEvent, QColor
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QApplication, QLabel, QFileDialog
-from qfluentwidgets import LineEdit, ProgressBar, InfoBar, InfoBarPosition, BodyLabel, ToolButton, HyperlinkButton
-from qfluentwidgets import FluentIcon, ComboBoxSettingCard
+from qfluentwidgets import LineEdit, ProgressBar, InfoBar, InfoBarPosition, BodyLabel, ToolButton, HyperlinkButton, PushButton
+from qfluentwidgets import FluentIcon, ComboBoxSettingCard, MessageDialog
 from qfluentwidgets import FluentIcon as FIF
 
 from ..common.config import cfg, Language, LanguageSerializer, TranscribeLanguageEnum
@@ -23,9 +23,12 @@ from .log_window import LogWindow
 from ..common.signal_bus import signalBus
 from ..components.FasterWhisperSettingDialog import FasterWhisperSettingDialog
 from ..core.utils.test_opanai import test_openai
-
+from ..core.utils.video_utils import check_ffmpeg_available
+from ..core.utils.imdb import get_movie_info
+from ..core.thread.download_ffmpeg_thread import DownloadFFMpegThread
 
 LOGO_PATH = ASSETS_PATH / "logo.png"
+POST_URL = ""
 
 class TaskCreationInterface(QWidget):
     """
@@ -52,6 +55,7 @@ class TaskCreationInterface(QWidget):
         self.main_layout.setSpacing(0)
 
         self.setup_config_layout()
+        self.setup_movie_info_layout()
         self.setup_logo()
         self.setup_search_layout()
         self.setup_status_layout()
@@ -153,8 +157,8 @@ class TaskCreationInterface(QWidget):
             self.tr("是否合成软字幕视频，关掉则会合成硬字幕"),
             self
         )
-        self.soft_subtitle_card.switchButton.setOffText("Hard Subtitle")
-        self.soft_subtitle_card.switchButton.setOnText("Soft Subtitle")
+        self.soft_subtitle_card.switchButton.setOffText(self.tr("Hard Subtitle"))
+        self.soft_subtitle_card.switchButton.setOnText(self.tr("Soft Subtitle"))
         self.soft_subtitle_card.switchButton.setContentsMargins(0,0,16,0)
 
 
@@ -231,6 +235,31 @@ class TaskCreationInterface(QWidget):
         self.main_layout.addLayout(self.search_layout)
         self.main_layout.addSpacing(30)
 
+    def setup_movie_info_layout(self):
+        self.movie_info_layout = QHBoxLayout()
+        self.movie_info_layout.setContentsMargins(0, 0, 10, 0)
+        self.movie_info_layout.setSpacing(20)
+        self.movie_imdb_label = BodyLabel(self.tr("(Optional) Movie or TV Episode IMDB ID:"), self)
+        self.movie_imdb_label.setToolTip(self.tr("This will improve transcription accuracy by fetching video summary info from imdb."))
+        self.movie_imdb_input = LineEdit(self)
+        self.movie_imdb_input.setFixedWidth(100)
+        self.movie_imdb_input.setPlaceholderText("tt1234567")
+        self.movie_imdb_input.setToolTip(self.tr("Get movie/tv information from imdb.com and set it to the prompt for Whisper transcription."))
+        self.movie_imdb_button = PushButton(
+            FIF.INFO,
+            self.tr("Get Info"),
+            self,
+        )
+        self.movie_imdb_button.setToolTip(self.tr("Fetch information from IMDB.com"))
+        self.movie_info_layout.addStretch()
+        self.movie_info_layout.addWidget(self.movie_imdb_label)
+        self.movie_info_layout.addWidget(self.movie_imdb_input)
+        self.movie_info_layout.addWidget(self.movie_imdb_button)
+        self.main_layout.addLayout(self.movie_info_layout)
+        self.main_layout.addSpacing(30)
+        
+        
+
     def setup_status_layout(self):
         self.status_layout = QVBoxLayout()
         self.status_layout.setContentsMargins(50, 0, 30, 5)
@@ -293,6 +322,7 @@ class TaskCreationInterface(QWidget):
         self.start_button.clicked.connect(self.on_start_clicked)
         self.search_input.textChanged.connect(self.on_search_input_changed)
         self.log_button.clicked.connect(self.show_log_window)
+        self.movie_imdb_button.clicked.connect(self.on_imdb_button_clicked)
 
         # Local to signalBus
         self.transcription_model_card.comboBox.currentTextChanged.connect(
@@ -335,6 +365,50 @@ class TaskCreationInterface(QWidget):
         signalBus.original_language_changed.connect(self.on_original_language_changed)
         signalBus.subititle_output_format_changed.connect(self.on_output_format_changed)
 
+    def on_imdb_button_clicked(self):
+        movie_id = self.movie_imdb_input.text()
+        if not movie_id:
+            POST_URL = None
+            return
+        
+        movie_summary, post_url, kind = get_movie_info(movie_id)
+        if not movie_summary:
+            InfoBar.error(
+                self.tr("Failed"),
+                self.tr("Error getting movie/tv series info."),
+                duration=5000,
+                parent=self,
+                )
+            POST_URL = None
+            return
+        match cfg.transcribe_model.value:
+            case TranscribeModelEnum.FASTER_WHISPER | TranscribeModelEnum.WHISPER:
+                cfg.faster_whisper_prompt.value = movie_summary
+            case TranscribeModelEnum.WHISPER_API:
+                cfg.whisper_api_prompt.value = movie_summary
+        
+        if kind == "tv series":
+            # Special message for TV series
+            msg = MessageDialog(
+                self.tr("This is an id for TV series"),
+                self.tr(f"This imdb id {movie_id} is for the whole TV series.\n" \
+                    + "It will work but you will have better accuracy\n" \
+                    + "if you set it to the episode's id instead."
+                    ),
+                self
+            )
+            msg.cancelButton.hide()
+            msg.exec()
+
+        InfoBar.info(
+            self.tr("Success! Now the prompt is:"),
+            self.tr(movie_summary),
+            duration=10000,
+            parent=self,
+            )
+        POST_URL = post_url
+                    
+    
     def on_output_format_changed(self, value:str):
         if cfg.subtitle_output_format.value != value:
             cfg.set(cfg.subtitle_output_format, value)
@@ -496,6 +570,45 @@ class TaskCreationInterface(QWidget):
 
         self.start_button.setIcon(FIF.STOP_WATCH)
         self.start_button.repaint()
+
+        self.ffmpeg_error = False
+        if not check_ffmpeg_available():
+            if os.name != "nt":
+                # For all other operation systems.
+                InfoBar.error(
+                    self.tr("FFMpeg not available."),
+                    self.tr("FFMpeg is not installed or cannot run."),
+                    duration=5000,
+                    parent=self,
+                )
+                return
+            # For windows only.
+            self.ffmpeg_error = True
+            msg = MessageDialog(
+                self.tr("FFMpeg is not available"), 
+                self.tr("Do you want to download it from Internet?"),
+                self
+                )
+            msg.yesButton.setText(self.tr("OK"))
+            msg.cancelButton.setText(self.tr("Cancel"))
+            self.yes_result = False
+            def accepted():
+                self.yes_result = True
+            msg.yesSignal.connect(accepted)
+            msg.exec()
+            if self.yes_result:
+                # Confirmed
+                download_thread = DownloadFFMpegThread()
+                download_thread.finished.connect(self._on_ffmpeg_download_finished)
+                download_thread.start()
+            else:
+                # Cancelled.
+                pass
+
+        if self.ffmpeg_error:
+            self.start_button.setIcon(FIF.PLAY)
+            self.start_button.repaint()
+            return
         # Start to excute the task, but check base url first.
         if self.is_base_url_needed():
             # Need to use LLM features in this task.
@@ -523,6 +636,13 @@ class TaskCreationInterface(QWidget):
             
         self.process()
 
+    def _on_ffmpeg_download_finished(self):
+        InfoBar.info(
+            self.tr("Done"),
+            self.tr("FFMpeg downloaded and extracted."),
+            duration=5000,
+            parent=self,
+        )
 
     def on_search_input_changed(self):
         if self.search_input.text():
@@ -575,6 +695,7 @@ class TaskCreationInterface(QWidget):
                 parent=self
             )
 
+        
     def _is_valid_url(self, url):
         try:
             result: ParseResult = urlparse(url)
@@ -599,8 +720,9 @@ class TaskCreationInterface(QWidget):
             translate_method= cfg.translate_method.value,
             soft_sub=cfg.soft_subtitle.value,
             need_video=cfg.need_video.value,
+            post_url=POST_URL,
             )
-        
+
         self.create_task_thread.finished.connect(self.on_create_task_finished)
         self.create_task_thread.progress.connect(self.on_create_task_progress)
         self.create_task_thread.start()
