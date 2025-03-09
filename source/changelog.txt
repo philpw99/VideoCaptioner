@@ -1,6 +1,6 @@
 3.5.4
-	Add optional fetching imdb info button in the front page.
-	Improve transcribe accuracy by optionally fetching video summary from imdb.
+	Add optional fetching imdb and douban info button in the front page.
+	Improve transcribe accuracy by optionally fetching video summary from imdb or douban.
 	Better ffmpeg detection.
 3.5.3
 	Add ffmpeg download and extract feature to reduce the size of the package.

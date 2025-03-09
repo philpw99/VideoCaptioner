@@ -6,6 +6,12 @@ from random import randint
 from typing import Optional
 from PyQt5.QtCore import QThread
 
+
+class MovieDatabaseEnum(Enum):
+    """ Where to the movie info """
+    IMDB = "imdb.com"
+    DOUBAN = "douban.com"
+
 class MuEnum(Enum):
     """ Mutable Enum. Unlike regular Enum, its values can be set again. """
     def setValue(self, newValue):

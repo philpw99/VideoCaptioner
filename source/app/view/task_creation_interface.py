@@ -5,7 +5,7 @@ import sys
 from urllib.parse import urlparse, ParseResult
 
 from PyQt5.QtCore import pyqtSignal, Qt, QStandardPaths
-from PyQt5.QtGui import QPixmap, QDragEnterEvent, QDropEvent, QColor
+from PyQt5.QtGui import QPixmap, QDragEnterEvent, QDropEvent, QColor, QFont
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QApplication, QLabel, QFileDialog
 from qfluentwidgets import LineEdit, ProgressBar, InfoBar, InfoBarPosition, BodyLabel, ToolButton, HyperlinkButton, PushButton
 from qfluentwidgets import FluentIcon, ComboBoxSettingCard, MessageDialog
@@ -14,7 +14,7 @@ from qfluentwidgets import FluentIcon as FIF
 from ..common.config import cfg, Language, LanguageSerializer, TranscribeLanguageEnum
 from ..components.SimpleSettingCard import ComboBoxSimpleSettingCard, SwitchButtonSimpleSettingCard
 from ..core.entities import SupportedAudioFormats, SupportedVideoFormats, OutputSubtitleFormatEnum, SubtitleLayoutEnum
-from ..core.entities import TargetLanguageEnum, TranscribeModelEnum, Task, TranslateMethodEnum, LANGUAGES
+from ..core.entities import TargetLanguageEnum, TranscribeModelEnum, Task, TranslateMethodEnum, LANGUAGES, MovieDatabaseEnum
 from ..core.thread.create_task_thread import CreateTaskThread
 from ..config import APPDATA_PATH, ASSETS_PATH, VERSION, AUTHOR, SUBVERSION, COAUTHOR
 from ..components.WhisperSettingDialog import WhisperSettingDialog
@@ -24,11 +24,11 @@ from ..common.signal_bus import signalBus
 from ..components.FasterWhisperSettingDialog import FasterWhisperSettingDialog
 from ..core.utils.test_opanai import test_openai
 from ..core.utils.video_utils import check_ffmpeg_available
-from ..core.utils.imdb import get_movie_info
+from ..core.utils.imdb import get_imdb_movie_info
+from ..core.utils.douban import get_douban_movie_info
 from ..core.thread.download_ffmpeg_thread import DownloadFFMpegThread
 
 LOGO_PATH = ASSETS_PATH / "logo.png"
-POST_URL = ""
 
 class TaskCreationInterface(QWidget):
     """
@@ -40,6 +40,7 @@ class TaskCreationInterface(QWidget):
         super().__init__(parent)
         self.task = None
         self.log_window = None
+        self.post_url = None
 
         self.setObjectName("TaskCreationInterface")
         self.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
@@ -239,27 +240,36 @@ class TaskCreationInterface(QWidget):
         self.movie_info_layout = QHBoxLayout()
         self.movie_info_layout.setContentsMargins(0, 0, 10, 0)
         self.movie_info_layout.setSpacing(20)
-        self.movie_imdb_label = BodyLabel(self.tr("(Optional) Movie or TV Episode IMDB ID:"), self)
-        self.movie_imdb_label.setToolTip(self.tr("This will improve transcription accuracy by fetching video summary info from imdb."))
-        self.movie_imdb_input = LineEdit(self)
-        self.movie_imdb_input.setFixedWidth(100)
-        self.movie_imdb_input.setPlaceholderText("tt1234567")
-        self.movie_imdb_input.setToolTip(self.tr("Get movie/tv information from imdb.com and set it to the prompt for Whisper transcription."))
-        self.movie_imdb_button = PushButton(
+        
+        self.movie_info_source = ComboBoxSimpleSettingCard(
+            self.tr("(Optional) From "),
+            self.tr("Choose where to get movie info. English ones use imdb, Chinese ones use douban."),
+            list(item.value for item in MovieDatabaseEnum),
+            self
+        )
+        font = QFont()
+        font.setPointSize(11)
+        self.movie_info_source.label.setFont(font)
+        self.movie_info_label = BodyLabel(self.tr("get info about a Movie or TV Episode by ID:"), self)
+        self.movie_info_label.setToolTip(self.tr("This will improve transcription accuracy by fetching video summary info from webside."))
+        self.movie_info_input = LineEdit(self)
+        self.movie_info_input.setFixedWidth(100)
+        self.movie_info_input.setPlaceholderText("tt1234567")
+        self.movie_info_input.setToolTip(self.tr("Get movie/tv information from website and set it to the prompt for Whisper transcription."))
+        self.movie_info_button = PushButton(
             FIF.INFO,
             self.tr("Get Info"),
             self,
         )
-        self.movie_imdb_button.setToolTip(self.tr("Fetch information from IMDB.com"))
+        self.movie_info_button.setToolTip(self.tr("Fetch information from IMDB.com"))
         self.movie_info_layout.addStretch()
-        self.movie_info_layout.addWidget(self.movie_imdb_label)
-        self.movie_info_layout.addWidget(self.movie_imdb_input)
-        self.movie_info_layout.addWidget(self.movie_imdb_button)
+        self.movie_info_layout.addWidget(self.movie_info_source)
+        self.movie_info_layout.addWidget(self.movie_info_label)
+        self.movie_info_layout.addWidget(self.movie_info_input)
+        self.movie_info_layout.addWidget(self.movie_info_button)
         self.main_layout.addLayout(self.movie_info_layout)
         self.main_layout.addSpacing(30)
         
-        
-
     def setup_status_layout(self):
         self.status_layout = QVBoxLayout()
         self.status_layout.setContentsMargins(50, 0, 30, 5)
@@ -322,7 +332,8 @@ class TaskCreationInterface(QWidget):
         self.start_button.clicked.connect(self.on_start_clicked)
         self.search_input.textChanged.connect(self.on_search_input_changed)
         self.log_button.clicked.connect(self.show_log_window)
-        self.movie_imdb_button.clicked.connect(self.on_imdb_button_clicked)
+        self.movie_info_button.clicked.connect(self.on_movie_info_button_clicked)
+        self.movie_info_source.comboBox.currentTextChanged.connect(self.on_movie_source_changed)
 
         # Local to signalBus
         self.transcription_model_card.comboBox.currentTextChanged.connect(
@@ -365,13 +376,34 @@ class TaskCreationInterface(QWidget):
         signalBus.original_language_changed.connect(self.on_original_language_changed)
         signalBus.subititle_output_format_changed.connect(self.on_output_format_changed)
 
-    def on_imdb_button_clicked(self):
-        movie_id = self.movie_imdb_input.text()
+    def on_movie_source_changed(self, source: str):
+        match source:
+            case MovieDatabaseEnum.IMDB.value:
+                self.movie_info_input.setPlaceholderText("tt1234567")
+            case MovieDatabaseEnum.DOUBAN.value:
+                self.movie_info_input.setPlaceholderText("1234567")
+
+    def on_movie_info_button_clicked(self):
+        movie_id = self.movie_info_input.text()
+        source = self.movie_info_source.comboBox.currentText()
         if not movie_id:
-            POST_URL = None
+            self.post_url = None
             return
         
-        movie_summary, post_url, kind = get_movie_info(movie_id)
+        match source:
+            case MovieDatabaseEnum.IMDB.value:
+                movie_summary, post_url, kind = get_imdb_movie_info(movie_id)
+            case MovieDatabaseEnum.DOUBAN.value:
+                movie_summary, post_url, kind = get_douban_movie_info(movie_id)
+            case _:
+                InfoBar.error(
+                    self.tr("Error!"),
+                    self.tr("Invalide movie/tv info source."),
+                    duration=5000,
+                    parent=self,
+                )
+                return
+                
         if not movie_summary:
             InfoBar.error(
                 self.tr("Failed"),
@@ -379,7 +411,7 @@ class TaskCreationInterface(QWidget):
                 duration=5000,
                 parent=self,
                 )
-            POST_URL = None
+            self.post_url = None
             return
         match cfg.transcribe_model.value:
             case TranscribeModelEnum.FASTER_WHISPER | TranscribeModelEnum.WHISPER:
@@ -387,8 +419,8 @@ class TaskCreationInterface(QWidget):
             case TranscribeModelEnum.WHISPER_API:
                 cfg.whisper_api_prompt.value = movie_summary
         
-        if kind == "tv series":
-            # Special message for TV series
+        if kind == "tv series" and source == MovieDatabaseEnum.IMDB.value:
+            # Special message for TV series in imdb
             msg = MessageDialog(
                 self.tr("This is an id for TV series"),
                 self.tr(f"This imdb id {movie_id} is for the whole TV series.\n" \
@@ -406,7 +438,7 @@ class TaskCreationInterface(QWidget):
             duration=10000,
             parent=self,
             )
-        POST_URL = post_url
+        self.post_url = post_url
                     
     
     def on_output_format_changed(self, value:str):
@@ -720,7 +752,7 @@ class TaskCreationInterface(QWidget):
             translate_method= cfg.translate_method.value,
             soft_sub=cfg.soft_subtitle.value,
             need_video=cfg.need_video.value,
-            post_url=POST_URL,
+            post_url=self.post_url,
             )
 
         self.create_task_thread.finished.connect(self.on_create_task_finished)

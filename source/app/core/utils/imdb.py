@@ -1,6 +1,6 @@
 from imdb import Cinemagoer, IMDbError
 
-def get_movie_info(id: str, topActors = 10):
+def get_imdb_movie_info(id: str, topActors = 20):
     if id[:2].lower() == "tt":
         id = id[2:]
     if not id.isdigit():

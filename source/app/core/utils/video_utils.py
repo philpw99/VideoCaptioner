@@ -466,9 +466,22 @@ def get_video_info(filepath: str, thumbnail_path: str = "", post_url: str = None
             if thumbnail_path:
                 if post_url:
                     # If there is a post_url from imdb, use it.
-                    img_data = requests.get(post_url).content
-                    with open(thumbnail_path, 'wb') as handler:
-                        handler.write(img_data)
+                    if post_url and not post_url.endswith(".jpg"):
+                        # save and convert the picture.
+                        filename = post_url.split('/')[-1]
+                        save_path = Path(thumbnail_path).parent / filename
+                        img_data = requests.get(post_url, headers = {'user-agent': 'VideoCaptioner/3.5.4'}).content
+                        with open(save_path, 'wb') as handler:
+                            handler.write(img_data)
+                        # Convert the image to jpg format
+                        from PIL import Image
+                        image = Image.open(save_path)
+                        image.convert("RGB").save(thumbnail_path)
+                    else:
+                        # Save as thumbnail.jpg directly.
+                        img_data = requests.get(post_url, headers = {'user-agent': 'VideoCaptioner/3.5.4'}).content
+                        with open(thumbnail_path, 'wb') as handler:
+                            handler.write(img_data)
                     video_info['thumbnail_path'] = thumbnail_path
                 elif extract_thumbnail(filepath, video_info['duration_seconds'] * 0.3, thumbnail_path):
                     # Get thumbnail from ffmpeg extraction.
