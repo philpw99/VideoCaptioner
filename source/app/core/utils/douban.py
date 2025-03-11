@@ -61,12 +61,10 @@ def get_douban_movie_info(id: str, topActors = 20):
             actors = ", ".join( actor for actor in match_actors[:topActors*2:2])    # only keep odd lines in the list
             print(actors)
 
-
-        movie_info=f"这是一出 {year} {genre} {kind}.\n" \
+        movie_info=f"这是一出 {year}年 {genre} {kind}.\n" \
             + "剧情:\n" \
             + f"{summary}\n" \
             + f"人物: {actors}"
-
         
         return movie_info, post_url, kind
 

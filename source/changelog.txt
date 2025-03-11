@@ -1,3 +1,5 @@
+3.5.5
+	Put the prompt dialog in a button instead of all on the front page.
 3.5.4
 	Add optional fetching imdb and douban info button in the front page.
 	Improve transcribe accuracy by optionally fetching video summary from imdb or douban.

@@ -27,6 +27,7 @@ from ..core.utils.video_utils import check_ffmpeg_available
 from ..core.utils.imdb import get_imdb_movie_info
 from ..core.utils.douban import get_douban_movie_info
 from ..core.thread.download_ffmpeg_thread import DownloadFFMpegThread
+from ..components.MyDialogs import PromptSettingDialog
 
 LOGO_PATH = ASSETS_PATH / "logo.png"
 
@@ -240,33 +241,16 @@ class TaskCreationInterface(QWidget):
         self.movie_info_layout = QHBoxLayout()
         self.movie_info_layout.setContentsMargins(0, 0, 10, 0)
         self.movie_info_layout.setSpacing(20)
-        
-        self.movie_info_source = ComboBoxSimpleSettingCard(
-            self.tr("(Optional) From "),
-            self.tr("Choose where to get movie info. English ones use imdb, Chinese ones use douban."),
-            list(item.value for item in MovieDatabaseEnum),
-            self
-        )
-        font = QFont()
-        font.setPointSize(11)
-        self.movie_info_source.label.setFont(font)
-        self.movie_info_label = BodyLabel(self.tr("get info about a Movie or TV Episode by ID:"), self)
-        self.movie_info_label.setToolTip(self.tr("This will improve transcription accuracy by fetching video summary info from webside."))
-        self.movie_info_input = LineEdit(self)
-        self.movie_info_input.setFixedWidth(100)
-        self.movie_info_input.setPlaceholderText("tt1234567")
-        self.movie_info_input.setToolTip(self.tr("Get movie/tv information from website and set it to the prompt for Whisper transcription."))
-        self.movie_info_button = PushButton(
-            FIF.INFO,
-            self.tr("Get Info"),
+        self.prompt_button = PushButton(
+            FIF.ASTERISK,
+            self.tr("Set Prompt"),
             self,
         )
-        self.movie_info_button.setToolTip(self.tr("Fetch information from IMDB.com"))
+        self.prompt_button.setToolTip(self.tr("Set prompt for Whisper models to increase its accuracy."))
+
         self.movie_info_layout.addStretch()
-        self.movie_info_layout.addWidget(self.movie_info_source)
-        self.movie_info_layout.addWidget(self.movie_info_label)
-        self.movie_info_layout.addWidget(self.movie_info_input)
-        self.movie_info_layout.addWidget(self.movie_info_button)
+        self.movie_info_layout.addWidget(self.prompt_button)
+        
         self.main_layout.addLayout(self.movie_info_layout)
         self.main_layout.addSpacing(30)
         
@@ -332,8 +316,7 @@ class TaskCreationInterface(QWidget):
         self.start_button.clicked.connect(self.on_start_clicked)
         self.search_input.textChanged.connect(self.on_search_input_changed)
         self.log_button.clicked.connect(self.show_log_window)
-        self.movie_info_button.clicked.connect(self.on_movie_info_button_clicked)
-        self.movie_info_source.comboBox.currentTextChanged.connect(self.on_movie_source_changed)
+        self.prompt_button.clicked.connect(self.on_prompt_button_clicked)
 
         # Local to signalBus
         self.transcription_model_card.comboBox.currentTextChanged.connect(
@@ -376,70 +359,10 @@ class TaskCreationInterface(QWidget):
         signalBus.original_language_changed.connect(self.on_original_language_changed)
         signalBus.subititle_output_format_changed.connect(self.on_output_format_changed)
 
-    def on_movie_source_changed(self, source: str):
-        match source:
-            case MovieDatabaseEnum.IMDB.value:
-                self.movie_info_input.setPlaceholderText("tt1234567")
-            case MovieDatabaseEnum.DOUBAN.value:
-                self.movie_info_input.setPlaceholderText("1234567")
+    def on_prompt_button_clicked(self):
+        prompt_diaglog = PromptSettingDialog(self)
+        prompt_diaglog.exec()
 
-    def on_movie_info_button_clicked(self):
-        movie_id = self.movie_info_input.text()
-        source = self.movie_info_source.comboBox.currentText()
-        if not movie_id:
-            self.post_url = None
-            return
-        
-        match source:
-            case MovieDatabaseEnum.IMDB.value:
-                movie_summary, post_url, kind = get_imdb_movie_info(movie_id)
-            case MovieDatabaseEnum.DOUBAN.value:
-                movie_summary, post_url, kind = get_douban_movie_info(movie_id)
-            case _:
-                InfoBar.error(
-                    self.tr("Error!"),
-                    self.tr("Invalide movie/tv info source."),
-                    duration=5000,
-                    parent=self,
-                )
-                return
-                
-        if not movie_summary:
-            InfoBar.error(
-                self.tr("Failed"),
-                self.tr("Error getting movie/tv series info."),
-                duration=5000,
-                parent=self,
-                )
-            self.post_url = None
-            return
-        match cfg.transcribe_model.value:
-            case TranscribeModelEnum.FASTER_WHISPER | TranscribeModelEnum.WHISPER:
-                cfg.faster_whisper_prompt.value = movie_summary
-            case TranscribeModelEnum.WHISPER_API:
-                cfg.whisper_api_prompt.value = movie_summary
-        
-        if kind == "tv series" and source == MovieDatabaseEnum.IMDB.value:
-            # Special message for TV series in imdb
-            msg = MessageDialog(
-                self.tr("This is an id for TV series"),
-                self.tr(f"This imdb id {movie_id} is for the whole TV series.\n" \
-                    + "It will work but you will have better accuracy\n" \
-                    + "if you set it to the episode's id instead."
-                    ),
-                self
-            )
-            msg.cancelButton.hide()
-            msg.exec()
-
-        InfoBar.info(
-            self.tr("Success! Now the prompt is:"),
-            self.tr(movie_summary),
-            duration=10000,
-            parent=self,
-            )
-        self.post_url = post_url
-                    
     
     def on_output_format_changed(self, value:str):
         if cfg.subtitle_output_format.value != value:

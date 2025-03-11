@@ -1053,6 +1053,69 @@ Or go to GitHub for the new release.</source>
     </message>
 </context>
 <context>
+    <name>PromptSettingDialog</name>
+    <message>
+        <location filename="../../app/components/MyDialogs.py" line="37"/>
+        <source>Prompt for Whisper:</source>
+        <translation>Whisper 提示词：</translation>
+    </message>
+    <message>
+        <location filename="../../app/components/MyDialogs.py" line="46"/>
+        <source>(Optional) From </source>
+        <translation>（可选）从 </translation>
+    </message>
+    <message>
+        <location filename="../../app/components/MyDialogs.py" line="48"/>
+        <source>Choose the info source for a movie or a TV show.</source>
+        <translation>选择电影或者电视剧的信息来源。</translation>
+    </message>
+    <message>
+        <location filename="../../app/components/MyDialogs.py" line="51"/>
+        <source>get info about a Movie or TV Episode by ID:</source>
+        <translation>取得电影或者电视剧集的信息，其ID为：</translation>
+    </message>
+    <message>
+        <location filename="../../app/components/MyDialogs.py" line="52"/>
+        <source>This will improve transcription accuracy by fetching video summary info from webside.</source>
+        <translation>从网站上拿到视频的大概信息，这会改善语音转录的准确性。</translation>
+    </message>
+    <message>
+        <location filename="../../app/components/MyDialogs.py" line="56"/>
+        <source>Fill in the id for the movie/tv show only.</source>
+        <translation>只填入电影/电视的 ID 。</translation>
+    </message>
+    <message>
+        <location filename="../../app/components/MyDialogs.py" line="59"/>
+        <source>Get Info</source>
+        <translation>提取信息</translation>
+    </message>
+    <message>
+        <location filename="../../app/components/MyDialogs.py" line="62"/>
+        <source>Fetch information from IMDB.com or Douban.com</source>
+        <translation>从 imdb.com 或者 douban.com 提取信息</translation>
+    </message>
+    <message>
+        <location filename="../../app/components/MyDialogs.py" line="71"/>
+        <source>Ready.</source>
+        <translation>准备好了。</translation>
+    </message>
+    <message>
+        <location filename="../../app/components/MyDialogs.py" line="129"/>
+        <source>Error! Invalid movie/tv info source.</source>
+        <translation>出错！电影/电视信息来源不正确。</translation>
+    </message>
+    <message>
+        <location filename="../../app/components/MyDialogs.py" line="133"/>
+        <source>Failed! Error getting movie/tv info.</source>
+        <translation>失败！无法拿到电影/电视信息。</translation>
+    </message>
+    <message>
+        <location filename="../../app/components/MyDialogs.py" line="143"/>
+        <source>Tip: This is an id for whole TV series. It&apos;s better to use episode&apos;s id instead.</source>
+        <translation>提示：这个 ID 是给整个连续剧用的，如果用单集的 ID 效果会更好。</translation>
+    </message>
+</context>
+<context>
     <name>SaveSettingComboCard</name>
     <message>
         <location filename="../../app/components/MySettingCard.py" line="124"/>
@@ -2421,335 +2484,273 @@ Or go to GitHub for the new release.</source>
 <context>
     <name>TaskCreationInterface</name>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="78"/>
+        <location filename="../../app/view/task_creation_interface.py" line="79"/>
         <source>转录模型</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="79"/>
+        <location filename="../../app/view/task_creation_interface.py" line="80"/>
         <source>语音转换的模型</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="111"/>
+        <location filename="../../app/view/task_creation_interface.py" line="112"/>
         <source>Translate Target</source>
         <translation>翻译目标</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="112"/>
+        <location filename="../../app/view/task_creation_interface.py" line="113"/>
         <source>The final language you want to translate into.</source>
         <translation>最后生成字幕的语言。</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="202"/>
+        <location filename="../../app/view/task_creation_interface.py" line="203"/>
         <source>请拖拽文件或输入视频URL</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="245"/>
-        <source>(Optional) From </source>
-        <translation>（可选）从 </translation>
-    </message>
-    <message>
-        <location filename="../../app/view/task_creation_interface.py" line="246"/>
-        <source>Choose where to get movie info. English ones use imdb, Chinese ones use douban.</source>
-        <translation>选择从哪里取得电影资讯。英语的用imdb，中文的用douban。</translation>
-    </message>
-    <message>
-        <location filename="../../app/view/task_creation_interface.py" line="253"/>
-        <source>get info about a Movie or TV Episode by ID:</source>
-        <translation>取得电影或者电视剧集的信息，其ID为：</translation>
-    </message>
-    <message>
-        <location filename="../../app/view/task_creation_interface.py" line="254"/>
-        <source>This will improve transcription accuracy by fetching video summary info from webside.</source>
-        <translation>从网站上拿到视频的大概信息，这会改善语音转录的准确性。</translation>
-    </message>
-    <message>
-        <location filename="../../app/view/task_creation_interface.py" line="258"/>
-        <source>Get movie/tv information from website and set it to the prompt for Whisper transcription.</source>
-        <translation>从网站上拿到电影/电视的信息并且设为提示给Whisper语音转录用。</translation>
-    </message>
-    <message>
-        <location filename="../../app/view/task_creation_interface.py" line="277"/>
+        <location filename="../../app/view/task_creation_interface.py" line="261"/>
         <source>准备就绪</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="296"/>
+        <location filename="../../app/view/task_creation_interface.py" line="280"/>
         <source>查看日志</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="313"/>
+        <location filename="../../app/view/task_creation_interface.py" line="297"/>
         <source>语言</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="314"/>
+        <location filename="../../app/view/task_creation_interface.py" line="298"/>
         <source>设置您偏好的界面语言</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="315"/>
-        <location filename="../../app/view/task_creation_interface.py" line="845"/>
+        <location filename="../../app/view/task_creation_interface.py" line="299"/>
+        <location filename="../../app/view/task_creation_interface.py" line="768"/>
         <source>使用系统设置</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="767"/>
+        <location filename="../../app/view/task_creation_interface.py" line="690"/>
         <source>警告</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="593"/>
+        <location filename="../../app/view/task_creation_interface.py" line="516"/>
         <source>选择媒体文件</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="700"/>
-        <location filename="../../app/view/task_creation_interface.py" line="702"/>
+        <location filename="../../app/view/task_creation_interface.py" line="246"/>
+        <source>Set Prompt</source>
+        <translation>设置提示</translation>
+    </message>
+    <message>
+        <location filename="../../app/view/task_creation_interface.py" line="249"/>
+        <source>Set prompt for Whisper models to increase its accuracy.</source>
+        <translation>给 Whisper 模型设置提示词，以增加其转录的准确性。</translation>
+    </message>
+    <message>
+        <location filename="../../app/view/task_creation_interface.py" line="623"/>
+        <location filename="../../app/view/task_creation_interface.py" line="625"/>
         <source>导入成功</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="703"/>
+        <location filename="../../app/view/task_creation_interface.py" line="626"/>
         <source>导入媒体文件成功</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="147"/>
+        <location filename="../../app/view/task_creation_interface.py" line="148"/>
         <source>是否把字幕合成到视频里面。</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="158"/>
+        <location filename="../../app/view/task_creation_interface.py" line="159"/>
         <source>是否合成软字幕视频，关掉则会合成硬字幕</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="102"/>
+        <location filename="../../app/view/task_creation_interface.py" line="103"/>
         <source>字幕翻译方式</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="94"/>
+        <location filename="../../app/view/task_creation_interface.py" line="95"/>
         <source>源语言</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="95"/>
+        <location filename="../../app/view/task_creation_interface.py" line="96"/>
         <source>音频的源语言</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="103"/>
+        <location filename="../../app/view/task_creation_interface.py" line="104"/>
         <source>选择字幕翻译方式，或者不翻译。</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="130"/>
+        <location filename="../../app/view/task_creation_interface.py" line="131"/>
         <source>字幕输出格式</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="131"/>
+        <location filename="../../app/view/task_creation_interface.py" line="132"/>
         <source>字幕文件的后缀名</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="138"/>
+        <location filename="../../app/view/task_creation_interface.py" line="139"/>
         <source>字幕布局</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="139"/>
+        <location filename="../../app/view/task_creation_interface.py" line="140"/>
         <source>原文在上，译文在上，或者其它布局</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="150"/>
+        <location filename="../../app/view/task_creation_interface.py" line="151"/>
         <source>Save Subtitle Only</source>
         <translation>只生成字幕</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="151"/>
+        <location filename="../../app/view/task_creation_interface.py" line="152"/>
         <source>Combine Sub + Video</source>
         <translation>生成带字幕视频</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="161"/>
+        <location filename="../../app/view/task_creation_interface.py" line="162"/>
         <source>Hard Subtitle</source>
         <translation>硬字幕</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="162"/>
+        <location filename="../../app/view/task_creation_interface.py" line="163"/>
         <source>Soft Subtitle</source>
         <translation>软字幕</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="261"/>
-        <source>Get Info</source>
-        <translation>提取信息</translation>
-    </message>
-    <message>
-        <location filename="../../app/view/task_creation_interface.py" line="264"/>
-        <source>Fetch information from IMDB.com</source>
-        <translation>从 IMDB.COM 提取信息</translation>
-    </message>
-    <message>
-        <location filename="../../app/view/task_creation_interface.py" line="305"/>
+        <location filename="../../app/view/task_creation_interface.py" line="289"/>
         <source>©VideoCaptioner {VERSION} • By {AUTHOR}, forked {SUBVERSION}  By {COAUTHOR}</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="400"/>
-        <source>Error!</source>
-        <translation>错误！</translation>
-    </message>
-    <message>
-        <location filename="../../app/view/task_creation_interface.py" line="401"/>
-        <source>Invalide movie/tv info source.</source>
-        <translation>错误的电影/电视信息来源。</translation>
-    </message>
-    <message>
-        <location filename="../../app/view/task_creation_interface.py" line="409"/>
-        <source>Failed</source>
-        <translation>已失败</translation>
-    </message>
-    <message>
-        <location filename="../../app/view/task_creation_interface.py" line="410"/>
-        <source>Error getting movie/tv series info.</source>
-        <translation>提取电影/电视剧集信息时出错。</translation>
-    </message>
-    <message>
-        <location filename="../../app/view/task_creation_interface.py" line="425"/>
-        <source>This is an id for TV series</source>
-        <translation>这个 id 是给整个剧集用的</translation>
-    </message>
-    <message>
-        <location filename="../../app/view/task_creation_interface.py" line="429"/>
-        <source>This imdb id {movie_id} is for the whole TV series.
-It will work but you will have better accuracy
-if you set it to the episode&apos;s id instead.</source>
-        <translation>这个 imdb 的 id {movie_id} 是给整个剧集用的，\n虽然也能工作，但如果你把它设成单个电视剧的ID的话，\n得到的准确率会更高。</translation>
-    </message>
-    <message>
-        <location filename="../../app/view/task_creation_interface.py" line="436"/>
-        <source>Success! Now the prompt is:</source>
-        <translation>成功！现在提示改成：</translation>
-    </message>
-    <message>
-        <location filename="../../app/view/task_creation_interface.py" line="542"/>
-        <location filename="../../app/view/task_creation_interface.py" line="649"/>
+        <location filename="../../app/view/task_creation_interface.py" line="465"/>
+        <location filename="../../app/view/task_creation_interface.py" line="572"/>
         <source>警告，需要配置 Base URL！</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="543"/>
-        <location filename="../../app/view/task_creation_interface.py" line="650"/>
+        <location filename="../../app/view/task_creation_interface.py" line="466"/>
+        <location filename="../../app/view/task_creation_interface.py" line="573"/>
         <source>你需要去设置中配置自己的Base URL，API Key和LLM Model。</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="611"/>
+        <location filename="../../app/view/task_creation_interface.py" line="534"/>
         <source>FFMpeg not available.</source>
         <translation>FFMpeg找不到。</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="612"/>
+        <location filename="../../app/view/task_creation_interface.py" line="535"/>
         <source>FFMpeg is not installed or cannot run.</source>
         <translation>FFMpeg没有安装或者无法跑。</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="620"/>
+        <location filename="../../app/view/task_creation_interface.py" line="543"/>
         <source>FFMpeg is not available</source>
         <translation>没有FFMpeg可跑</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="621"/>
+        <location filename="../../app/view/task_creation_interface.py" line="544"/>
         <source>Do you want to download it from Internet?</source>
         <translation>你想要从互联网下载它吗？</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="624"/>
+        <location filename="../../app/view/task_creation_interface.py" line="547"/>
         <source>OK</source>
         <translation>好的</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="625"/>
+        <location filename="../../app/view/task_creation_interface.py" line="548"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="659"/>
+        <location filename="../../app/view/task_creation_interface.py" line="582"/>
         <source>The LLM is not working.</source>
         <translation>LLM 不工作。</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="660"/>
+        <location filename="../../app/view/task_creation_interface.py" line="583"/>
         <source>Access to {cfg.api_base.value} failed. Check your LLM connection please.</source>
         <translation>尝试调用 {cfg.api_base.value} 失败。请查一下你的 LLM 链接。</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="673"/>
+        <location filename="../../app/view/task_creation_interface.py" line="596"/>
         <source>Done</source>
         <translation>完成</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="674"/>
+        <location filename="../../app/view/task_creation_interface.py" line="597"/>
         <source>FFMpeg downloaded and extracted.</source>
         <translation>FFMpeg 已下载并解压。</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="710"/>
+        <location filename="../../app/view/task_creation_interface.py" line="633"/>
         <source>格式错误: </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="711"/>
+        <location filename="../../app/view/task_creation_interface.py" line="634"/>
         <source>不支持该文件格式</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="724"/>
-        <location filename="../../app/view/task_creation_interface.py" line="813"/>
-        <location filename="../../app/view/task_creation_interface.py" line="836"/>
+        <location filename="../../app/view/task_creation_interface.py" line="647"/>
+        <location filename="../../app/view/task_creation_interface.py" line="736"/>
+        <location filename="../../app/view/task_creation_interface.py" line="759"/>
         <source>错误</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="725"/>
+        <location filename="../../app/view/task_creation_interface.py" line="648"/>
         <source>请输入有效的文件路径或视频URL</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="768"/>
+        <location filename="../../app/view/task_creation_interface.py" line="691"/>
         <source>建议配置cookies.txt文件，以可以下载高清视频</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="796"/>
+        <location filename="../../app/view/task_creation_interface.py" line="719"/>
         <source>任务创建成功</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="797"/>
+        <location filename="../../app/view/task_creation_interface.py" line="720"/>
         <source>开始自动处理...</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="837"/>
+        <location filename="../../app/view/task_creation_interface.py" line="760"/>
         <source>请输入音视频文件路径或URL</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="858"/>
+        <location filename="../../app/view/task_creation_interface.py" line="781"/>
         <source>更新成功 :</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="859"/>
+        <location filename="../../app/view/task_creation_interface.py" line="782"/>
         <source>配置将在重启后生效</source>
         <translation></translation>
     </message>

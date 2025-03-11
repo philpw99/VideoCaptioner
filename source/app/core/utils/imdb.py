@@ -14,7 +14,10 @@ def get_imdb_movie_info(id: str, topActors = 20):
         if not movie:
             return None, None, None
         
-        cast = movie["cast"]
+        cast = movie.get("cast")
+        if not cast:
+            # No cast. The info must be wrong.
+            return None, None, None
         if len(cast) > topActors:
             cast = cast[:topActors]    # Limit the actor list length.
 
@@ -23,6 +26,9 @@ def get_imdb_movie_info(id: str, topActors = 20):
             actors = ", ".join(str(actor) for actor in cast)
         else:
             actors = ", ".join(str(actor.currentRole) for actor in cast)
+        
+        # Remove all "/ ..." instances
+        actors = actors.replace("/ ...", "")
         
         plot = movie.get("plot outline")
         if not plot:
