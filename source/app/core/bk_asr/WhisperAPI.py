@@ -11,6 +11,7 @@ logger = setup_logger("whisper_api")
 
 
 class WhisperAPI(BaseASR):
+    allow_running = [True]
     def __init__(self, 
                  audio_path: str,
                  whisper_model: str,
@@ -19,7 +20,9 @@ class WhisperAPI(BaseASR):
                  prompt: str = "",
                  base_url: Optional[str] = None,
                  api_key: Optional[str] = None, 
-                 use_cache: bool = False):
+                 use_cache: bool = False,
+                 allow_running = None,
+                 ):
         """
         初始化 WhisperASR
         

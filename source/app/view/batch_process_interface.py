@@ -20,7 +20,7 @@ from ..common.config import cfg
 from ..common.signal_bus import signalBus
 
 from ..core.entities import SupportedVideoFormats, SupportedAudioFormats, TodoWhenDoneEnum, SupportedSubtitleFormats, SupportedImageFormats
-from ..core.entities import Task, VideoInfo, BatchTaskTypeEnum, TranslateMethodEnum, NOT_RUNNING_TASKS
+from ..core.entities import Task, VideoInfo, BatchTaskTypeEnum, TranslateMethodEnum, NOT_RUNNING_TASKS, LANGUAGES
 from ..core.thread.create_task_thread import CreateTaskThread
 from ..core.thread.subtitle_pipeline_thread import SubtitlePipelineThread
 from ..core.thread.transcript_thread import TranscriptThread
@@ -841,12 +841,18 @@ class TaskInfoCard(CardWidget):
         #     elif self.task.type == Task.Type.TRANSLATE:
         #         strategy_text += self.tr(" 任务：生成字幕文件 ")
 
-        if self.task.portrait:
+        if self.task.portrait and self.task.need_video:
             strategy_text += self.tr(" 竖屏模式：开启 ")
-        if self.task.portrait_background:
-            strategy_text += "\n" + self.tr(" 竖屏背景: ") + self.task.portrait_background
+            if self.task.portrait_background:
+                strategy_text += "\n" + self.tr(" 竖屏背景: ") + self.task.portrait_background
 
-        tooltip = self.tr("任务类型: ") + self.task.type.value + "  " + self.tr("转录模型: ") + self.task.transcribe_model.value + "\n"
+        tooltip = self.tr("任务类型: ") + self.task.type.value + "  " \
+            + self.tr("转录模型: ") + self.task.transcribe_model.value + "  " \
+            + self.tr("源语言：") + next(lang for lang, v in LANGUAGES.items() if v==self.task.transcribe_language) \
+            + "\n"
+        
+        
+        
         if len(self.task.file_path) > 100:
             tooltip += self.tr("文件: ") + self.task.file_path[:50] + "..." + Path(self.task.file_path).name + "\n"
         else:
@@ -862,8 +868,8 @@ class TaskInfoCard(CardWidget):
 
         pixmap = QPixmap(str(thumbnail_path)).scaled(
             self.video_thumbnail.size(),
-            Qt.KeepAspectRatio,
-            Qt.SmoothTransformation
+            Qt.AspectRatioMode.KeepAspectRatio,
+            Qt.TransformationMode.SmoothTransformation
         )
         self.video_thumbnail.setPixmap(pixmap)
 
@@ -983,12 +989,15 @@ class TaskInfoCard(CardWidget):
 
     def cancel(self):
         """修改任务状态"""
-        self.stop()
-        self.task.status = Task.Status.CANCELED
-        self.update_tooltip()
         if not self.task.status in NOT_RUNNING_TASKS:
-            # If the task is running
-            self.finished.emit(self.task)
+            # Stop the task if it's running.
+            self.stop()
+        self.task.status = Task.Status.CANCELED
+        self.start_button.setText(self.tr("Cancelled"))
+        self.update_tooltip()
+        # if not self.task.status in NOT_RUNNING_TASKS:
+        #     # If the task is running or pending
+        #     self.finished.emit(self.task)
 
     def stop(self):
         """停止转录"""
@@ -997,7 +1006,7 @@ class TaskInfoCard(CardWidget):
             # self.transcript_thread.quit()
             # self.transcript_thread.terminate()
 
-        self.reset_ui()
+        # self.reset_ui()
 
         InfoBar.success(
             self.tr("已取消"),

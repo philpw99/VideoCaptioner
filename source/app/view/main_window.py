@@ -222,6 +222,7 @@ class MainWindow(FluentWindow):
         Task.Status.OPTIMIZING.setValue( self.tr("Optimizing/Translating"))
         Task.Status.PENDING.setValue( self.tr("Pending"))
         Task.Status.SYNTHESIZING.setValue( self.tr("Synthesizing"))
+        Task.Status.TRANSCRIBING.setValue( self.tr("Transcribing"))
         Task.Status.TRANSCODING.setValue( self.tr("Transcoding"))
         Task.Status.TRANSLATING.setValue( self.tr("Translating"))
         Task.Status.WAITINGAUDIO.setValue( self.tr("Waiting for audio transcoding"))

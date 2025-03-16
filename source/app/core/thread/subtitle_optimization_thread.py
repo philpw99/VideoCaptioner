@@ -145,6 +145,7 @@ class SubtitleOptimizationThread(QThread):
                             need_remove_punctuation=need_remove_punctuation,
                             cjk_only=True,
                             allow_running=self.task.allow_running,
+                            custom_prompt=self.custom_prompt_text,
                         )
                         translate_result = self.optimizer.optimizer_multi_thread(subtitle_json, translate=True,
                                                                                     reflect=need_reflect,
@@ -163,6 +164,7 @@ class SubtitleOptimizationThread(QThread):
                             allow_running=self.task.allow_running,
                             target_language=self.task.target_language,
                             original_language=self.task.original_language,
+                            custom_prompt=self.custom_prompt_text,
                         )
                         translate_result = self.optimizer.translate_single_batch(subtitle_json, callback=self.callback)
                     case TranslateMethodEnum.GOOGLE:

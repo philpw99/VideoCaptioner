@@ -44,7 +44,8 @@ class SubtitleOptimizer:
         cjk_only: bool = True,
         single_sentence_translate = False,
         allow_running = None,
-        original_language = None
+        original_language = None,
+        custom_prompt = None,
     ) -> None:
         base_url = os.getenv('OPENAI_BASE_URL')
         api_key = os.getenv('OPENAI_API_KEY')
@@ -63,7 +64,8 @@ class SubtitleOptimizer:
         self.need_remove_punctuation = need_remove_punctuation
         self.cjk_only = cjk_only
         self.single_sentence_translate = single_sentence_translate
-
+        self.custom_prompt = custom_prompt
+        
         if allow_running:
             self.allow_running = allow_running
 
@@ -93,10 +95,7 @@ class SubtitleOptimizer:
                                translate=False,
                                reflect=False,
                                callback=None,
-                               allow_running=None,
                                ):
-        if allow_running:       # Pass the reference
-            self.allow_running = allow_running
         batch_num = self.batch_num
         items = list(subtitle_json.items())[:]
         chunks = [dict(items[i:i + batch_num]) for i in range(0, len(items), batch_num)]
@@ -261,6 +260,8 @@ class SubtitleOptimizer:
         if self.summary_content:
             input_content += f"\nThe following is reference material related to subtitles, based on which the subtitles will be corrected, optimized, and translated:\n<prompt>{self.summary_content}</prompt>\n"
         prompt = REFLECT_TRANSLATE_PROMPT.replace("[TargetLanguage]", self.target_language)
+        if self.custom_prompt:
+            prompt += "\nAdditional Info:\n" + self.custom_prompt
         message = [{"role": "system", "content": prompt},
                    {"role": "user", "content": input_content}]
         return message
@@ -319,6 +320,9 @@ class SubtitleOptimizer:
 
         sys_prompt = SINGLE_BATCH_SYSTEM_PROMPT.replace("[TargetLanguage]", self.target_language
                     ).replace("[OriginalLanguage]", self.original_language)
+        
+        if self.custom_prompt:
+            sys_prompt += "\nAdditional info:\n" + self.custom_prompt
         
         for key, value in original_subtitle.items():
             

@@ -304,12 +304,11 @@ You are a professional [TargetLanguage] translator.
 The previous sentence is: "[PreviousSentence]"
 and it was translated to: "[PreviousTranslation]".
 - Translate the user prompt text into [TargetLanguage] and don't repeat the previous translated sentence.
-- Don't include any explanation or extra content.
+- Don't answer or explain anything. Output only the translation and nothing else.
 """
 
 SINGLE_BATCH_SYSTEM_PROMPT = """
 You are a professional [TargetLanguage] translator. 
 - Translate the [OriginalLanguage] user text  into [TargetLanguage] and don't repeat the previous translated sentence.
-- Don't output any explanation or extra content.
-- Don't answer or explain anything in the user text.
+- Don't answer or explain anything, output only the translation and nothing else.
 """

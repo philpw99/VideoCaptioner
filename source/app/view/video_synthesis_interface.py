@@ -345,13 +345,13 @@ class VideoSynthesisInterface(QWidget):
 
     def on_synthesis_clicked(self):
         if self.processing:
-            # Cancel the process
+            # It's actually the cancel button now.
             if self.task:
                 self.task.allow_running[0] = False
             self.processing = False
             self.synthesize_button.setText("Start Synthesis")
         else:
-            # Start the process
+            # Start the process, set the button to "Cancel"
             self.processing = True
             self.synthesize_button.setText(self.tr("Cancel Synthesis"))
             self.process()

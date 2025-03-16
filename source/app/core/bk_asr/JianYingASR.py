@@ -19,8 +19,15 @@ logger = setup_logger("jianying_asr")
 
 
 class JianYingASR(BaseASR):
-    def __init__(self, audio_path: Union[str, bytes], use_cache: bool = False, need_word_time_stamp: bool = False,
-                 start_time: float = 0, end_time: float = 6000):
+    allow_running = [True]
+    def __init__(self,
+                 audio_path: Union[str, bytes],
+                 use_cache: bool = False,
+                 need_word_time_stamp: bool = False,
+                 start_time: float = 0,
+                 end_time: float = 6000,
+                 allow_running = None,
+                 ):
         super().__init__(audio_path, use_cache)
         self.audio_path = audio_path
         self.end_time = end_time
@@ -40,6 +47,9 @@ class JianYingASR(BaseASR):
 
         self.need_word_time_stamp = need_word_time_stamp
         self.tdid = self._get_tid()
+
+        if allow_running:
+            self.allow_running = allow_running
 
     def submit(self) -> str:
         """Submit the task"""
@@ -83,10 +93,7 @@ class JianYingASR(BaseASR):
         response = requests.post(url, json=payload, headers=headers)
         return response.json()
 
-    def _run(self, callback=None, allow_running = None):
-        if allow_running:
-            self.allow_running = allow_running
-
+    def _run(self, callback=None):
         if not self.allow_running[0]:
             logger.error("上传前中断")
             return

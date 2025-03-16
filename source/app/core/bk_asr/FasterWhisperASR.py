@@ -15,6 +15,7 @@ from ...config import MODEL_PATH, BIN_PATH
 logger = setup_logger("faster_whisper")
 
 class FasterWhisperASR(BaseASR):
+    allow_running = [True]
     def __init__(self, 
                  audio_path: str,
                  faster_whisper_path: str,
@@ -42,6 +43,7 @@ class FasterWhisperASR(BaseASR):
                  max_comma: int = 20,
                  max_comma_cent: int = 50,
                  prompt: str = None,
+                 allow_running = None,
                  ):
         super().__init__(audio_path, False)
         
@@ -75,6 +77,8 @@ class FasterWhisperASR(BaseASR):
         self.prompt = prompt
 
         self.process = None
+        if allow_running:
+            self.allow_running = allow_running
         
     def _build_command(self, audio_path: Path) -> List[str]:
         """构建命令行参数"""

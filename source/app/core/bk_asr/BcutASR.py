@@ -30,8 +30,14 @@ class BcutASR(BaseASR):
         'Content-Type': 'application/json'
     }
     MAX_DAILY_CALLS = 23
+    allow_running = [True]
 
-    def __init__(self, audio_path: str | bytes, use_cache: bool = False, need_word_time_stamp: bool = False):
+    def __init__(self,
+                 audio_path: str | bytes,
+                 use_cache: bool = False,
+                 need_word_time_stamp: bool = False,
+                 allow_running = None,
+                 ):
         super().__init__(audio_path, use_cache=use_cache)
         self.session = requests.Session()
         self.task_id: Optional[str] = None
@@ -49,6 +55,9 @@ class BcutASR(BaseASR):
         self.task_id: Optional[str] = None
 
         self.need_word_time_stamp = need_word_time_stamp
+        
+        if allow_running:
+            self.allow_running = allow_running
 
     def upload(self) -> None:
         """申请上传"""
@@ -99,6 +108,9 @@ class BcutASR(BaseASR):
             etag = resp.headers.get("Etag")
             self.__etags.append(etag)
             logger.info(f"分片{clip}上传成功: {etag}")
+            if not self.allow_running[0]:
+                logger.info("上载过程时中断。")
+                return
 
     def __commit_upload(self) -> None:
         """提交上传数据"""
@@ -121,6 +133,9 @@ class BcutASR(BaseASR):
 
     def create_task(self) -> str:
         """开始创建转换任务"""
+        if not self.allow_running[0]:
+            logger.info("建立转换任务前中断")
+            return
         resp = requests.post(
             API_CREATE_TASK, json={"resource": self.__download_url, "model_id": "8"}, headers=self.headers
         )
@@ -142,8 +157,16 @@ class BcutASR(BaseASR):
         if callback is None:
             callback = lambda x, y: None
 
+        if not self.allow_running[0]:
+            logger.info("上传前中断。")
+            return
+
         callback(0, "上传中")
         self.upload()
+
+        if not self.allow_running[0]:
+            logger.info("创建任务前中断。")
+            return
 
         callback(40, "创建任务中")
 
@@ -153,6 +176,9 @@ class BcutASR(BaseASR):
 
         # 轮询检查任务状态
         for _ in range(500):
+            if not self.allow_running[0]:
+                logger.info("转录时中断")
+                return
             task_resp = self.result()
             if task_resp["state"] == 4:
                 break

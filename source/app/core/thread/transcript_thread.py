@@ -121,6 +121,7 @@ class TranscriptThread(QThread):
                 args = {
                     "use_cache": self.task.use_asr_cache,
                     "need_word_time_stamp": self.task.need_word_time_stamp,
+                    "allow_running": self.task.allow_running,
                 }
                 match self.task.transcribe_model:
                     case TranscribeModelEnum.WHISPER:
@@ -176,7 +177,7 @@ class TranscriptThread(QThread):
                     case _:
                         raise ValueError(self.tr("无效的转录模型: ") + str(self.task.transcribe_model.value))
                 
-                asr_data = self.asr.run(callback=self.progress_callback, allow_running=self.task.allow_running)
+                asr_data = self.asr.run(callback=self.progress_callback)
 
                 if not self.task.allow_running[0]:
                     logger.error("字幕断句前中断")

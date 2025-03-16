@@ -638,7 +638,8 @@ class SubtitleOptimizationInterface(QWidget):
             need_translate=True,
             translate_method=method,
             soft_sub=cfg.soft_subtitle.value,
-            need_video=False)
+            need_video=False,
+            )
             
         # 设置任务的原始字幕保存路径
         self.task.original_subtitle_save_path = file_str
@@ -1098,7 +1099,11 @@ class SubtitleOptimizationInterface(QWidget):
         # menu.addAction(retranslate_action)
         menu.addAction(merge_action)
         merge_action.setShortcut("Ctrl+M")  # 设置快捷键
-
+        
+        add_action = Action(FIF.ADD_TO, self.tr("在前面加行"))
+        menu.addAction(add_action)
+        add_action.setShortcut("Ctrl+A")
+        
         # 设置动作状态
         # retranslate_action.setEnabled(cfg.need_translate.value)
         merge_action.setEnabled(len(rows) > 1)
@@ -1106,9 +1111,51 @@ class SubtitleOptimizationInterface(QWidget):
         # 连接动作信号
         # retranslate_action.triggered.connect(lambda: self.retranslate_selected_rows(rows))
         merge_action.triggered.connect(lambda: self.merge_selected_rows(rows))
+        add_action.triggered.connect(lambda: self.add_row_before(rows))
 
         # 显示菜单
         menu.exec(self.subtitle_table.viewport().mapToGlobal(pos))
+
+    def add_row_before(self, rows):
+        if not rows:
+            return
+        
+        data= self.model._data
+        data_list = list(data.values())
+        row_data = data_list[rows[0]]
+        start_time = row_data['start_time']
+        empty_item = {
+            'start_time': start_time,
+            'end_time': start_time,
+            'original_subtitle': "",
+            'translated_subtitle': "",
+        }
+        keys = list( data.keys() )
+        row_key = keys[rows[0]]
+        new_data={}
+        reach_row = False
+        for i, key in enumerate(keys):
+            if key == row_key:
+                new_data[str(i+1)] = empty_item
+                new_data[str(i+2)] = row_data
+                reach_row = True
+            else:
+                if reach_row:
+                    new_data[str(i+2)] = data[key]
+                else:
+                    new_data[str(i+1)] = data[key]
+
+        # 更新模型数据
+        self.model.update_all(new_data)
+
+        # 显示成功提示
+        InfoBar.success(
+            self.tr("加行成功"),
+            self.tr("已成功加入字幕行"),
+            duration=3000,
+            parent=self
+        )
+            
 
     def merge_selected_rows(self, rows):
         """合并选中的字幕行"""

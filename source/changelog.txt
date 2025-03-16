@@ -1,4 +1,7 @@
 3.5.5
+	Now you can add lines in subtitle optimize tab.
+	Missing translation.
+	Fix a bug caused by mechanism of task interruption.
 	Put the prompt dialog in a button instead of all on the front page.
 3.5.4
 	Add optional fetching imdb and douban info button in the front page.

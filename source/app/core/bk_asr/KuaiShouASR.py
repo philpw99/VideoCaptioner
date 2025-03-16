@@ -8,10 +8,18 @@ from ..utils.logger import setup_logger
 logger = setup_logger("kuaishou_asr")
 
 class KuaiShouASR(BaseASR):
-    def __init__(self, audio_path, use_cache: bool = False, need_word_time_stamp: bool = False):
+    allow_running = [True]
+    def __init__(self,
+                 audio_path,
+                 use_cache: bool = False,
+                 need_word_time_stamp: bool = False,
+                 allow_running = None,
+                 ):
         super().__init__(audio_path, use_cache)
         self.need_word_time_stamp = need_word_time_stamp
         logger.info("KuaiShouASR initialized with audio_path: %s", audio_path)
+        if allow_running:
+            self.allow_running = allow_running
 
     def _run(self, callback=None) -> dict:
         logger.info("Running ASR process")

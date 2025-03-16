@@ -15,8 +15,16 @@ logger = setup_logger("whisper_asr")
 
 
 class WhisperASR(BaseASR):
-    def __init__(self, audio_path, language="en", whisper_cpp_path="whisper-cpp", whisper_model=None,
-                 use_cache: bool = False, need_word_time_stamp: bool = False):
+    allow_running = [True]
+    def __init__(self,
+                 audio_path,
+                 language="en",
+                 whisper_cpp_path="whisper-cpp",
+                 whisper_model=None,
+                 use_cache: bool = False,
+                 need_word_time_stamp: bool = False,
+                 allow_runnning = None
+                 ):
         super().__init__(audio_path, False)
         assert os.path.exists(audio_path), f"音频文件 {audio_path} 不存在"
         assert audio_path.endswith('.wav'), f"音频文件 {audio_path} 必须是WAV格式"
@@ -38,6 +46,9 @@ class WhisperASR(BaseASR):
         self.language = language
 
         self.process = None
+        
+        if allow_runnning:
+            self.allow_running = allow_runnning
 
     def _make_segments(self, resp_data: str) -> list[ASRDataSeg]:
         asr_data = from_srt(resp_data)

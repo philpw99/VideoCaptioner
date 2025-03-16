@@ -188,8 +188,6 @@ class CreateTaskThread(QThread):
             type=task_type,
             task_thread=self,
         )
-        # Make sure it's allow to run.
-        task.allow_running[0] = True
         self.finished.emit(task)
         self.progress.emit(100, self.tr("创建任务完成"))
         logger.info(f"文件任务创建完成：{task}")
@@ -327,8 +325,6 @@ class CreateTaskThread(QThread):
             type=Task.Type.URL,
             task_thread=self,
         )
-        # Make sure it's allow to run.
-        task.allow_running[0] = True
         self.finished.emit(task)
         logger.info(f"URL任务创建完成：{task}")
         return task

@@ -99,11 +99,12 @@ class PromptSettingDialog(MessageBoxBase):
 
     def on_accepted(self):
         # Keep the prompt value and close itself
+        self.summary = self.prompt_input.toPlainText()
         match cfg.transcribe_model.value:
             case TranscribeModelEnum.FASTER_WHISPER | TranscribeModelEnum.WHISPER:
-                cfg.faster_whisper_prompt.value = self.summary
+                cfg.faster_whisper_prompt.value = self.summary if self.summary else ""
             case TranscribeModelEnum.WHISPER_API:
-                cfg.whisper_api_prompt.value = self.summary
+                cfg.whisper_api_prompt.value = self.summary if self.summary else ""
         self.accept()
         
     def on_movie_source_changed(self, source: str):
