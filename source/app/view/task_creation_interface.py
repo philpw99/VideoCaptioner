@@ -749,6 +749,8 @@ class TaskCreationInterface(QWidget):
         
         if self.audio_track_select.isVisible():
             audio_track = self.audio_track_select.comboBox.currentIndex()
+        else:
+            audio_track = 0
         
         self.create_task_thread = CreateTaskThread(
             file_path,
@@ -758,7 +760,7 @@ class TaskCreationInterface(QWidget):
             soft_sub=cfg.soft_subtitle.value,
             need_video=cfg.need_video.value,
             post_url=self.post_url,
-            audio_track = audio_track
+            audio_track = audio_track,
             )
 
         self.create_task_thread.finished.connect(self.on_create_task_finished)
