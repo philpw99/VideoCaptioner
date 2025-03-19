@@ -32,13 +32,13 @@ class TimedMessageBox(QMessageBox):
         super(TimedMessageBox, self).__init__()
         self.timeout = timeout
         self.setWindowTitle(title)
-        self.setText('\n'.join((message, f"Closing in {timeout} seconds")))
+        self.setText('\n'.join([message, f"Closing in {timeout} seconds"]))
         self.setIcon(QMessageBox.Icon.Warning)
         self.setStandardButtons( QMessageBox.StandardButton.Ok | QMessageBox.StandardButton.Cancel )
         self.setDefaultButton = QMessageBox.StandardButton.Ok
 
     def showEvent(self, event):
-        QTimer().singleShot(self.timeout*1000, self.close)
+        QTimer().singleShot(self.timeout*1000, self.accept)
         super(TimedMessageBox, self).showEvent(event)
 
 class BatchProcessInterface(QWidget):
@@ -368,6 +368,7 @@ class BatchProcessInterface(QWidget):
                     else:
                         os.system('sudo systemctl suspend')
             case TodoWhenDoneEnum.SHUTDOWN.value:
+                print("shutting down in 1 min.")
                 qbox = TimedMessageBox(
                     self.tr( "Shutting Down in 1 minute"),
                     self.tr("All jobs are done. The computer is shutting down. "),
@@ -376,9 +377,9 @@ class BatchProcessInterface(QWidget):
                 ret = qbox.exec()
                 if ret != QMessageBox.StandardButton.Cancel:
                     if sys.platform == 'win32':
+                        print("shutting down now.")
                         os.system("shutdown /s /t 1")
                     else:
-                        self.stop()
                         os.system('sudo shutdown now')
 
         # Doing nothing.

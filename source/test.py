@@ -1,4 +1,2 @@
-import shutil
-
-result = shutil.which("ffmpegg")
-print (f"result: {result}")
+import sys
+print (f"result: {sys.platform}")

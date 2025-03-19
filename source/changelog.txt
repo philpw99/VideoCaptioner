@@ -1,3 +1,5 @@
+3.5.6
+	Fix the issue of auto-shutdown after batch processing finishes.
 3.5.5
 	Now you can add lines in subtitle optimize tab.
 	Missing translation.
