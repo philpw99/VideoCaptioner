@@ -28,7 +28,9 @@ class CreateTaskThread(QThread):
                  soft_sub: bool = True,
                  need_video: bool = False,
                  url: str = None,
-                 post_url:str = None):
+                 post_url:str = None,
+                 audio_track:int = 0,
+                 ):
         super().__init__()
         self.file_path = file_path
         self.task_type = task_type
@@ -38,6 +40,7 @@ class CreateTaskThread(QThread):
         self.need_video = need_video
         self.url = url
         self.post_url = post_url
+        self.audio_track = audio_track
 
     def run(self):
         try:
@@ -50,6 +53,7 @@ class CreateTaskThread(QThread):
                                             translate_method = self.translate_method,
                                             need_video =self.need_video,
                                             post_url=self.post_url,
+                                            audio_track=self.audio_track,
                                         )
 
                 case Task.Type.URL:
@@ -77,6 +81,7 @@ class CreateTaskThread(QThread):
                          soft_sub: bool,
                          need_video: bool,
                          post_url: str = None,
+                         audio_track: int = 0,
                          ):
         logger.info("\n===================")
         logger.info(f"开始创建文件任务：{file_path}")
@@ -85,6 +90,7 @@ class CreateTaskThread(QThread):
         file_full_path = Path(file_path)
         file_dir = file_full_path.parent
         file_name = file_full_path.stem
+        audio_track = audio_track
 
         # 获取 视频/音频 信息
         thumbnail_path = str(task_work_dir / "thumbnail.jpg")
@@ -187,6 +193,7 @@ class CreateTaskThread(QThread):
             zoom_subtitle=cfg.zoom_subtitle.value,
             type=task_type,
             task_thread=self,
+            audio_track = audio_track
         )
         self.finished.emit(task)
         self.progress.emit(100, self.tr("创建任务完成"))
@@ -430,6 +437,7 @@ class CreateTaskThread(QThread):
             type=Task.Type.TRANSCRIBE,  # It should be Transcribe only, no video generation.
             # Don't set need_video here because it can be part of subtitle pipeline
             task_thread=self,
+            audio_track=self.audio_track,
         )
         self.finished.emit(task)
         logger.info(f"转录任务创建完成：{task}")

@@ -87,7 +87,8 @@ class TranscriptThread(QThread):
                 is_success = video2audio(str(video_path),
                                          output_file=str(audio_save_path),
                                          format= self.task.audio_format,
-                                         allow_running=self.task.allow_running
+                                         allow_running=self.task.allow_running,
+                                         audio_track = self.task.audio_track,
                                         )
 
             if not is_success:

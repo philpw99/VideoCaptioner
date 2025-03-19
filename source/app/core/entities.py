@@ -607,6 +607,7 @@ class VideoInfo:
     audio_codec: str
     audio_sampling_rate: int
     thumbnail_path: str
+    audio_tracks: list
 
 class WhisperModelEnum(Enum):
     TINY = "tiny"
@@ -736,6 +737,9 @@ class Task:
     
     # 中止任务
     allow_running = [True]
+    
+    # 声道
+    audio_track: int = 0
     
 NOT_RUNNING_TASKS = [Task.Status.CANCELED, Task.Status.COMPLETED, Task.Status.FAILED, Task.Status.PENDING]
 

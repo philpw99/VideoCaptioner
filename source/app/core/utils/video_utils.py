@@ -13,7 +13,7 @@ from PyQt5.QtCore import QObject
 logger = setup_logger("video_utils")
 qoVideo = QObject()  # for i18n
 
-def video2audio(input_file: str, output_file: str = "", format: str = "copy", allow_running: list = [True] ) -> bool:
+def video2audio(input_file: str, output_file: str = "", format: str = "copy", allow_running: list = [True], audio_track: int = 0 ) -> bool:
     """使用ffmpeg将视频转换为音频"""    
     if not check_ffmpeg_available():
         logger.error("ffmpeg not available to transcode audio.")
@@ -26,7 +26,7 @@ def video2audio(input_file: str, output_file: str = "", format: str = "copy", al
         cmd = [
             'ffmpeg',
             '-i', input_file,
-            '-map', '0:a',
+            '-map', '0:a:'+str(audio_track),    # The chosen audio track
             '-c', 'copy',
             '-y',
             output_file
@@ -36,7 +36,7 @@ def video2audio(input_file: str, output_file: str = "", format: str = "copy", al
         cmd = [
             'ffmpeg',
             '-i', input_file,
-            '-map', '0:a',
+            '-map', '0:a:'+str(audio_track),
             '-ac', '1',
             '-acodec', format,      # can be aac, mp3 ...etc
             '-ar', '16000',
@@ -441,6 +441,7 @@ def get_video_info(filepath: str, thumbnail_path: str = "", post_url: str = None
             'audio_codec': '',
             'audio_sampling_rate': 0,
             'thumbnail_path': '',
+            'audio_tracks': None,
         }
 
         # 提取时长
@@ -496,6 +497,10 @@ def get_video_info(filepath: str, thumbnail_path: str = "", post_url: str = None
                 'audio_codec': audio_stream_match.group(1),
                 'audio_sampling_rate': int(audio_stream_match.group(2))
             })
+
+        # 提取音频流语言列表信息
+        if audio_track_match := re.findall(r"Stream #\d+:(\d+\(.+?\)): Audio:", info, re.DOTALL):
+            video_info['audio_tracks'] = audio_track_match     # It's a list like ["1(eng)", "2(fra)", "3(ita)"]
 
         return video_info
     except Exception as e:

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import os
+import os, subprocess, re
 from pathlib import Path
 import sys
 from urllib.parse import urlparse, ParseResult
@@ -241,14 +241,26 @@ class TaskCreationInterface(QWidget):
         self.movie_info_layout = QHBoxLayout()
         self.movie_info_layout.setContentsMargins(0, 0, 10, 0)
         self.movie_info_layout.setSpacing(20)
+        # Prompt button
         self.prompt_button = PushButton(
             FIF.ASTERISK,
             self.tr("Set Prompt"),
             self,
         )
         self.prompt_button.setToolTip(self.tr("Set prompt for Whisper models to increase its accuracy."))
+        
+        # Audio track selection. Usually hidden.
+        self.audio_track_select = ComboBoxSimpleSettingCard(
+            self.tr("Choose Audio Track"),
+            self.tr("Please choose which audio track to transcribe."),
+            None,
+            self
+        )
+        self.audio_track_select.setFixedWidth(250)
+        self.audio_track_select.hide()
 
         self.movie_info_layout.addStretch()
+        self.movie_info_layout.addWidget(self.audio_track_select)
         self.movie_info_layout.addWidget(self.prompt_button)
         
         self.main_layout.addLayout(self.movie_info_layout)
@@ -521,6 +533,28 @@ class TaskCreationInterface(QWidget):
                     cfg.set(cfg.last_open_dir, file_dir,True)   # Set and save.
                 
                 self.search_input.setText(file_path)                
+
+            if not check_ffmpeg_available():
+                if os.name != "nt":
+                    # For all other operation systems.
+                    InfoBar.error(
+                        self.tr("FFMpeg not available."),
+                        self.tr("FFMpeg is not installed or cannot run."),
+                        duration=5000,
+                        parent=self,
+                    )
+                    return
+                else:
+                    self._ask_ffmpeg_download()
+                return
+            
+            # Get audio track info from ffmpeg
+            audio_list = self._get_audio_tracks(file_path)
+            if audio_list and len(audio_list) > 1:
+                self.audio_track_select.comboBox.addItems(audio_list)
+                self.audio_track_select.show()
+            else:
+                self.audio_track_select.hide()
             return
 
         self.start_button.setIcon(FIF.STOP_WATCH)
@@ -539,26 +573,7 @@ class TaskCreationInterface(QWidget):
                 return
             # For windows only.
             self.ffmpeg_error = True
-            msg = MessageDialog(
-                self.tr("FFMpeg is not available"), 
-                self.tr("Do you want to download it from Internet?"),
-                self
-                )
-            msg.yesButton.setText(self.tr("OK"))
-            msg.cancelButton.setText(self.tr("Cancel"))
-            self.yes_result = False
-            def accepted():
-                self.yes_result = True
-            msg.yesSignal.connect(accepted)
-            msg.exec()
-            if self.yes_result:
-                # Confirmed
-                download_thread = DownloadFFMpegThread()
-                download_thread.finished.connect(self._on_ffmpeg_download_finished)
-                download_thread.start()
-            else:
-                # Cancelled.
-                pass
+            self._ask_ffmpeg_download()
 
         if self.ffmpeg_error:
             self.start_button.setIcon(FIF.PLAY)
@@ -591,6 +606,47 @@ class TaskCreationInterface(QWidget):
             
         self.process()
 
+    def _get_audio_tracks(self, filepath):
+        """ Use ffmpeg to return audio tracks info.
+        input: filepath for video file path in string
+        output: a list of audio tracks like ["1(eng)","2(fra)", "3(ita)"]
+        """
+        try:
+            cmd = ["ffmpeg", "-i", filepath]
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                encoding='utf-8',
+                errors='replace',
+                creationflags=subprocess.CREATE_NO_WINDOW if hasattr(subprocess, 'CREATE_NO_WINDOW') else 0
+                )
+            info = result.stderr
+            if audio_track_match := re.findall(r"Stream #\d+:(\d+\(.+?\)): Audio:", info, re.DOTALL):
+                return audio_track_match
+            # else, return None
+        except Exception as e:
+            print("error getting audio info.")
+
+    def _ask_ffmpeg_download(self):
+        msg = MessageDialog(
+            self.tr("FFMpeg is not available"), 
+            self.tr("Do you want to download it from Internet?"),
+            self
+            )
+        msg.yesButton.setText(self.tr("OK"))
+        msg.cancelButton.setText(self.tr("Cancel"))
+        self.yes_result = False
+        def accepted():
+            self.yes_result = True
+        msg.yesSignal.connect(accepted)
+        msg.exec()
+        if self.yes_result:
+            # Confirmed
+            download_thread = DownloadFFMpegThread()
+            download_thread.finished.connect(self._on_ffmpeg_download_finished)
+            download_thread.start()
+
     def _on_ffmpeg_download_finished(self):
         InfoBar.info(
             self.tr("Done"),
@@ -619,6 +675,29 @@ class TaskCreationInterface(QWidget):
             supported_formats = {fmt.value for fmt in SupportedVideoFormats} | {fmt.value for fmt in
                                                                                 SupportedAudioFormats}
             if file_path.suffix[1:] in supported_formats:
+                if not check_ffmpeg_available():
+                    if os.name != "nt":
+                        # For all other operation systems.
+                        InfoBar.error(
+                            self.tr("FFMpeg not available."),
+                            self.tr("FFMpeg is not installed or cannot run."),
+                            duration=5000,
+                            parent=self,
+                        )
+                        return
+                    # For windows only.
+                    self.ffmpeg_error = True
+                    self._ask_ffmpeg_download()
+                    return
+
+                # Get audio track info from ffmpeg
+                audio_list = self._get_audio_tracks(file_path)
+                if audio_list and len(audio_list) > 1:
+                    self.audio_track_select.comboBox.addItems(audio_list)
+                    self.audio_track_select.show()
+                else:
+                    self.audio_track_select.hide()
+
                 self.search_input.setText(file)
                 self.status_label.setText(self.tr("导入成功"))
                 InfoBar.success(
@@ -668,6 +747,9 @@ class TaskCreationInterface(QWidget):
         else:
             task_type = Task.Type.TRANSLATE     # Save translated sub files only
         
+        if self.audio_track_select.isVisible():
+            audio_track = self.audio_track_select.comboBox.currentIndex()
+        
         self.create_task_thread = CreateTaskThread(
             file_path,
             task_type,
@@ -676,6 +758,7 @@ class TaskCreationInterface(QWidget):
             soft_sub=cfg.soft_subtitle.value,
             need_video=cfg.need_video.value,
             post_url=self.post_url,
+            audio_track = audio_track
             )
 
         self.create_task_thread.finished.connect(self.on_create_task_finished)
