@@ -1,4 +1,5 @@
 3.5.7
+	Other small bugs.
 	Fix bugs in Optimizing/Translate tab when you choose "No Translation" in the front page.
 	Better handling of Douban actors info.
 	Add a choice for audio track selection, if the file has more than 2 audio tracks.
