@@ -173,6 +173,10 @@ class SubtitleOptimizationThread(QThread):
                         logger.info("正在批量谷歌翻译字幕...")
                         translate_result = asyncio.run(googleTranslate(subtitle_json, callback=self.callback, allow_running=self.task.allow_running))
                         
+                if not translate_result or len(translate_result) == 0:
+                    self.error.emit(self.tr("Error! Translation result is empty!"))
+                    return
+                
                 # 加入优化或者翻译后的字幕
                 for i, subtitle_text in translate_result.items():
                     original, translated = get_original_and_translated(subtitle_text)

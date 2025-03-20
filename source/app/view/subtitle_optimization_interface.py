@@ -734,10 +734,20 @@ class SubtitleOptimizationInterface(QWidget):
     def _update_task_config(self):
         """更新任务配置"""
         # 更新任务的需要翻译标志
-        self.task.need_translate = cfg.translate_method.value != TranslateMethodEnum.NONE
+        self.task.need_translate = True
+
         # 更新任务的翻译方式
-        self.task.translate_method = cfg.translate_method.value
+        if cfg.translate_method.value == TranslateMethodEnum.NONE:
+            # 首页选了不翻译，就用默认的翻译方式，单句翻译
+            self.task.translate_method = TranslateMethodEnum.SINGLE_SENTENCE
+        else:
+            # 用首页里选的翻译方式，反思或者谷歌
+            self.task.translate_method = cfg.translate_method.value
+
         self.task.original_language = cfg.transcribe_language.value.value
+        
+        # 在这个界面下不会合成视频
+        self.task.need_video = False
 
         # 更新任务的 API 密钥
         self.task.api_key = cfg.api_key.value

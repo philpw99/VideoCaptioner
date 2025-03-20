@@ -57,9 +57,11 @@ def get_douban_movie_info(id: str, topActors = 20):
 
         text = r.content.decode()
         match_actors = re.findall(r"\(饰 (.*?)\)", text)
-        if match_actors:
-            actors = ", ".join( actor for actor in match_actors[:topActors*2:2])    # only keep odd lines in the list
-            print(actors)
+        if not match_actors:
+            # 动画之类的会是配音，而不是饰演
+            match_actors = re.findall(r"\(配 (.*?)\)", text)
+            
+        actors = ", ".join( actor for actor in match_actors[:topActors*2:2]) if match_actors else " "    # only keep odd lines in the list
 
         movie_info=f"这是一出 {year}年 {genre} {kind}.\n" \
             + "剧情:\n" \
