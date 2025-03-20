@@ -391,17 +391,15 @@ def add_subtitles(
                 # 强行终止
                 if not allow_running[0]:
                     logger.error("视频合成强行中止")
-                    _, stderr = process.communicate(input="q", timeout=5)
+                    process.communicate(input="q", timeout=5)
                     
                     raise Exception(qoVideo.tr("视频合成强行中止"))
 
             if progress_callback:
                 progress_callback("100", qoVideo.tr("合成完成"))
             # 检查进程的返回码
-            if not stderr:
-                _ , stderr = process.communicate()
             if process.returncode != 0:
-                logger.error(f"视频合成失败， {stderr}")
+                logger.error(f"视频合成失败。")
                 raise Exception(process.returncode)
             logger.info("视频合成完成")
 

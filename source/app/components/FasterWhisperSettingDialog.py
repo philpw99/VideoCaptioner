@@ -30,14 +30,14 @@ from ..core.thread.unzip_thread import UnzipThread
 # 在文件开头添加常量定义
 FASTER_WHISPER_PROGRAMS = [
     {
-        "label": "GPU + CPU 版本 r245.2",
+        "label": "GPU + CPU 版本 r245.2 (GitHub)",
         "value": "faster-whisper-gpu.7z",
         "type": "GPU",
         "size": "1.35 GB",
         "downloadLink": "https://github.com/Purfview/whisper-standalone-win/releases/download/Faster-Whisper-XXL/Faster-Whisper-XXL_r245.2_windows.7z",
     },
     {
-        "label": "CPU版本",
+        "label": "CPU版本 (modelscope.cn)",
         "value": "faster-whisper.exe",
         "type": "CPU",
         "size": "78.7 MB",
@@ -436,8 +436,7 @@ class FasterWhisperDownloadDialog(MessageBoxBase):
         if self.program_download_thread and self.program_download_thread.isRunning():
             self.program_download_thread.stop()
         if self.model_download_thread and self.model_download_thread.isRunning():
-            self.model_download_thread.quit()
-            # self.model_download_thread.terminate()
+            self.model_download_thread.terminate()
         FasterWhisperDownloadDialog.is_downloading = False
         self.reject()
 
