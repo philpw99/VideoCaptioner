@@ -30,14 +30,21 @@ from ..core.thread.unzip_thread import UnzipThread
 # 在文件开头添加常量定义
 FASTER_WHISPER_PROGRAMS = [
     {
-        "label": "GPU + CPU 版本 r245.2 (GitHub)",
+        "label": "GPU + CPU r245.2 (GitHub)",
         "value": "faster-whisper-gpu.7z",
         "type": "GPU",
         "size": "1.35 GB",
         "downloadLink": "https://github.com/Purfview/whisper-standalone-win/releases/download/Faster-Whisper-XXL/Faster-Whisper-XXL_r245.2_windows.7z",
     },
     {
-        "label": "CPU版本 (modelscope.cn)",
+        "label": "GPU + CPU r245.2 (内网)",
+        "value": "faster-whisper-gpu.7z",
+        "type": "GPU",
+        "size": "1.35 GB",
+        "downloadLink": "https://modelscope.cn/models/bkfengg/whisper-cpp/resolve/master/Faster-Whisper-XXL_r245.2_windows.7z",
+    },
+    {
+        "label": "CPU (内网)",
         "value": "faster-whisper.exe",
         "type": "CPU",
         "size": "78.7 MB",

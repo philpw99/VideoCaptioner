@@ -1,3 +1,5 @@
+3.5.8
+	Add FasterWhisperXXL China download link.
 3.5.7
 	Other small bugs.
 	Fix bugs in Optimizing/Translate tab when you choose "No Translation" in the front page.
