@@ -472,6 +472,7 @@ class SettingInterface(ScrollArea):
         self.needVideoCard.checkedChanged.connect(signalBus.on_need_video_changed)
         self.transcribeModelCard.comboBox.currentTextChanged.connect(signalBus.on_transcription_model_changed)
         self.saveSubtitleFormatCard.comboBox.currentTextChanged.connect(signalBus.on_subtitle_output_format_changed)
+
         # self.languageCard.comboBox.currentTextChanged.connect(signalBus.on_language_changed)
         
         # signalBus to local
@@ -487,6 +488,9 @@ class SettingInterface(ScrollArea):
 
     def on_translation_method_changed(self,text):
         # print(f"text type:{type(text)}")
+        enum = TranslateMethodEnum(text)
+        if cfg.translate_method.value != enum:
+            cfg.translate_method.value = enum
         comboBox = self.subtitleTranslateCard.comboBox
         if comboBox.currentText() != text:
             comboBox.setCurrentText(text)

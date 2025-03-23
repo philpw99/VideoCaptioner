@@ -143,11 +143,12 @@ class Config(QConfig):
     whisper_api_prompt = ConfigItem("WhisperAPI", "WhisperApiPrompt", "")
 
     # ------------------- 字幕配置 -------------------
-    translate_method = OptionsConfigItem("Subtitle","Translate Method",
-                                        TranslateMethodEnum.NONE,
-                                        EnumOptionsValidator(TranslateMethodEnum),
-                                        EnumExSerializer(TranslateMethodEnum)
-                                        )
+    translate_method = OptionsConfigItem(
+        "Subtitle","Translate Method",
+        TranslateMethodEnum.NONE,
+        EnumOptionsValidator(TranslateMethodEnum),
+        EnumExSerializer(TranslateMethodEnum)
+        )
     target_language = OptionsConfigItem(
         "Subtitle", "TargetLanguage",
         TargetLanguageEnum.CHINESE_SIMPLIFIED.value,

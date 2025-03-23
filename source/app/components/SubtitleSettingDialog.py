@@ -1,10 +1,12 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import QWidget
-from qfluentwidgets import (MessageBoxBase, BodyLabel, SwitchSettingCard, FluentIcon as FIF)
+from qfluentwidgets import MessageBoxBase, BodyLabel, SwitchSettingCard, FluentIcon as FIF, ComboBoxSettingCard
 
 from ..common.config import cfg
 from .SpinBoxSettingCard import SpinBoxSettingCard
-
+from ..core.entities import TargetLanguageEnum, TranslateMethodEnum
+from .EnumComboBoxSettingCard import EnumComboBoxSettingCard
+from ..common.signal_bus import signalBus
 class SubtitleSettingDialog(MessageBoxBase):
     """ 字幕设置对话框 """
 
@@ -13,6 +15,24 @@ class SubtitleSettingDialog(MessageBoxBase):
         self.titleLabel = BodyLabel(self.tr('字幕设置'), self)
 
         # 创建设置卡片
+        self.target_language_card = ComboBoxSettingCard(
+            cfg.target_language,
+            FIF.LANGUAGE,
+            self.tr("目标语言"),
+            self.tr("字幕翻译生成的目标语言"),
+            [lang.value for lang in TargetLanguageEnum],
+            self
+        )
+
+        self.translation_method_card = EnumComboBoxSettingCard(
+            cfg.translate_method,
+            FIF.UNIT,
+            self.tr("翻译方式"),
+            self.tr("字幕翻译使用的方式"),
+            TranslateMethodEnum,
+            self
+        )
+
         self.split_card = SwitchSettingCard(
             FIF.ALIGNMENT,
             self.tr('字幕分割'),
@@ -51,12 +71,13 @@ class SubtitleSettingDialog(MessageBoxBase):
         
         # 添加到布局
         self.viewLayout.addWidget(self.titleLabel)
+        self.viewLayout.addWidget(self.target_language_card)
+        self.viewLayout.addWidget(self.translation_method_card)
         self.viewLayout.addWidget(self.split_card)
         self.viewLayout.addWidget(self.word_count_cjk_card)
         self.viewLayout.addWidget(self.word_count_english_card)
         self.viewLayout.addWidget(self.remove_punctuation_card)
         # 设置间距
-
         self.viewLayout.setSpacing(10)
         
         # 设置窗口标题
@@ -65,3 +86,7 @@ class SubtitleSettingDialog(MessageBoxBase):
         # 只显示取消按钮
         self.yesButton.hide()
         self.cancelButton.setText(self.tr('关闭'))
+
+        # 连接信号 local to signalBus
+        self.translation_method_card.currentTextChanged.connect(signalBus.translation_method_changed)
+        

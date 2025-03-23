@@ -1,4 +1,6 @@
 3.5.8
+	Little bug in WhisperCPP.
+	Fix the front page problem of soft subtitle switch.
 	Add FasterWhisperXXL China download link.
 3.5.7
 	Other small bugs.

@@ -206,7 +206,8 @@ class SubtitleOptimizationInterface(QWidget):
 
 
         # 添加打开文件夹按钮和文件选择按钮
-        self.open_folder_button = ToolButton(FIF.FOLDER, self)
+        # self.open_folder_button = ToolButton(FIF.FOLDER, self)
+        self.open_video_button = ToolButton(FIF.VIDEO, self)
         self.file_select_button = PushButton(self.tr("选择字幕文件"), self, icon=FIF.FOLDER_ADD)
         self.prompt_button = PushButton(self.tr("文稿提示"), self, icon=FIF.DOCUMENT)
         # 添加字幕设置按钮
@@ -220,7 +221,8 @@ class SubtitleOptimizationInterface(QWidget):
 
         self.start_button = PrimaryPushButton(self.tr("开始"), self, icon=FIF.PLAY)
 
-        self.right_layout.addWidget(self.open_folder_button)
+        # self.right_layout.addWidget(self.open_folder_button)
+        self.right_layout.addWidget(self.open_video_button)
         self.right_layout.addWidget(self.file_select_button)
 
         #改start
@@ -358,7 +360,8 @@ class SubtitleOptimizationInterface(QWidget):
         # 将保存按钮的 clicked 信号连接到 on_save_clicked 方法
         self.save_button.clicked.connect(self.on_save_clicked)
         # 将打开文件夹按钮的 clicked 信号连接到 on_open_folder_clicked 方法
-        self.open_folder_button.clicked.connect(self.on_open_folder_clicked)
+        # self.open_folder_button.clicked.connect(self.on_open_folder_clicked)
+        self.open_video_button.clicked.connect(self.show_video_player)
         # 将提示按钮的 clicked 信号连接到 show_prompt_dialog 方法
         self.prompt_button.clicked.connect(self.show_prompt_dialog)
         # 将字幕布局下拉框的 currentTextChanged 信号连接到 on_subtitle_layout_changed 方法
@@ -1046,9 +1049,29 @@ class SubtitleOptimizationInterface(QWidget):
         dialog = SubtitleSettingDialog(self.window())
         dialog.exec_()
 
+    def set_vlc_env(self):
+        """设置VLC环境变量给Python-vlc用"""
+        vlc_env = os.getenv("PYTHON_VLC_MODULE_PATH")
+        if not vlc_env or not os.path.exists(vlc_env+"\\vlc.exe"):
+            if sys.platform == "win32":
+                vlc_dir = os.environ.get("ProgramFiles") + "\\VideoLan\\VLC"
+                if os.path.exists(vlc_dir+"\\vlc.exe"):
+                    os.system(f"setx PYTHON_VLC_MODULE_PATH \"{vlc_dir}\"")
+                    vlc_env = vlc_dir
+                else:
+                    vlc_dir = os.environ.get("ProgramFiles(x86)") + "\\VideoLan\\VLC"
+                    if os.path.exists(vlc_dir+"\\vlc.exe"):
+                        os.system(f"setx PYTHON_VLC_MODULE_PATH \"{vlc_dir}\"")
+                        vlc_env = vlc_dir
+            vlc_env = os.getenv("PYTHON_VLC_MODULE_PATH")
+            print(f"set new vlc_env:{vlc_env}")
+        return vlc_env
+
     def show_video_player(self):
         """显示视频播放器窗口"""
+        self.set_vlc_env()
         # 创建视频播放器窗口
+        
         from ..components.MyVideoWidget import MyVideoWidget
         self.video_player = MyVideoWidget()
         self.video_player.resize(800, 600)

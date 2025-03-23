@@ -412,13 +412,11 @@ class TaskCreationInterface(QWidget):
             comboBox.setCurrentText(value)
 
         if enum == TranslateMethodEnum.NONE:
-            self.soft_subtitle_card.setDisabled(True)
+            # No translation
             self.target_language_card.setDisabled(True)
-            self.subtitle_layout_card.setDisabled(True)
         else:
-            self.soft_subtitle_card.setDisabled(False)
+            # Do translation
             self.target_language_card.setDisabled(False)
-            self.subtitle_layout_card.setDisabled(False)
 
     def on_soft_subtitle_changed(self, enable: bool):
         if cfg.soft_subtitle.value != enable:
@@ -462,7 +460,7 @@ class TaskCreationInterface(QWidget):
             self.subtitle_layout_card.setDisabled(True)
         self.video_synthesis_card.setChecked(cfg.need_video.value)
         self.soft_subtitle_card.setChecked( cfg.soft_subtitle.value )
-        if not cfg.need_video.value:
+        if not self.video_synthesis_card.isChecked():
             self.soft_subtitle_card.setDisabled(True)
         self.target_language_card.comboBox.setCurrentText(cfg.target_language.value.value)
         self.target_format_card.comboBox.setCurrentText(cfg.subtitle_output_format.value.value)

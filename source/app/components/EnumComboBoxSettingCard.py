@@ -19,11 +19,7 @@ class EnumComboBoxSettingCard(SettingCard):
 
         # 创建可编辑的组合框
         self.comboBox = ComboBox(self)
-        if self.enums:
-            for item in enums:
-                # Add the value to comboBox, but not the key
-                # It will show the translated text
-                self.comboBox.addItem( item.value )
+        self.addItems(enums)
 
         # 设置布局
         self.hBoxLayout.addWidget(self.comboBox, 0, Qt.AlignmentFlag.AlignRight)

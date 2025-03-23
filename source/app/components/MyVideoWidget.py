@@ -17,7 +17,6 @@ from qfluentwidgets.components.widgets.label import CaptionLabel
 from ..common.signal_bus import signalBus
 from ..config import RESOURCE_PATH
 
-
 class MediaStatus(Enum):
     NoMedia = 0
     LoadingMedia = 1

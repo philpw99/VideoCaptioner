@@ -23,7 +23,7 @@ class WhisperASR(BaseASR):
                  whisper_model=None,
                  use_cache: bool = False,
                  need_word_time_stamp: bool = False,
-                 allow_runnning = None
+                 allow_running = None
                  ):
         super().__init__(audio_path, False)
         assert os.path.exists(audio_path), f"音频文件 {audio_path} 不存在"
@@ -47,8 +47,8 @@ class WhisperASR(BaseASR):
 
         self.process = None
         
-        if allow_runnning:
-            self.allow_running = allow_runnning
+        if allow_running:
+            self.allow_running = allow_running
 
     def _make_segments(self, resp_data: str) -> list[ASRDataSeg]:
         asr_data = from_srt(resp_data)
