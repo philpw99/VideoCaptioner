@@ -402,148 +402,148 @@
 <context>
     <name>FasterWhisperDownloadDialog</name>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="156"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="163"/>
         <source>关闭</source>
         <translation>關閉</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="162"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="169"/>
         <source>Faster Whisper 下载</source>
         <translation>Faster Whisper 下載</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="172"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="179"/>
         <source>已安装版本: {versions_text}</source>
         <translation>已安裝版本: {versions_text}</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="178"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="185"/>
         <source>您可以继续下载其他版本:</source>
         <translation>您可以繼續下載其他版本:</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="181"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="188"/>
         <source>未下载Faster Whisper 程序</source>
         <translation>未下載Faster Whisper 程序</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="197"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="204"/>
         <source>下载程序</source>
         <translation>下載程序</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="210"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="217"/>
         <source>模型下载</source>
         <translation>模型下載</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="216"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="223"/>
         <source>打开模型文件夹</source>
         <translation>開啟模型資料夾</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="239"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="246"/>
         <source>模型名称</source>
         <translation>模型名稱</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="239"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="246"/>
         <source>大小</source>
         <translation>大小</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="240"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="247"/>
         <source>状态</source>
         <translation>狀態</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="241"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="248"/>
         <source>操作</source>
         <translation>操作</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="302"/>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="487"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="309"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="494"/>
         <source>已下载</source>
         <translation>已下載</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="303"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="310"/>
         <source>未下载</source>
         <translation>未下載</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="316"/>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="494"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="323"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="501"/>
         <source>重新下载</source>
         <translation>重新下載</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="316"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="323"/>
         <source>下载</source>
         <translation>下載</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="335"/>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="452"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="342"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="459"/>
         <source>下载进行中</source>
         <translation>下載進行中</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="336"/>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="453"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="343"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="460"/>
         <source>请等待当前下载任务完成</source>
         <translation>請等待當前下載任務完成</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="360"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="367"/>
         <source>下载错误</source>
         <translation>下載錯誤</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="361"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="368"/>
         <source>未找到对应的程序配置</source>
         <translation>未找到對應的程序配置</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="401"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="408"/>
         <source>正在解压文件...</source>
         <translation>正在解壓文件...</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="412"/>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="575"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="419"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="582"/>
         <source>安装失败</source>
         <translation>安裝失敗</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="422"/>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="521"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="429"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="528"/>
         <source>下载失败</source>
         <translation>下載失敗</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="465"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="472"/>
         <source>正在下载 {model[&apos;label&apos;]} 模型...</source>
         <translation>正在下載 {model[&apos;label&apos;]} 模型...</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="506"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="513"/>
         <source>下载成功</source>
         <translation>下載成功</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="507"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="514"/>
         <source>{model[&apos;label&apos;]} 模型已下载完成</source>
         <translation>{model[&apos;label&apos;]} 模型已下載完成</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="563"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="570"/>
         <source>安装完成</source>
         <translation>安裝完成</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="564"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="571"/>
         <source>Faster Whisper 程序已安装成功</source>
         <translation>Faster Whisper 程序已安裝成功</translation>
     </message>
@@ -551,188 +551,188 @@
 <context>
     <name>FasterWhisperSettingDialog</name>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="594"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="601"/>
         <source>Faster Whisper 设置</source>
         <translation>Faster Whisper 設置</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="605"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="612"/>
         <source>模型设置</source>
         <translation>模型設置</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="611"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="618"/>
         <source>模型</source>
         <translation>模型模型</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="612"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="619"/>
         <source>选择 Faster Whisper 模型</source>
         <translation>選擇 Faster Whisper 模型</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="633"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="640"/>
         <source>管理模型</source>
         <translation>管理模型</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="635"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="642"/>
         <source>模型管理</source>
         <translation>模型管理</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="636"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="643"/>
         <source>下载或更新 Faster Whisper 模型</source>
         <translation>下載或更新 Faster Whisper 模型</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="644"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="651"/>
         <source>源语言</source>
         <translation>源語言</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="645"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="652"/>
         <source>音频的源语言</source>
         <translation>音頻的源語言</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="655"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="662"/>
         <source>运行设备</source>
         <translation>運行設備</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="656"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="663"/>
         <source>模型运行设备</source>
         <translation>模型運行設備</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="665"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="672"/>
         <source>VAD设置</source>
         <translation>VAD設置</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="670"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="677"/>
         <source>VAD过滤</source>
         <translation>VAD過濾</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="671"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="678"/>
         <source>过滤无人声语音片断，减少幻觉</source>
         <translation>過濾無人聲語音片段，減少幻覺</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="680"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="687"/>
         <source>VAD阈值</source>
         <translation>VAD閾值</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="681"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="688"/>
         <source>语音概率阈值，高于此值视为语音</source>
         <translation>語音概率閾值，高於此值視為語音</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="692"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="699"/>
         <source>VAD方法</source>
         <translation>VAD方法</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="693"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="700"/>
         <source>选择VAD检测方法</source>
         <translation>選擇VAD檢測方法</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="699"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="706"/>
         <source>其他设置</source>
         <translation>其他設置</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="704"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="711"/>
         <source>人声分离</source>
         <translation>人聲分離</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="705"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="712"/>
         <source>处理前使用MDX-Net降噪，分离人声和背景音乐</source>
         <translation>處理前使用MDX-Net降噪，分離人聲和背景音樂</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="713"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="720"/>
         <source>单字时间戳</source>
         <translation>單字時間戳</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="714"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="721"/>
         <source>开启生成单字级时间戳；关闭后使用原始分段断句</source>
         <translation>開啟生成單字級時間戳；關閉後使用原始分段斷句</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="722"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="729"/>
         <source>翻译成英语</source>
         <translation>翻譯成英語</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="723"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="730"/>
         <source>使用FastWhisper内置的翻译成英语功能</source>
         <translation>使用FasterWhisper内置的翻譯成英語功能</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="732"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="739"/>
         <source>重复字句惩罚</source>
         <translation>重複字句懲罰</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="733"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="740"/>
         <source>对重复字句的惩罚，1为不惩罚，一般1.2就可</source>
         <translation>對重複字句得到懲罰，1為不懲罰，一般1.2就可</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="744"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="751"/>
         <source>提示词</source>
         <translation>提示詞</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="745"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="752"/>
         <source>可选的提示词,默认空</source>
         <translation>可選的提示詞，默認為空</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="801"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="808"/>
         <source>确定</source>
         <translation>確定</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="802"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="809"/>
         <source>取消</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="836"/>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="886"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="843"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="893"/>
         <source>Faster Whisper程序不存在，请先下载程序</source>
         <translation>Faster Whisper程序不存在，請先下載程序</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="849"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="856"/>
         <source>设置已保存</source>
         <translation>設置已保存</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="850"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="857"/>
         <source>Faster Whisper 设置已更新</source>
         <translation>Faster Whisper 設置已更新</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="870"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="877"/>
         <source>错误</source>
         <translation>錯誤</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="893"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="900"/>
         <source>模型配置不存在</source>
         <translation>模型配置不存在</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="900"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="907"/>
         <source>模型文件不存在: </source>
         <translation>模型文件不存在: </translation>
     </message>
@@ -1036,23 +1036,23 @@ Or go to GitHub for the new release.</source>
 <context>
     <name>PromptDialog</name>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1267"/>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1272"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1291"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1296"/>
         <source>文稿提示</source>
         <translation>文稿提示</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1278"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1302"/>
         <source>请输入文稿提示（优化字幕或者翻译字幕的提示参考）</source>
         <translation>請輸入文稿提示（優化字幕或者翻譯字幕的提示參考）</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1290"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1314"/>
         <source>确定</source>
         <translation>確定</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1291"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1315"/>
         <source>取消</source>
         <translation>取消</translation>
     </message>
@@ -1322,8 +1322,8 @@ Or go to GitHub for the new release.</source>
     </message>
     <message>
         <location filename="../../app/view/setting_interface.py" line="88"/>
-        <location filename="../../app/view/setting_interface.py" line="726"/>
-        <location filename="../../app/view/setting_interface.py" line="737"/>
+        <location filename="../../app/view/setting_interface.py" line="730"/>
+        <location filename="../../app/view/setting_interface.py" line="741"/>
         <source>检查连接</source>
         <translation>檢查連線</translation>
     </message>
@@ -1343,23 +1343,23 @@ Or go to GitHub for the new release.</source>
         <translation>執行緒數</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="682"/>
+        <location filename="../../app/view/setting_interface.py" line="686"/>
         <source>更新成功</source>
         <translation>更新成功</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="683"/>
+        <location filename="../../app/view/setting_interface.py" line="687"/>
         <source>配置将在重启后生效</source>
         <translation>設定將在重新啟動後生效</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="690"/>
+        <location filename="../../app/view/setting_interface.py" line="694"/>
         <source>选择文件夹</source>
         <translation>選擇資料夾</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="672"/>
-        <location filename="../../app/view/setting_interface.py" line="702"/>
+        <location filename="../../app/view/setting_interface.py" line="676"/>
+        <location filename="../../app/view/setting_interface.py" line="706"/>
         <source>错误</source>
         <translation>錯誤</translation>
     </message>
@@ -1604,105 +1604,105 @@ Or go to GitHub for the new release.</source>
         <translation>為了工作原因不顯示縮圖。</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="500"/>
+        <location filename="../../app/view/setting_interface.py" line="504"/>
         <source>File llm.json not exist!</source>
         <translation>文件 llm.json 不存在！</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="501"/>
+        <location filename="../../app/view/setting_interface.py" line="505"/>
         <source>Cannot find the llm.json file.</source>
         <translation>找不到 llm.json 文件。</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="524"/>
-        <location filename="../../app/view/setting_interface.py" line="636"/>
+        <location filename="../../app/view/setting_interface.py" line="528"/>
+        <location filename="../../app/view/setting_interface.py" line="640"/>
         <source>Error getting {key} settings</source>
         <translation>無法拿到 {key} 的位置</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="525"/>
-        <location filename="../../app/view/setting_interface.py" line="636"/>
+        <location filename="../../app/view/setting_interface.py" line="529"/>
+        <location filename="../../app/view/setting_interface.py" line="640"/>
         <source>Cannot get {key} settings from AppData/llm.json</source>
         <translation>無法從 AppData/llm.json 拿到 {key} 的位置</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="536"/>
+        <location filename="../../app/view/setting_interface.py" line="540"/>
         <source>LLM entry deleted.</source>
         <translation>LLM 設定刪除了。</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="537"/>
+        <location filename="../../app/view/setting_interface.py" line="541"/>
         <source>The settings of {old_key} was deleted.</source>
         <translation>有關 {old_key} 的設定已經刪除。</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="585"/>
+        <location filename="../../app/view/setting_interface.py" line="589"/>
         <source>Name this LLM Setting</source>
         <translation>命名這個 LLM 設定</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="586"/>
+        <location filename="../../app/view/setting_interface.py" line="590"/>
         <source>Please input the name for this LLM setting.</source>
         <translation>請給這個 LLM 設定一個名字。</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="620"/>
+        <location filename="../../app/view/setting_interface.py" line="624"/>
         <source>LLM settings saved.</source>
         <translation>LLM 設定保存了。</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="621"/>
+        <location filename="../../app/view/setting_interface.py" line="625"/>
         <source>The LLM settings for {saveKey} was saved.</source>
         <translation>名字為 {saveKey} 的 LLM 設定已經保持。</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="631"/>
+        <location filename="../../app/view/setting_interface.py" line="635"/>
         <source>Error Reading llm.json</source>
         <translation>錯誤讀取 llm.json 文件</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="631"/>
+        <location filename="../../app/view/setting_interface.py" line="635"/>
         <source>Cannot open LLM settins file: AppData/llm.json</source>
         <translation>無法打開 LLM 設定文件： AppData/llm.json</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="673"/>
+        <location filename="../../app/view/setting_interface.py" line="677"/>
         <source>请先选择Whisper转录模型</source>
         <translation>請先選擇Whisper轉錄模型</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="703"/>
+        <location filename="../../app/view/setting_interface.py" line="707"/>
         <source>请输入正确的 API Base, 含有 /v1</source>
         <translation>請輸入正確的 API Base，含有 /v1</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="711"/>
+        <location filename="../../app/view/setting_interface.py" line="715"/>
         <source>正在检查...</source>
         <translation>正在檢查...</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="728"/>
-        <location filename="../../app/view/setting_interface.py" line="768"/>
+        <location filename="../../app/view/setting_interface.py" line="732"/>
+        <location filename="../../app/view/setting_interface.py" line="772"/>
         <source>LLM 连接测试错误</source>
         <translation>LLM 連線測試錯誤</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="761"/>
+        <location filename="../../app/view/setting_interface.py" line="765"/>
         <source>获取模型列表成功:</source>
         <translation>取得模型列表成功:</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="762"/>
+        <location filename="../../app/view/setting_interface.py" line="766"/>
         <source>一共</source>
         <translation>一共</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="762"/>
+        <location filename="../../app/view/setting_interface.py" line="766"/>
         <source>个模型</source>
         <translation>個模型</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="775"/>
+        <location filename="../../app/view/setting_interface.py" line="779"/>
         <source>LLM 连接测试成功</source>
         <translation>LLM 連接測試成功</translation>
     </message>
@@ -1743,307 +1743,307 @@ Or go to GitHub for the new release.</source>
         <translation>批量</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="210"/>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="867"/>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="906"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="212"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="871"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="910"/>
         <source>选择字幕文件</source>
         <translation>選擇字幕文件</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="211"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="213"/>
         <source>文稿提示</source>
         <translation>文稿提示</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="221"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="223"/>
         <source>开始</source>
         <translation>開始</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="249"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="252"/>
         <source>Search text here</source>
         <translation>這裏打入搜索文字</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="251"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="254"/>
         <source>Replace text here</source>
         <translation>這裏打入替換文字</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="252"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="255"/>
         <source>Search</source>
         <translation>搜索</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="253"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="256"/>
         <source>Search text in both original and translated subtitles.</source>
         <translation>在原文和翻譯字幕裏面尋找。</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="254"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="257"/>
         <source>Replace</source>
         <translation>替換</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="255"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="258"/>
         <source>Replace current line of text only in original or translated subtitles.</source>
         <translation>替換當前行的譯文或者原文。</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="256"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="259"/>
         <source>Replace All</source>
         <translation>全部替換</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="257"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="260"/>
         <source>Replace all lines of text in original or translated subtitles.</source>
         <translation>替換所有的譯文或者原文。</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="259"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="262"/>
         <source>Original</source>
         <translation>原文</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="260"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="263"/>
         <source>Translated</source>
         <translation>譯文</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="261"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="264"/>
         <source>Set target for replace and replace all button.</source>
         <translation>設定“替換”或者“替換所有”的操作目標。</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="304"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="307"/>
         <source>Maximum line width for</source>
         <translation>最大行寬字數給</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="307"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="310"/>
         <source>Original Text:</source>
         <translation>原文：</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="308"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="311"/>
         <source>Translated Text:</source>
         <translation>譯文：</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="311"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="314"/>
         <source>characters.</source>
         <translation>個字符。</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="312"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="315"/>
         <source>Apply</source>
         <translation>處理</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="315"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="318"/>
         <source>请拖入字幕文件</source>
         <translation>請拖入字幕文件</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="322"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="325"/>
         <source>取消</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="390"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="394"/>
         <source>Line too short</source>
         <translation>行寬太短</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="391"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="395"/>
         <source>You need to set it to at least 10 characters.</source>
         <translation>你需要設置至少為10個字符。</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="440"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="444"/>
         <source>Reach the end</source>
         <translation>搜索到盡頭</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="441"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="445"/>
         <source>Cannot find more result.</source>
         <translation>找不到更多搜索的文字了。</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="453"/>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="523"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="457"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="527"/>
         <source>Missing search or replace text.</source>
         <translation>缺少搜索或者替換文字。</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="454"/>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="524"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="458"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="528"/>
         <source>Need both search and replace text to do the replace.</source>
         <translation>需要搜索文字以及替換文字來做替換的操作。</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="462"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="466"/>
         <source>No selected row</source>
         <translation>沒有選擇字幕行</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="463"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="467"/>
         <source>Currently no row is selected.</source>
         <translation>目前沒有選擇任何字幕行。</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="549"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="553"/>
         <source>Replace All is done.</source>
         <translation>全部替換操作完成。</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="550"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="554"/>
         <source>Totally replace {replace_count} occurances.</source>
         <translation>總共替換了 {replace_count} 次。</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="688"/>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1002"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="692"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1006"/>
         <source>已加载文件</source>
         <translation>已載入文件</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="696"/>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="931"/>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="976"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="700"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="935"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="980"/>
         <source>警告</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="697"/>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="932"/>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="976"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="701"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="936"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="980"/>
         <source>请先加载字幕文件</source>
         <translation>請先載入字幕文件</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="732"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="736"/>
         <source>开始优化</source>
         <translation>開始優化</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="732"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="736"/>
         <source>开始优化字幕</source>
         <translation>開始優化字幕</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="785"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="789"/>
         <source>优化完成</source>
         <translation>優化完成</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="786"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="790"/>
         <source>优化完成字幕...</source>
         <translation>優化完成字幕...</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="809"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="813"/>
         <source>优化失败</source>
         <translation>優化失敗</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="898"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="902"/>
         <source>No API Key or API Base set</source>
         <translation>沒有API 密碼或者API 入口網址</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="899"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="903"/>
         <source>批量字幕处理占用大量服务器资源，因此必须要使用自己的API KEY &amp; BASE，免得公益服务器无法工作，请见谅。
 具体设定在程序左下角的‘设定’里。</source>
         <translation>批量字幕處理占用大量服務器資源，因此必須要使用自己的API KEY &amp; BASE，免得公益服務器無法工作，請見諒。\n具體設定在程序左下角的“設定”裏。</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="942"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="946"/>
         <source>保存字幕文件</source>
         <translation>保存字幕文件</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="961"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="965"/>
         <source>保存成功</source>
         <translation>保存成功</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="962"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="966"/>
         <source>字幕已保存至:</source>
         <translation>字幕已保存至:</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="968"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="972"/>
         <source>保存失败</source>
         <translation>保存失敗</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="969"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="973"/>
         <source>保存字幕文件失败: </source>
         <translation>保存字幕文件失敗: </translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1024"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1028"/>
         <source>导入成功</source>
         <translation>導入成功</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1025"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1029"/>
         <source>成功导入</source>
         <translation>成功導入</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1032"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1036"/>
         <source>格式错误</source>
         <translation>格式錯誤</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1033"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1037"/>
         <source>支持的字幕格式:</source>
         <translation>支持的字幕格式:</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1108"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1132"/>
         <source>合并</source>
         <translation>合併</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1113"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1137"/>
         <source>在前面加行</source>
         <translation>在前面加行</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1163"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1187"/>
         <source>加行成功</source>
         <translation>加行成功</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1164"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1188"/>
         <source>已成功加入字幕行</source>
         <translation>已成功加入字幕行</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1227"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1251"/>
         <source>合并成功</source>
         <translation>合併成功</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1228"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1252"/>
         <source>已成功合并选中的字幕行</source>
         <translation>已成功合併選中的字幕行</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1254"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1278"/>
         <source>已取消优化</source>
         <translation>已取消優化</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1256"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1280"/>
         <source>已取消</source>
         <translation>已取消</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1257"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1281"/>
         <source>字幕优化已取消</source>
         <translation>字幕優化已取消</translation>
     </message>
@@ -2152,53 +2152,73 @@ Or go to GitHub for the new release.</source>
 <context>
     <name>SubtitleSettingDialog</name>
     <message>
-        <location filename="../../app/components/SubtitleSettingDialog.py" line="13"/>
-        <location filename="../../app/components/SubtitleSettingDialog.py" line="63"/>
+        <location filename="../../app/components/SubtitleSettingDialog.py" line="15"/>
+        <location filename="../../app/components/SubtitleSettingDialog.py" line="84"/>
         <source>字幕设置</source>
         <translation>字幕設置</translation>
     </message>
     <message>
-        <location filename="../../app/components/SubtitleSettingDialog.py" line="18"/>
+        <location filename="../../app/components/SubtitleSettingDialog.py" line="21"/>
+        <source>目标语言</source>
+        <translation>目標語言</translation>
+    </message>
+    <message>
+        <location filename="../../app/components/SubtitleSettingDialog.py" line="22"/>
+        <source>字幕翻译生成的目标语言</source>
+        <translation>字幕翻譯生成的目標語言</translation>
+    </message>
+    <message>
+        <location filename="../../app/components/SubtitleSettingDialog.py" line="30"/>
+        <source>翻译方式</source>
+        <translation>翻譯方式</translation>
+    </message>
+    <message>
+        <location filename="../../app/components/SubtitleSettingDialog.py" line="31"/>
+        <source>字幕翻译使用的方式</source>
+        <translation>字幕翻譯所使用的方法</translation>
+    </message>
+    <message>
+        <location filename="../../app/components/SubtitleSettingDialog.py" line="38"/>
         <source>字幕分割</source>
         <translation>字幕分割</translation>
     </message>
     <message>
-        <location filename="../../app/components/SubtitleSettingDialog.py" line="19"/>
+        <location filename="../../app/components/SubtitleSettingDialog.py" line="39"/>
         <source>是否对字幕智能分割（仅针对导入字幕有效）</source>
         <translation>是否對字幕智能分割（僅針對導入字幕有效）</translation>
     </message>
     <message>
-        <location filename="../../app/components/SubtitleSettingDialog.py" line="27"/>
+        <location filename="../../app/components/SubtitleSettingDialog.py" line="47"/>
         <source>中文最大字数</source>
         <translation>中文最大字數</translation>
     </message>
     <message>
-        <location filename="../../app/components/SubtitleSettingDialog.py" line="28"/>
+        <location filename="../../app/components/SubtitleSettingDialog.py" line="48"/>
         <source>单条字幕的最大字数 (对于中日韩等字符)</source>
         <translation>單條字幕的最大字數 （對於中日韓等字符）</translation>
     </message>
     <message>
-        <location filename="../../app/components/SubtitleSettingDialog.py" line="37"/>
+        <location filename="../../app/components/SubtitleSettingDialog.py" line="57"/>
         <source>英文最大单词数</source>
         <translation>英文最大單詞數</translation>
     </message>
     <message>
-        <location filename="../../app/components/SubtitleSettingDialog.py" line="38"/>
+        <location filename="../../app/components/SubtitleSettingDialog.py" line="58"/>
         <source>单条字幕的最大单词数 (英文)</source>
         <translation>單條字幕的最大單詞數 （英文）</translation>
     </message>
     <message>
-        <location filename="../../app/components/SubtitleSettingDialog.py" line="46"/>
+        <location filename="../../app/components/SubtitleSettingDialog.py" line="66"/>
         <source>去除末尾标点符号</source>
         <translation>去除末尾標點符號</translation>
     </message>
     <message>
-        <location filename="../../app/components/SubtitleSettingDialog.py" line="47"/>
+        <location filename="../../app/components/SubtitleSettingDialog.py" line="67"/>
         <source>是否去除中文字幕中的末尾标点符号</source>
         <translation>是否去除中文字幕中的末尾標點符號</translation>
     </message>
     <message>
-        <location filename="../../app/components/SubtitleSettingDialog.py" line="67"/>
+        <location filename="../../app/components/SubtitleSettingDialog.py" line="88"/>
         <source>关闭</source>
         <translation>關閉</translation>
     </message>
@@ -2650,146 +2670,146 @@ Or go to GitHub for the new release.</source>
     </message>
     <message>
         <location filename="../../app/view/task_creation_interface.py" line="311"/>
-        <location filename="../../app/view/task_creation_interface.py" line="853"/>
+        <location filename="../../app/view/task_creation_interface.py" line="851"/>
         <source>使用系统设置</source>
         <translation>使用系統設定</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="477"/>
-        <location filename="../../app/view/task_creation_interface.py" line="587"/>
+        <location filename="../../app/view/task_creation_interface.py" line="475"/>
+        <location filename="../../app/view/task_creation_interface.py" line="585"/>
         <source>警告，需要配置 Base URL！</source>
         <translation>警告，需要配置 Base URL！</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="478"/>
-        <location filename="../../app/view/task_creation_interface.py" line="588"/>
+        <location filename="../../app/view/task_creation_interface.py" line="476"/>
+        <location filename="../../app/view/task_creation_interface.py" line="586"/>
         <source>你需要去设置中配置自己的Base URL，API Key和LLM Model。</source>
         <translation>你需要去設置中配置自己的Base URL，API Key和 LLM Model。</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="541"/>
-        <location filename="../../app/view/task_creation_interface.py" line="568"/>
-        <location filename="../../app/view/task_creation_interface.py" line="682"/>
+        <location filename="../../app/view/task_creation_interface.py" line="539"/>
+        <location filename="../../app/view/task_creation_interface.py" line="566"/>
+        <location filename="../../app/view/task_creation_interface.py" line="680"/>
         <source>FFMpeg not available.</source>
         <translation>FFMpeg找不到。</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="542"/>
-        <location filename="../../app/view/task_creation_interface.py" line="569"/>
-        <location filename="../../app/view/task_creation_interface.py" line="683"/>
+        <location filename="../../app/view/task_creation_interface.py" line="540"/>
+        <location filename="../../app/view/task_creation_interface.py" line="567"/>
+        <location filename="../../app/view/task_creation_interface.py" line="681"/>
         <source>FFMpeg is not installed or cannot run.</source>
         <translation>FFMpeg沒有安裝或者無法運行。</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="633"/>
+        <location filename="../../app/view/task_creation_interface.py" line="631"/>
         <source>FFMpeg is not available</source>
         <translation>沒有FFMpeg可以跑</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="634"/>
+        <location filename="../../app/view/task_creation_interface.py" line="632"/>
         <source>Do you want to download it from Internet?</source>
         <translation>你想要從互聯網上下載它嗎？</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="637"/>
+        <location filename="../../app/view/task_creation_interface.py" line="635"/>
         <source>OK</source>
         <translation>好的</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="638"/>
+        <location filename="../../app/view/task_creation_interface.py" line="636"/>
         <source>Cancel</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="652"/>
+        <location filename="../../app/view/task_creation_interface.py" line="650"/>
         <source>Done</source>
         <translation>完成</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="653"/>
+        <location filename="../../app/view/task_creation_interface.py" line="651"/>
         <source>FFMpeg downloaded and extracted.</source>
         <translation>FFMpeg 已下載並解壓。</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="712"/>
+        <location filename="../../app/view/task_creation_interface.py" line="710"/>
         <source>格式错误: </source>
         <translation>格式錯誤： </translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="776"/>
+        <location filename="../../app/view/task_creation_interface.py" line="774"/>
         <source>建议配置cookies.txt文件，以可以下载高清视频</source>
         <translation>建議配置cookies.txt文件，以可以下載高清視頻</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="804"/>
+        <location filename="../../app/view/task_creation_interface.py" line="802"/>
         <source>任务创建成功</source>
         <translation>任務創建成功</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="805"/>
+        <location filename="../../app/view/task_creation_interface.py" line="803"/>
         <source>开始自动处理...</source>
         <translation>開始自動處理……</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="866"/>
+        <location filename="../../app/view/task_creation_interface.py" line="864"/>
         <source>更新成功 :</source>
         <translation>更新成功：</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="867"/>
+        <location filename="../../app/view/task_creation_interface.py" line="865"/>
         <source>配置将在重启后生效</source>
         <translation>設定將在重新啟動後生效</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="775"/>
+        <location filename="../../app/view/task_creation_interface.py" line="773"/>
         <source>警告</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="528"/>
+        <location filename="../../app/view/task_creation_interface.py" line="526"/>
         <source>选择媒体文件</source>
         <translation>選擇媒體文件</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="597"/>
+        <location filename="../../app/view/task_creation_interface.py" line="595"/>
         <source>The LLM is not working.</source>
         <translation>LLM 大模型不工作。</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="598"/>
+        <location filename="../../app/view/task_creation_interface.py" line="596"/>
         <source>Access to {cfg.api_base.value} failed. Check your LLM connection please.</source>
         <translation>嘗試調用 {cfg.api_base.value} 失敗。請查一下你的 LLM 鏈接。</translation>
     </message>
     <message>
+        <location filename="../../app/view/task_creation_interface.py" line="700"/>
         <location filename="../../app/view/task_creation_interface.py" line="702"/>
-        <location filename="../../app/view/task_creation_interface.py" line="704"/>
         <source>导入成功</source>
         <translation>導入成功</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="705"/>
+        <location filename="../../app/view/task_creation_interface.py" line="703"/>
         <source>导入媒体文件成功</source>
         <translation>導入媒體文件成功</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="713"/>
+        <location filename="../../app/view/task_creation_interface.py" line="711"/>
         <source>不支持该文件格式</source>
         <translation>不支持該文件格式</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="726"/>
-        <location filename="../../app/view/task_creation_interface.py" line="821"/>
-        <location filename="../../app/view/task_creation_interface.py" line="844"/>
+        <location filename="../../app/view/task_creation_interface.py" line="724"/>
+        <location filename="../../app/view/task_creation_interface.py" line="819"/>
+        <location filename="../../app/view/task_creation_interface.py" line="842"/>
         <source>错误</source>
         <translation>錯誤</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="727"/>
+        <location filename="../../app/view/task_creation_interface.py" line="725"/>
         <source>请输入有效的文件路径或视频URL</source>
         <translation>請輸入有效的文件路徑或影片URL</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="845"/>
+        <location filename="../../app/view/task_creation_interface.py" line="843"/>
         <source>请输入音视频文件路径或URL</source>
         <translation>請輸入音影片文件路徑或URL</translation>
     </message>
@@ -3055,88 +3075,89 @@ Or go to GitHub for the new release.</source>
         <translation>視頻路徑不能為空</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="70"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="87"/>
         <source>等待其他音频处理结束</source>
         <translation>等待氣體音頻處理結束</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="76"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="93"/>
         <source>音频转换前中断</source>
         <translation>音頻轉換前中斷</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="78"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="95"/>
         <source>转换音频中</source>
         <translation>轉換音頻中</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="96"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="113"/>
         <source>音频转换失败</source>
         <translation>音頻轉換失敗</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="103"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="120"/>
         <source>等待其他转录结束</source>
         <translation>等待其他轉錄結束</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="109"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="126"/>
         <source>转录前中断</source>
         <translation>轉錄前中斷</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="112"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="129"/>
         <source>语音转录中</source>
         <translation>語音轉錄中</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="119"/>
-        <location filename="../../app/core/thread/transcript_thread.py" line="179"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="136"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="196"/>
         <source>无效的转录模型: </source>
         <translation>無效的轉錄模型： </translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="185"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="202"/>
         <source>字幕断句前中断</source>
         <translation>字幕斷句前中斷</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="191"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="208"/>
         <source>智能断句被中断</source>
         <translation>智能斷句被中斷</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="194"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="211"/>
         <source>智能断句失败，请检查你的大模型Base URL和API Key是否有效。</source>
         <translation>智能斷句失敗，請檢查你的大模型Base URL和API Key是否有效。</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="233"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="78"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="250"/>
         <source>转录完成</source>
         <translation>轉錄完成</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="240"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="257"/>
         <source>转录失败</source>
         <translation>轉錄失敗</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="250"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="267"/>
         <source>OpenAI API 测试失败, 请检查设置</source>
         <translation>OpenAI API 測試失敗， 請檢查設置</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="259"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="276"/>
         <source>开始验证API配置...</source>
         <translation>開始驗證API配置……</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="265"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="282"/>
         <source>字幕断句...</source>
         <translation>字幕斷句……</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="276"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="293"/>
         <source>断句失败</source>
         <translation>斷句失敗</translation>
     </message>
@@ -3144,32 +3165,32 @@ Or go to GitHub for the new release.</source>
 <context>
     <name>TranscriptionInterface</name>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="348"/>
+        <location filename="../../app/view/transcription_interface.py" line="347"/>
         <source>转录完成</source>
         <translation>轉錄完成</translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="349"/>
+        <location filename="../../app/view/transcription_interface.py" line="348"/>
         <source>开始字幕优化...</source>
         <translation>開始字幕優化...</translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="395"/>
+        <location filename="../../app/view/transcription_interface.py" line="394"/>
         <source>导入成功</source>
         <translation>導入成功</translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="396"/>
+        <location filename="../../app/view/transcription_interface.py" line="395"/>
         <source>开始语音转文字</source>
         <translation>開始語音轉文字</translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="403"/>
+        <location filename="../../app/view/transcription_interface.py" line="402"/>
         <source>格式错误</source>
         <translation>格式錯誤</translation>
     </message>
     <message>
-        <location filename="../../app/view/transcription_interface.py" line="404"/>
+        <location filename="../../app/view/transcription_interface.py" line="403"/>
         <source>请拖入音频或视频文件</source>
         <translation>請拖入音頻或影片文件</translation>
     </message>
@@ -3203,7 +3224,7 @@ Or go to GitHub for the new release.</source>
     </message>
     <message>
         <location filename="../../app/view/transcription_interface.py" line="157"/>
-        <location filename="../../app/view/transcription_interface.py" line="300"/>
+        <location filename="../../app/view/transcription_interface.py" line="299"/>
         <source>开始转录</source>
         <translation>開始轉錄</translation>
     </message>
