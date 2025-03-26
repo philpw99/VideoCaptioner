@@ -479,8 +479,9 @@ def from_vtt(vtt_str: str) -> 'ASRData':
     segments = []
     # 分拆数据及跳过头部元数据
     content = vtt_str.split('\n\n')
-    if content[1].lower() == "webvtt":
-        content = content[1:]
+    # Has "webvtt" block is not important at all.
+    # if content[1].lower() == "webvtt":
+    #     content = content[1:]
     
     timestamp_pattern1 = re.compile(r'(\d{2}):(\d{2})\.(\d{3})\s*-->\s*(\d{2}):(\d{2})\.(\d{3})')
     timestamp_pattern2 = re.compile(r'(\d{2}):(\d{2}):(\d{2})\.(\d{3})\s*-->\s*(\d{2}):(\d{2}):(\d{2})\.(\d{3})')
@@ -498,8 +499,12 @@ def from_vtt(vtt_str: str) -> 'ASRData':
             # Only 1 line, impossible.
             continue
         
-        have_line_number = str(lines[0]).find("-->") == -1
+        have_line_number = str(lines[0]).find("-->") == -1  # Line 0 have no "-->"
         
+        if have_line_number and str(lines[1]).find("-->") == -1:
+            # Line 1 also have no "-->". This block is not valid
+            continue
+
         # 解析时间戳行
         timestamp_line = lines[1] if have_line_number else lines[0]
         # Some Youtube videos use "," instead of "." for miliseconds.

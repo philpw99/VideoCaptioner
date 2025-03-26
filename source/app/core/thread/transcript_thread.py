@@ -62,6 +62,23 @@ class TranscriptThread(QThread):
                 logger.error("视频路径不能为空")
                 raise ValueError(self.tr("视频路径不能为空"))
 
+            if self.task.type == Task.Type.URL and self.task.url_subtitle_file \
+                and Path(self.task.url_subtitle_file).exists():
+                # Have subtitle already downloaded from Internet.
+                logger.info(f"已下载字幕文件，直接调用：{self.task.url_subtitle_file}")
+                self.task.original_subtitle_save_path = self.task.url_subtitle_file
+                # 删除封面
+                try:
+                    thumbnail_path = Path(self.task.video_info.thumbnail_path)
+                    if thumbnail_path.exists():
+                        thumbnail_path.unlink()
+                except Exception as e:
+                    logger.error("删除封面失败: %s", str(e))
+
+                self.progress.emit(100, self.tr("转录完成"))
+                self.finished.emit(self.task)
+                return
+            
             # 如果音频在制作中，等待
             if mutAudioRecording.tryLock(1):
                 mutAudioRecording.unlock()

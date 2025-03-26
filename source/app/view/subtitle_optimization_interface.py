@@ -208,6 +208,7 @@ class SubtitleOptimizationInterface(QWidget):
         # 添加打开文件夹按钮和文件选择按钮
         # self.open_folder_button = ToolButton(FIF.FOLDER, self)
         self.open_video_button = ToolButton(FIF.VIDEO, self)
+        self.open_video_button.setToolTip("Not working. 测试阶段，不可用。")
         self.file_select_button = PushButton(self.tr("选择字幕文件"), self, icon=FIF.FOLDER_ADD)
         self.prompt_button = PushButton(self.tr("文稿提示"), self, icon=FIF.DOCUMENT)
         # 添加字幕设置按钮

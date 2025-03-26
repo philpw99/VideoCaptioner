@@ -225,6 +225,7 @@ class CreateTaskThread(QThread):
             audio_codec=info_dict.get('acodec', ''),
             audio_sampling_rate=info_dict.get('asr', 0),
             thumbnail_path=thumbnail_file_path,
+            audio_tracks=["0(audio)"],
         )
 
         # 使用 Path 对象处理路径
@@ -232,6 +233,7 @@ class CreateTaskThread(QThread):
         task_work_dir = file_full_path.parent
         file_name = file_full_path.stem
 
+        # No subtitle from download. Do the audio transcrption.
         match cfg.transcribe_model.value.value:
             case TranscribeModelEnum.WHISPER.value:
                 whisper_type = f"{cfg.whisper_model.value.value}-{cfg.transcribe_language.value.value}"
@@ -242,11 +244,8 @@ class CreateTaskThread(QThread):
             case _:
                 whisper_type = ""
 
-        if whisper_type:
-            transcribe_language = WHISPER_LANGUAGES[cfg.transcribe_language.value.value]
-        else:
-            transcribe_language = LANGUAGES[cfg.transcribe_language.value.value]
-
+        transcribe_language = WHISPER_LANGUAGES[cfg.transcribe_language.value.value] \
+            if whisper_type else LANGUAGES[cfg.transcribe_language.value.value]
 
         # 定义各个路径
         audio_save_path = task_work_dir / f"{self.tr("【音频】")}{Path(video_file_path).stem}.wav"
@@ -283,7 +282,8 @@ class CreateTaskThread(QThread):
             work_dir=str(task_work_dir),
             file_path=str(Path(video_file_path)),
             url="",
-            source=Task.Source.FILE_IMPORT,
+            url_subtitle_file=subtitle_file_path,           # Has subtitle downloaded from URL alreay.
+            source=Task.Source.URL_IMPORT,
             original_language=LANGUAGES[cfg.transcribe_language.value.value],
             target_language=LANGUAGES[cfg.target_language.value.value],
             video_info=video_info,

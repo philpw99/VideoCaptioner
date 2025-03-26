@@ -63,13 +63,15 @@ def setup_logger(name: str,
         if log_file:
             Path(log_file).parent.mkdir(parents=True, exist_ok=True)
             file_handler = logging.handlers.RotatingFileHandler(
-                log_file, maxBytes=10*1024*1024, backupCount=5, encoding='utf-8'
+                log_file,
+                maxBytes=10*1024*1024,
+                encoding='utf-8'
             )
             file_handler.setLevel(level)
             file_handler.setFormatter(level_formatter)
             logger.addHandler(file_handler)
 
-        # Add logger for 
+        # Add logger for showing in the program
         logger.addHandler(app_log_handler)
 
 

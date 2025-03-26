@@ -675,6 +675,7 @@ class Task:
     # 初始输入
     file_path: Optional[str] = None
     url: Optional[str] = None
+    url_subtitle_file: Optional[str] = None
     source: Source = Source.FILE_IMPORT
     original_language: Optional[str] = None
     target_language: Optional[str] = None

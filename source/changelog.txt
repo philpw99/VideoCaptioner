@@ -1,4 +1,7 @@
 3.5.8
+	Update yt-dlp to fix problems with youtube videos.
+	If youtube video contains subtitles, use the subtitle file directly, bypass the audio transcription.
+	Better handling of webvtt (again).
 	Little bug in WhisperCPP.
 	Fix the front page problem of soft subtitle switch.
 	Add FasterWhisperXXL China download link.

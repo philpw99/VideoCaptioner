@@ -291,8 +291,7 @@ class VideoInfoCard(CardWidget):
         """转录完成处理"""
         self.start_button.setEnabled(True)
         self.start_button.setText(self.tr("转录完成"))
-        if self.task.status not in NOT_RUNNING_TASKS:
-            self.finished.emit(task)
+        self.finished.emit(task)
 
     def reset_ui(self):
         """重置UI状态"""
