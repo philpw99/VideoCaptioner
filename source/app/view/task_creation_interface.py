@@ -28,6 +28,8 @@ from ..core.utils.imdb import get_imdb_movie_info
 from ..core.utils.douban import get_douban_movie_info
 from ..core.thread.download_ffmpeg_thread import DownloadFFMpegThread
 from ..components.MyDialogs import PromptSettingDialog
+from .subtitle_optimization_interface import PromptDialog
+
 
 LOGO_PATH = ASSETS_PATH / "logo.png"
 
@@ -241,13 +243,20 @@ class TaskCreationInterface(QWidget):
         self.movie_info_layout = QHBoxLayout()
         self.movie_info_layout.setContentsMargins(0, 0, 10, 0)
         self.movie_info_layout.setSpacing(20)
-        # Prompt button
-        self.prompt_button = PushButton(
+        # Whisper Prompt button
+        self.whisper_prompt_button = PushButton(
             FIF.ASTERISK,
-            self.tr("Set Prompt"),
+            self.tr("Whisper Prompt"),
             self,
         )
-        self.prompt_button.setToolTip(self.tr("Set prompt for Whisper models to increase its accuracy."))
+        self.whisper_prompt_button.setToolTip(self.tr("Set prompt for Whisper models to increase its transcribing accuracy."))
+        # LLM translate prompt button.
+        self.translate_prompt_button = PushButton(
+            FIF.DOCUMENT,
+            self.tr("Translate Prompt"),
+            self,
+        )
+        self.translate_prompt_button.setToolTip(self.tr("Set prompt for LLM to get better translation results."))
         
         # Audio track selection. Usually hidden.
         self.audio_track_select = ComboBoxSimpleSettingCard(
@@ -261,7 +270,8 @@ class TaskCreationInterface(QWidget):
 
         self.movie_info_layout.addStretch()
         self.movie_info_layout.addWidget(self.audio_track_select)
-        self.movie_info_layout.addWidget(self.prompt_button)
+        self.movie_info_layout.addWidget(self.whisper_prompt_button)
+        self.movie_info_layout.addWidget(self.translate_prompt_button)
         
         self.main_layout.addLayout(self.movie_info_layout)
         self.main_layout.addSpacing(30)
@@ -328,7 +338,8 @@ class TaskCreationInterface(QWidget):
         self.start_button.clicked.connect(self.on_start_clicked)
         self.search_input.textChanged.connect(self.on_search_input_changed)
         self.log_button.clicked.connect(self.show_log_window)
-        self.prompt_button.clicked.connect(self.on_prompt_button_clicked)
+        self.whisper_prompt_button.clicked.connect(self.on_whisper_prompt_button_clicked)
+        self.translate_prompt_button.clicked.connect(self.on_translate_prompt_button_clicked)
 
         # Local to signalBus
         self.transcription_model_card.comboBox.currentTextChanged.connect(
@@ -371,10 +382,53 @@ class TaskCreationInterface(QWidget):
         signalBus.original_language_changed.connect(self.on_original_language_changed)
         signalBus.subititle_output_format_changed.connect(self.on_output_format_changed)
 
-    def on_prompt_button_clicked(self):
-        prompt_diaglog = PromptSettingDialog(self)
-        prompt_diaglog.exec()
+    def on_translate_prompt_button_clicked(self):
+        """
+        该方法创建一个 PromptDialog 对话框，并在用户点击确定后更新自定义提示文本。
+        """
+        # 创建一个提示对话框
+        dialog = PromptDialog(self)
+        # 执行对话框，如果用户点击确定
+        if dialog.exec_():
+            # 更新提示按钮的样式
+            self._update_prompt_button_style(
+                self.translate_prompt_button,
+                FIF.DOCUMENT,
+                cfg.custom_prompt_text.value,
+                )
 
+    def _update_prompt_button_style(self, button: PushButton, icon: FluentIcon, value: str = None):
+        """
+        该方法根据自定义提示文本是否为空来更新提示按钮的图标。
+        """
+        # 如果自定义提示文本不为空
+        if value.strip():
+            # 创建一个绿色的文档图标
+            green_icon = icon.colored(QColor(76,255,165), QColor(76,255,165))
+            # 设置提示按钮的图标为绿色文档图标
+            button.setIcon(green_icon)
+        else:
+            # 设置提示按钮的图标为默认的文档图标
+            button.setIcon(icon)
+
+    def on_whisper_prompt_button_clicked(self):
+        """显示FasterWhisper提示词的对话框"""
+        prompt_diaglog = PromptSettingDialog(self)
+        if prompt_diaglog.exec():
+            # 根据 cfg 的值来改变图标的颜色
+            match cfg.transcribe_model.value:
+                case TranscribeModelEnum.FASTER_WHISPER | TranscribeModelEnum.WHISPER:
+                    self._update_prompt_button_style(
+                        self.whisper_prompt_button,
+                        FIF.ASTERISK,
+                        cfg.faster_whisper_prompt.value,
+                        )
+                case TranscribeModelEnum.WHISPER_API:
+                    self._update_prompt_button_style(
+                        self.whisper_prompt_button,
+                        FIF.ASTERISK,
+                        cfg.whisper_api_prompt.value
+                        )
     
     def on_output_format_changed(self, value:str):
         if cfg.subtitle_output_format.value != value:
@@ -414,9 +468,13 @@ class TaskCreationInterface(QWidget):
         if enum == TranslateMethodEnum.NONE:
             # No translation
             self.target_language_card.setDisabled(True)
+            self.translate_prompt_button.setDisabled(True)
+            self.subtitle_layout_card.setDisabled(True)
         else:
             # Do translation
             self.target_language_card.setDisabled(False)
+            self.translate_prompt_button.setDisabled(False)
+            self.subtitle_layout_card.setDisabled(False)
 
     def on_soft_subtitle_changed(self, enable: bool):
         if cfg.soft_subtitle.value != enable:
@@ -449,15 +507,34 @@ class TaskCreationInterface(QWidget):
         comboBox = self.transcription_model_card.comboBox
         if comboBox.currentText != value:
             comboBox.setCurrentText(value)
-        self.whisper_setting_button.setVisible( self.is_using_whisper())
+        if self.is_using_whisper():
+            # 改变后需要对提示按钮相应地改变。
+            self.whisper_setting_button.setVisible(True)
+            self.whisper_prompt_button.setDisabled(False)
+            match cfg.transcribe_model.value:
+                case TranscribeModelEnum.FASTER_WHISPER | TranscribeModelEnum.WHISPER:
+                    value = cfg.faster_whisper_prompt.value
+                case TranscribeModelEnum.WHISPER_API:
+                    value = cfg.whisper_api_prompt.value
+                case _:
+                    value = None
+            self._update_prompt_button_style(
+                self.whisper_prompt_button,
+                FIF.ASTERISK,
+                value
+            )
+        else:
+            # 不使用 Whisper
+            self.whisper_setting_button.setVisible(False)
+            self.whisper_prompt_button.setDisabled(True)
             
-
     def setup_values(self):
         self.transcription_model_card.comboBox.setCurrentText(cfg.transcribe_model.value.value)
         self.translation_method_card.comboBox.setCurrentText(cfg.translate_method.value.value)
         if cfg.translate_method.value == TranslateMethodEnum.NONE:
             self.target_language_card.setDisabled(True)
             self.subtitle_layout_card.setDisabled(True)
+            self.translate_prompt_button.setDisabled(True)
         self.video_synthesis_card.setChecked(cfg.need_video.value)
         self.soft_subtitle_card.setChecked( cfg.soft_subtitle.value )
         if not self.video_synthesis_card.isChecked():
@@ -469,6 +546,7 @@ class TaskCreationInterface(QWidget):
        
         self.search_input.setText("")
         self.whisper_setting_button.setVisible( self.is_using_whisper())
+        self.whisper_prompt_button.setEnabled(self.is_using_whisper())
 
         if self.is_base_url_needed() and not cfg.api_base.value:
             InfoBar.warning(

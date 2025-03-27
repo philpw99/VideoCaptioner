@@ -1351,17 +1351,17 @@ class PromptDialog(MessageBoxBase):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setup_ui()
-        self.setWindowTitle(self.tr('文稿提示'))
+        self.setWindowTitle(self.tr('翻译提示'))
         # 连接按钮点击事件
         self.yesButton.clicked.connect(self.save_prompt)
         
     def setup_ui(self):
-        self.titleLabel = BodyLabel(self.tr('文稿提示'), self)
+        self.titleLabel = BodyLabel(self.tr('翻译提示'), self)
         
         # 添加文本编辑框
         self.text_edit = TextEdit(self)
         self.text_edit.setPlaceholderText(
-            self.tr("请输入文稿提示（优化字幕或者翻译字幕的提示参考）")
+            self.tr("请输入翻译用的文稿提示")
         )
         self.text_edit.setText(cfg.custom_prompt_text.value)
         
@@ -1384,7 +1384,7 @@ class PromptDialog(MessageBoxBase):
         # 在点击确定按钮时保存提示文本到配置
         prompt_text = self.text_edit.toPlainText()
         cfg.set(cfg.custom_prompt_text, prompt_text, True)
-        print(cfg.custom_prompt_text.value)
+        # print(cfg.custom_prompt_text.value)
 
 
 if __name__ == "__main__":

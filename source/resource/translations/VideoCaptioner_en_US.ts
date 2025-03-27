@@ -1031,6 +1031,14 @@ Or go to GitHub for the new release.</source>
     </message>
 </context>
 <context>
+    <name>MyVideoWidget</name>
+    <message>
+        <location filename="../../app/components/MyVideoWidget.py" line="487"/>
+        <source>请拖入视频文件</source>
+        <translation>Please drag in video files</translation>
+    </message>
+</context>
+<context>
     <name>ProcessLogInfoCard</name>
     <message>
         <location filename="../../app/view/transcription_interface.py" line="55"/>
@@ -1048,13 +1056,13 @@ Or go to GitHub for the new release.</source>
     <message>
         <location filename="../../app/view/subtitle_optimization_interface.py" line="1354"/>
         <location filename="../../app/view/subtitle_optimization_interface.py" line="1359"/>
-        <source>文稿提示</source>
-        <translation>Prompt</translation>
+        <source>翻译提示</source>
+        <translation>Translate Prompt</translation>
     </message>
     <message>
         <location filename="../../app/view/subtitle_optimization_interface.py" line="1365"/>
-        <source>请输入文稿提示（优化字幕或者翻译字幕的提示参考）</source>
-        <translation>Please enter prompt (reference for optimizing or translating subtitles)</translation>
+        <source>请输入翻译用的文稿提示</source>
+        <translation>Please input prompt here for LLM translation</translation>
     </message>
     <message>
         <location filename="../../app/view/subtitle_optimization_interface.py" line="1377"/>
@@ -2568,287 +2576,297 @@ Detail settings are in the &apos;Settings&apos; on the lower left corner.</trans
 <context>
     <name>TaskCreationInterface</name>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="79"/>
+        <location filename="../../app/view/task_creation_interface.py" line="81"/>
         <source>转录模型</source>
         <translation>Transcription Model</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="80"/>
+        <location filename="../../app/view/task_creation_interface.py" line="82"/>
         <source>语音转换的模型</source>
         <translation>Voice to text conversion method. FasterWhisper is recommended</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="148"/>
+        <location filename="../../app/view/task_creation_interface.py" line="150"/>
         <source>是否把字幕合成到视频里面。</source>
         <translation>Whether to combine the subtitle into a new video, or just save the subtitle to the audio/video folder.</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="159"/>
+        <location filename="../../app/view/task_creation_interface.py" line="161"/>
         <source>是否合成软字幕视频，关掉则会合成硬字幕</source>
         <translation>Whether to mux soft subtitle into video, or hard-coding subtitles into video frames</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="103"/>
+        <location filename="../../app/view/task_creation_interface.py" line="105"/>
         <source>字幕翻译方式</source>
         <translation>Translate Method</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="104"/>
+        <location filename="../../app/view/task_creation_interface.py" line="106"/>
         <source>选择字幕翻译方式，或者不翻译。</source>
         <translation>Choose the method to translate the subtitle, or not translating.</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="131"/>
+        <location filename="../../app/view/task_creation_interface.py" line="133"/>
         <source>字幕输出格式</source>
         <translation>Sub Output Format</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="132"/>
+        <location filename="../../app/view/task_creation_interface.py" line="134"/>
         <source>字幕文件的后缀名</source>
         <translation>Subtitle file format that will save to the original audio/video folder</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="139"/>
+        <location filename="../../app/view/task_creation_interface.py" line="141"/>
         <source>字幕布局</source>
         <translation>Subtitle Layout</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="140"/>
+        <location filename="../../app/view/task_creation_interface.py" line="142"/>
         <source>原文在上，译文在上，或者其它布局</source>
         <translation>Original on top and translated below, or translated on top and original below, or other layout</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="203"/>
+        <location filename="../../app/view/task_creation_interface.py" line="205"/>
         <source>请拖拽文件或输入视频URL</source>
         <translation>Please drag and drop file or enter video URL</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="273"/>
+        <location filename="../../app/view/task_creation_interface.py" line="283"/>
         <source>准备就绪</source>
         <translation>Ready</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="526"/>
+        <location filename="../../app/view/task_creation_interface.py" line="580"/>
         <source>选择媒体文件</source>
         <translation>Select Media File</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="112"/>
+        <location filename="../../app/view/task_creation_interface.py" line="114"/>
         <source>Translate Target</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="95"/>
+        <location filename="../../app/view/task_creation_interface.py" line="97"/>
         <source>源语言</source>
         <translation>Source Language</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="96"/>
+        <location filename="../../app/view/task_creation_interface.py" line="98"/>
         <source>音频的源语言</source>
         <translation>The original spoken language in the source audio</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="113"/>
+        <location filename="../../app/view/task_creation_interface.py" line="115"/>
         <source>The final language you want to translate into.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="151"/>
+        <location filename="../../app/view/task_creation_interface.py" line="153"/>
         <source>Save Subtitle Only</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="152"/>
+        <location filename="../../app/view/task_creation_interface.py" line="154"/>
         <source>Combine Sub + Video</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="162"/>
+        <location filename="../../app/view/task_creation_interface.py" line="164"/>
         <source>Hard Subtitle</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="163"/>
+        <location filename="../../app/view/task_creation_interface.py" line="165"/>
         <source>Soft Subtitle</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="254"/>
+        <location filename="../../app/view/task_creation_interface.py" line="249"/>
+        <source>Whisper Prompt</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../app/view/task_creation_interface.py" line="252"/>
+        <source>Set prompt for Whisper models to increase its transcribing accuracy.</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../app/view/task_creation_interface.py" line="256"/>
+        <source>Translate Prompt</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../app/view/task_creation_interface.py" line="259"/>
+        <source>Set prompt for LLM to get better translation results.</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../app/view/task_creation_interface.py" line="263"/>
         <source>Choose Audio Track</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="255"/>
+        <location filename="../../app/view/task_creation_interface.py" line="264"/>
         <source>Please choose which audio track to transcribe.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="301"/>
+        <location filename="../../app/view/task_creation_interface.py" line="311"/>
         <source>©VideoCaptioner {VERSION} • By {AUTHOR}, forked {SUBVERSION}  By {COAUTHOR}</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="309"/>
+        <location filename="../../app/view/task_creation_interface.py" line="319"/>
         <source>语言</source>
         <translation>Language</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="310"/>
+        <location filename="../../app/view/task_creation_interface.py" line="320"/>
         <source>设置您偏好的界面语言</source>
         <translation>Set your preferred interface language</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="311"/>
-        <location filename="../../app/view/task_creation_interface.py" line="851"/>
+        <location filename="../../app/view/task_creation_interface.py" line="321"/>
+        <location filename="../../app/view/task_creation_interface.py" line="905"/>
         <source>使用系统设置</source>
         <translation>Use System Settings</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="539"/>
-        <location filename="../../app/view/task_creation_interface.py" line="566"/>
-        <location filename="../../app/view/task_creation_interface.py" line="680"/>
+        <location filename="../../app/view/task_creation_interface.py" line="593"/>
+        <location filename="../../app/view/task_creation_interface.py" line="620"/>
+        <location filename="../../app/view/task_creation_interface.py" line="734"/>
         <source>FFMpeg not available.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="540"/>
-        <location filename="../../app/view/task_creation_interface.py" line="567"/>
-        <location filename="../../app/view/task_creation_interface.py" line="681"/>
+        <location filename="../../app/view/task_creation_interface.py" line="594"/>
+        <location filename="../../app/view/task_creation_interface.py" line="621"/>
+        <location filename="../../app/view/task_creation_interface.py" line="735"/>
         <source>FFMpeg is not installed or cannot run.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="631"/>
+        <location filename="../../app/view/task_creation_interface.py" line="685"/>
         <source>FFMpeg is not available</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="632"/>
+        <location filename="../../app/view/task_creation_interface.py" line="686"/>
         <source>Do you want to download it from Internet?</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="635"/>
+        <location filename="../../app/view/task_creation_interface.py" line="689"/>
         <source>OK</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="636"/>
+        <location filename="../../app/view/task_creation_interface.py" line="690"/>
         <source>Cancel</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="595"/>
+        <location filename="../../app/view/task_creation_interface.py" line="649"/>
         <source>The LLM is not working.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="596"/>
+        <location filename="../../app/view/task_creation_interface.py" line="650"/>
         <source>Access to {cfg.api_base.value} failed. Check your LLM connection please.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="650"/>
+        <location filename="../../app/view/task_creation_interface.py" line="704"/>
         <source>Done</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="651"/>
+        <location filename="../../app/view/task_creation_interface.py" line="705"/>
         <source>FFMpeg downloaded and extracted.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="700"/>
-        <location filename="../../app/view/task_creation_interface.py" line="702"/>
+        <location filename="../../app/view/task_creation_interface.py" line="754"/>
+        <location filename="../../app/view/task_creation_interface.py" line="756"/>
         <source>导入成功</source>
         <translation>Import Successful</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="703"/>
+        <location filename="../../app/view/task_creation_interface.py" line="757"/>
         <source>导入媒体文件成功</source>
         <translation>Media file imported successfully</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="711"/>
+        <location filename="../../app/view/task_creation_interface.py" line="765"/>
         <source>不支持该文件格式</source>
         <translation>This file format is not supported</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="724"/>
-        <location filename="../../app/view/task_creation_interface.py" line="819"/>
-        <location filename="../../app/view/task_creation_interface.py" line="842"/>
+        <location filename="../../app/view/task_creation_interface.py" line="778"/>
+        <location filename="../../app/view/task_creation_interface.py" line="873"/>
+        <location filename="../../app/view/task_creation_interface.py" line="896"/>
         <source>错误</source>
         <translation>Error</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="725"/>
+        <location filename="../../app/view/task_creation_interface.py" line="779"/>
         <source>请输入有效的文件路径或视频URL</source>
         <translation>Please enter a valid file path or video URL</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="802"/>
+        <location filename="../../app/view/task_creation_interface.py" line="856"/>
         <source>任务创建成功</source>
         <translation>Task created successfully</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="803"/>
+        <location filename="../../app/view/task_creation_interface.py" line="857"/>
         <source>开始自动处理...</source>
         <translation>Starting automatic processing...</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="843"/>
+        <location filename="../../app/view/task_creation_interface.py" line="897"/>
         <source>请输入音视频文件路径或URL</source>
         <translation>Please enter audio/video file path or URL</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="864"/>
+        <location filename="../../app/view/task_creation_interface.py" line="918"/>
         <source>更新成功 :</source>
         <translation>Update successful :</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="865"/>
+        <location filename="../../app/view/task_creation_interface.py" line="919"/>
         <source>配置将在重启后生效</source>
         <translation>Configuration will take effect after restart</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="292"/>
+        <location filename="../../app/view/task_creation_interface.py" line="302"/>
         <source>查看日志</source>
         <translation>View Logs</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="247"/>
-        <source>Set Prompt</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../../app/view/task_creation_interface.py" line="250"/>
-        <source>Set prompt for Whisper models to increase its accuracy.</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="../../app/view/task_creation_interface.py" line="475"/>
-        <location filename="../../app/view/task_creation_interface.py" line="585"/>
+        <location filename="../../app/view/task_creation_interface.py" line="529"/>
+        <location filename="../../app/view/task_creation_interface.py" line="639"/>
         <source>警告，需要配置 Base URL！</source>
         <translation>Warning, Need to Configure Base URL !!</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="476"/>
-        <location filename="../../app/view/task_creation_interface.py" line="586"/>
+        <location filename="../../app/view/task_creation_interface.py" line="530"/>
+        <location filename="../../app/view/task_creation_interface.py" line="640"/>
         <source>你需要去设置中配置自己的Base URL，API Key和LLM Model。</source>
         <translation>You need to go to settings and configure your own Base URL, API Key and LLM model.</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="710"/>
+        <location filename="../../app/view/task_creation_interface.py" line="764"/>
         <source>格式错误: </source>
         <translation>Format Error: </translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="773"/>
+        <location filename="../../app/view/task_creation_interface.py" line="827"/>
         <source>警告</source>
         <translation>Warning</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="774"/>
+        <location filename="../../app/view/task_creation_interface.py" line="828"/>
         <source>建议配置cookies.txt文件，以可以下载高清视频</source>
         <translation>It is recommended to configure cookies.txt file to download HD videos</translation>
     </message>
@@ -3712,27 +3730,27 @@ Detail settings are in the &apos;Settings&apos; on the lower left corner.</trans
 <context>
     <name>qoVideo</name>
     <message>
-        <location filename="../../app/core/utils/video_utils.py" line="162"/>
+        <location filename="../../app/core/utils/video_utils.py" line="152"/>
         <source>输入文件不存在</source>
         <translation>Input File Does Not Exist</translation>
     </message>
     <message>
-        <location filename="../../app/core/utils/video_utils.py" line="164"/>
+        <location filename="../../app/core/utils/video_utils.py" line="154"/>
         <source>字幕文件不存在</source>
         <translation>Subtitle file does not exist</translation>
     </message>
     <message>
-        <location filename="../../app/core/utils/video_utils.py" line="389"/>
+        <location filename="../../app/core/utils/video_utils.py" line="379"/>
         <source>正在合成</source>
         <translation>Synthesizing</translation>
     </message>
     <message>
-        <location filename="../../app/core/utils/video_utils.py" line="396"/>
+        <location filename="../../app/core/utils/video_utils.py" line="386"/>
         <source>视频合成强行中止</source>
         <translation>Video synthesis was interrupted by user</translation>
     </message>
     <message>
-        <location filename="../../app/core/utils/video_utils.py" line="399"/>
+        <location filename="../../app/core/utils/video_utils.py" line="389"/>
         <source>合成完成</source>
         <translation>Synthesis Done</translation>
     </message>

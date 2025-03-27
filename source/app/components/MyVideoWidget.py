@@ -13,6 +13,8 @@ from qfluentwidgets.multimedia.media_play_bar import MediaPlayBarBase, MediaPlay
 # from qfluentwidgets.multimedia.media_player import MediaPlayer, MediaPlayerBase
 from qfluentwidgets.common.icon import FluentIcon
 from qfluentwidgets.components.widgets.label import CaptionLabel
+from qfluentwidgets import FluentWindow
+from qfluentwidgets.common.config import isDarkTheme
 
 from ..common.signal_bus import signalBus
 from ..config import RESOURCE_PATH
@@ -450,7 +452,7 @@ class StandardMediaPlayBar(MediaPlayBarBase):
     def _formatTime(self, time: int):
         time = int(time / 1000)
         s = time % 60
-        m = int(time / 60)
+        m = int(time / 60) % 60
         h = int(time / 3600)
         return f'{h}:{m:02}:{s:02}'
     
@@ -467,15 +469,22 @@ class MyVideoWidget(QWidget):
         
         # 设置初始窗口大小
         self.resize(800, 600)
-        self.setWindowTitle("VideoCaptioner")
+        self.setWindowTitle("VideoCaptioner - Video Player")
         self.setWindowIcon(QIcon(str(RESOURCE_PATH / "assets" / "logo.png")))
+
+        theme = 'dark' if isDarkTheme() else "light"
+        with open(RESOURCE_PATH / "assets" / "qss" / theme / "demo.qss", encoding='utf-8') as f:
+            style_sheet = f.read()
+        
+        self.setStyleSheet(style_sheet)
         
         # 创建一个专门用于视频输出的 widget
         self.videoWidget = QWidget(self)
-        self.videoWidget.setStyleSheet("background-color: rgb(24, 24, 24);")
+        # self.videoWidget.setStyleSheet("background-color: rgb(24, 24, 24);")
+        self.videoWidget.setStyleSheet(style_sheet)
         
         # 添加提示标签
-        self.tipLabel = CaptionLabel("请拖入视频文件", self.videoWidget)
+        self.tipLabel = CaptionLabel(self.tr("请拖入视频文件"), self.videoWidget)
         self.tipLabel.setStyleSheet("""
             color: rgba(255, 255, 255, 0.5);
             font-size: 20px;
@@ -508,7 +517,7 @@ class MyVideoWidget(QWidget):
         self.playBar.setMediaPlayer(self.vlc_player)
         self.playBar.setVolume(80)
         self.vlc_player.setVideoOutput(self.videoWidget)
-        FluentStyleSheet.MEDIA_PLAYER.apply(self)
+        # FluentStyleSheet.MEDIA_PLAYER.apply(self)
         
         # 设置焦点和事件过滤
         self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)

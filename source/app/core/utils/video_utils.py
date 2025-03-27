@@ -77,16 +77,6 @@ def video2audio(input_file: str, output_file: str = "", format: str = "copy", al
         # 获取所有输出和错误信息
         process.communicate()
                 
-        # result = subprocess.run(
-        #     cmd, 
-        #     capture_output=True, 
-        #     check=True, 
-        #     encoding='utf-8', 
-        #     errors='replace', 
-        #     creationflags=subprocess.CREATE_NO_WINDOW if hasattr(subprocess, 'CREATE_NO_WINDOW') else 0,
-        #     )
-        # if result.returncode == 0 and Path(output_file).is_file():
-        #     return True
         if allow_running[0] and process.returncode == 0 and Path(output_file).is_file():
             return True
         else:

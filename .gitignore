@@ -18,6 +18,8 @@
 /source/work-dir/
 /source/AppData/
 /work-dir/
+/backups/
+
 # 媒体文件
 *.srt
 *.ass

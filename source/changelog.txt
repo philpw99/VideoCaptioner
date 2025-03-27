@@ -1,3 +1,6 @@
+3.6.0
+	Add translate prompt to the front page. Change color if the prompts have contents.
+	A little fix here and there in video player.
 3.5.9
 	Auto load video when subtitle is opened in Optimize/Translate tab.
 	Add VLC video embeded player feature.
