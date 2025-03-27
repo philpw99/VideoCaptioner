@@ -348,7 +348,13 @@ class SettingInterface(ScrollArea):
             self.tr('版本') + " " + VERSION,
             self.aboutGroup
         )
-
+        self.check_update_startup_card = SwitchSettingCard(
+            FIF.UPDATE,
+            self.tr("自动检测更新"),
+            self.tr("每次程序开跑时自动检测更新"),
+            cfg.checkUpdateAtStartUp,
+            self.aboutGroup,
+        )
         self.__initWidget()
 
     def __initWidget(self):
@@ -411,7 +417,8 @@ class SettingInterface(ScrollArea):
         self.personalGroup.addSettingCards([self.themeCard, self.themeColorCard,
             self.zoomCard, self.languageCard, self.noThumbnailCard])
 
-        self.aboutGroup.addSettingCards([self.helpCard, self.feedbackCard, self.aboutCard])
+        self.aboutGroup.addSettingCards([self.helpCard, self.feedbackCard, 
+                                         self.aboutCard, self.check_update_startup_card])
 
         # 将设置卡片组添加到布局
         self.expandLayout.setSpacing(28)
@@ -671,13 +678,6 @@ class SettingInterface(ScrollArea):
                 dialog = FasterWhisperSettingDialog(self.window())
                 if dialog.exec_():
                     return True
-                else:
-                    InfoBar.error(
-                        self.tr('错误'),
-                        self.tr('请先选择Whisper转录模型'),
-                        duration=3000,
-                        parent=self
-                    )
         return False
     
     def __showRestartTooltip(self):

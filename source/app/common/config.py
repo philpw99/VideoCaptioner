@@ -136,6 +136,11 @@ class Config(QConfig):
     # 提示词
     faster_whisper_prompt = ConfigItem("FasterWhisper", "Prompt", "")
 
+    # RTX 5000 系统特殊处理
+    faster_whisper_RTX_5000_fix = ConfigItem(
+        "FasterWhisper", "RTX5000Fix", False, BoolValidator()
+    )
+
     # ------------------- Whisper API 配置 -------------------
     whisper_api_base = ConfigItem("WhisperAPI", "WhisperApiBase", "")
     whisper_api_key = ConfigItem("WhisperAPI", "WhisperApiKey", "")
@@ -234,7 +239,7 @@ class Config(QConfig):
 
     # ------------------- 更新配置 -------------------
     checkUpdateAtStartUp = ConfigItem(
-        "Update", "CheckUpdateAtStartUp", True, BoolValidator()
+        "Update", "CheckUpdateAtStartUp", False, BoolValidator()
     )
     
     # ------------------- 最后打开文件夹 -------------------
@@ -248,6 +253,7 @@ class Config(QConfig):
         EnumOptionsValidator(TodoWhenDoneEnum),
         EnumExSerializer(TodoWhenDoneEnum)
     )
+    
 
 cfg = Config()
 cfg.themeMode.value = Theme.DARK

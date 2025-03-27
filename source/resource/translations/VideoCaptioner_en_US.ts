@@ -686,53 +686,63 @@
         <translation>The penalty for repeating words, 1 is no penalty, usually 1.2 is good enough</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="751"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="752"/>
         <source>提示词</source>
         <translation>Prompt</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="752"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="753"/>
         <source>可选的提示词,默认空</source>
         <translation>Optional Prompts, default to be empty</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="808"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="761"/>
+        <source>RTX 5000 系列补丁</source>
+        <translation>Patch for RTX 5000 GPU</translation>
+    </message>
+    <message>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="762"/>
+        <source>如果你使用的是Nvidia RTX 5000系列显卡，则需要打开这个设定而避免出错。</source>
+        <translation>If you are using Nvidia RTX 5000 series GPU, then you need to enable this to avoide error in FasterWhisper.</translation>
+    </message>
+    <message>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="818"/>
         <source>确定</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="809"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="819"/>
         <source>取消</source>
         <translation>Cancel</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="843"/>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="893"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="853"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="903"/>
         <source>Faster Whisper程序不存在，请先下载程序</source>
         <translation>Faster Whisper is not installed. Please download the program first</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="856"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="866"/>
         <source>设置已保存</source>
         <translation>Settings are saved</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="857"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="867"/>
         <source>Faster Whisper 设置已更新</source>
         <translation>Faster Whisper settings are updated</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="877"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="887"/>
         <source>错误</source>
         <translation>Error</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="900"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="910"/>
         <source>模型配置不存在</source>
         <translation>Model configuration does not exist</translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="907"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="917"/>
         <source>模型文件不存在: </source>
         <translation>Model file doesn&apos;t exist: </translation>
     </message>
@@ -763,38 +773,38 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../../app/view/main_window.py" line="73"/>
+        <location filename="../../app/view/main_window.py" line="74"/>
         <source>主页</source>
         <translation>Home</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="74"/>
+        <location filename="../../app/view/main_window.py" line="75"/>
         <source>批量处理</source>
         <translation>Batch Processing</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="75"/>
+        <location filename="../../app/view/main_window.py" line="76"/>
         <source>字幕样式</source>
         <translation>Subtitle Style</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="81"/>
+        <location filename="../../app/view/main_window.py" line="82"/>
         <source>Settings</source>
         <translation>Settings</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="90"/>
-        <location filename="../../app/view/main_window.py" line="98"/>
+        <location filename="../../app/view/main_window.py" line="91"/>
+        <location filename="../../app/view/main_window.py" line="99"/>
         <source>卡卡字幕助手 -- VideoCaptioner</source>
         <translation>VideoCaptioner -- Subtitle Assistant</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="118"/>
+        <location filename="../../app/view/main_window.py" line="119"/>
         <source>GitHub信息</source>
         <translation>GitHub Information</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="123"/>
+        <location filename="../../app/view/main_window.py" line="124"/>
         <source>VideoCaptioner 由本人在课余时间独立开发完成， 目前托管在GitHub上， 欢迎Star和Fork。项目诚然还有很多地方需要完善， 遇到软件的问题或者BUG欢迎提交Issue。
 
 主项目： https://github.com/WEIFENG2333/VideoCaptioner
@@ -803,219 +813,219 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="126"/>
+        <location filename="../../app/view/main_window.py" line="127"/>
         <source>打开 GitHub</source>
         <translation>Open GitHub</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="127"/>
+        <location filename="../../app/view/main_window.py" line="128"/>
         <source>支持作者</source>
         <translation>Support the Author</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="138"/>
+        <location filename="../../app/view/main_window.py" line="139"/>
         <source>New version is out {version}
 Download it here: {download_url}
 Or go to GitHub for the new release.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="138"/>
+        <location filename="../../app/view/main_window.py" line="139"/>
         <source>New Version Available!</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="156"/>
+        <location filename="../../app/view/main_window.py" line="157"/>
         <source>New Announcement!</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="197"/>
+        <location filename="../../app/view/main_window.py" line="198"/>
         <source>Transcribe Audio/Video</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="198"/>
+        <location filename="../../app/view/main_window.py" line="199"/>
         <source>Transcribe + Translate Audio/Video</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="199"/>
+        <location filename="../../app/view/main_window.py" line="200"/>
         <source>Create Soft Subtitle Video</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="200"/>
+        <location filename="../../app/view/main_window.py" line="201"/>
         <source>Create Hard Subtitle Video</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="202"/>
+        <location filename="../../app/view/main_window.py" line="203"/>
         <source>Original Only</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="203"/>
+        <location filename="../../app/view/main_window.py" line="204"/>
         <source>Translated Only</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="204"/>
+        <location filename="../../app/view/main_window.py" line="205"/>
         <source>Original on Top</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="205"/>
+        <location filename="../../app/view/main_window.py" line="206"/>
         <source>Translated on Top</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="207"/>
+        <location filename="../../app/view/main_window.py" line="208"/>
         <source>Optimize Translate</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="208"/>
+        <location filename="../../app/view/main_window.py" line="209"/>
         <source>Google Translate</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="209"/>
+        <location filename="../../app/view/main_window.py" line="210"/>
         <source>Single Sentence Translate</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="210"/>
+        <location filename="../../app/view/main_window.py" line="211"/>
         <source>No Translation</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="212"/>
+        <location filename="../../app/view/main_window.py" line="213"/>
         <source>Nothing</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="213"/>
+        <location filename="../../app/view/main_window.py" line="214"/>
         <source>Exit The Program</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="214"/>
+        <location filename="../../app/view/main_window.py" line="215"/>
         <source>Shutdown The Computer</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="215"/>
+        <location filename="../../app/view/main_window.py" line="216"/>
         <source>Suspend The Computer</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="217"/>
+        <location filename="../../app/view/main_window.py" line="218"/>
         <source>Canceled</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="218"/>
+        <location filename="../../app/view/main_window.py" line="219"/>
         <source>Completed</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="219"/>
+        <location filename="../../app/view/main_window.py" line="220"/>
         <source>Downloading</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="220"/>
+        <location filename="../../app/view/main_window.py" line="221"/>
         <source>Failed</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="221"/>
+        <location filename="../../app/view/main_window.py" line="222"/>
         <source>Generating</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="222"/>
+        <location filename="../../app/view/main_window.py" line="223"/>
         <source>Optimizing/Translating</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="223"/>
+        <location filename="../../app/view/main_window.py" line="224"/>
         <source>Pending</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="224"/>
+        <location filename="../../app/view/main_window.py" line="225"/>
         <source>Synthesizing</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="225"/>
+        <location filename="../../app/view/main_window.py" line="226"/>
         <source>Transcribing</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="226"/>
+        <location filename="../../app/view/main_window.py" line="227"/>
         <source>Transcoding</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="227"/>
+        <location filename="../../app/view/main_window.py" line="228"/>
         <source>Translating</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="228"/>
+        <location filename="../../app/view/main_window.py" line="229"/>
         <source>Waiting for audio transcoding</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="229"/>
+        <location filename="../../app/view/main_window.py" line="230"/>
         <source>Waiting for translating.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="230"/>
+        <location filename="../../app/view/main_window.py" line="231"/>
         <source>Waiting for video synthesis</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="231"/>
+        <location filename="../../app/view/main_window.py" line="232"/>
         <source>Waiting for transcripting</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="233"/>
+        <location filename="../../app/view/main_window.py" line="234"/>
         <source>File Import</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="234"/>
+        <location filename="../../app/view/main_window.py" line="235"/>
         <source>URL Import</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="236"/>
+        <location filename="../../app/view/main_window.py" line="237"/>
         <source>Add Subtitle To Video</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="237"/>
+        <location filename="../../app/view/main_window.py" line="238"/>
         <source>Combine Subtitle with Video</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="238"/>
+        <location filename="../../app/view/main_window.py" line="239"/>
         <source>Get Subtitle From Video/Audio</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="239"/>
+        <location filename="../../app/view/main_window.py" line="240"/>
         <source>Add Translated Sub To Video</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="240"/>
+        <location filename="../../app/view/main_window.py" line="241"/>
         <source>Download Video from URL then Add Subtitle</source>
         <translation></translation>
     </message>
@@ -1036,23 +1046,23 @@ Or go to GitHub for the new release.</source>
 <context>
     <name>PromptDialog</name>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1291"/>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1296"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1354"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1359"/>
         <source>文稿提示</source>
         <translation>Prompt</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1302"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1365"/>
         <source>请输入文稿提示（优化字幕或者翻译字幕的提示参考）</source>
         <translation>Please enter prompt (reference for optimizing or translating subtitles)</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1314"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1377"/>
         <source>确定</source>
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1315"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1378"/>
         <source>取消</source>
         <translation>Cancel</translation>
     </message>
@@ -1441,57 +1451,61 @@ Or go to GitHub for the new release.</source>
         <translation>Version</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="504"/>
+        <location filename="../../app/view/setting_interface.py" line="353"/>
+        <source>自动检测更新</source>
+        <translation>Check Update Automatically</translation>
+    </message>
+    <message>
+        <location filename="../../app/view/setting_interface.py" line="354"/>
+        <source>每次程序开跑时自动检测更新</source>
+        <translation>Automatically check latest updates when the program is opened</translation>
+    </message>
+    <message>
+        <location filename="../../app/view/setting_interface.py" line="511"/>
         <source>File llm.json not exist!</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="505"/>
+        <location filename="../../app/view/setting_interface.py" line="512"/>
         <source>Cannot find the llm.json file.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="528"/>
-        <location filename="../../app/view/setting_interface.py" line="640"/>
+        <location filename="../../app/view/setting_interface.py" line="535"/>
+        <location filename="../../app/view/setting_interface.py" line="647"/>
         <source>Error getting {key} settings</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="529"/>
-        <location filename="../../app/view/setting_interface.py" line="640"/>
+        <location filename="../../app/view/setting_interface.py" line="536"/>
+        <location filename="../../app/view/setting_interface.py" line="647"/>
         <source>Cannot get {key} settings from AppData/llm.json</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="540"/>
+        <location filename="../../app/view/setting_interface.py" line="547"/>
         <source>LLM entry deleted.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="624"/>
+        <location filename="../../app/view/setting_interface.py" line="631"/>
         <source>LLM settings saved.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="635"/>
+        <location filename="../../app/view/setting_interface.py" line="642"/>
         <source>Error Reading llm.json</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="635"/>
+        <location filename="../../app/view/setting_interface.py" line="642"/>
         <source>Cannot open LLM settins file: AppData/llm.json</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="676"/>
         <location filename="../../app/view/setting_interface.py" line="706"/>
         <source>错误</source>
         <translation>Error</translation>
-    </message>
-    <message>
-        <location filename="../../app/view/setting_interface.py" line="677"/>
-        <source>请先选择Whisper转录模型</source>
-        <translation>Please choose Whisper transcribe model</translation>
     </message>
     <message>
         <location filename="../../app/view/setting_interface.py" line="707"/>
@@ -1511,22 +1525,22 @@ Or go to GitHub for the new release.</source>
         <translation>Check Connection</translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="541"/>
+        <location filename="../../app/view/setting_interface.py" line="548"/>
         <source>The settings of {old_key} was deleted.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="589"/>
+        <location filename="../../app/view/setting_interface.py" line="596"/>
         <source>Name this LLM Setting</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="590"/>
+        <location filename="../../app/view/setting_interface.py" line="597"/>
         <source>Please input the name for this LLM setting.</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/setting_interface.py" line="625"/>
+        <location filename="../../app/view/setting_interface.py" line="632"/>
         <source>The LLM settings for {saveKey} was saved.</source>
         <translation></translation>
     </message>
@@ -1799,7 +1813,6 @@ Or go to GitHub for the new release.</source>
         <translation>Optimization failed</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="212"/>
         <location filename="../../app/view/subtitle_optimization_interface.py" line="871"/>
         <location filename="../../app/view/subtitle_optimization_interface.py" line="910"/>
         <source>选择字幕文件</source>
@@ -1816,6 +1829,21 @@ Or go to GitHub for the new release.</source>
         <location filename="../../app/view/subtitle_optimization_interface.py" line="205"/>
         <source>Batch</source>
         <translation></translation>
+    </message>
+    <message>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="210"/>
+        <source>视频</source>
+        <translation>Video</translation>
+    </message>
+    <message>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="211"/>
+        <source>打开 VLC 视频播放器界面</source>
+        <translation>Open VLC player interface</translation>
+    </message>
+    <message>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="212"/>
+        <source>载入字幕</source>
+        <translation>Load Subtitles</translation>
     </message>
     <message>
         <location filename="../../app/view/subtitle_optimization_interface.py" line="252"/>
@@ -1989,22 +2017,32 @@ Detail settings are in the &apos;Settings&apos; on the lower left corner.</trans
         <translation>Supported subtitle formats:</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1137"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1067"/>
+        <source>VLC 64bit not installed.</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1068"/>
+        <source>VLC 64bit is required for this feature.</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1200"/>
         <source>在前面加行</source>
         <translation>Add lines before this</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1187"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1250"/>
         <source>加行成功</source>
         <translation>Successfully added line</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1188"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1251"/>
         <source>已成功加入字幕行</source>
         <translation>An empty subtitle line is added successfully</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1281"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1344"/>
         <source>字幕优化已取消</source>
         <translation>Subtitle optimising cancelled</translation>
     </message>
@@ -2024,27 +2062,27 @@ Detail settings are in the &apos;Settings&apos; on the lower left corner.</trans
         <translation>Cancel</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1132"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1195"/>
         <source>合并</source>
         <translation>Combine</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1251"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1314"/>
         <source>合并成功</source>
         <translation>Combining Successfully</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1252"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1315"/>
         <source>已成功合并选中的字幕行</source>
         <translation>Successfully combined chosen subtitle lines</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1278"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1341"/>
         <source>已取消优化</source>
         <translation>Optimization cancelled</translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_optimization_interface.py" line="1280"/>
+        <location filename="../../app/view/subtitle_optimization_interface.py" line="1343"/>
         <source>已取消</source>
         <translation>Cancelled</translation>
     </message>
@@ -3112,53 +3150,53 @@ Detail settings are in the &apos;Settings&apos; on the lower left corner.</trans
     </message>
     <message>
         <location filename="../../app/core/thread/transcript_thread.py" line="136"/>
-        <location filename="../../app/core/thread/transcript_thread.py" line="196"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="199"/>
         <source>无效的转录模型: </source>
         <translation>Invalid transcribe model: </translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="202"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="205"/>
         <source>字幕断句前中断</source>
         <translation>Interrupted before sentence breaking</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="208"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="211"/>
         <source>智能断句被中断</source>
         <translation>Smart sentence breaking was interrupted</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="211"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="214"/>
         <source>智能断句失败，请检查你的大模型Base URL和API Key是否有效。</source>
         <translation>Smart Sentence Breaking failed, please check your LLM&apos;s Base URL and API Key Settings.</translation>
     </message>
     <message>
         <location filename="../../app/core/thread/transcript_thread.py" line="78"/>
-        <location filename="../../app/core/thread/transcript_thread.py" line="250"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="253"/>
         <source>转录完成</source>
         <translation>Transcription Complete</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="257"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="260"/>
         <source>转录失败</source>
         <translation>Transcribing Failed</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="267"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="270"/>
         <source>OpenAI API 测试失败, 请检查设置</source>
         <translation>OpenAI API test failed. Please check your settings</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="276"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="279"/>
         <source>开始验证API配置...</source>
         <translation>Start checking API settings...</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="282"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="285"/>
         <source>字幕断句...</source>
         <translation>Subtitle Sentence Breaking...</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="293"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="296"/>
         <source>断句失败</source>
         <translation>Smart Sentence Breaking Failed</translation>
     </message>

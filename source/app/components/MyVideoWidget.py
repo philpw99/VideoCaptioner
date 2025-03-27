@@ -485,11 +485,11 @@ class MyVideoWidget(QWidget):
         
         # 创建布局使标签居中
         tipLayout = QVBoxLayout(self.videoWidget)
-        tipLayout.addWidget(self.tipLabel, 0, Qt.AlignCenter)
+        tipLayout.addWidget(self.tipLabel, 0, Qt.AlignmentFlag.AlignCenter)
         
         # 创建播放控制栏
         self.playBar = StandardMediaPlayBar(self)
-        self.playBar.setAttribute(Qt.WA_TranslucentBackground)
+        self.playBar.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
 
         # 设置字幕文件
         self.subtitle_file = None
@@ -511,8 +511,8 @@ class MyVideoWidget(QWidget):
         FluentStyleSheet.MEDIA_PLAYER.apply(self)
         
         # 设置焦点和事件过滤
-        self.setFocusPolicy(Qt.StrongFocus)
-        self.videoWidget.setFocusPolicy(Qt.StrongFocus)
+        self.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        self.videoWidget.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
         
         # 安装事件过滤器
         self.videoWidget.installEventFilter(self)
@@ -523,7 +523,7 @@ class MyVideoWidget(QWidget):
         
         # 连接 SignalBus 信号
         self._connectSignals()
-    
+        
     def _connectSignals(self):
         """连接 SignalBus 的信号"""
         # 视频控制信号
@@ -533,6 +533,8 @@ class MyVideoWidget(QWidget):
         signalBus.video_source_changed.connect(self.setVideo)
         signalBus.video_segment_play.connect(self.playSegment)
         signalBus.video_subtitle_added.connect(self.addSubtitle)
+        # 送出视频位置改变信号
+        self.vlc_player.positionChanged.connect(signalBus.video_current_time)
     
     def addSubtitle(self, subtitle_file: str):
         """添加字幕文件的内部方法"""
@@ -555,6 +557,7 @@ class MyVideoWidget(QWidget):
     def play(self):
         """播放视频"""
         self.playBar.play()
+
     
     def pause(self):
         """暂停视频"""

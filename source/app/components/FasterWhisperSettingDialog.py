@@ -741,7 +741,8 @@ class FasterWhisperSettingDialog(MessageBoxBase):
             minimum=1.00,
             maximum=2.00,
             decimals=2,
-            step=0.05
+            step=0.05,
+            parent=self.other_group,
         )
         
         # 提示词
@@ -753,7 +754,15 @@ class FasterWhisperSettingDialog(MessageBoxBase):
             "",
             self.other_group
         )
-
+        
+        # RTX 5000 系列补丁
+        self.rtx5000fix_card = SwitchSettingCard(
+            FIF.PASTE,
+            self.tr("RTX 5000 系列补丁"),
+            self.tr("如果你使用的是Nvidia RTX 5000系列显卡，则需要打开这个设定而避免出错。"),
+            cfg.faster_whisper_RTX_5000_fix,
+            self.other_group,
+        )
 
         self.model_card.comboBox.setMinimumWidth(200)
         self.device_card.comboBox.setMinimumWidth(200)
@@ -779,6 +788,7 @@ class FasterWhisperSettingDialog(MessageBoxBase):
         self.other_group.addSettingCard(self.translate_to_english_card)
         self.other_group.addSettingCard(self.repetition_penalty_card)
         self.other_group.addSettingCard(self.prompt_card)
+        self.other_group.addSettingCard(self.rtx5000fix_card)
 
         # 检查并提示下载 faster-whisper
         self._check_faster_whisper()

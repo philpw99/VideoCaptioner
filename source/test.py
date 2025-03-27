@@ -1,4 +1,8 @@
-import sys
+from enum import Enum
+
+class test(Enum):
+    A = "aaa"
+    B = "bbb"
 
 
-print(sys.platform)
+print(list( test ))

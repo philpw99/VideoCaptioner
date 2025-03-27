@@ -14,13 +14,13 @@ from qfluentwidgets import ComboBox, PrimaryPushButton, ProgressBar, PushButton,
 from qfluentwidgets import InfoBarPosition, TableView, ToolButton, TextEdit, MessageBoxBase, RoundMenu, Action, LineEdit,SwitchButton
 from PyQt5.QtCore import QUrl
 
-from app.config import SUBTITLE_STYLE_PATH
+from app.config import SUBTITLE_STYLE_PATH, VLC_PATH
 
 from ..core.thread.subtitle_optimization_thread import SubtitleOptimizationThread
-from ..common.config import cfg, INVISIBLE_ORIGINAL, INVISIBLE_TRANSLATED
+from ..common.config import cfg
 from ..core.bk_asr.ASRData import from_subtitle_file, from_json
 from ..core.entities import OutputSubtitleFormatEnum, SupportedSubtitleFormats, SubtitleLayoutEnum, TranslateMethodEnum
-from ..core.entities import Task
+from ..core.entities import Task, SupportedVideoFormats
 from ..core.thread.create_task_thread import CreateTaskThread
 from ..common.signal_bus import signalBus
 from ..components.SubtitleSettingDialog import SubtitleSettingDialog
@@ -207,9 +207,9 @@ class SubtitleOptimizationInterface(QWidget):
 
         # 添加打开文件夹按钮和文件选择按钮
         # self.open_folder_button = ToolButton(FIF.FOLDER, self)
-        self.open_video_button = ToolButton(FIF.VIDEO, self)
-        self.open_video_button.setToolTip("Not working. 测试阶段，不可用。")
-        self.file_select_button = PushButton(self.tr("选择字幕文件"), self, icon=FIF.FOLDER_ADD)
+        self.open_video_button = PushButton(self.tr("视频"), self, FIF.VIDEO)
+        self.open_video_button.setToolTip(self.tr("打开 VLC 视频播放器界面"))
+        self.file_select_button = PushButton(self.tr("载入字幕"), self, icon=FIF.FOLDER_ADD)
         self.prompt_button = PushButton(self.tr("文稿提示"), self, icon=FIF.DOCUMENT)
         # 添加字幕设置按钮
         self.subtitle_setting_button = ToolButton(FIF.SETTING, self)
@@ -1050,28 +1050,28 @@ class SubtitleOptimizationInterface(QWidget):
         dialog = SubtitleSettingDialog(self.window())
         dialog.exec_()
 
-    def set_vlc_env(self):
-        """设置VLC环境变量给Python-vlc用"""
-        vlc_env = os.getenv("PYTHON_VLC_MODULE_PATH")
-        if not vlc_env or not os.path.exists(vlc_env+"\\vlc.exe"):
-            if sys.platform == "win32":
-                vlc_dir = os.environ.get("ProgramFiles") + "\\VideoLan\\VLC"
-                if os.path.exists(vlc_dir+"\\vlc.exe"):
-                    os.system(f"setx PYTHON_VLC_MODULE_PATH \"{vlc_dir}\"")
-                    vlc_env = vlc_dir
-                else:
-                    vlc_dir = os.environ.get("ProgramFiles(x86)") + "\\VideoLan\\VLC"
-                    if os.path.exists(vlc_dir+"\\vlc.exe"):
-                        os.system(f"setx PYTHON_VLC_MODULE_PATH \"{vlc_dir}\"")
-                        vlc_env = vlc_dir
-            vlc_env = os.getenv("PYTHON_VLC_MODULE_PATH")
-            print(f"set new vlc_env:{vlc_env}")
-        return vlc_env
-
     def show_video_player(self):
         """显示视频播放器窗口"""
-        self.set_vlc_env()
         # 创建视频播放器窗口
+        if os.name != "nt":
+            InfoBar.error(
+                "Windows 64bit Only",
+                "Sorry this feature only available in Windows 64bit version.",
+                duration=10000,
+                parent=self,
+                )
+            return
+        
+        if not VLC_PATH or not (VLC_PATH / "libvlc.dll").exists():
+            InfoBar.error(
+                self.tr("VLC 64bit not installed."),
+                self.tr("VLC 64bit is required for this feature."),
+                duration=10000,
+                parent=self
+            )
+            return
+        os.environ['PYTHON_VLC_MODULE_PATH'] = str( VLC_PATH / "plugins" )
+        os.environ['PYTHON_VLC_LIB_PATH'] = str( VLC_PATH / "libvlc.dll" )
         
         from ..components.MyVideoWidget import MyVideoWidget
         self.video_player = MyVideoWidget()
@@ -1098,12 +1098,75 @@ class SubtitleOptimizationInterface(QWidget):
         self.model.dataChanged.connect(signal_update)
         self.model.layoutChanged.connect(signal_update)
 
+        # 播放位置信号连接
+        signalBus.video_current_time.connect(self.on_video_position_changed)
+        
         # 如果有关联的视频文件,则自动加载
         if self.task and hasattr(self.task, 'file_path') and self.task.file_path:
-            self.video_player.setVideo(QUrl.fromLocalFile(self.task.file_path))
+            video_formats = list( SupportedVideoFormats._value2member_map_)
+            subtitle_formats = list( SupportedSubtitleFormats._value2member_map_)
+            
+            file_name_parts = self.task.file_path.split(".")
+            file_path_ext = file_name_parts[-1]
+            
+            if file_path_ext in video_formats:
+                # file_path is a video
+                self.video_player.setVideo(QUrl.fromLocalFile(self.task.file_path))
+            elif file_path_ext in subtitle_formats:
+                # file_path is a subtitle
+                file1 = ".".join(file_name_parts[:-1])
+                if len(file_name_parts) > 2:
+                    file2 = ".".join(file_name_parts[:-2])
+                else:
+                    file2 = None
 
+                file_str = None
+                for ext in video_formats:
+                    # check if file1 + .mkv or .mov exists.
+                    if os.path.exists(file1 + "." + ext):
+                        file_str = file1 + "." + ext
+                        break
+                    if file2:
+                        if os.path.exists(file2 + "." + ext):
+                            file_str = file2 + "." + ext
+                            break
+                if file_str:
+                    self.video_player.setVideo(QUrl.fromLocalFile(file_str))
+        
         self.video_player.show()
         self.video_player.play()
+
+    def on_video_position_changed(self, position: int):
+        if position == -1 or not self.model._data:
+            return
+        
+        indexes = self.subtitle_table.selectedIndexes()
+        if indexes:
+            row = indexes[0].row()
+        else:
+            row = 0
+            self.subtitle_table.setCurrentIndex(self.model.index(0,2))
+        item = self.model._data[str(row+1)]
+        if position < item["start_time"]:
+            # start search from the beginning.
+            row = 0
+            item = self.model._data["1"]
+            if item["start_time"] > position:
+                # Not even reach the first row.
+                return
+        elif position < item["end_time"]:
+            # Still within the row. Do nothing.
+            return
+        
+        # Position out of current row.
+        for i in range(row, len(self.model._data)):
+            item = self.model._data[str(i+1)]
+            if position >= item["start_time"] and position <= item["end_time"]:
+                # Bingo! This is the row.
+                index = self.model.index(i,2)
+                self.subtitle_table.setCurrentIndex(index)
+                self.subtitle_table.scrollTo(index, QAbstractItemView.ScrollHint.PositionAtCenter)
+                break
 
     def on_subtitle_clicked(self, index):
         row = index.row()

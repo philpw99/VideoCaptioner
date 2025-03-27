@@ -41,10 +41,11 @@ class MainWindow(FluentWindow):
         self.versionManager.announcementAvailable.connect(self.onAnnouncement)
 
         # 创建版本检查线程
-        self.versionThread = QThread()
-        self.versionManager.moveToThread(self.versionThread)
-        self.versionThread.started.connect(self.versionManager.performCheck)
-        self.versionThread.start()
+        if cfg.checkUpdateAtStartUp.value:
+            self.versionThread = QThread()
+            self.versionManager.moveToThread(self.versionThread)
+            self.versionThread.started.connect(self.versionManager.performCheck)
+            self.versionThread.start()
 
         # 初始化导航界面
         self.initNavigation()

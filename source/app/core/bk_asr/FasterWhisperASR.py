@@ -4,7 +4,7 @@ import shutil
 import subprocess
 from pathlib import Path
 import tempfile
-from typing import Optional, List, Union
+from typing import List
 
 from .ASRData import ASRDataSeg, from_srt
 from .BaseASR import BaseASR
@@ -44,6 +44,7 @@ class FasterWhisperASR(BaseASR):
                  max_comma_cent: int = 50,
                  prompt: str = None,
                  allow_running = None,
+                 rtx5000fix = False,
                  ):
         super().__init__(audio_path, False)
         
@@ -75,10 +76,13 @@ class FasterWhisperASR(BaseASR):
         self.translate_to_english = translate_to_english
         self.repetition_penalty = repetition_penalty
         self.prompt = prompt
-
+        self.rtx5000fix = rtx5000fix
+        
         self.process = None
         if allow_running:
             self.allow_running = allow_running
+        
+        
         
     def _build_command(self, audio_path: Path) -> List[str]:
         """构建命令行参数"""
@@ -154,6 +158,10 @@ class FasterWhisperASR(BaseASR):
 
         # 关闭声音
         cmd.append("--beep_off")
+        
+        # Nvidia RTX 5000 系列补丁
+        if self.device.lower() == "gpu" and self.rtx5000fix:
+            cmd.append(["--compute_type","float32"])
         
         # 提示词
         if self.prompt:

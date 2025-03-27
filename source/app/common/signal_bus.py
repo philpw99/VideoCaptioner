@@ -29,6 +29,7 @@ class SignalBus(QObject):
     video_source_changed = pyqtSignal(QUrl)  # 视频源改变信号
     video_segment_play = pyqtSignal(int, int)  # 播放片段信号，参数为开始和结束时间(ms)
     video_subtitle_added = pyqtSignal(str)  # 添加字幕文件信号
+    video_current_time = pyqtSignal(int) # 播放的当前时间(ms)
 
     def on_subtitle_output_format_changed(self, format:str):
         self.subititle_output_format_changed.emit(format)
@@ -94,6 +95,9 @@ class SignalBus(QObject):
             subtitle_file: 字幕文件路径
         """
         self.video_subtitle_added.emit(subtitle_file)
+
+    def on_video_current_time_changed(self, timestamp: int):
+        self.video_current_time.emit(timestamp)
 
 
 signalBus = SignalBus()

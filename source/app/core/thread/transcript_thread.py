@@ -186,6 +186,9 @@ class TranscriptThread(QThread):
                     
                         args["translate_to_english"] = self.task.faster_whisper_translate_to_english
                         args["repetition_penalty"] = self.task.faster_whisper_repetion_penalty
+                        
+                        if cfg.faster_whisper_RTX_5000_fix.value:
+                            args["rtx5000fix"] = True
 
                         self.asr = FasterWhisperASR(self.task.audio_save_path, **args )
                     case TranscribeModelEnum.BIJIAN:

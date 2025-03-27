@@ -1,3 +1,7 @@
+3.5.9
+	Auto load video when subtitle is opened in Optimize/Translate tab.
+	Add VLC video embeded player feature.
+	Add fix in Settings for FasterWhisperXXL error when running with RTX 50X0 GPU.
 3.5.8
 	Update yt-dlp to fix problems with youtube videos.
 	If youtube video contains subtitles, use the subtitle file directly, bypass the audio transcription.
