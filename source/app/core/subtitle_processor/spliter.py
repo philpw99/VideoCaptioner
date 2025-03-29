@@ -1,13 +1,13 @@
 import difflib
 import re
-import logging
 from concurrent.futures import ThreadPoolExecutor
 from typing import List
 from retry import retry
 
-from .split_by_llm import split_by_llm, MAX_WORD_COUNT
-from ..bk_asr.ASRData import ASRData, from_srt, ASRDataSeg
+from .split_by_llm import split_by_llm
+from ..bk_asr.ASRData import ASRData, ASRDataSeg, is_all_half_width
 from ..utils.logger import setup_logger
+from ...common.config import cfg
 
 logger = setup_logger("subtitle_spliter")
 
@@ -17,8 +17,8 @@ SPLIT_RANGE = 30  # 在分割点前后寻找最大时间间隔的范围
 MAX_GAP = 1500  # 允许每个词语之间的最大时间间隔 ms
 USE_CACHE = True  # 是否使用缓存
 
-MAX_WORD_COUNT_ENGLISH = 12  # 英文最大单词数
-MAX_WORD_COUNT_CJK = 20     # 中日韩文字最大字数
+# MAX_WORD_COUNT_ENGLISH = 12  # 英文最大单词数
+# MAX_WORD_COUNT_CJK = 20     # 中日韩文字最大字数
 
 class SubtitleProcessError(Exception):
     """字幕处理相关的异常"""
@@ -53,7 +53,7 @@ def count_words(text: str) -> int:
         r'[\uac00-\ud7af]',           # 韩文音节
         r'[\u0e00-\u0e7f]',           # 泰文
         r'[\u0600-\u06ff]',           # 阿拉伯文
-        r'[\u0400-\u04ff]',           # 西里尔字母（俄文等）
+        # r'[\u0400-\u04ff]',           # 西里尔字母（俄文等） 这些语言应该和英语同等对待
         r'[\u0590-\u05ff]',           # 希伯来文
         r'[\u1e00-\u1eff]',           # 越南文
         r'[\u3130-\u318f]',           # 韩文兼容字母
@@ -220,7 +220,8 @@ def split_long_segment(segs_to_merge: List[ASRDataSeg]) -> List[ASRDataSeg]:
     merged_text = ''.join(seg.text for seg in segs_to_merge)
 
     # 根据文本类型确定最大词数限制
-    max_word_count = MAX_WORD_COUNT_CJK if is_mainly_cjk(merged_text) else MAX_WORD_COUNT_ENGLISH
+    # max_word_count = MAX_WORD_COUNT_CJK if is_mainly_cjk(merged_text) else MAX_WORD_COUNT_ENGLISH
+    max_word_count = cfg.max_word_count_cjk.value if is_mainly_cjk(merged_text) else cfg.max_word_count_english.value
     # logger.debug(f"正在拆分分段: {merged_text}")
 
     # 基本情况：如果分段足够短或无法进一步拆分
@@ -255,8 +256,8 @@ def split_long_segment(segs_to_merge: List[ASRDataSeg]) -> List[ASRDataSeg]:
 
     first_segs = segs_to_merge[:split_index + 1]
     second_segs = segs_to_merge[split_index + 1:]
-    # logger.debug(f"分段1: {''.join(seg.text for seg in first_segs)}")
-    # logger.debug(f"分段2: {''.join(seg.text for seg in second_segs)}")
+    # print(f"分段1: {''.join(seg.text for seg in first_segs)}")
+    # print(f"分段2: {''.join(seg.text for seg in second_segs)}")
     # logger.debug(f"-------")
     # 递归拆分
     result_segs.extend(split_long_segment(first_segs))
@@ -339,7 +340,8 @@ def merge_short_segment(segments: List[ASRDataSeg]) -> None:
         current_words = count_words(current_seg.text)
         next_words = count_words(next_seg.text)
         total_words = current_words + next_words
-        max_word_count = MAX_WORD_COUNT_CJK if is_mainly_cjk(current_seg.text) else MAX_WORD_COUNT_ENGLISH
+        # max_word_count = MAX_WORD_COUNT_CJK if is_mainly_cjk(current_seg.text) else MAX_WORD_COUNT_ENGLISH
+        max_word_count = cfg.max_word_count_cjk.value if is_mainly_cjk(current_seg.text) else cfg.max_word_count_english.value
 
         if time_gap < 300 and (current_words < 5 or next_words <= 5) and total_words <= max_word_count:
             # 执行合并操作
@@ -386,7 +388,11 @@ def preprocess_segments(segments: List[ASRDataSeg], need_lower=True) -> List[ASR
                 if need_lower:
                     seg.text = seg.text.lower() + " "
                 else:
-                    seg.text = seg.text + " "
+                    seg.text += " "
+            elif is_all_half_width(seg.text):
+                # Includes Latin, Germany, Russian ... etc.
+                # All those latin need a space behind.
+                seg.text += " "
             new_segments.append(seg)
     return new_segments
 
@@ -500,7 +506,8 @@ def merge_common_words(segments: List[ASRDataSeg]) -> List[List[ASRDataSeg]]:
     for i, seg in enumerate(segments):
         # 如果当前词是前缀词且前面已经累积了至少7个词
         # logger.debug(seg.text)
-        max_word_count = MAX_WORD_COUNT_CJK if is_mainly_cjk(seg.text) else MAX_WORD_COUNT_ENGLISH
+        # max_word_count = MAX_WORD_COUNT_CJK if is_mainly_cjk(seg.text) else MAX_WORD_COUNT_ENGLISH
+        max_word_count = cfg.max_word_count_cjk.value if is_mainly_cjk(seg.text) else cfg.max_word_count_english.value
         if any(seg.text.lower().startswith(word) for word in prefix_split_words) and len(current_group) >= int(max_word_count*0.6):
             # 合并当前组并添加到结果
             result.append(current_group)
@@ -548,7 +555,8 @@ def process_by_rules(segments: List[ASRDataSeg]) -> List[ASRDataSeg]:
     common_result_groups = []
     for group in segment_groups:
         # logger.debug("".join(seg.text for seg in group))
-        max_word_count = MAX_WORD_COUNT_CJK if is_mainly_cjk("".join(seg.text for seg in group)) else MAX_WORD_COUNT_ENGLISH
+        # max_word_count = MAX_WORD_COUNT_CJK if is_mainly_cjk("".join(seg.text for seg in group)) else MAX_WORD_COUNT_ENGLISH
+        max_word_count = cfg.max_word_count_cjk.value if is_mainly_cjk("".join(seg.text for seg in group)) else cfg.max_word_count_english.value
         if count_words("".join(seg.text for seg in group)) > max_word_count:    
             segments = merge_common_words(group)
             common_result_groups.extend(segments)
@@ -564,9 +572,7 @@ def process_by_rules(segments: List[ASRDataSeg]) -> List[ASRDataSeg]:
 
 
 def process_by_llm(segments: List[ASRDataSeg], 
-                   model: str = "gpt-4o-mini",
-                   max_word_count_cjk: int = MAX_WORD_COUNT_CJK,
-                   max_word_count_english: int = MAX_WORD_COUNT_ENGLISH) -> List[ASRDataSeg]:
+                    model: str = "gpt-4o-mini") -> List[ASRDataSeg]:
 
     """
     使用LLM拆分句子
@@ -580,8 +586,9 @@ def process_by_llm(segments: List[ASRDataSeg],
     sentences = split_by_llm(txt, 
                              model=model, 
                              use_cache=USE_CACHE,
-                             max_word_count_cjk=max_word_count_cjk,
-                             max_word_count_english=max_word_count_english)
+                             max_word_count_cjk=cfg.max_word_count_cjk.value,
+                             max_word_count_english=cfg.max_word_count_english.value,
+                            )
     logger.info(f"分段的句子提取完成，共 {len(sentences)} 句")
     # 对当前分段进行合并处理
     merged_segments = merge_segments_based_on_sentences(segments, sentences)
@@ -590,9 +597,7 @@ def process_by_llm(segments: List[ASRDataSeg],
 
 def merge_segments(asr_data: ASRData, 
                    model: str = "gpt-4o-mini", 
-                   num_threads: int = FIXED_NUM_THREADS, 
-                   max_word_count_cjk: int = MAX_WORD_COUNT_CJK, 
-                   max_word_count_english: int = MAX_WORD_COUNT_ENGLISH,
+                   merge_by_rules = False,
                    allow_running: list = [True]) -> ASRData:
     """
     合并ASR数据分段
@@ -600,17 +605,12 @@ def merge_segments(asr_data: ASRData,
     Args:
         asr_data: ASR数据对象
         model: 使用的LLM模型名称
-        num_threads: 并行处理的线程数
-        max_word_count: 每个分段的最大字数限制，会覆盖默认值
+        merge_by_rules: 如果为 True 则不使用大模型来进行合并。
+        allow_running: 中途退出控制机制
     Returns:
         处理后的ASR数据对象
     """
     
-    # 更新全局的MAX_WORD_COUNT
-    global MAX_WORD_COUNT_CJK, MAX_WORD_COUNT_ENGLISH
-    MAX_WORD_COUNT_CJK = max_word_count_cjk
-    MAX_WORD_COUNT_ENGLISH = max_word_count_english
-
     # 预处理ASR数据，移除纯标点符号的分段，并处理仅包含字母和撇号的文本
     asr_data.segments = preprocess_segments(asr_data.segments, need_lower=False)
     txt = asr_data.to_txt().replace("\n", "")
@@ -623,19 +623,25 @@ def merge_segments(asr_data: ASRData,
 
     # 多线程处理每个分段
     logger.info("开始并行处理每个分段...")
-    with ThreadPoolExecutor(max_workers=num_threads) as executor:
-        def process_segment(asr_data_part):
-            if not allow_running[0]:
-                return
-            try:
-                # raise Exception("test")
-                return process_by_llm(asr_data_part.segments, model=model)
-            except Exception as e:
-                logger.warning(f"LLM处理失败，使用规则based方法进行分割: {str(e)}")
-                return process_by_rules(asr_data_part.segments)
+    
+    if merge_by_rules:
+        processed_segments = list()
+        for asr_data_part in asr_data_segments:
+            processed_segments.append(process_by_rules(asr_data_part.segments))
+    else:
+        with ThreadPoolExecutor(max_workers=FIXED_NUM_THREADS) as executor:
+            def process_segment(asr_data_part):
+                if not allow_running[0]:
+                    return
+                try:
+                    # raise Exception("test")
+                    return process_by_llm(asr_data_part.segments, model=model)
+                except Exception as e:
+                    logger.warning(f"LLM处理失败，使用规则based方法进行分割: {str(e)}")
+                    return process_by_rules(asr_data_part.segments)
 
-        # 并行处理所有分段
-        processed_segments = list(executor.map(process_segment, asr_data_segments))
+            # 并行处理所有分段
+            processed_segments = list(executor.map(process_segment, asr_data_segments))
 
     if not allow_running[0]:
         return

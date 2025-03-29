@@ -1035,7 +1035,7 @@ Or go to GitHub for the new release.</source>
     <message>
         <location filename="../../app/components/MyVideoWidget.py" line="487"/>
         <source>请拖入视频文件</source>
-        <translation></translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>

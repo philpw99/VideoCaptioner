@@ -1,4 +1,4 @@
-from qfluentwidgets import MessageBoxBase, BodyLabel, LineEdit, TextEdit, ComboBox, FluentIcon as FIF, PushButton, InfoBar
+from qfluentwidgets import MessageBoxBase, BodyLabel, LineEdit, TextEdit, ComboBox, FluentIcon as FIF, PushButton
 from PyQt5.QtWidgets import QHBoxLayout, QVBoxLayout
 from ..core.entities import MovieDatabaseEnum, TranscribeModelEnum
 from ..common.config import cfg
@@ -17,6 +17,22 @@ class LineInputDialog(MessageBoxBase):
         self.inputLine.setClearButtonEnabled(True)
         self.viewLayout.addWidget(self.inputLine)
         self.widget.setMinimumWidth(300)
+
+class NormalDialog(MessageBoxBase):
+    def __init__(self, title:str = None,
+                 content:str = None,
+                 ok_text = "OK",
+                 cancel_text = "Cancel",
+                 parent=None
+                 ):
+        super().__init__(parent)
+        self.setWindowTitle(title)
+        if content:
+            self.contentLabel = BodyLabel(content, self)
+            self.viewLayout.addWidget(self.contentLabel)
+        self.yesButton.setText(ok_text)
+        self.cancelButton.setText(cancel_text)
+        self.widget.setMinimumWidth(200)
 
 class PromptSettingDialog(MessageBoxBase):
     old_prompt = ""

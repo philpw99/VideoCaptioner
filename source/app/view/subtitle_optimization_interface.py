@@ -16,7 +16,7 @@ from PyQt5.QtCore import QUrl
 
 from app.config import SUBTITLE_STYLE_PATH, VLC_PATH
 
-from ..core.thread.subtitle_optimization_thread import SubtitleOptimizationThread
+from ..core.thread.subtitle_optimization_thread import SubtitleOptimizationThread, merge_segments
 from ..common.config import cfg
 from ..core.bk_asr.ASRData import from_subtitle_file, from_json
 from ..core.entities import OutputSubtitleFormatEnum, SupportedSubtitleFormats, SubtitleLayoutEnum, TranslateMethodEnum
@@ -25,6 +25,7 @@ from ..core.thread.create_task_thread import CreateTaskThread
 from ..common.signal_bus import signalBus
 from ..components.SubtitleSettingDialog import SubtitleSettingDialog
 from ..core.utils.subtitles import get_original_and_translated
+from ..components.MyDialogs import NormalDialog
 
 class SubtitleTableModel(QAbstractTableModel):
     def __init__(self, data):
@@ -684,6 +685,11 @@ class SubtitleOptimizationInterface(QWidget):
         original_subtitle_save_path = Path(self.task.original_subtitle_save_path)
         # 从字幕文件中读取数据
         asr_data = from_subtitle_file(original_subtitle_save_path)
+        # 如果是以词为单位，合并。
+        if asr_data.is_word_timestamp():
+            # The data is in words, merge them, and not using LLM to merge.
+            asr_data = merge_segments(asr_data, merge_by_rules=True)
+
         # 将读取的数据转换为 JSON 格式并保存到模型中
         self.model._data = asr_data.to_json()
         # 发射布局更改信号
@@ -736,7 +742,11 @@ class SubtitleOptimizationInterface(QWidget):
         InfoBar.info(self.tr("开始优化"), self.tr("开始优化字幕"), duration=3000, parent=self)
 
     def _update_task_config(self):
-        """更新任务配置"""
+        """
+        更新任务配置，以便在设定改动后重新拿到设定值。
+        同时也把字幕保存，因为源字幕可能是以词为单位的，在导入时会变成合并后的结果。
+        而用户也有可能会自己手动改动字幕。
+        """
         # 更新任务的需要翻译标志
         self.task.need_translate = True
 
@@ -773,6 +783,20 @@ class SubtitleOptimizationInterface(QWidget):
         self.task.max_word_count_cjk = cfg.max_word_count_cjk.value
         # 更新任务的英文最大词数
         self.task.max_word_count_english = cfg.max_word_count_english.value
+        
+        # 储存临时字幕，保留源字幕同时允许字幕有改动
+        # 如果源字幕是以词为单位，导入时会自动合并，产生很不同的字幕，因此很有必要。
+        ass_style_name = cfg.subtitle_style_name.value
+        ass_style_path = SUBTITLE_STYLE_PATH / f"{ass_style_name}.txt"
+        if ass_style_path.exists():
+            subtitle_style_srt = ass_style_path.read_text(encoding="utf-8")
+        else:
+            subtitle_style_srt = None
+        temp_srt_path = os.path.join(tempfile.gettempdir(), "temp_subtitle.ass")
+        asr_data = from_json(self.model._data)
+        asr_data.save(temp_srt_path, layout=cfg.subtitle_layout.value, ass_style=subtitle_style_srt)
+        # 新的源字幕指定为临时字幕
+        self.task.original_subtitle_save_path = temp_srt_path
 
     def on_subtitle_optimization_finished(self, task: Task):
         """处理字幕优化完成事件"""
@@ -852,14 +876,6 @@ class SubtitleOptimizationInterface(QWidget):
         # 构建文件过滤器
         subtitle_formats = " ".join(f"*.{fmt.value}" for fmt in SupportedSubtitleFormats)
         filter_str = f"{self.tr('字幕文件')} ({subtitle_formats})"
-        # # 修改mark s
-        # file_paths, _ = QFileDialog.getOpenFileNames(self, self.tr("选择字幕文件"), "", filter_str)
-        # if file_paths:
-        #     for file_path in file_paths:
-        #         self.file_select_button.setProperty("selected_file", file_path)
-        #         self.load_subtitle_file(file_path)
-        #         print(file_path)
-        # # 修改mark e
         
         if cfg.last_open_dir.value != "":
             open_path = cfg.last_open_dir.value
@@ -877,6 +893,7 @@ class SubtitleOptimizationInterface(QWidget):
 
             self.file_select_button.setProperty("selected_file", file_path)
             self.load_subtitle_file(file_path)
+            
             # print(file_path)
 
     #改start
@@ -1001,6 +1018,9 @@ class SubtitleOptimizationInterface(QWidget):
         """
         self.create_task(file_path)
         asr_data = from_subtitle_file(file_path)
+        if asr_data.is_word_timestamp():
+            # Not processing by LLM.
+            asr_data = merge_segments(asr_data, merge_by_rules=True)
         self.model._data = asr_data.to_json()
         self.model.layoutChanged.emit()
         self.status_label.setText(self.tr("已加载文件"))

@@ -2,7 +2,7 @@ import json
 import re
 from typing import List, Tuple
 from pathlib import Path
-import math
+import math, unicodedata
 from ...core.entities import SubtitleLayoutEnum as SubEnum
 from ...common.config import INVISIBLE_ORIGINAL, INVISIBLE_TRANSLATED
 from ..utils.subtitles import get_original_and_translated
@@ -89,11 +89,12 @@ class ASRData:
         
         for seg in self.segments:
             text = seg.text.strip()
-            # 检查是否只包含一个英文单词或一个汉字
-            if (len(text.split()) == 1 and text.isascii()) or len(text.strip()) <= 4:
+            # 检查是否只包含一个单词或一个汉字，单词可以是英语，德语，俄语等等
+            if (len(text.split()) == 1 and is_all_half_width(text)) or len(text.strip()) <= 4:
                 valid_segments += 1
         return (valid_segments / total_segments) >= 0.8
 
+      
     def split_to_word_segments(self) -> 'ASRData':
         """
         将当前ASRData中的每个segment按字词分割，并按音素计算时间戳
@@ -707,6 +708,13 @@ def from_ass(ass_str: str) -> 'ASRData':
 
     return ASRData(segments)
 
+def is_all_half_width(text: str):
+    # This method is better than using isascii() or isalpha()
+    for char in text:
+        if unicodedata.east_asian_width(char) in ["W", "F"]:
+            return False
+    # All characters are half width.
+    return True
 
 if __name__ == '__main__':
     from pathlib import Path

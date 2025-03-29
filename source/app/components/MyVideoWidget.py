@@ -480,8 +480,8 @@ class MyVideoWidget(QWidget):
         
         # 创建一个专门用于视频输出的 widget
         self.videoWidget = QWidget(self)
-        # self.videoWidget.setStyleSheet("background-color: rgb(24, 24, 24);")
-        self.videoWidget.setStyleSheet(style_sheet)
+        self.videoWidget.setStyleSheet("background-color: rgb(24, 24, 24);")
+        # self.videoWidget.setStyleSheet(style_sheet)
         
         # 添加提示标签
         self.tipLabel = CaptionLabel(self.tr("请拖入视频文件"), self.videoWidget)

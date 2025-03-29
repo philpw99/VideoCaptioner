@@ -205,7 +205,7 @@ class TranscriptThread(QThread):
                     raise RuntimeError(self.tr("字幕断句前中断"))
                 
                 if asr_data.is_word_timestamp():
-                    # The data is in words
+                    # The data is in words, use LLM to merge them.
                     asr_data = self.merge_words(asr_data)
                     if not self.task.allow_running[0]:
                         raise RuntimeError(self.tr("智能断句被中断"))

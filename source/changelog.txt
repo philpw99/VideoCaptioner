@@ -1,4 +1,7 @@
 3.6.0
+	Fix a subtitle splitting problem when import from files like youtube webvtt.
+	Better handling of world splitting and merging for Russian and other languages.
+	Better alphabetic arrangement of language choices.
 	Add translate prompt to the front page. Change color if the prompts have contents.
 	A little fix here and there in video player.
 3.5.9
