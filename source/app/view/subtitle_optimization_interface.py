@@ -16,16 +16,16 @@ from PyQt5.QtCore import QUrl
 
 from app.config import SUBTITLE_STYLE_PATH, VLC_PATH
 
-from ..core.thread.subtitle_optimization_thread import SubtitleOptimizationThread, merge_segments
+from ..core.thread.subtitle_optimization_thread import SubtitleOptimizationThread
 from ..common.config import cfg
-from ..core.bk_asr.ASRData import from_subtitle_file, from_json
+from ..core.bk_asr.ASRData import from_subtitle_file, from_json, remove_line_break
 from ..core.entities import OutputSubtitleFormatEnum, SupportedSubtitleFormats, SubtitleLayoutEnum, TranslateMethodEnum
 from ..core.entities import Task, SupportedVideoFormats
 from ..core.thread.create_task_thread import CreateTaskThread
 from ..common.signal_bus import signalBus
 from ..components.SubtitleSettingDialog import SubtitleSettingDialog
 from ..core.utils.subtitles import get_original_and_translated
-from ..components.MyDialogs import NormalDialog
+from ..core.subtitle_processor.spliter import merge_segments
 
 class SubtitleTableModel(QAbstractTableModel):
     def __init__(self, data):
@@ -390,23 +390,19 @@ class SubtitleOptimizationInterface(QWidget):
         if not w or not w.isdigit():
             return
         width = int(w)
-        if width < 10:
+        if width < 5:
             InfoBar.warning(
                 self.tr("Line too short"),
-                self.tr("You need to set it to at least 10 characters."),
+                self.tr("You need to set it to at least 5 characters."),
                 duration=5000,
                 parent=self,
                 )
             return
         item = "translated_subtitle" if self.max_width_switch.isChecked() else "original_subtitle"
-        line_re = re.compile(r"(?<=[A-Za-z\.,])\n(?=[a-zA-Z ])")
+
         for key in self.model._data:
-            line = self.model._data[key][item]
             # Replace western alpha line breaks with space
-            line = re.sub(line_re, " ", line)
-            # All other line breaks, including CJK.
-            line = line.replace("\n", "")
-            # Break lines.
+            line = remove_line_break(self.model._data[key][item])
             lines = textwrap.wrap(line, width)
             # Set new data back.
             self.model._data[key][item] = "\n".join(lines)
@@ -1019,7 +1015,7 @@ class SubtitleOptimizationInterface(QWidget):
         self.create_task(file_path)
         asr_data = from_subtitle_file(file_path)
         if asr_data.is_word_timestamp():
-            # Not processing by LLM.
+            # Not processed by LLM.
             asr_data = merge_segments(asr_data, merge_by_rules=True)
         self.model._data = asr_data.to_json()
         self.model.layoutChanged.emit()

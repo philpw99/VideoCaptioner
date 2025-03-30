@@ -11,7 +11,6 @@ from ..subtitle_processor.summarizer import SubtitleSummarizer
 from ..subtitle_processor.gtranslator import googleTranslate
 from ..bk_asr.ASRData import from_subtitle_file
 from ..entities import Task, TranslateMethodEnum
-from ..subtitle_processor.spliter import merge_segments
 from ..utils.test_opanai import test_openai
 from ..utils.subtitles import get_original_and_translated
 from ..utils.logger import setup_logger

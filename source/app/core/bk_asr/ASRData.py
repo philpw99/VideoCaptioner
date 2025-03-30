@@ -90,7 +90,7 @@ class ASRData:
         for seg in self.segments:
             text = seg.text.strip()
             # 检查是否只包含一个单词或一个汉字，单词可以是英语，德语，俄语等等
-            if (len(text.split()) == 1 and is_all_half_width(text)) or len(text.strip()) <= 4:
+            if (len(text.split()) == 1 and is_mostly_half_width(text)) or len(text.strip()) <= 4:
                 valid_segments += 1
         return (valid_segments / total_segments) >= 0.8
 
@@ -325,8 +325,9 @@ class ASRData:
             
         return vtt_text
 
-    def merge_segments(self, start_index: int, end_index: int, merged_text: str = None):
+    def _merge_segments(self, start_index: int, end_index: int, merged_text: str = None):
             """合并从 start_index 到 end_index 的段（包含）。"""
+            # 目前没有使用。一般用spliter里面的merge_segments()
             if start_index < 0 or end_index >= len(self.segments) or start_index > end_index:
                 raise IndexError("无效的段索引。")
             merged_start_time = self.segments[start_index].start_time
@@ -708,13 +709,45 @@ def from_ass(ass_str: str) -> 'ASRData':
 
     return ASRData(segments)
 
-def is_all_half_width(text: str):
-    # This method is better than using isascii() or isalpha()
+def is_mostly_half_width(text: str):
+    """
+    Judge if a string contain mostly half-width ( non-cjk ) characters.
+    This method is better than using isascii() or isalpha()
+    Maybe is even better than the is_mainly_cjk() in spliter.py
+    If over 80% is half width then return true.
+    """
+    text_len = len(text)
+    full_count = 0
     for char in text:
         if unicodedata.east_asian_width(char) in ["W", "F"]:
-            return False
-    # All characters are half width.
-    return True
+            full_count += 1
+    # Most characters are half width?
+    return full_count / text_len < 0.2
+
+def remove_line_break(text:str):
+    """
+    Remove line breaks. Add a space if the char before a line break is half width.
+    """
+    prev_char_is_half_width = False
+    new_text = ""
+    for char in text:
+        if char == "\r":
+            # ignore this
+            continue
+        if char == "\n":
+            char = " " if prev_char_is_half_width else ""
+            # start a new line with false, in case this line is empty.
+            prev_char_is_half_width = False
+        # Generate new text with line break removed
+        new_text += char
+        # Prepare to handle the next char
+        if char == " ":
+            # Already have a space, no need to add space for it.
+            prev_char_is_half_width = False
+        else:
+            if char:
+                prev_char_is_half_width = unicodedata.east_asian_width(char) not in ["W", "F"]
+    return new_text
 
 if __name__ == '__main__':
     from pathlib import Path

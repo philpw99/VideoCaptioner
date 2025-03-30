@@ -284,11 +284,10 @@ class TranscriptThread(QThread):
             
             self.progress.emit(85, self.tr("字幕断句..."))
             logger.info("正在字幕断句...")
-            asr_data = merge_segments(asr_data, model=llm_model, 
-                                    num_threads=thread_num, 
-                                    max_word_count_cjk=cfg.max_word_count_cjk.value, 
-                                    max_word_count_english=cfg.max_word_count_english.value,
-                                    allow_running=self.task.allow_running)
+            # 用大模型进行字幕断句和合并。
+            asr_data = merge_segments(asr_data, model=llm_model,
+                                      merge_by_rules=False, 
+                                      allow_running=self.task.allow_running)
             return asr_data     
         except Exception as e:
             logger.exception(f"断句失败: {str(e)}")

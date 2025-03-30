@@ -5,7 +5,7 @@ from typing import List
 from retry import retry
 
 from .split_by_llm import split_by_llm
-from ..bk_asr.ASRData import ASRData, ASRDataSeg, is_all_half_width
+from ..bk_asr.ASRData import ASRData, ASRDataSeg, is_mostly_half_width
 from ..utils.logger import setup_logger
 from ...common.config import cfg
 
@@ -389,7 +389,7 @@ def preprocess_segments(segments: List[ASRDataSeg], need_lower=True) -> List[ASR
                     seg.text = seg.text.lower() + " "
                 else:
                     seg.text += " "
-            elif is_all_half_width(seg.text):
+            elif is_mostly_half_width(seg.text):
                 # Includes Latin, Germany, Russian ... etc.
                 # All those latin need a space behind.
                 seg.text += " "

@@ -1,3 +1,7 @@
+3.6.1
+	Fix error in removing line breaks by the new half width function.
+	Relax the is_all_half_width() function. Change to over 80% then true.
+	Fix error in merge_segment() import.
 3.6.0
 	Fix a subtitle splitting problem when import from files like youtube webvtt.
 	Better handling of world splitting and merging for Russian and other languages.

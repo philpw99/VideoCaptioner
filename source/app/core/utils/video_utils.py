@@ -189,8 +189,8 @@ def add_subtitles(
                 '-i', input_file,
                 '-i', subtitle_file,
                 '-sub_charenc', 'UTF-8',
-                '-map', '0',
-                '-map', '1',
+                '-map', '0',    # 复制视频所有流
+                '-map', '1',    # 复制字幕文件所有流
                 '-c', 'copy',
                 output,
                 '-y'
@@ -310,10 +310,10 @@ def add_subtitles(
             
         cmd.extend([
             '-map', '0',    # 复制所有流
-            '-map', '-0:v',  # 排除视频流，免得生成两个视频流
+            '-map', '-0:v',  # 排除源视频流，免得生成两个视频流
             '-acodec', 'copy',
             '-vcodec', vcodec,
-            '-c:s', 'copy',
+            '-c:s', 'copy', # 复制其它的字幕流
             '-preset', quality,
             '-filter_complex', q(vf),
             '-y',  # 覆盖输出文件
