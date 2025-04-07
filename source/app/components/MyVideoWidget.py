@@ -39,6 +39,7 @@ class MediaPlayerBase(QObject):
 
     mediaStatusChanged = pyqtSignal(MediaStatus)
     playbackRateChanged = pyqtSignal(float)
+    playbackStateChanged = pyqtSignal(PlaybackState)
     positionChanged = pyqtSignal(int)
     durationChanged = pyqtSignal(int)
     sourceChanged = pyqtSignal(QUrl)
@@ -136,10 +137,10 @@ class MediaPlayer(MediaPlayerBase):
         
         # 在主线程中创建 VLC 实例
         self.moveToThread(QApplication.instance().thread())
-        self.instance = vlc.Instance(vlc_args)
-        self._player = self.instance.media_player_new()
-        self._media = None
-        self._source = None
+        self.instance: vlc.Instance = vlc.Instance(vlc_args)
+        self._player: vlc.MediaPlayer = self.instance.media_player_new()
+        self._media: vlc.Media = None
+        self._source: QUrl = None
         self._playback_rate = 1.0
         
         # 创建定时器用于更新状态
@@ -152,6 +153,7 @@ class MediaPlayer(MediaPlayerBase):
         self._last_position = 0
         self._last_duration = 0
         self._last_volume = 100
+        self._last_state = PlaybackState.StoppedState
         
     def _on_timer_update(self):
         """定时更新状态并发送信号"""
@@ -173,6 +175,12 @@ class MediaPlayer(MediaPlayerBase):
             if volume != self._last_volume:
                 self._last_volume = volume
                 self.volumeChanged.emit(volume)
+                
+            # 更新播放状态
+            state = self.playbackState()
+            if state != self._last_state:
+                self._last_state = state
+                self.playbackStateChanged.emit(state)
 
     def isPlaying(self):
         return bool(self._player and self._player.is_playing())
@@ -410,12 +418,12 @@ class StandardMediaPlayBar(MediaPlayBarBase):
         self.setFixedHeight(102)
         self.vBoxLayout.setSpacing(6)
         self.vBoxLayout.setContentsMargins(5, 9, 5, 9)
-        self.vBoxLayout.addWidget(self.progressSlider, 1, Qt.AlignTop)
+        self.vBoxLayout.addWidget(self.progressSlider, 1, Qt.AlignmentFlag.AlignTop)
 
         self.vBoxLayout.addLayout(self.timeLayout)
         self.timeLayout.setContentsMargins(10, 0, 10, 0)
-        self.timeLayout.addWidget(self.currentTimeLabel, 0, Qt.AlignLeft)
-        self.timeLayout.addWidget(self.remainTimeLabel, 0, Qt.AlignRight)
+        self.timeLayout.addWidget(self.currentTimeLabel, 0, Qt.AlignmentFlag.AlignLeft)
+        self.timeLayout.addWidget(self.remainTimeLabel, 0, Qt.AlignmentFlag.AlignRight)
 
         self.vBoxLayout.addStretch(1)
         self.vBoxLayout.addLayout(self.buttonLayout, 1)
@@ -424,14 +432,14 @@ class StandardMediaPlayBar(MediaPlayBarBase):
         self.centerButtonLayout.setContentsMargins(0, 0, 0, 0)
         self.rightButtonLayout.setContentsMargins(0, 0, 4, 0)
 
-        self.leftButtonLayout.addWidget(self.volumeButton, 0, Qt.AlignLeft)
+        self.leftButtonLayout.addWidget(self.volumeButton, 0, Qt.AlignmentFlag.AlignLeft)
         self.centerButtonLayout.addWidget(self.skipBackButton)
         self.centerButtonLayout.addWidget(self.playButton)
         self.centerButtonLayout.addWidget(self.skipForwardButton)
 
-        self.buttonLayout.addWidget(self.leftButtonContainer, 0, Qt.AlignLeft)
-        self.buttonLayout.addWidget(self.centerButtonContainer, 0, Qt.AlignHCenter)
-        self.buttonLayout.addWidget(self.rightButtonContainer, 0, Qt.AlignRight)
+        self.buttonLayout.addWidget(self.leftButtonContainer, 0, Qt.AlignmentFlag.AlignLeft)
+        self.buttonLayout.addWidget(self.centerButtonContainer, 0, Qt.AlignmentFlag.AlignHCenter)
+        self.buttonLayout.addWidget(self.rightButtonContainer, 0, Qt.AlignmentFlag.AlignRight)
 
         self.skipBackButton.clicked.connect(lambda: self.skipBack(5000))
         self.skipForwardButton.clicked.connect(lambda: self.skipForward(5000))
@@ -464,7 +472,7 @@ class StandardMediaPlayBar(MediaPlayBarBase):
 class MyVideoWidget(QWidget):
     """ Video widget """
 
-    def __init__(self, parent=None):
+    def __init__(self, style_sheet = None, parent=None):
         super().__init__(parent)
         
         # 设置初始窗口大小
@@ -472,16 +480,14 @@ class MyVideoWidget(QWidget):
         self.setWindowTitle("VideoCaptioner - Video Player")
         self.setWindowIcon(QIcon(str(RESOURCE_PATH / "assets" / "logo.png")))
 
-        theme = 'dark' if isDarkTheme() else "light"
-        with open(RESOURCE_PATH / "assets" / "qss" / theme / "demo.qss", encoding='utf-8') as f:
-            style_sheet = f.read()
-        
-        self.setStyleSheet(style_sheet)
+        if style_sheet:
+            self.setStyleSheet(style_sheet)
         
         # 创建一个专门用于视频输出的 widget
         self.videoWidget = QWidget(self)
-        self.videoWidget.setStyleSheet("background-color: rgb(24, 24, 24);")
-        # self.videoWidget.setStyleSheet(style_sheet)
+        # self.videoWidget.setStyleSheet("background-color: rgb(24, 24, 24);")
+        if style_sheet:
+            self.videoWidget.setStyleSheet(style_sheet)
         
         # 添加提示标签
         self.tipLabel = CaptionLabel(self.tr("请拖入视频文件"), self.videoWidget)
@@ -544,12 +550,21 @@ class MyVideoWidget(QWidget):
         signalBus.video_subtitle_added.connect(self.addSubtitle)
         # 送出视频位置改变信号
         self.vlc_player.positionChanged.connect(signalBus.video_current_time)
+        
+        # 连接视频播放状态信号到改变播放按钮
+        self.vlc_player.playbackStateChanged.connect(self.on_play_state_changed)
+
+    def on_play_state_changed(self, state: PlaybackState):
+        if state == PlaybackState.PlayingState:
+            self.playBar.playButton.setPlay(True)
+        else:
+            self.playBar.playButton.setPlay(False)
     
     def addSubtitle(self, subtitle_file: str):
         """添加字幕文件的内部方法"""
         self.subtitle_file = subtitle_file
         self.vlc_player.add_subtitle(subtitle_file)
-    
+   
     def setVideo(self, url: QUrl):
         """设置视频源
         
@@ -598,6 +613,9 @@ class MyVideoWidget(QWidget):
             self.pause()
         else:
             self.play()
+
+    def source(self) -> QUrl:
+        return self.vlc_player.source()
 
     @property
     def player(self):

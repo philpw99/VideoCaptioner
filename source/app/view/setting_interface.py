@@ -5,14 +5,14 @@ from PyQt5.QtCore import Qt, QUrl, pyqtSignal, QThread
 from PyQt5.QtGui import QDesktopServices
 from PyQt5.QtWidgets import QWidget, QLabel, QFileDialog
 from qfluentwidgets import FluentIcon as FIF
-from qfluentwidgets import InfoBar
-from qfluentwidgets import (SettingCardGroup, SwitchSettingCard, OptionsSettingCard, PushSettingCard,
+from qfluentwidgets import InfoBar, Theme
+from qfluentwidgets import ( SettingCardGroup, SwitchSettingCard, OptionsSettingCard, PushSettingCard,
                             HyperlinkCard, PrimaryPushSettingCard, ScrollArea, 
                             ComboBoxSettingCard, ExpandLayout, CustomColorSettingCard, RangeSettingCard,
-                            setTheme, setThemeColor )
+                            setTheme, setThemeColor,  )
 
 from app.components.WhisperAPISettingDialog import WhisperAPISettingDialog
-from app.config import VERSION, YEAR, AUTHOR, HELP_URL, FEEDBACK_URL, RELEASE_URL, APPDATA_PATH
+from app.config import VERSION, YEAR, AUTHOR, HELP_URL, FEEDBACK_URL, RELEASE_URL, APPDATA_PATH, RESOURCE_PATH
 from app.core.entities import TranscribeModelEnum, SubtitleLayoutEnum, TranslateMethodEnum
 from ..common.config import cfg
 from ..components.EditComboBoxSettingCard import EditComboBoxSettingCard
@@ -460,7 +460,7 @@ class SettingInterface(ScrollArea):
             lambda: self.window().switchTo(self.window().subtitleStyleInterface))
 
         # 个性化
-        self.themeCard.optionChanged.connect(lambda ci: setTheme(cfg.get(ci)))
+        self.themeCard.optionChanged.connect(self.on_theme_changed)
         self.themeColorCard.colorChanged.connect(setThemeColor)
 
         # 反馈
@@ -492,6 +492,13 @@ class SettingInterface(ScrollArea):
         signalBus.transcription_model_changed.connect(self.transcribeModelCard.comboBox.setCurrentText)
         signalBus.subititle_output_format_changed.connect(self.saveSubtitleFormatCard.comboBox.setCurrentText)
         
+    def on_theme_changed(self, theme):
+        setTheme(cfg.get(theme))
+        theme_mode = 'dark' if theme == Theme.DARK else "light"
+        with open(RESOURCE_PATH / "assets" / "qss" / theme_mode / "demo.qss", encoding='utf-8') as f:
+            cfg.theme_style_sheet = f.read()
+
+
 
     def on_translation_method_changed(self,text):
         # print(f"text type:{type(text)}")

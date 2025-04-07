@@ -161,7 +161,7 @@ class FasterWhisperASR(BaseASR):
         
         # Nvidia RTX 5000 系列补丁
         if self.device.lower() == "gpu" and self.rtx5000fix:
-            cmd.append(["--compute_type","float16"])
+            cmd.append(["--compute_type","float32"])
         
         # 提示词
         if self.prompt:

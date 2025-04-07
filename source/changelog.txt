@@ -1,3 +1,8 @@
+3.6.2
+	Fix error of RTX 5070 transcribing problem.
+	Fix editing exit bug when playing video.
+	Fix the media player's play/pause button reversed problem.
+	Attempt to make VLC player multi-platform by using PYHTON_VLC_LIB_PATH system variable.
 3.6.1
 	Fix error in removing line breaks by the new half width function.
 	Relax the is_all_half_width() function. Change to over 80% then true.

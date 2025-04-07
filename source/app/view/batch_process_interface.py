@@ -972,10 +972,7 @@ class TaskInfoCard(CardWidget):
             layout.addWidget(subtitle_interface)
             
             self.subtitle_window.resize(1000, 800)
-
-            theme = 'dark' if isDarkTheme() else 'light'
-            with open(RESOURCE_PATH / "assets" / "qss" / theme / "demo.qss", encoding='utf-8') as f:
-                self.subtitle_window.setStyleSheet(f.read())
+            self.subtitle_window.setStyleSheet(cfg.theme_style_sheet)
             self.subtitle_window.show()
         else:
             InfoBar.warning(

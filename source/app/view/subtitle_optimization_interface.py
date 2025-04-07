@@ -361,8 +361,7 @@ class SubtitleOptimizationInterface(QWidget):
 
         # 将保存按钮的 clicked 信号连接到 on_save_clicked 方法
         self.save_button.clicked.connect(self.on_save_clicked)
-        # 将打开文件夹按钮的 clicked 信号连接到 on_open_folder_clicked 方法
-        # self.open_folder_button.clicked.connect(self.on_open_folder_clicked)
+        # 将打开视频按钮的 clicked 信号连接到 on_open_folder_clicked 方法
         self.open_video_button.clicked.connect(self.show_video_player)
         # 将提示按钮的 clicked 信号连接到 show_prompt_dialog 方法
         self.prompt_button.clicked.connect(self.show_prompt_dialog)
@@ -1069,16 +1068,8 @@ class SubtitleOptimizationInterface(QWidget):
     def show_video_player(self):
         """显示视频播放器窗口"""
         # 创建视频播放器窗口
-        if os.name != "nt":
-            InfoBar.error(
-                "Windows 64bit Only",
-                "Sorry this feature only available in Windows 64bit version.",
-                duration=10000,
-                parent=self,
-                )
-            return
         
-        if not VLC_PATH or not (VLC_PATH / "libvlc.dll").exists():
+        if not VLC_PATH:
             InfoBar.error(
                 self.tr("VLC 64bit not installed."),
                 self.tr("VLC 64bit is required for this feature."),
@@ -1086,11 +1077,28 @@ class SubtitleOptimizationInterface(QWidget):
                 parent=self
             )
             return
-        os.environ['PYTHON_VLC_MODULE_PATH'] = str( VLC_PATH / "plugins" )
-        os.environ['PYTHON_VLC_LIB_PATH'] = str( VLC_PATH / "libvlc.dll" )
+        
+        if os.name != "nt":
+            # Experimental with other os
+            if not os.environ.get('PYTHON_VLC_LIB_PATH') or \
+                not os.environ.get('PYTHON_VLC_MODULE_PATH'):
+            
+                InfoBar.error(
+                    "Environment of VLC not set.",
+                    "You need to set the environment of VLC\n" \
+                    + "PYTHON_VLC_LIB_PATH and PYTHON_VLC_MODULE_PATH\n" \
+                    + "in order for the video player to work.",
+                    duration=10000,
+                    parent=self,
+                    )
+                return
+        else:
+            # Windows
+            os.environ['PYTHON_VLC_MODULE_PATH'] = str( VLC_PATH / "plugins" )
+            os.environ['PYTHON_VLC_LIB_PATH'] = str( VLC_PATH / "libvlc.dll" )
         
         from ..components.MyVideoWidget import MyVideoWidget
-        self.video_player = MyVideoWidget()
+        self.video_player = MyVideoWidget(style_sheet=cfg.theme_style_sheet)
         self.video_player.resize(800, 600)
 
         def signal_update():
@@ -1150,13 +1158,18 @@ class SubtitleOptimizationInterface(QWidget):
                     self.video_player.setVideo(QUrl.fromLocalFile(file_str))
         
         self.video_player.show()
-        self.video_player.play()
+        if self.video_player.source():
+            self.video_player.play()
 
     def on_video_position_changed(self, position: int):
         if position == -1 or not self.model._data:
             return
         
         indexes = self.subtitle_table.selectedIndexes()
+        # If this index is currently under editing, don't change.
+        if self.subtitle_table.state() == QAbstractItemView.State.EditingState:
+            return
+        
         if indexes:
             row = indexes[0].row()
         else:
@@ -1186,6 +1199,7 @@ class SubtitleOptimizationInterface(QWidget):
 
     def on_subtitle_clicked(self, index):
         row = index.row()
+        print(f"editing state: {self.subtitle_table.state()} column {index.column()}")
         self.searchPos = row
         item = list(self.model._data.values())[row]
         start_time = item['start_time']  # 毫秒

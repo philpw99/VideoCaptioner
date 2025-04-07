@@ -3,7 +3,7 @@ import logging
 from pathlib import Path
 
 VERSION = "v1.2.0"
-SUBVERSION = "3.6.1"
+SUBVERSION = "3.6.2"
 YEAR = 2025
 APP_NAME = "VideoCaptioner"
 AUTHOR = "Weifeng"
@@ -46,8 +46,22 @@ os.environ["PATH"] = str(FASER_WHISPER_PATH) + os.pathsep + os.environ["PATH"]
 # 添加 VLC 路径
 # os.environ['PYTHON_VLC_MODULE_PATH'] = str( BIN_PATH / "vlc" / "plugins" )
 # os.environ['PYTHON_VLC_LIB_PATH'] = str( BIN_PATH / "vlc" / "libvlc.dll" )
-if os.name == "nt":
-    VLC_PATH = Path(os.environ["ProgramFiles"] + "\\VideoLAN\\VLC")
+if vlc_lib_path :=os.environ.get("PYTHON_VLC_LIB_PATH"):
+    if Path(vlc_lib_path).is_dir():
+        # Pointing to the folder
+        VLC_PATH = Path(vlc_lib_path)
+    elif Path(vlc_lib_path).is_file():
+        # Pointing to a file
+        VLC_PATH = Path(vlc_lib_path).parent
+    else:
+        VLC_PATH = None
+elif os.name == "nt":
+    vlc_lib_path = Path(os.environ["ProgramFiles"] + "\\VideoLAN\\VLC")
+    if Path(vlc_lib_path).is_dir():
+        VLC_PATH = Path(vlc_lib_path)
+    else:
+        # Path not exist
+        VLC_PATH = None
 
 # 创建路径
 for p in [CACHE_PATH, LOG_PATH, WORK_PATH, MODEL_PATH]:

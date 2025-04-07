@@ -7,7 +7,7 @@ from qfluentwidgets import (qconfig, QConfig, ConfigItem, OptionsConfigItem, Boo
                             OptionsValidator, RangeConfigItem, RangeValidator,
                             Theme, FolderValidator, ConfigSerializer, EnumSerializer)
 
-from app.config import WORK_PATH, SETTINGS_PATH
+from app.config import WORK_PATH, SETTINGS_PATH, RESOURCE_PATH
 from .enums import EnumExSerializer, EnumOptionsValidator
 from ..core.entities import (
     TargetLanguageEnum,
@@ -254,8 +254,14 @@ class Config(QConfig):
         EnumExSerializer(TodoWhenDoneEnum)
     )
     
+    theme_style_sheet = ""      # Load the value from qss, not from the config file.
 
 cfg = Config()
 cfg.themeMode.value = Theme.DARK
 cfg.themeColor.value = QColor("#ff28f08b")
+
 qconfig.load(SETTINGS_PATH, cfg)
+
+theme = 'dark' if cfg.themeMode.value == Theme.DARK else "light"
+with open(RESOURCE_PATH / "assets" / "qss" / theme / "demo.qss", encoding='utf-8') as f:
+    cfg.theme_style_sheet = f.read()

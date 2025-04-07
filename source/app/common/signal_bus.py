@@ -30,7 +30,7 @@ class SignalBus(QObject):
     video_segment_play = pyqtSignal(int, int)  # 播放片段信号，参数为开始和结束时间(ms)
     video_subtitle_added = pyqtSignal(str)  # 添加字幕文件信号
     video_current_time = pyqtSignal(int) # 播放的当前时间(ms)
-
+    
     def on_subtitle_output_format_changed(self, format:str):
         self.subititle_output_format_changed.emit(format)
 
