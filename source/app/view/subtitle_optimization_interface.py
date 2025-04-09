@@ -28,6 +28,7 @@ from ..core.utils.subtitles import get_original_and_translated
 from ..core.subtitle_processor.spliter import merge_segments
 
 class SubtitleTableModel(QAbstractTableModel):
+    current_index = None
     def __init__(self, data):
         super().__init__()
         self._data = data
@@ -39,6 +40,10 @@ class SubtitleTableModel(QAbstractTableModel):
         return 4
 
     def data(self, index, role):
+        if role == Qt.ItemDataRole.BackgroundColorRole:
+            if index == self.current_index:
+                return QColor("blue")
+            
         if role == Qt.ItemDataRole.DisplayRole or role == Qt.ItemDataRole.EditRole:
             item = list(self._data.values())[index.row()]
             match index.column():
@@ -160,7 +165,7 @@ class SubtitleOptimizationInterface(QWidget):
 
         # 用于在字幕里寻找字符串,暂时存储找到字符的行数
         self.searchPos: int = None
-
+        
     def _init_ui(self):
         """
         初始化界面布局
@@ -295,10 +300,14 @@ class SubtitleOptimizationInterface(QWidget):
         self.subtitle_table.verticalHeader().setDefaultSectionSize(50)
         self.subtitle_table.setEditTriggers(QAbstractItemView.EditTrigger.DoubleClicked | QAbstractItemView.EditTrigger.EditKeyPressed)
         self.subtitle_table.clicked.connect(self.on_subtitle_clicked)
+        self.subtitle_table.selectionModel().currentChanged.connect(self.set_current_index)
         # 添加右键菜单支持
         self.subtitle_table.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
         self.subtitle_table.customContextMenuRequested.connect(self.show_context_menu)
         self.main_layout.addWidget(self.subtitle_table)
+
+    def set_current_index(self, current, previous):
+        self.model.current_index = current
 
     def _setup_bottom_layout(self):
         """
@@ -792,6 +801,10 @@ class SubtitleOptimizationInterface(QWidget):
         asr_data.save(temp_srt_path, layout=cfg.subtitle_layout.value, ass_style=subtitle_style_srt)
         # 新的源字幕指定为临时字幕
         self.task.original_subtitle_save_path = temp_srt_path
+        # 加入翻译提示
+        if cfg.custom_prompt_text.value:
+            self.custom_prompt_text = cfg.custom_prompt_text.value
+        
 
     def on_subtitle_optimization_finished(self, task: Task):
         """处理字幕优化完成事件"""
@@ -1199,12 +1212,21 @@ class SubtitleOptimizationInterface(QWidget):
 
     def on_subtitle_clicked(self, index):
         row = index.row()
-        print(f"editing state: {self.subtitle_table.state()} column {index.column()}")
         self.searchPos = row
         item = list(self.model._data.values())[row]
         start_time = item['start_time']  # 毫秒
         end_time = item['end_time'] - 50 if item['end_time'] - 50 > start_time else item['end_time']
-        signalBus.play_video_segment(start_time, end_time)
+        # Delay 500ms. So if a double click happens, the video won't play.
+        signalBus.play_seg_start_time = start_time
+        signalBus.play_seg_end_time = end_time
+        QTimer().singleShot(500, self._play_video_seg_singleshot)
+        # signalBus.play_video_segment(start_time, end_time)
+
+    def _play_video_seg_singleshot(self):
+        if self.subtitle_table.state() == QAbstractItemView.State.EditingState:
+            # Don't starts playing video if this is a double click to edit subtitles.
+            return
+        signalBus.play_video_segment_singleshot()
 
     def show_context_menu(self, pos):
         """显示右键菜单"""

@@ -1,3 +1,7 @@
+3.6.3
+	Fix an error so Single Sentence Translate can also use the prompt.
+	Double click on subtitle line will no longer play the video segment.
+	Highlight the selected subtitle cell for easy editing.
 3.6.2
 	Fix error of RTX 5070 transcribing problem.
 	Fix editing exit bug when playing video.

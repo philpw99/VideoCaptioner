@@ -21,6 +21,9 @@ class SignalBus(QObject):
     app_log_signal = pyqtSignal(str)
     # Subtitle output format
     subititle_output_format_changed = pyqtSignal(str)
+    # Play Segment start and end time, because single shot have no parameters
+    play_seg_start_time = None
+    play_seg_end_time = None
 
     # 新增视频控制相关信号
     video_play = pyqtSignal()  # 播放信号
@@ -79,6 +82,7 @@ class SignalBus(QObject):
         """
         self.video_source_changed.emit(url)
 
+   
     def play_video_segment(self, start_time: int, end_time: int):
         """播放指定时间段的视频
         
@@ -87,6 +91,13 @@ class SignalBus(QObject):
             end_time: 结束时间(毫秒)
         """
         self.video_segment_play.emit(start_time, end_time)
+
+    # Same as above, except this is for QTimer singleshot.
+    def play_video_segment_singleshot(self):
+        if self.play_seg_start_time is None or self.play_seg_end_time is None:
+            return
+        self.video_segment_play.emit(self.play_seg_start_time, self.play_seg_end_time)
+
 
     def add_subtitle(self, subtitle_file: str):
         """添加字幕文件
