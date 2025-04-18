@@ -188,7 +188,7 @@ class CreateTaskThread(QThread):
             need_video=need_video,
             subtitle_vertical_offset=cfg.subtitle_vertical_offset.value,
             portrait=cfg.portrait.value,
-            portrait_background=cfg.portrait_background.value,
+            logo_picture=cfg.logo_picture.value,
             zoom_video=cfg.zoom_video.value,
             zoom_subtitle=cfg.zoom_subtitle.value,
             type=task_type,
@@ -326,7 +326,7 @@ class CreateTaskThread(QThread):
             need_video=need_video,
             subtitle_vertical_offset=cfg.subtitle_vertical_offset.value,
             portrait=cfg.portrait.value,
-            portrait_background=cfg.portrait_background.value,
+            logo_picture=cfg.logo_picture.value,
             zoom_video=cfg.zoom_video.value,
             zoom_subtitle=cfg.zoom_subtitle.value,
             type=Task.Type.URL,
@@ -466,7 +466,7 @@ class CreateTaskThread(QThread):
             need_video=True,    # Just in case, because synthesis always generate a video
             subtitle_vertical_offset=cfg.subtitle_vertical_offset.value,
             portrait=cfg.portrait.value,
-            portrait_background=cfg.portrait_background.value,
+            logo_picture=cfg.logo_picture.value,
             zoom_video=cfg.zoom_video.value,
             zoom_subtitle=cfg.zoom_subtitle.value,
             task_thread=self,
@@ -568,8 +568,8 @@ def download(url, work_dir, progress_hook):
         # 提取视频信息（不下载）
         info_dict = ydl.extract_info(url, download=False)
 
-        # 设置动态下载文件夹为视频标题
-        video_title = sanitize_filename(info_dict.get('title', 'MyVideo'))
+        # 设置动态下载文件夹为视频标题，最多50个字符长
+        video_title = sanitize_filename(info_dict.get('title', 'MyVideo'))[:50]
         video_work_dir = Path(work_dir) / sanitize_filename(video_title)
         subtitle_language = info_dict.get('language', None)
         if subtitle_language:

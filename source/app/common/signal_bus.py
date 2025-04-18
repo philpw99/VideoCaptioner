@@ -15,6 +15,8 @@ class SignalBus(QObject):
     need_video_changed = pyqtSignal(bool)
     # 软字幕信号
     soft_subtitle_changed = pyqtSignal(bool)
+    # 水印信号
+    logo_picture_changed = pyqtSignal(str)
     # 转录方式信号
     transcription_model_changed = pyqtSignal(str)
     # App log signal
@@ -33,6 +35,9 @@ class SignalBus(QObject):
     video_segment_play = pyqtSignal(int, int)  # 播放片段信号，参数为开始和结束时间(ms)
     video_subtitle_added = pyqtSignal(str)  # 添加字幕文件信号
     video_current_time = pyqtSignal(int) # 播放的当前时间(ms)
+    
+    def on_logo_picture_changed(self, logo_file: str):
+        self.logo_picture_changed.emit(logo_file)
     
     def on_subtitle_output_format_changed(self, format:str):
         self.subititle_output_format_changed.emit(format)

@@ -1,8 +1,7 @@
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import QHBoxLayout
 
-from qfluentwidgets import ComboBox, SwitchButton, CaptionLabel, CardWidget, ToolTipFilter, \
-    ToolTipPosition
+from qfluentwidgets import ComboBox, SwitchButton, CaptionLabel, CardWidget, ToolTipFilter, ToolTipPosition, PushButton
 
 
 class SimpleSettingCard(CardWidget):
@@ -66,10 +65,23 @@ class SwitchButtonSimpleSettingCard(SimpleSettingCard):
         self.switchButton.checkedChanged.connect(self.checkedChanged)
         self.cardlayout.addWidget(self.switchButton)
 
-        self.clicked.connect(lambda: self.switchButton.setChecked(not self.switchButton.isChecked()))
+        self.clicked.connect(lambda: self.setChecked(not self.isChecked()))
 
     def setChecked(self, checked):
         self.switchButton.setChecked(checked)
 
     def isChecked(self):
         return self.switchButton.isChecked()
+
+class PushButtonSimpleSettingCard(SimpleSettingCard):
+    """简单按键"""
+    def __init__(self, title, content, parent=None):
+        super().__init__(title, content, parent)
+        self.setup_button()
+    
+    def setup_button(self):
+        self.pushButton = PushButton(self)
+        self.cardlayout.addWidget(self.pushButton)
+    
+    def setButtonText(self, new_value: str):
+        self.pushButton.setText(new_value)

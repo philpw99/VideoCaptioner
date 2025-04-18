@@ -740,9 +740,7 @@ class TaskInfoCard(CardWidget):
         self.portrait_mode = SwitchButton(self, indicatorPos = IndicatorPosition.RIGHT)
         self.portrait_mode.setOnText(self.tr("竖屏"))
         self.portrait_mode.setOffText(self.tr("横屏"))
-        self.portrait_background = PushButton(self.tr("背景：无"), parent=self)
-        self.portrait_background.hide()
-        
+        self.logo_picture = PushButton(self.tr("水印：无"), parent=self)
         
         self.progress_ring = ProgressRing(self)
         self.progress_ring.setFixedSize(20, 20)
@@ -757,7 +755,7 @@ class TaskInfoCard(CardWidget):
         self.details_layout2.addWidget(self.video_codec)
         self.details_layout2.addWidget(self.audio_codec)
         self.details_layout2.addWidget(self.portrait_mode)
-        self.details_layout2.addWidget(self.portrait_background)
+        self.details_layout2.addWidget(self.logo_picture)
         
         self.details_layout2.addStretch(1)
         self.info_layout.addLayout(self.details_layout1)
@@ -809,7 +807,14 @@ class TaskInfoCard(CardWidget):
         else:
             # Other cases, disable it.
             self.portrait_mode.setDisabled(True)
-            
+        
+        # 水印
+        if self.task.logo_picture:
+            logo_path = Path(self.task.logo_picture)
+            self.logo_picture.setText(self.tr("水印：")+ logo_path.name)
+        else:
+            self.logo_picture.setText(self.tr("水印：无"))
+        
         self.update_tooltip()
 
     def update_tooltip(self):
@@ -829,23 +834,13 @@ class TaskInfoCard(CardWidget):
                     strategy_text += self.tr("翻译方式：谷歌批量翻译，目标: "
                                              ) + self.task.target_language + " "
 
-            strategy_text += self.tr(", 使用的LLM 模型: ") + self.task.llm_model + ""
-
-        # if self.task.need_video:
-        #     if self.task.soft_subtitle:
-        #         strategy_text += self.tr(" 任务：视频加软字幕 ")
-        #     else:
-        #         strategy_text += self.tr(" 任务：视频加硬字幕 ")
-        # else:   # No video
-        #     if self.task.type == Task.Type.TRANSCRIBE:
-        #         strategy_text += self.tr(" 任务：语言转录 ")
-        #     elif self.task.type == Task.Type.TRANSLATE:
-        #         strategy_text += self.tr(" 任务：生成字幕文件 ")
+            strategy_text += self.tr(", 使用的LLM 模型: ") + self.task.llm_model + "\n"
 
         if self.task.portrait and self.task.need_video:
-            strategy_text += self.tr(" 竖屏模式：开启 ")
-            if self.task.portrait_background:
-                strategy_text += "\n" + self.tr(" 竖屏背景: ") + self.task.portrait_background
+            strategy_text += self.tr("竖屏模式：开启 ")
+
+        if self.task.logo_picture:
+            strategy_text += self.tr("水印: ") + self.task.logo_picture
 
         tooltip = self.tr("任务类型: ") + self.task.type.value + "  " \
             + self.tr("转录模型: ") + self.task.transcribe_model.value + "  " \
@@ -879,18 +874,14 @@ class TaskInfoCard(CardWidget):
         self.open_folder_button.clicked.connect(self.on_open_folder_clicked)
         self.preview_subtitle_button.clicked.connect(self.open_subtitle)
         self.portrait_mode.checkedChanged.connect(self.on_portrait_mode_changed)
-        self.portrait_background.clicked.connect(self.on_portrait_background_clicked)
+        self.logo_picture.clicked.connect(self.on_logo_picture_clicked)
 
     def on_portrait_mode_changed(self, checked):
         """竖屏模式切换"""
         self.task.portrait = checked
-        if checked:
-            self.portrait_background.show()
-        else:
-            self.portrait_background.hide()
         self.update_tooltip()
 
-    def on_portrait_background_clicked(self):
+    def on_logo_picture_clicked(self):
         picture_formats = [f"*.{fmt.value}" for fmt in SupportedImageFormats]
         file, _ = QFileDialog.getOpenFileName(self, self.tr("选择背景图片"),
                                                cfg.last_open_dir.value,
@@ -906,8 +897,8 @@ class TaskInfoCard(CardWidget):
             )
             return
 
-        self.portrait_background.setText(self.tr("背景：") + file_path.name)
-        self.task.portrait_background = file
+        self.logo_picture.setText(self.tr("背景：") + file_path.name)
+        self.task.logo_picture = file
         self.update_tooltip()
 
     def show_context_menu(self, pos):

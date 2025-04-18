@@ -732,7 +732,7 @@ class Task:
     soft_subtitle: bool = True
     subtitle_style_srt: Optional[str] = None
     portrait: bool = False
-    portrait_background: Optional[str] = None
+    logo_picture: Optional[str] = None
     zoom_video: int = 100
     zoom_subtitle: int = 100
     subtitle_vertical_offset: int = 0

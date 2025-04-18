@@ -1,4 +1,9 @@
+3.6.4
+	Add "video quality" in settings.
 3.6.3
+	Add "blur_background" setting. It can generate blurred background when change video orientation.
+	Change the background picture to watermark / logo picture. Change ffmpeg commands.
+	Limit yt-dlp video file name to max 50 characters.
 	Fix an error so Single Sentence Translate can also use the prompt.
 	Double click on subtitle line will no longer play the video segment.
 	Highlight the selected subtitle cell for easy editing.

@@ -138,10 +138,12 @@ def add_subtitles(
         vcodec: str = 'libx264',
         soft_subtitle: bool = False,
         portrait: bool = False,
-        background: str = None,
+        logo: str = None,
         vertical_offset: int = 0,
+        crf: int = 23,
         zoom_video: int = 100,
         zoom_subtitle: int = 100,
+        blur_background = False,
         progress_callback: callable = None,
         allow_running: list = [True],
 ) -> None:
@@ -248,20 +250,25 @@ def add_subtitles(
             video_x = (output_width - output_width_video) // 2
             video_y = (output_height - output_height_video) // 2
             
-            if background:
-                cmd.extend([
-                    '-i', background,
-                ])
+            if blur_background:
+                # Blur background for videos that changed orientation or zoomed out.
+                bg_str = f"[0:v]avgblur=sizeX=40:sizeY=40,scale={output_width}x{output_height}:flags=fast_bilinear[bg];" 
+            else:
+                # Just black background
+                bg_str = f"color=d={duration}:c=black@0:s={output_width}x{output_height}[bg];"
+            
+            if logo:
+                cmd.extend(['-i', logo])
 
-                # With picture background
-                vf = f"[1:v]trim=0:{duration},scale={output_width}:{output_height}[bg];" \
+                # With logo
+                vf = bg_str + f"[1:v]trim=0:{duration},scale={output_width}:{output_height}[logo];" \
                     + f"color=d={duration}:c=black@0:s={output_width_subtitle}x{squeeze_height_subtitle}," \
                     + f"subtitles='{subtitle_file}':alpha=1[sub];[0:v]scale={output_width_video}:{squeeze_height_video}[fg];" \
-                    + f"[bg][fg]overlay={video_x}:{video_y}[out];[out][sub]overlay={subtitle_x}:{subtitle_y+vertical_offset},setsar=1"
+                    + f"[bg][fg]overlay={video_x}:{video_y}[out];[out][logo]overlay[outlogo];" \
+                    + f"[outlogo][sub]overlay={subtitle_x}:{subtitle_y+vertical_offset},setsar=1"
                 
-            else:   # Blur background
-                vf = f"[0:v]avgblur=sizeX=40:sizeY=40,scale={output_width}x{output_height}:flags=fast_bilinear[bg];" \
-                    + f"color=d={duration}:c=black@0:s={output_width_subtitle}x{squeeze_height_subtitle}," \
+            else:   # Without logo
+                vf = bg_str + f"color=d={duration}:c=black@0:s={output_width_subtitle}x{squeeze_height_subtitle}," \
                     + f"subtitles='{subtitle_file}':alpha=1[sub];[0:v]scale={output_width_video}:{squeeze_height_video}[fg];" \
                     + f"[bg][fg]overlay={video_x}:{video_y}[out];[out][sub]overlay={subtitle_x}:{subtitle_y+vertical_offset},setsar=1"
         
@@ -282,19 +289,24 @@ def add_subtitles(
             video_x = (output_width - output_width_video) // 2
             video_y = (output_height - output_height_video) // 2
 
-            if background: 
-                cmd.extend([
-                    '-i', background,
-                ])
-                # With picture background
-                vf = f"[1:v]trim=0:{duration},scale={output_width}:{output_height}[bg];" \
+            if blur_background:
+                # Blur background for videos that changed orientation or zoomed out.
+                bg_str = f"[0:v]avgblur=sizeX=40:sizeY=40,scale={output_width}x{output_height}:flags=fast_bilinear[bg];" 
+            else:
+                # Just black background
+                bg_str = f"color=d={duration}:c=black@0:s={output_width}x{output_height}[bg];"
+
+            if logo: 
+                cmd.extend(['-i', logo])
+                # With logo
+                vf = bg_str + f"[1:v]trim=0:{duration},scale={output_width}:{output_height}[logo];" \
                     + f"color=d={duration}:c=black@0:s={squeeze_width_subtitle}x{output_height_subtitle}," \
                     + f"subtitles='{subtitle_file}':alpha=1[sub];[0:v]scale={squeeze_width_video}:{output_height_video}[fg];" \
-                    + f"[bg][fg]overlay={video_x}:{video_y}[out];[out][sub]overlay={subtitle_x}:{subtitle_y+vertical_offset},setsar=1"
+                    + f"[bg][fg]overlay={video_x}:{video_y}[out];[out][logo]overlay[outlogo];" \
+                    + f"[outlogo][sub]overlay={subtitle_x}:{subtitle_y+vertical_offset},setsar=1"
                 
-            else:   # Blur background
-                vf = f"[0:v]avgblur=sizeX=40:sizeY=40,scale={output_width}x{output_height}:flags=fast_bilinear[bg];" \
-                    + f"color=d={duration}:c=black@0:s={squeeze_width_subtitle}x{output_height_subtitle}," \
+            else:   # Without logo
+                vf = bg_str + f"color=d={duration}:c=black@0:s={squeeze_width_subtitle}x{output_height_subtitle}," \
                     + f"subtitles='{subtitle_file}':alpha=1[sub];[0:v]scale={squeeze_width_video}:{output_height_video}[fg];" \
                     + f"[bg][fg]overlay={video_x}:{video_y}[out];[out][sub]overlay={subtitle_x}:{subtitle_y+vertical_offset},setsar=1"
             
@@ -305,16 +317,38 @@ def add_subtitles(
             output_height_subtitle = int(output_height * zoom_subtitle // 200) * 2
             subtitle_x, subtitle_y = 0, 0
 
-            vf = f"color=d={duration}:c=black@0:s={output_width_subtitle}x{output_height_subtitle}," \
+            if logo:
+                # With logo
+                cmd.extend(['-i', logo])
+                
+                vf =  f"[1:v]trim=0:{duration},scale={output_width}:{output_height}[logo];" \
+                    + f"color=d={duration}:c=black@0:s={output_width_subtitle}x{output_height_subtitle}," \
+                    + f"subtitles='{subtitle_file}':alpha=1[sub];" \
+                    + f"[0:v][logo]overlay[outlogo];" \
+                    + f"[outlogo][sub]overlay={subtitle_x}:{subtitle_y+vertical_offset},setsar=1"
+            else:
+                # No logo
+                f"color=d={duration}:c=black@0:s={output_width_subtitle}x{output_height_subtitle}," \
                 + f"subtitles='{subtitle_file}':alpha=1[sub];[0:v][sub]overlay={subtitle_x}:{subtitle_y+vertical_offset},setsar=1"
-            
+
         cmd.extend([
             '-map', '0',    # 复制所有流
             '-map', '-0:v',  # 排除源视频流，免得生成两个视频流
             '-acodec', 'copy',
             '-vcodec', vcodec,
             '-c:s', 'copy', # 复制其它的字幕流
-            '-preset', quality,
+            '-preset', quality
+        ])
+
+        # Video quality control
+        if use_cuda:
+            # For nvidia encoder.
+            cmd.extend(['-cq', crf])
+        else:
+            # For libx264 or libx265.
+            cmd.extend(['-crf', crf])
+
+        cmd.extend([
             '-filter_complex', q(vf),
             '-y',  # 覆盖输出文件
             output

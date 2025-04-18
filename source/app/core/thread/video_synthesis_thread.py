@@ -85,10 +85,12 @@ class VideoSynthesisThread(QThread):
                             output_height=height,
                             portrait=self.task.portrait,
                             vertical_offset=self.task.subtitle_vertical_offset,
-                            background=self.task.portrait_background,
+                            logo=self.task.logo_picture,
                             duration=duration,
                             zoom_video=self.task.zoom_video,
                             zoom_subtitle=self.task.zoom_subtitle,
+                            blur_background=cfg.blur_background.value,
+                            crf=cfg.encoder_quality.value,
                             progress_callback=self.progress_callback,
                             allow_running=self.task.allow_running,
                             )

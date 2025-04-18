@@ -17,6 +17,7 @@ from app.core.thread.create_task_thread import CreateTaskThread
 from app.core.thread.video_synthesis_thread import VideoSynthesisThread
 from ..core.entities import SupportedVideoFormats, SupportedSubtitleFormats, SupportedImageFormats
 from ..core.entities import Task
+from ..common.signal_bus import signalBus
 
 current_dir = Path(__file__).parent.parent
 SUBTITLE_STYLE_DIR = current_dir / "resource" / "subtitle_style"
@@ -37,7 +38,7 @@ class VideoSynthesisInterface(QWidget):
         self.setup_signals()
         self.task = None
         self.task_thread = None
-        self.portrait_background = None
+        self.logo_picture = None
 
     def setup_ui(self):
         self.main_layout = QVBoxLayout(self)
@@ -82,7 +83,7 @@ class VideoSynthesisInterface(QWidget):
         self.option_portrait = SwitchButton(self.tr("横屏字幕"), self, indicatorPos=IndicatorPosition.RIGHT)
         self.option_portrait.setOnText(self.tr("竖屏字幕"))
         self.option_portrait.setDisabled(True)
-        self.option_portrait_background = PushButton(self.tr("背景：无"), self)
+        self.option_logo_picture = PushButton(self.tr("水印：无"), self)
         
         # 字幕垂直偏移
         self.option_vertical_offset_label = BodyLabel(self.tr("垂直偏移量 (px): 100"),self)
@@ -115,7 +116,7 @@ class VideoSynthesisInterface(QWidget):
 
         self.options_layout.addWidget(self.option_hard_subtitle)
         self.options_layout.addWidget(self.option_portrait)
-        self.options_layout.addWidget(self.option_portrait_background)
+        self.options_layout.addWidget(self.option_logo_picture)
         self.options_layout.addWidget(self.option_vertical_offset_label)
         self.options_layout.addWidget(self.option_vertical_offset)
         self.options_layout.addWidget(self.option_zoom_video_label)
@@ -150,17 +151,32 @@ class VideoSynthesisInterface(QWidget):
         self.bottom_layout.addWidget(self.status_label)  # 状态标签使用固定宽度
         self.main_layout.addLayout(self.bottom_layout)
 
-    def on_portrait_background_clicked(self):
+    def on_logo_picture_changed(self, logo_file: str):
+        if self.logo_picture != logo_file:
+            self.logo_picture = logo_file
+            if self.task:
+                self.task.logo_picture = logo_file
+            if logo_file:
+                file_path = Path(logo_file)
+                self.option_logo_picture.setText( self.tr(f"水印：") + file_path.name )
+            else:
+                self.option_logo_picture.setText( self.tr(f"水印：无") )
+        
+        
+    def on_logo_picture_clicked(self):
         # Open file dialog to select background image
         image_formats = {f"*.{fmt.value}" for fmt in SupportedImageFormats}
-        file_str, _ = QFileDialog.getOpenFileName(self, self.tr("选择背景图片"), cfg.last_open_dir.value, ' '.join(image_formats))
+        file_str, _ = QFileDialog.getOpenFileName(self, self.tr("选择水印图片"), cfg.last_open_dir.value, ' '.join(image_formats))
         if file_str:
             file_path = Path(file_str)
             if file_path.exists():
-                self.option_portrait_background.setText( self.tr(f"背景：{file_path.name}") )
-                # self.option_portrait_background.setFixedWidth(200)
-                self.portrait_background = file_str
-                cfg.set(cfg.portrait_background, file_str)
+                self.option_logo_picture.setText( self.tr(f"水印：") + file_path.name )
+                # self.option_logo_picture.setFixedWidth(200)
+                self.logo_picture = file_str
+                cfg.set(cfg.logo_picture, file_str)
+                if self.task:
+                    self.task.logo_picture = file_str
+                signalBus.logo_picture_changed.emit(file_str)
             else:
                 InfoBar.error(
                     self.tr("错误"),
@@ -170,10 +186,13 @@ class VideoSynthesisInterface(QWidget):
                     parent=self
                 )
         else: # User canceled the file selection
-            self.option_portrait_background.setText( self.tr("背景：无") )
-            self.option_portrait_background.setFixedWidth(100)
-            self.portrait_background = None
-            cfg.set(cfg.portrait_background, "")
+            self.option_logo_picture.setText( self.tr("水印：无") )
+            self.option_logo_picture.setFixedWidth(100)
+            self.logo_picture = None
+            cfg.set(cfg.logo_picture, "")
+            if self.task:
+                self.task.logo_picture = None
+            signalBus.logo_picture_changed.emit("")
             
     
     def set_bodylabel_disabled(self, label: BodyLabel, disable: bool):
@@ -185,7 +204,7 @@ class VideoSynthesisInterface(QWidget):
     def on_hard_subtitle_toggled(self, checked):
         # checked means enable hard subtitle
         self.option_portrait.setEnabled(checked)
-        self.option_portrait_background.setEnabled(checked)
+        self.option_logo_picture.setEnabled(checked)
         
         self.option_zoom_video.setEnabled(checked)
         self.set_bodylabel_disabled(self.option_zoom_video_label, not checked )
@@ -254,21 +273,24 @@ class VideoSynthesisInterface(QWidget):
         # 字幕选项相关信号
         self.option_hard_subtitle.checkedChanged.connect(self.on_hard_subtitle_toggled)
         self.option_portrait.checkedChanged.connect(self.on_portrait_toggled)
-        self.option_portrait_background.clicked.connect(self.on_portrait_background_clicked)
+        self.option_logo_picture.clicked.connect(self.on_logo_picture_clicked)
         self.option_vertical_offset.valueChanged.connect(self.on_vertical_offset_changed)
         self.option_zoom_video.valueChanged.connect(self.on_zoom_video_changed)
         self.option_zoom_subtitle.valueChanged.connect(self.on_zoom_subtitle_changed)
+        
+        # signal bus to local
+        signalBus.logo_picture_changed.connect(self.on_logo_picture_changed)
 
     def set_value(self):
         # Set values before the signals are set.
         self.option_hard_subtitle.setChecked(not cfg.soft_subtitle.value)
         self.option_portrait.setChecked(cfg.portrait.value)
-        self.portrait_background = cfg.portrait_background.value
-        if self.portrait_background:
-            bg_path = Path(self.portrait_background)
-            self.option_portrait_background.setText( self.tr(f"背景：{bg_path.name}") )
+        self.logo_picture = cfg.logo_picture.value
+        if self.logo_picture:
+            bg_path = Path(self.logo_picture)
+            self.option_logo_picture.setText( self.tr(f"水印：{bg_path.name}") )
         else:
-            self.option_portrait_background.setText( self.tr("背景：无") )
+            self.option_logo_picture.setText( self.tr("水印：无") )
         self.option_vertical_offset.setValue(cfg.subtitle_vertical_offset.value)
         self.option_zoom_video.setValue(-cfg.zoom_video.value)
         self.option_zoom_subtitle.setValue(-cfg.zoom_subtitle.value)
@@ -322,7 +344,7 @@ class VideoSynthesisInterface(QWidget):
             # Hard coded subtitle
             if self.option_portrait.isChecked():    # portrait sub
                 self.task.portrait = True
-                self.task.portrait_background = self.portrait_background
+                self.task.logo_picture = self.logo_picture
                 # They are negative numbers from -300 to -10
                 self.task.zoom_video = abs(self.option_zoom_video.value())
                 self.task.zoom_subtitle = abs(self.option_zoom_subtitle.value())

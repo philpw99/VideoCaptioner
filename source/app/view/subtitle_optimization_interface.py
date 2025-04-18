@@ -1148,7 +1148,10 @@ class SubtitleOptimizationInterface(QWidget):
             
             if file_path_ext in video_formats:
                 # file_path is a video
-                self.video_player.setVideo(QUrl.fromLocalFile(self.task.file_path))
+                url = QUrl.fromLocalFile(self.task.file_path)
+                if self.task.file_path[0:2] == r"\\":
+                    url.setScheme('smb')
+                self.video_player.setVideo(url)
             elif file_path_ext in subtitle_formats:
                 # file_path is a subtitle
                 file1 = ".".join(file_name_parts[:-1])
@@ -1168,7 +1171,10 @@ class SubtitleOptimizationInterface(QWidget):
                             file_str = file2 + "." + ext
                             break
                 if file_str:
-                    self.video_player.setVideo(QUrl.fromLocalFile(file_str))
+                    url = QUrl.fromLocalFile(file_str)
+                    if self.task.file_path[0:2] == r"\\":
+                        url.setScheme('smb')
+                    self.video_player.setVideo(url)
         
         self.video_player.show()
         if self.video_player.source():

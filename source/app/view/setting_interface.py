@@ -240,12 +240,20 @@ class SettingInterface(ScrollArea):
             self.videoGroup
         )
 
-        self.videoPortraitBackgroundCard = LineEditSettingCard(
-            cfg.portrait_background,
+        self.videoLogoCard = LineEditSettingCard(
+            cfg.logo_picture,
             FIF.FOLDER,
-            self.tr("Portrait or Landscape Picture Background"),
-            self.tr("When generating a landscape-to-portrait video, or vice versa, add a picture background to it."),
+            self.tr("Picture Logo"),
+            self.tr("When generating a hard-subbed video, or you can add a picture logo to it."),
             "",
+            self.videoGroup
+        )
+        
+        self.videoBlurBackgroundCard = SwitchSettingCard(
+            FIF.BACKGROUND_FILL,
+            self.tr("Blur Background"),
+            self.tr("Generate blurred background when change video orientation or zoom out. Black background when off."),
+            cfg.blur_background,
             self.videoGroup
         )
 
@@ -262,6 +270,14 @@ class SettingInterface(ScrollArea):
             FIF.ZOOM,
             self.tr("Subtitle Zoom Percentage"),
             self.tr("The scale percent for subtitle zooming in the generated video."),
+            self.videoGroup
+        )
+        
+        self.videoQualityCard = RangeSettingCard(
+            cfg.encoder_quality,
+            FIF.VIDEO,
+            self.tr("Video Quality"),
+            self.tr("The constant quality value (CRF). Range from 0 to 50. 0 is the best and 50 is the worst. Default is 23. "),
             self.videoGroup
         )
         
@@ -409,8 +425,8 @@ class SettingInterface(ScrollArea):
             self.SubtitleSentenceMinimumTimeCard, self.SubtitleTimeOffsetCard])
 
         self.videoGroup.addSettingCards([self.needVideoCard, self.softSubtitleCard,
-            self.subtitleVerticalOffsetCard, self.videoPortraitCard,
-            self.videoPortraitBackgroundCard, self.zoomVideoCard, self.zoomSubtitleCard])
+            self.subtitleVerticalOffsetCard, self.videoPortraitCard, self.videoLogoCard,
+            self.videoBlurBackgroundCard, self.zoomVideoCard, self.zoomSubtitleCard, self.videoQualityCard])
 
         self.saveGroup.addSettingCard(self.savePathCard)
 

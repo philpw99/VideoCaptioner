@@ -12,8 +12,8 @@ from qfluentwidgets import FluentIcon, ComboBoxSettingCard, MessageDialog
 from qfluentwidgets import FluentIcon as FIF
 
 from ..common.config import cfg, Language, LanguageSerializer, TranscribeLanguageEnum
-from ..components.SimpleSettingCard import ComboBoxSimpleSettingCard, SwitchButtonSimpleSettingCard
-from ..core.entities import SupportedAudioFormats, SupportedVideoFormats, OutputSubtitleFormatEnum, SubtitleLayoutEnum
+from ..components.SimpleSettingCard import ComboBoxSimpleSettingCard, SwitchButtonSimpleSettingCard, PushButtonSimpleSettingCard
+from ..core.entities import SupportedAudioFormats, SupportedVideoFormats, SupportedImageFormats, OutputSubtitleFormatEnum, SubtitleLayoutEnum
 from ..core.entities import TargetLanguageEnum, TranscribeModelEnum, Task, TranslateMethodEnum, LANGUAGES, MovieDatabaseEnum
 from ..core.thread.create_task_thread import CreateTaskThread
 from ..config import APPDATA_PATH, ASSETS_PATH, VERSION, AUTHOR, SUBVERSION, COAUTHOR
@@ -165,6 +165,13 @@ class TaskCreationInterface(QWidget):
         self.soft_subtitle_card.switchButton.setOnText(self.tr("Soft Subtitle"))
         self.soft_subtitle_card.switchButton.setContentsMargins(0,0,16,0)
 
+        # 创建水印图片按钮
+        self.logo_card = PushButtonSimpleSettingCard(
+            self.tr("水印"),
+            self.tr("给视频加水印图片，图片最好和视频大小一致，RGBA格式。"),
+            self
+        )
+        self.logo_card.pushButton.setMinimumWidth(100)
 
         self.config_layout2 = QHBoxLayout()
         self.config_layout2.setObjectName("config_layout2")
@@ -174,6 +181,7 @@ class TaskCreationInterface(QWidget):
         self.config_layout2.addWidget(self.subtitle_layout_card)
         self.config_layout2.addWidget(self.video_synthesis_card)
         self.config_layout2.addWidget(self.soft_subtitle_card)
+        self.config_layout2.addWidget(self.logo_card)
 
         # Container for main layout
         self.config_container2 = QWidget()
@@ -370,6 +378,8 @@ class TaskCreationInterface(QWidget):
         self.target_format_card.comboBox.currentTextChanged.connect(
             signalBus.on_subtitle_output_format_changed
         )
+
+        self.logo_card.pushButton.clicked.connect(self.on_logo_picture_clicked)
         
         # Signal bus to local
         signalBus.soft_subtitle_changed.connect(self.on_soft_subtitle_changed)
@@ -381,7 +391,41 @@ class TaskCreationInterface(QWidget):
         signalBus.language_changed.connect(self.on_language_changed)
         signalBus.original_language_changed.connect(self.on_original_language_changed)
         signalBus.subititle_output_format_changed.connect(self.on_output_format_changed)
+        signalBus.logo_picture_changed.connect(self.on_logo_picture_changed)
 
+    def on_logo_picture_clicked(self):
+        # 设置水印
+        image_formats = {f"*.{fmt.value}" for fmt in SupportedImageFormats}
+        file_str, _ = QFileDialog.getOpenFileName(self, self.tr("选择水印图片"), cfg.last_open_dir.value, ' '.join(image_formats))
+        if file_str:
+            file_path = Path(file_str)
+            if file_path.exists():
+                self.on_logo_picture_changed(str(file_path))
+                # self.option_logo_picture.setFixedWidth(200)
+                signalBus.logo_picture_changed.emit(file_str)
+            else:
+                InfoBar.error(
+                    self.tr("错误"),
+                    self.tr("无效的文件路径"),
+                    duration=3000,
+                    position=InfoBarPosition.TOP,
+                    parent=self
+                )
+        else: # User canceled the file selection
+            self.logo_card.setButtonText( self.tr("无") )
+            self.logo_card.pushButton.setMinimumWidth(100)
+            cfg.set(cfg.logo_picture, "")
+            signalBus.logo_picture_changed.emit("")
+
+        
+    def on_logo_picture_changed(self, logo_file: str):
+        if cfg.logo_picture.value != logo_file:
+            cfg.set(cfg.logo_picture, logo_file)
+        if logo_file:
+            self.logo_card.setButtonText(Path(logo_file).name)
+        else:
+            self.logo_card.setButtonText(self.tr("无"))
+        
     def on_translate_prompt_button_clicked(self):
         """
         该方法创建一个 PromptDialog 对话框，并在用户点击确定后更新自定义提示文本。
@@ -479,9 +523,9 @@ class TaskCreationInterface(QWidget):
     def on_soft_subtitle_changed(self, enable: bool):
         if cfg.soft_subtitle.value != enable:
             cfg.set(cfg.soft_subtitle, enable, True)    # Save it.
-        switch = self.soft_subtitle_card.switchButton
-        if switch.isChecked() != enable:
-            switch.setChecked(enable)
+
+        self.soft_subtitle_card.setChecked(enable)
+        self.logo_card.setDisabled(enable)
         
     def on_video_synthesis_changed(self, enable: bool):
         if cfg.need_video.value != enable:
@@ -490,6 +534,11 @@ class TaskCreationInterface(QWidget):
         if switch.isChecked() != enable:
             switch.setChecked(enable)
         self.soft_subtitle_card.setEnabled(enable)
+        if enable and not cfg.soft_subtitle.value:
+            self.logo_card.setEnabled(True)
+        else:
+            self.logo_card.setDisabled(True)
+        
 
     def on_target_language_changed(self, language: str):
         enum = TargetLanguageEnum(language)
@@ -539,6 +588,13 @@ class TaskCreationInterface(QWidget):
         self.soft_subtitle_card.setChecked( cfg.soft_subtitle.value )
         if not self.video_synthesis_card.isChecked():
             self.soft_subtitle_card.setDisabled(True)
+            self.logo_card.setDisabled(True)
+        if cfg.logo_picture.value:
+            logo_path = Path(cfg.logo_picture.value)
+            self.logo_card.setButtonText(logo_path.name)
+        else:
+            self.logo_card.setButtonText(self.tr("无"))
+        
         self.target_language_card.comboBox.setCurrentText(cfg.target_language.value.value)
         self.target_format_card.comboBox.setCurrentText(cfg.subtitle_output_format.value.value)
         self.subtitle_layout_card.comboBox.setCurrentText(cfg.subtitle_layout.value.value)

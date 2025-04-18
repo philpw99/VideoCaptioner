@@ -170,16 +170,17 @@ class Config(QConfig):
     soft_subtitle = ConfigItem("Video", "SoftSubtitle", True, BoolValidator())
     need_video = ConfigItem("Video", "NeedVideo", True, BoolValidator())
     subtitle_vertical_offset = RangeConfigItem("Video", 
-        "Subtitle on video vertical offset", 0, RangeValidator(-500, 500))
-    portrait = ConfigItem("Video", "Generate video in portrait mode", False, BoolValidator())
-    portrait_background = ConfigItem("Subtittle",
-        "Background for landscrape-to-portrait or portrait-to-landscape video.", ""
-    )
-    zoom_video = RangeConfigItem("Video", "Zoom percent for original video.",
+        "SubtitleVerticalOffset", 0, RangeValidator(-500, 500))
+    portrait = ConfigItem("Video", "PortraitMode", False, BoolValidator())
+    logo_picture = ConfigItem("Video","LogoPicture", "")
+    blur_background = ConfigItem("Video", "BlurBackground", False, BoolValidator())
+    zoom_video = RangeConfigItem("Video", "OriginalVideoZoomPercent",
                             100, RangeValidator(10, 300))
-    zoom_subtitle = RangeConfigItem("Video", "Zoom percent for subtitle on video.",
+    zoom_subtitle = RangeConfigItem("Video", "SubtitleZoomPercent",
                             100, RangeValidator(10, 300))
-
+    encoder_quality = RangeConfigItem("Video","EncoderQuality",
+                            23, RangeValidator(0,50))
+    
     # ------------------- 字幕样式配置 -------------------
     subtitle_style_name = ConfigItem("SubtitleStyle", "StyleName", "default")
     subtitle_layout = OptionsConfigItem(

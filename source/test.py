@@ -1,6 +1,4 @@
-text = f"""line1
-    line2
-    line3
-    """
-
-print (text)
+from PyQt5.QtCore import *
+url = QUrl(r"\\temp\text.txt")
+url.setScheme('smb')
+print (url)
