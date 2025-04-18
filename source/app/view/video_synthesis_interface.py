@@ -187,7 +187,7 @@ class VideoSynthesisInterface(QWidget):
                 )
         else: # User canceled the file selection
             self.option_logo_picture.setText( self.tr("水印：无") )
-            self.option_logo_picture.setFixedWidth(100)
+            self.option_logo_picture.setMinimumWidth(100)
             self.logo_picture = None
             cfg.set(cfg.logo_picture, "")
             if self.task:

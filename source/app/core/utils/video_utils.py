@@ -343,10 +343,10 @@ def add_subtitles(
         # Video quality control
         if use_cuda:
             # For nvidia encoder.
-            cmd.extend(['-cq', crf])
+            cmd.extend(['-cq', str(crf)])
         else:
             # For libx264 or libx265.
-            cmd.extend(['-crf', crf])
+            cmd.extend(['-crf', str(crf)])
 
         cmd.extend([
             '-filter_complex', q(vf),
