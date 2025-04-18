@@ -628,6 +628,7 @@ class FasterWhisperModelEnum(Enum):
     LARGE_V2 = "large-v2"
     LARGE_V3 = "large-v3"
     LARGE_V3_T = "large-v3-turbo"
+    LARGE_DISTI_T = "large-distil-turbo"
 
 @dataclass
 class Task:

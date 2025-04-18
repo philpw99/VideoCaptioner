@@ -1,4 +1,8 @@
 3.6.4
+	Add distil-large-turbo model
+	Update the setting of mdx_kim2 for FasterWhisper
+	Update download link to the new FasterWhsiperXXL 245.4.
+	Add "multilingal" as a new FasterWhisper option.
 	Add "video quality" in settings.
 3.6.3
 	Add "blur_background" setting. It can generate blurred background when change video orientation.

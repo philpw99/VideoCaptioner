@@ -140,6 +140,11 @@ class Config(QConfig):
     faster_whisper_RTX_5000_fix = ConfigItem(
         "FasterWhisper", "RTX5000Fix", False, BoolValidator()
     )
+    
+    # 多语言
+    faster_whisper_multilingal = ConfigItem(
+        "FasterWhisper", "Multilingual", False, BoolValidator()
+    )
 
     # ------------------- Whisper API 配置 -------------------
     whisper_api_base = ConfigItem("WhisperAPI", "WhisperApiBase", "")

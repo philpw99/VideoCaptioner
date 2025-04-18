@@ -45,6 +45,7 @@ class FasterWhisperASR(BaseASR):
                  prompt: str = None,
                  allow_running = None,
                  rtx5000fix = False,
+                 multilingual = False,
                  ):
         super().__init__(audio_path, False)
         
@@ -77,6 +78,7 @@ class FasterWhisperASR(BaseASR):
         self.repetition_penalty = repetition_penalty
         self.prompt = prompt
         self.rtx5000fix = rtx5000fix
+        self.multilingual = multilingual
         
         self.process = None
         if allow_running:
@@ -88,6 +90,7 @@ class FasterWhisperASR(BaseASR):
         """构建命令行参数"""
         cmd = [
             str(self.faster_whisper_path),
+            "-l", self.language,
             "-m", str(self.model_path),
             # "--verbose", "true",
             "--print_progress"
@@ -100,10 +103,13 @@ class FasterWhisperASR(BaseASR):
         # 基本参数
         cmd.extend([
             str(audio_path),
-            "-l", self.language,
             "-d", self.device,
             "--output_format", self.output_format,
         ])
+        
+        if self.multilingual:
+            # 多语言混合
+            cmd.extend(["--multilingual", "true"])
         
         # 日语尽量以汉字输出
         if self.language == 'ja' or self.language.lower() == "japanese":
@@ -128,7 +134,7 @@ class FasterWhisperASR(BaseASR):
 
         # 人声分离
         if self.ff_mdx_kim2 and self.faster_whisper_path.name.startswith("faster-whisper-xxl"):
-            cmd.append("--ff_mdx_kim2")
+            cmd.extend(["--ff_vocal_extract", "mdx_kim2"])
 
         # 文本处理参数
         if self.one_word:

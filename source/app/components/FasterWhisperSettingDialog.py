@@ -30,18 +30,11 @@ from ..core.thread.unzip_thread import UnzipThread
 # 在文件开头添加常量定义
 FASTER_WHISPER_PROGRAMS = [
     {
-        "label": "GPU + CPU r245.2 (GitHub)",
+        "label": "GPU + CPU r245.4 (GitHub)",
         "value": "faster-whisper-gpu.7z",
         "type": "GPU",
         "size": "1.35 GB",
-        "downloadLink": "https://github.com/Purfview/whisper-standalone-win/releases/download/Faster-Whisper-XXL/Faster-Whisper-XXL_r245.2_windows.7z",
-    },
-    {
-        "label": "GPU + CPU r245.2 (内网)",
-        "value": "faster-whisper-gpu.7z",
-        "type": "GPU",
-        "size": "1.35 GB",
-        "downloadLink": "https://modelscope.cn/models/bkfengg/whisper-cpp/resolve/master/Faster-Whisper-XXL_r245.2_windows.7z",
+        "downloadLink": "https://github.com/Purfview/whisper-standalone-win/releases/download/Faster-Whisper-XXL/Faster-Whisper-XXL_r245.4_windows.7z",
     },
     {
         "label": "CPU (内网)",
@@ -108,7 +101,15 @@ FASTER_WHISPER_MODELS = [
         "size": "1739466",
         "downloadLink": "https://huggingface.co/Purfview/faster-whisper-large-v3-turbo",
         "modelScopeLink": "pengzhendong/faster-whisper-large-v3-turbo"
+    },
+    {
+        "label": "Large-distil-turbo",
+        "value": "faster-whisper-distil-large-turbo",
+        "size": "1739466",
+        "downloadLink": "https://huggingface.co/Purfview/faster-distil-whisper-large-v3.5",
+        "modelScopeLink": "pengzhendong/faster-distil-whisper-large-v2"
     }
+
 ]
 
 # 在类外添加这个工具函数
@@ -755,6 +756,15 @@ class FasterWhisperSettingDialog(MessageBoxBase):
             self.other_group
         )
         
+        # 多语言
+        self.multilingual_card = SwitchSettingCard(
+            FIF.LANGUAGE,
+            self.tr("多语言"),
+            self.tr("除了主要语言外，视频里还含有其它语言需要识别"),
+            cfg.faster_whisper_multilingal,
+            self.other_group,
+        )
+        
         # RTX 5000 系列补丁
         self.rtx5000fix_card = SwitchSettingCard(
             FIF.PASTE,
@@ -788,6 +798,7 @@ class FasterWhisperSettingDialog(MessageBoxBase):
         self.other_group.addSettingCard(self.translate_to_english_card)
         self.other_group.addSettingCard(self.repetition_penalty_card)
         self.other_group.addSettingCard(self.prompt_card)
+        self.other_group.addSettingCard(self.multilingual_card)
         self.other_group.addSettingCard(self.rtx5000fix_card)
 
         # 检查并提示下载 faster-whisper
