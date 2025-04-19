@@ -7,7 +7,7 @@ from PyQt5.QtGui import QColor, QPainter
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import (QFrame, QHBoxLayout, QLabel, QToolButton,
                              QVBoxLayout)
-from qfluentwidgets import ComboBox, ColorDialog
+from qfluentwidgets import ComboBox, ColorDialog, SwitchButton
 from qfluentwidgets import CompactSpinBox, CompactDoubleSpinBox, PushButton
 from qfluentwidgets.common.config import isDarkTheme
 from qfluentwidgets.common.icon import FluentIcon as FIF
@@ -204,7 +204,7 @@ class SpinBoxSettingCard(SettingCard):
         self.spinBox.setSingleStep(2)  # 设置步长为2
 
         # 添加到布局
-        self.hBoxLayout.addWidget(self.spinBox, 0, Qt.AlignRight)
+        self.hBoxLayout.addWidget(self.spinBox, 0, Qt.AlignmentFlag.AlignRight)
         self.hBoxLayout.addSpacing(8)
 
         # 设置初始值和连接信号
@@ -231,7 +231,7 @@ class ComboBoxSettingCard(SettingCard):
 
         # 创建ComboBox
         self.comboBox = ComboBox(self)
-        self.hBoxLayout.addWidget(self.comboBox, 0, Qt.AlignRight)
+        self.hBoxLayout.addWidget(self.comboBox, 0, Qt.AlignmentFlag.AlignRight)
         self.hBoxLayout.addSpacing(16)
 
         # 添加选项
@@ -271,6 +271,30 @@ class ComboBoxSettingCard(SettingCard):
         """ 清空所有选项 """
         self.comboBox.clear()
 
+
+class SwitchSettingCard(SettingCard):
+    """开关设置卡片"""
+    checkChanged = pyqtSignal(bool)
+    
+    def __init__(self, icon, title, content=None, parent=None):
+        super().__init__(icon, title, content, parent)
+        
+        # 创建开关按钮
+        self.switch = SwitchButton(self)
+        self.hBoxLayout.addWidget(self.switch)
+        self.hBoxLayout.addSpacing(16)
+        
+        # 连接信号
+        self.switch.checkedChanged.connect(self.on_check_changed)
+    
+    def on_check_changed(self, enable):
+        self.checkChanged.emit(enable)
+    
+    def checked(self):
+        return self.switch.checked
+
+    def setChecked(self, enable):
+        self.switch.setChecked(enable)
 
 class ColorSettingCard(SettingCard):
     """ 带颜色选择器的设置卡片 """

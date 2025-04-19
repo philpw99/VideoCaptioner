@@ -328,7 +328,7 @@ def add_subtitles(
                     + f"[outlogo][sub]overlay={subtitle_x}:{subtitle_y+vertical_offset},setsar=1"
             else:
                 # No logo
-                f"color=d={duration}:c=black@0:s={output_width_subtitle}x{output_height_subtitle}," \
+                vf = f"color=d={duration}:c=black@0:s={output_width_subtitle}x{output_height_subtitle}," \
                 + f"subtitles='{subtitle_file}':alpha=1[sub];[0:v][sub]overlay={subtitle_x}:{subtitle_y+vertical_offset},setsar=1"
 
         cmd.extend([

@@ -1,3 +1,9 @@
+3.6.5
+	Fix a bug for subtitle video filter setting.
+	Fix a few bugs for subtitle video synthesis.
+	Update task settings before processing front page file or url.
+	Add enable/disable subtitle background to subtitle style editor.
+	Add background color and alpha to subtitle style editor.
 3.6.4
 	Add distil-large-turbo model
 	Update the setting of mdx_kim2 for FasterWhisper

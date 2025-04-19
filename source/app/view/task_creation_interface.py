@@ -961,10 +961,74 @@ class TaskCreationInterface(QWidget):
         self.update_info()
 
     def update_info(self):
-        if self.task:
-            self.search_input.setText(self.task.file_path)
+        """
+            In case of settings change after file or url is dragged inside.
+            Need to change the task settings.
+        """
+        if not self.task:
+            return
+        
+        self.task.original_language = cfg.transcribe_language.value
+        self.task.target_language = cfg.target_language.value
+        
+        self.task.transcribe_model = cfg.transcribe_model.value
+        self.task.transcribe_language = cfg.transcribe_language.value
+
+        # LLM settings
+        self.task.base_url = cfg.api_base.value
+        self.task.api_key = cfg.api_key.value
+        self.task.llm_model = cfg.model.value
+        self.task.translate_method = cfg.translate_method.value
+        self.task.thread_num = cfg.thread_num.value
+        self.task.batch_size = cfg.batch_size.value
+        
+        # Other settings
+        self.task.subtitle_layout = cfg.subtitle_layout.value
+        self.task.max_word_count_cjk = cfg.max_word_count_cjk.value
+        self.task.max_word_count_english = cfg.max_word_count_english.value
+        self.task.need_split = cfg.need_split.value
+
+        if self.audio_track_select.value() is not None:
+            self.task.audio_track = self.audio_track_select.value()
+        
+        # Video settings
+        if cfg.need_video.value:
+            self.task.need_video = True
+            self.task.soft_subtitle = cfg.soft_subtitle.value
+            self.task.portrait = cfg.portrait.value
+            self.task.logo_picture = cfg.logo_picture.value
+            self.task.zoom_video = cfg.zoom_video.value
+            self.task.zoom_subtitle = cfg.zoom_subtitle.value
+            self.task.subtitle_vertical_offset = cfg.subtitle_vertical_offset
+        
+        match self.task.transcribe_model: 
+            case TranscribeModelEnum.WHISPER:
+                self.task.whisper_model = cfg.whisper_model.value
+            
+            case TranscribeModelEnum.WHISPER_API:
+                self.task.whisper_api_base = cfg.whisper_api_base.value
+                self.task.whisper_api_key = cfg.whisper_api_key.value
+                self.task.whisper_api_model = cfg.whisper_api_model.value
+                self.task.whisper_api_prompt = cfg.whisper_api_prompt.value
+                
+            case TranscribeModelEnum.FASTER_WHISPER:
+                self.task.faster_whisper_model = cfg.faster_whisper_model.value
+                self.task.faster_whisper_device = cfg.faster_whisper_device.value
+                self.task.faster_whisper_ff_mdx_kim2 = cfg.faster_whisper_ff_mdx_kim2.value
+                self.task.faster_whisper_device = cfg.faster_whisper_device.value
+                self.task.faster_whisper_model_dir = cfg.faster_whisper_model_dir.value
+                self.task.faster_whisper_one_word = cfg.faster_whisper_one_word.value
+                self.task.faster_whisper_prompt = cfg.faster_whisper_prompt.value
+                self.task.faster_whisper_repetion_penalty = cfg.faster_whisper_repetition_penalty.value
+                self.task.faster_whisper_translate_to_english = cfg.faster_whisper_translate_to_english.value
+                self.task.faster_whisper_vad_filter = cfg.faster_whisper_vad_filter.value
+                self.task.faster_whisper_vad_method = cfg.faster_whisper_vad_method.value
+
 
     def process(self):
+        # Update task settings before processing.
+        self.update_info()
+        
         search_input = self.search_input.text()
 
         if os.path.isfile(search_input):

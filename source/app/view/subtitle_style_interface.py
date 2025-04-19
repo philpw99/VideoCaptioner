@@ -13,7 +13,7 @@ from qfluentwidgets import (ScrollArea, SettingCardGroup, LineEdit, MessageBoxBa
 
 from ..common.config import cfg
 from ..components.MySettingCard import SpinBoxSettingCard, ComboBoxSettingCard, ColorSettingCard, \
-    DoubleSpinBoxSettingCard
+    DoubleSpinBoxSettingCard, SwitchSettingCard
 from ..components.EnumComboBoxSettingCard import EnumComboBoxSettingCard
 from ..core.utils.subtitle_preview import generate_preview
 from ..config import SUBTITLE_STYLE_PATH
@@ -206,6 +206,28 @@ class SubtitleStyleInterface(QWidget):
             maximum=10.0,
             decimals=1,
         )
+        
+        self.mainBackgroundEnableCard = SwitchSettingCard(
+            FIF.BACKGROUND_FILL,
+            self.tr("主字幕背景"),
+            self.tr("主字幕的背景开关"),
+        )
+        
+        self.mainBackgroundColorCard = ColorSettingCard(
+            QColor(32,32,32),
+            FIF.PALETTE,
+            self.tr("主字幕背景颜色"),
+            self.tr("设置主字幕背景的颜色")
+        )
+        
+        self.mainBackgroundAlphaCard = SpinBoxSettingCard(
+            FIF.TRANSPARENT,
+            self.tr("主字幕背景透明度"),
+            self.tr("设置主字幕背景的透明度，0为不透明，255为完全透明"),
+            minimum=0,
+            maximum=255,
+        )
+        self.mainBackgroundAlphaCard.spinBox.setMinimumWidth(70)
 
         # 副字幕样式设置
         self.subFontCard = ComboBoxSettingCard(
@@ -255,6 +277,28 @@ class SubtitleStyleInterface(QWidget):
             decimals=1,
         )
 
+        self.subBackgroundEnableCard = SwitchSettingCard(
+            FIF.BACKGROUND_FILL,
+            self.tr("副字幕背景"),
+            self.tr("副字幕的背景开关"),
+        )
+        
+        self.subBackgroundColorCard = ColorSettingCard(
+            QColor(32,32,32),
+            FIF.PALETTE,
+            self.tr("副字幕背景颜色"),
+            self.tr("设置副字幕背景的颜色")
+        )
+        
+        self.subBackgroundAlphaCard = SpinBoxSettingCard(
+            FIF.TRANSPARENT,
+            self.tr("副字幕背景透明度"),
+            self.tr("设置副字幕背景的透明度，0为不透明，255为完全透明"),
+            minimum=0,
+            maximum=255,
+        )
+        self.subBackgroundAlphaCard.spinBox.setMinimumWidth(70)
+
         # 预览设置
         self.previewTextCard = ComboBoxSettingCard(
             FIF.MESSAGE,
@@ -278,21 +322,16 @@ class SubtitleStyleInterface(QWidget):
     def _initLayout(self):
         """初始化布局"""
         # 添加卡片到组
-        self.layoutGroup.addSettingCard(self.layoutCard)
-        self.layoutGroup.addSettingCard(self.verticalSpacingCard)
-        self.mainGroup.addSettingCard(self.mainFontCard)
-        self.mainGroup.addSettingCard(self.mainSizeCard)
-        self.mainGroup.addSettingCard(self.mainSpacingCard)
-        self.mainGroup.addSettingCard(self.mainColorCard)
-        self.mainGroup.addSettingCard(self.mainOutlineColorCard)
-        self.mainGroup.addSettingCard(self.mainOutlineSizeCard)
-
-        self.subGroup.addSettingCard(self.subFontCard)
-        self.subGroup.addSettingCard(self.subSizeCard)
-        self.subGroup.addSettingCard(self.subSpacingCard)
-        self.subGroup.addSettingCard(self.subColorCard)
-        self.subGroup.addSettingCard(self.subOutlineColorCard)
-        self.subGroup.addSettingCard(self.subOutlineSizeCard)
+        # 主字幕组件
+        self.layoutGroup.addSettingCards([self.layoutCard, self.verticalSpacingCard, self.mainFontCard,
+            self.mainSizeCard, self.mainSpacingCard, self.mainColorCard, self.mainOutlineColorCard,self.mainOutlineSizeCard,
+            self.mainBackgroundEnableCard, self.mainBackgroundColorCard, self.mainBackgroundAlphaCard,
+        ])
+        # 副字幕组件
+        self.subGroup.addSettingCards([self.subFontCard, self.subSizeCard, self.subSpacingCard,
+            self.subColorCard, self.subOutlineColorCard, self.subOutlineSizeCard,
+            self.subBackgroundEnableCard, self.subBackgroundColorCard, self.subBackgroundAlphaCard,
+        ])
 
         self.previewGroup.addSettingCard(self.previewTextCard)
         self.previewGroup.addSettingCard(self.previewImageCard)
@@ -369,6 +408,9 @@ class SubtitleStyleInterface(QWidget):
         self.mainColorCard.colorChanged.connect(self.onSettingChanged)
         self.mainOutlineColorCard.colorChanged.connect(self.onSettingChanged)
         self.mainOutlineSizeCard.spinBox.valueChanged.connect(self.onSettingChanged)
+        self.mainBackgroundEnableCard.checkChanged.connect(self.onSettingChanged)
+        self.mainBackgroundColorCard.colorChanged.connect(self.onSettingChanged)
+        self.mainBackgroundAlphaCard.valueChanged.connect(self.onSettingChanged)
 
         # 副字幕样式
         self.subFontCard.currentTextChanged.connect(self.onSettingChanged)
@@ -377,6 +419,9 @@ class SubtitleStyleInterface(QWidget):
         self.subColorCard.colorChanged.connect(self.onSettingChanged)
         self.subOutlineColorCard.colorChanged.connect(self.onSettingChanged)
         self.subOutlineSizeCard.spinBox.valueChanged.connect(self.onSettingChanged)
+        self.subBackgroundEnableCard.checkChanged.connect(self.onSettingChanged)
+        self.subBackgroundColorCard.colorChanged.connect(self.onSettingChanged)
+        self.subBackgroundAlphaCard.valueChanged.connect(self.onSettingChanged)
 
         # 预览设置
         self.previewTextCard.currentTextChanged.connect(self.onSettingChanged)
@@ -453,6 +498,10 @@ class SubtitleStyleInterface(QWidget):
         main_outline_color = f"&H00{main_outline_hex[5:7]}{main_outline_hex[3:5]}{main_outline_hex[1:3]}"
         main_spacing = self.mainSpacingCard.spinBox.value()
         main_outline_size = self.mainOutlineSizeCard.spinBox.value()
+        main_bg_color_hex = self.mainBackgroundColorCard.colorPicker.color.name()
+        main_bg_alpha = self.mainBackgroundAlphaCard.spinBox.value()
+        main_bg_color = f"&H{main_bg_alpha:02X}{main_bg_color_hex[5:7]}{main_bg_color_hex[3:5]}{main_bg_color_hex[1:3]}"
+        main_border_style = "4" if self.mainBackgroundEnableCard.checked() else "1"
 
         # 提取副字幕样式元素
         sub_font = self.subFontCard.comboBox.currentText()
@@ -465,10 +514,15 @@ class SubtitleStyleInterface(QWidget):
         sub_outline_color = f"&H00{sub_outline_hex[5:7]}{sub_outline_hex[3:5]}{sub_outline_hex[1:3]}"
         sub_spacing = self.subSpacingCard.spinBox.value()
         sub_outline_size = self.subOutlineSizeCard.spinBox.value()
+        sub_bg_color_hex = self.subBackgroundColorCard.colorPicker.color.name()
+        sub_bg_alpha = self.subBackgroundAlphaCard.spinBox.value()
+        sub_bg_color = f"&H{sub_bg_alpha:02X}{sub_bg_color_hex[5:7]}{sub_bg_color_hex[3:5]}{sub_bg_color_hex[1:3]}"
+        sub_border_style = "4" if self.subBackgroundEnableCard.checked() else "1"
+        
 
         # 生成样式字符串
-        main_style = f"Style: Default,{main_font},{main_size},{main_color},&H000000FF,{main_outline_color},&H00000000,-1,0,0,0,100,100,{main_spacing},0,1,{main_outline_size},0,2,10,10,{vertical_spacing},1"
-        sub_style = f"Style: Secondary,{sub_font},{sub_size},{sub_color},&H000000FF,{sub_outline_color},&H00000000,-1,0,0,0,100,100,{sub_spacing},0,1,{sub_outline_size},0,2,10,10,{vertical_spacing},1"
+        main_style = f"Style: Default,{main_font},{main_size},{main_color},&H000000FF,{main_outline_color},{main_bg_color},-1,0,0,0,100,100,{main_spacing},0,{main_border_style},{main_outline_size},0,2,10,10,{vertical_spacing},1"
+        sub_style = f"Style: Secondary,{sub_font},{sub_size},{sub_color},&H000000FF,{sub_outline_color},{sub_bg_color},-1,0,0,0,100,100,{sub_spacing},0,{sub_border_style},{sub_outline_size},0,2,10,10,{vertical_spacing},1"
 
         return f"[V4+ Styles]\n{style_format}\n{main_style}\n{sub_style}"
 
@@ -532,6 +586,18 @@ class SubtitleStyleInterface(QWidget):
         with open(style_path, 'r', encoding='utf-8') as f:
             style_content = f.read()
 
+        def HexToQColor(color_hex:str) -> QColor:
+            # Get rid of the starting '&H'
+            try:
+                color_hex = color_hex if color_hex[0:2].lower()!='&h' else color_hex[2:]
+                alpha = int(color_hex[0:2], 16)
+                blue = int(color_hex[2:4], 16)
+                green = int(color_hex[4:6], 16)
+                red = int(color_hex[6:8], 16)
+                return QColor(red, green, blue, alpha)
+            except:
+                return QColor(0,0,0,255)
+                
         # 解析样式内容
         for line in style_content.split('\n'):
             if line.startswith('Style: Default'):
@@ -545,23 +611,22 @@ class SubtitleStyleInterface(QWidget):
 
                 # 将 &HAARRGGBB 格式转换为 QColor
                 primary_color = parts[3].strip()
-                if primary_color.startswith('&H'):
-                    # 移除 &H 前缀,转换为 RGB
-                    color_hex = primary_color[2:]
-                    alpha = int(color_hex[0:2], 16)
-                    blue = int(color_hex[2:4], 16)
-                    green = int(color_hex[4:6], 16)
-                    red = int(color_hex[6:8], 16)
-                    self.mainColorCard.setColor(QColor(red, green, blue, alpha))
+                self.mainColorCard.setColor(HexToQColor(primary_color))
 
+                primary_bg_color = parts[6].strip()
+                color = HexToQColor(primary_bg_color)
+                self.mainBackgroundAlphaCard.setValue(color.alpha())
+                color.setAlpha(0)
+                self.mainBackgroundColorCard.setColor(color)
+
+                primary_bg_border = parts[15].strip()
+                if primary_bg_border == "4":
+                    self.mainBackgroundEnableCard.setChecked(True)
+                else:
+                    self.mainBackgroundEnableCard.setChecked(False)
+                
                 outline_color = parts[5].strip()
-                if outline_color.startswith('&H'):
-                    color_hex = outline_color[2:]
-                    alpha = int(color_hex[0:2], 16)
-                    blue = int(color_hex[2:4], 16)
-                    green = int(color_hex[4:6], 16)
-                    red = int(color_hex[6:8], 16)
-                    self.mainOutlineColorCard.setColor(QColor(red, green, blue, alpha))
+                self.mainOutlineColorCard.setColor(HexToQColor(outline_color))
 
                 self.mainSpacingCard.spinBox.setValue(float(parts[13]))
                 self.mainOutlineSizeCard.spinBox.setValue(float(parts[16]))
@@ -572,22 +637,22 @@ class SubtitleStyleInterface(QWidget):
                 self.subSizeCard.spinBox.setValue(int(parts[2]))
                 # 将 &HAARRGGBB 格式转换为 QColor
                 primary_color = parts[3].strip()
-                if primary_color.startswith('&H'):
-                    color_hex = primary_color[2:]
-                    alpha = int(color_hex[0:2], 16)
-                    blue = int(color_hex[2:4], 16)
-                    green = int(color_hex[4:6], 16)
-                    red = int(color_hex[6:8], 16)
-                    self.subColorCard.setColor(QColor(red, green, blue, alpha))
+                self.subColorCard.setColor(HexToQColor(primary_color))
+                
+                sub_color = parts[6].strip()
+                color = HexToQColor(sub_color)
+                self.subBackgroundAlphaCard.setValue(color.alpha())
+                color.setAlpha(0)
+                self.subBackgroundColorCard.setColor(color)
+
+                sub_bg_border = parts[15].strip()
+                if sub_bg_border == "4":
+                    self.subBackgroundEnableCard.setChecked(True)
+                else:
+                    self.subBackgroundEnableCard.setChecked(False)
 
                 outline_color = parts[5].strip()
-                if outline_color.startswith('&H'):
-                    color_hex = outline_color[2:]
-                    alpha = int(color_hex[0:2], 16)
-                    blue = int(color_hex[2:4], 16)
-                    green = int(color_hex[4:6], 16)
-                    red = int(color_hex[6:8], 16)
-                    self.subOutlineColorCard.setColor(QColor(red, green, blue, alpha))
+                self.subOutlineColorCard.setColor(HexToQColor(outline_color))
 
                 self.subSpacingCard.spinBox.setValue(float(parts[13]))
                 self.subOutlineSizeCard.spinBox.setValue(float(parts[16]))

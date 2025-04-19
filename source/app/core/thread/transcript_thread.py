@@ -235,15 +235,17 @@ class TranscriptThread(QThread):
                 asr_data.to_srt(save_path=str(original_subtitle_path))
                 logger.info("源字幕文件已保存到: %s", self.task.original_subtitle_save_path)
                 
-                if self.task.type == Task.Type.TRANSCRIBE and self.task.result_subtitle_save_path:
-                    # Make a copy to result dir as well, if this is only a transcribe task
-                    asr_data.save(
-                        save_path=self.task.result_subtitle_save_path,
-                        ass_style=self.task.subtitle_style_srt,
-                        layout=SubtitleLayoutEnum.ONLY_ORIGINAL,
-                    )
-                    logger.info("目的字幕文件已保存到: %s", self.task.result_subtitle_save_path)
-
+                if self.task.result_subtitle_save_path:
+                    if self.task.type == Task.Type.TRANSCRIBE \
+                        or ( self.task.type == Task.Type.SUBTITLE and not self.task.need_translate) :
+                        # Make a copy to result dir as well, if this is only a transcribe task, or a video syntheis without translation task.
+                        asr_data.save(
+                            save_path=self.task.result_subtitle_save_path,
+                            ass_style=self.task.subtitle_style_srt,
+                            layout=SubtitleLayoutEnum.ONLY_ORIGINAL,
+                        )
+                        logger.info("目的字幕文件已保存到: %s", self.task.result_subtitle_save_path)
+                        
             # 删除音频文件 和 封面
             try:
                 audio_save_path.unlink()

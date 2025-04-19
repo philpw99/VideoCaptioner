@@ -278,7 +278,7 @@
 <context>
     <name>ColorPickerButton</name>
     <message>
-        <location filename="../../app/components/MySettingCard.py" line="338"/>
+        <location filename="../../app/components/MySettingCard.py" line="362"/>
         <source>Choose </source>
         <translation type="unfinished"></translation>
     </message>
@@ -1762,22 +1762,22 @@ Or go to GitHub for the new release.</source>
 <context>
     <name>StyleNameDialog</name>
     <message>
-        <location filename="../../app/view/subtitle_style_interface.py" line="674"/>
+        <location filename="../../app/view/subtitle_style_interface.py" line="739"/>
         <source>新建样式</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_style_interface.py" line="677"/>
+        <location filename="../../app/view/subtitle_style_interface.py" line="742"/>
         <source>输入样式名称</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_style_interface.py" line="685"/>
+        <location filename="../../app/view/subtitle_style_interface.py" line="750"/>
         <source>确定</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_style_interface.py" line="686"/>
+        <location filename="../../app/view/subtitle_style_interface.py" line="751"/>
         <source>取消</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2440,128 +2440,188 @@ Or go to GitHub for the new release.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
+        <location filename="../../app/view/subtitle_style_interface.py" line="212"/>
+        <source>主字幕背景</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../../app/view/subtitle_style_interface.py" line="213"/>
-        <source>副字幕字体</source>
+        <source>主字幕的背景开关</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_style_interface.py" line="214"/>
-        <source>设置副字幕的字体</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../app/view/subtitle_style_interface.py" line="220"/>
-        <source>副字幕字号</source>
+        <location filename="../../app/view/subtitle_style_interface.py" line="219"/>
+        <source>主字幕背景颜色</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../app/view/subtitle_style_interface.py" line="221"/>
+        <source>设置主字幕背景的颜色</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../app/view/subtitle_style_interface.py" line="225"/>
+        <source>主字幕背景透明度</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../app/view/subtitle_style_interface.py" line="226"/>
+        <source>设置主字幕背景的透明度，0为不透明，255为完全透明</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../app/view/subtitle_style_interface.py" line="235"/>
+        <source>副字幕字体</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../app/view/subtitle_style_interface.py" line="236"/>
+        <source>设置副字幕的字体</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../app/view/subtitle_style_interface.py" line="242"/>
+        <source>副字幕字号</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../app/view/subtitle_style_interface.py" line="243"/>
         <source>设置副字幕的大小</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_style_interface.py" line="228"/>
+        <location filename="../../app/view/subtitle_style_interface.py" line="250"/>
         <source>副字幕间距</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_style_interface.py" line="229"/>
+        <location filename="../../app/view/subtitle_style_interface.py" line="251"/>
         <source>设置副字幕的字符间距</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_style_interface.py" line="238"/>
+        <location filename="../../app/view/subtitle_style_interface.py" line="260"/>
         <source>副字幕颜色</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_style_interface.py" line="240"/>
+        <location filename="../../app/view/subtitle_style_interface.py" line="262"/>
         <source>设置副字幕的颜色</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_style_interface.py" line="245"/>
+        <location filename="../../app/view/subtitle_style_interface.py" line="267"/>
         <source>副字幕边框颜色</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_style_interface.py" line="247"/>
+        <location filename="../../app/view/subtitle_style_interface.py" line="269"/>
         <source>设置副字幕的边框颜色</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_style_interface.py" line="251"/>
+        <location filename="../../app/view/subtitle_style_interface.py" line="273"/>
         <source>副字幕边框大小</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_style_interface.py" line="252"/>
+        <location filename="../../app/view/subtitle_style_interface.py" line="274"/>
         <source>设置副字幕的边框粗细</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_style_interface.py" line="261"/>
+        <location filename="../../app/view/subtitle_style_interface.py" line="282"/>
+        <source>副字幕背景</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../app/view/subtitle_style_interface.py" line="283"/>
+        <source>副字幕的背景开关</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../app/view/subtitle_style_interface.py" line="289"/>
+        <source>副字幕背景颜色</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../app/view/subtitle_style_interface.py" line="291"/>
+        <source>设置副字幕背景的颜色</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../app/view/subtitle_style_interface.py" line="295"/>
+        <source>副字幕背景透明度</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../app/view/subtitle_style_interface.py" line="296"/>
+        <source>设置副字幕背景的透明度，0为不透明，255为完全透明</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../app/view/subtitle_style_interface.py" line="305"/>
         <source>预览文字</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_style_interface.py" line="262"/>
+        <location filename="../../app/view/subtitle_style_interface.py" line="306"/>
         <source>设置预览显示的文字内容</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_style_interface.py" line="268"/>
+        <location filename="../../app/view/subtitle_style_interface.py" line="312"/>
         <source>选择图片</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_style_interface.py" line="270"/>
+        <location filename="../../app/view/subtitle_style_interface.py" line="314"/>
         <source>预览背景</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_style_interface.py" line="271"/>
+        <location filename="../../app/view/subtitle_style_interface.py" line="315"/>
         <source>选择预览使用的背景图片</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_style_interface.py" line="427"/>
+        <location filename="../../app/view/subtitle_style_interface.py" line="472"/>
         <source>选择背景图片</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_style_interface.py" line="429"/>
+        <location filename="../../app/view/subtitle_style_interface.py" line="474"/>
         <source>图片文件</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_style_interface.py" line="605"/>
-        <location filename="../../app/view/subtitle_style_interface.py" line="644"/>
+        <location filename="../../app/view/subtitle_style_interface.py" line="670"/>
+        <location filename="../../app/view/subtitle_style_interface.py" line="709"/>
         <source>成功</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_style_interface.py" line="606"/>
+        <location filename="../../app/view/subtitle_style_interface.py" line="671"/>
         <source>已加载样式 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_style_interface.py" line="625"/>
+        <location filename="../../app/view/subtitle_style_interface.py" line="690"/>
         <source>警告</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_style_interface.py" line="626"/>
+        <location filename="../../app/view/subtitle_style_interface.py" line="691"/>
         <source>样式 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_style_interface.py" line="626"/>
+        <location filename="../../app/view/subtitle_style_interface.py" line="691"/>
         <source> 已存在</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/subtitle_style_interface.py" line="645"/>
+        <location filename="../../app/view/subtitle_style_interface.py" line="710"/>
         <source>已创建新样式 </source>
         <translation type="unfinished"></translation>
     </message>
@@ -2766,7 +2826,7 @@ Or go to GitHub for the new release.</source>
     </message>
     <message>
         <location filename="../../app/view/task_creation_interface.py" line="329"/>
-        <location filename="../../app/view/task_creation_interface.py" line="985"/>
+        <location filename="../../app/view/task_creation_interface.py" line="1049"/>
         <source>使用系统设置</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2883,7 +2943,7 @@ Or go to GitHub for the new release.</source>
         <location filename="../../app/view/task_creation_interface.py" line="408"/>
         <location filename="../../app/view/task_creation_interface.py" line="858"/>
         <location filename="../../app/view/task_creation_interface.py" line="953"/>
-        <location filename="../../app/view/task_creation_interface.py" line="976"/>
+        <location filename="../../app/view/task_creation_interface.py" line="1040"/>
         <source>错误</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2913,17 +2973,17 @@ Or go to GitHub for the new release.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="977"/>
+        <location filename="../../app/view/task_creation_interface.py" line="1041"/>
         <source>请输入音视频文件路径或URL</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="998"/>
+        <location filename="../../app/view/task_creation_interface.py" line="1062"/>
         <source>更新成功 :</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="999"/>
+        <location filename="../../app/view/task_creation_interface.py" line="1063"/>
         <source>配置将在重启后生效</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3252,32 +3312,32 @@ Or go to GitHub for the new release.</source>
     </message>
     <message>
         <location filename="../../app/core/thread/transcript_thread.py" line="78"/>
-        <location filename="../../app/core/thread/transcript_thread.py" line="256"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="258"/>
         <source>转录完成</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="263"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="265"/>
         <source>转录失败</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="273"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="275"/>
         <source>OpenAI API 测试失败, 请检查设置</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="282"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="284"/>
         <source>开始验证API配置...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="288"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="290"/>
         <source>字幕断句...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="298"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="300"/>
         <source>断句失败</source>
         <translation type="unfinished"></translation>
     </message>

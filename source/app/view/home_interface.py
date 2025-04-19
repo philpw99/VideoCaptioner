@@ -61,15 +61,20 @@ class HomeInterface(QWidget):
         self.pivot.setCurrentItem('TranscriptionInterface')
 
     def switch_to_subtitle_optimization(self, task: Task | None):
-        # 切换到字幕优化/翻译界面 但不执行
+        # 切换到字幕优化/翻译界面
         self.subtitle_optimization_interface.set_task(task)
         if task.need_translate:
+            # Need optimize / translate
             self.subtitle_optimization_interface.process()
+        elif task.need_video:
+            # No translate but need to synthesis.
+            self.switch_to_video_synthesis(task)
+            return
         self.stackedWidget.setCurrentWidget(self.subtitle_optimization_interface)
         self.pivot.setCurrentItem('SubtitleOptimizationInterface')
 
     def switch_to_video_synthesis(self, task: Task | None):
-        # 切换到视频合成界面 但不执行
+        # 切换到视频合成界面
         self.video_synthesis_interface.set_task(task)
         if task.type == Task.Type.SUBTITLE:
             self.video_synthesis_interface.process()
