@@ -1,5 +1,5 @@
 import time, os
-import logging
+import logging, re
 from pathlib import Path
 
 from PyQt5.QtCore import QThread, pyqtSignal, QMutexLocker
@@ -225,6 +225,12 @@ class TranscriptThread(QThread):
                     for seg in asr_data.segments:
                         seg.start_time += cfg.time_offset.value
                         seg.end_time += cfg.time_offset.value
+                
+                # Remove punctuation if needed.
+                if cfg.needs_remove_punctuation.value:
+                    re_punctuation = re.compile( r'[,.!?;:，。！？；：、]+$')
+                    for seg in asr_data.segments:
+                        seg.text = re.sub(re_punctuation, "", seg.text)
                 
                 # 保存字幕文件
                 if not self.task.allow_running[0]:

@@ -26,9 +26,10 @@ class ASRDataSeg:
         return self._ms_to_ass_ts(self.start_time), self._ms_to_ass_ts(self.end_time)
 
     def _ms_to_lrc_time(self, ms: int) -> str:
-        seconds = ms / 1000
+        seconds, milliseconds = divmod( ms, 1000 )
         minutes, seconds = divmod(seconds, 60)
-        return f"{int(minutes):02}:{seconds:.2f}"
+        milliseconds = milliseconds // 10   # turn 500ms to .50
+        return f"{minutes:02}:{seconds:02}.{milliseconds:02}"
     
     @staticmethod
     def _ms_to_srt_time(ms: int) -> str:
@@ -155,6 +156,8 @@ class ASRData:
                 json.dump(self.to_json(), f, ensure_ascii=False)
         elif save_path.endswith('.ass'):
             self.to_ass(save_path=save_path, style_str=ass_style, layout=layout)
+        elif save_path.endswith('.lrc'):
+            self.to_lrc(save_path)
         else:
             raise ValueError(f"Unsupported file extension: {save_path}")
 
@@ -400,6 +403,8 @@ def from_subtitle_file(file_path: str) -> 'ASRData':
             return from_ass(content)
         case '.json':
             return from_json(json.loads(content))
+        case '.lrc':
+            return from_lrc(content)
         case _:
             raise ValueError(f"File formate not supported: {suffix}")
 
@@ -467,6 +472,42 @@ def from_srt(srt_str: str) -> 'ASRData':
         segments.append(ASRDataSeg(text, start_time, end_time))
 
     return ASRData(segments)
+
+def from_lrc(lrc_str: str) -> 'ASRData':
+    """
+    从LRC格式的字符串创建ASRData。
+
+    :param lrc_str: 包含lrc格式字幕的字符串。
+    :return: 解析后的ASRData实例。
+    """
+    segments = []
+    lrc_pattern = re.compile(
+        r'\[(\d{2}):(\d{2})\.(\d{2})\](.*)'
+    )
+    lines = lrc_str.split("\n")
+    last_start_time: int = None
+    last_text = ""
+    for line in lines:
+        match = lrc_pattern.match(line)
+        if not match:
+            continue
+
+        time_parts = list(map(int, match.groups()[:-1]))
+        start_time = sum([
+            time_parts[0] * 60000,
+            time_parts[1] * 1000,
+            time_parts[2] * 10,
+        ])
+        text = match.groups()[-1].strip()
+        if last_start_time:
+            segments.append(ASRDataSeg(last_text, last_start_time, start_time-100))
+        last_text = text
+        last_start_time = start_time
+    # Add the last line to the end
+    if last_start_time:
+        segments.append(ASRDataSeg(last_text, last_start_time, last_start_time+5000))
+    return ASRData(segments)
+    
 
 def from_vtt(vtt_str: str) -> 'ASRData':
     """

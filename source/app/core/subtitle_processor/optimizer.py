@@ -373,6 +373,10 @@ class SubtitleOptimizer:
             # Remove the remaining tags, just in case.
             translated = re.sub(re_notag, "", text)
 
+            # Remove punctuation
+            original = self.remove_punctuation(original)
+            translated = self.remove_punctuation(translated)
+            
             # Fix the sentence ending problem in Chinese
             # print (f"original: {self.original_language} target:{self.target_language}")
             if self.original_language == "English" and self.target_language == "简体中文":
@@ -389,11 +393,6 @@ class SubtitleOptimizer:
                 callback(line)
             
             translate_result.update(line)      # Add line to result
-        """
-        except Exception as e:
-            logger.error(f"批量单句翻译失败{e}")
-            return original_subtitle
-        """
         return translate_result
 
     

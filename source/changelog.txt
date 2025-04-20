@@ -1,3 +1,6 @@
+3.6.6
+	Basic .lrc file import/export support.
+	Better "remove punctuation" feature. Now applies to both transcription and translation.
 3.6.5
 	Fix a bug for subtitle video filter setting.
 	Fix a few bugs for subtitle video synthesis.

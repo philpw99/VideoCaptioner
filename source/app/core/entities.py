@@ -109,6 +109,7 @@ class SupportedSubtitleFormats(Enum):
     SRT = "srt"
     ASS = "ass"
     VTT = "vtt"
+    LRC = "lrc"
 
 
 class OutputSubtitleFormatEnum(Enum):
@@ -118,6 +119,7 @@ class OutputSubtitleFormatEnum(Enum):
     # VTT = "vtt"
     JSON = "json"
     TXT = "txt"
+    LRC = "lrc"
 
 
 class TranscribeModelEnum(Enum):
