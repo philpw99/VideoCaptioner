@@ -25,6 +25,8 @@ VideoCaptioner is easy to operate and requires no high-end configuration. It sup
 
 ![Screen4](https://github.com/user-attachments/assets/f2e6abca-2ad2-4193-8137-4858e88ba315)
 
+![Screen8](https://github.com/user-attachments/assets/9492c52e-c3b5-451d-9ffd-7691c66f0f21)
+
 ![Preview2](https://github.com/user-attachments/assets/c1c47aa6-5ef1-4d7a-8afe-2dbe27ebf771)
 
 ![Preview3](https://github.com/user-attachments/assets/53579629-918d-40d3-9f59-86180ed59454)
