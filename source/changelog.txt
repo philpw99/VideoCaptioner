@@ -1,4 +1,6 @@
 3.6.6
+	Fix ASS subtitle not being synthesized.
+	Fix some bugs of Video synthesis automation.
 	Basic .lrc file import/export support.
 	Better "remove punctuation" feature. Now applies to both transcription and translation.
 3.6.5

@@ -15,7 +15,7 @@ from ..bk_asr import (
 )
 from ..bk_asr.ASRData import ASRData
 from ..subtitle_processor.spliter import merge_segments
-from ..entities import Task, TranscribeModelEnum, SubtitleLayoutEnum
+from ..entities import Task, TranscribeModelEnum, SubtitleLayoutEnum, WHISPER_LANGUAGES
 from ..utils.video_utils import video2audio
 from ..utils.logger import setup_logger
 from ..utils.test_opanai import test_openai
@@ -141,6 +141,7 @@ class TranscriptThread(QThread):
                     "need_word_time_stamp": self.task.need_word_time_stamp,
                     "allow_running": self.task.allow_running,
                 }
+                
                 match self.task.transcribe_model:
                     case TranscribeModelEnum.WHISPER:
                         args["language"] = self.task.transcribe_language
@@ -187,7 +188,7 @@ class TranscriptThread(QThread):
                         args["translate_to_english"] = self.task.faster_whisper_translate_to_english
                         args["repetition_penalty"] = self.task.faster_whisper_repetion_penalty
                         
-                        if cfg.faster_whisper_multilingal:
+                        if cfg.faster_whisper_multilingal.value:
                             args["multilingual"] = True
 
                         if cfg.faster_whisper_RTX_5000_fix.value:

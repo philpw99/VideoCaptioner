@@ -14,7 +14,7 @@ from qfluentwidgets import FluentIcon as FIF
 from ..common.config import cfg, Language, LanguageSerializer, TranscribeLanguageEnum
 from ..components.SimpleSettingCard import ComboBoxSimpleSettingCard, SwitchButtonSimpleSettingCard, PushButtonSimpleSettingCard
 from ..core.entities import SupportedAudioFormats, SupportedVideoFormats, SupportedImageFormats, OutputSubtitleFormatEnum, SubtitleLayoutEnum
-from ..core.entities import TargetLanguageEnum, TranscribeModelEnum, Task, TranslateMethodEnum, LANGUAGES, MovieDatabaseEnum
+from ..core.entities import TargetLanguageEnum, TranscribeModelEnum, Task, TranslateMethodEnum, LANGUAGES, MovieDatabaseEnum, WHISPER_LANGUAGES
 from ..core.thread.create_task_thread import CreateTaskThread
 from ..config import APPDATA_PATH, ASSETS_PATH, VERSION, AUTHOR, SUBVERSION, COAUTHOR
 from ..components.WhisperSettingDialog import WhisperSettingDialog
@@ -972,7 +972,8 @@ class TaskCreationInterface(QWidget):
         self.task.target_language = cfg.target_language.value
         
         self.task.transcribe_model = cfg.transcribe_model.value
-        self.task.transcribe_language = cfg.transcribe_language.value
+        # cfg.transcribe_language is enum
+        self.task.transcribe_language = WHISPER_LANGUAGES[cfg.transcribe_language.value.value]
 
         # LLM settings
         self.task.base_url = cfg.api_base.value

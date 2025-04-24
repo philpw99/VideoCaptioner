@@ -1,3 +1,4 @@
+from pathlib import Path
 from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QWidget, QStackedWidget, QVBoxLayout, QSizePolicy
 from qfluentwidgets import SegmentedWidget
@@ -76,10 +77,20 @@ class HomeInterface(QWidget):
     def switch_to_video_synthesis(self, task: Task | None):
         # 切换到视频合成界面
         self.video_synthesis_interface.set_task(task)
-        if task.type == Task.Type.SUBTITLE:
+        if task.need_video:
+            if Path(task.result_subtitle_save_path).exists():
+                subtitle_path = task.result_subtitle_save_path
+            elif Path(task.original_subtitle_save_path).exists():
+                subtitle_path = task.original_subtitle_save_path
+            else:
+                # Neither original and result subtitle file exists.
+                print("Error: No subtitle found for this task to do video synthesis.")
+                return
+            self.video_synthesis_interface.subtitle_input.setText(subtitle_path)
+            self.video_synthesis_interface.video_input.setText(task.file_path)
             self.video_synthesis_interface.process()
-        self.stackedWidget.setCurrentWidget(self.video_synthesis_interface)
-        self.pivot.setCurrentItem('VideoSynthesisInterface')
+            self.stackedWidget.setCurrentWidget(self.video_synthesis_interface)
+            self.pivot.setCurrentItem('VideoSynthesisInterface')
 
     def addSubInterface(self, widget: QWidget, objectName: str, text: str):
         # 添加子界面到堆叠控件和分段控件

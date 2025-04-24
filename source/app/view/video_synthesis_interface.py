@@ -374,20 +374,22 @@ class VideoSynthesisInterface(QWidget):
             self.synthesize_button.setText("Start Synthesis")
         else:
             # Start the process, set the button to "Cancel"
-            self.processing = True
-            self.synthesize_button.setText(self.tr("Cancel Synthesis"))
             self.process()
 
     def process(self):
+        self.processing = True
+        self.synthesize_button.setText(self.tr("Cancel Synthesis"))
+
         self.progress_bar.resume()
         
         if self.task:
+            # Reset allow running
             self.task.allow_running[0] = True
         else:
             self.create_task()
         
         if self.task.file_path != str(Path(self.video_input.text())) \
-            or self.task.original_subtitle_save_path != str(Path(self.subtitle_input.text())):
+            or self.subtitle_input.text() not in [self.task.original_subtitle_save_path, self.task.result_subtitle_save_path ]:
             self.task = None
             self.create_task()
 

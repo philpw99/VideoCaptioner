@@ -360,7 +360,7 @@ class SubtitleOptimizationInterface(QWidget):
         该方法将各个按钮的 clicked 信号连接到相应的处理方法。
         """
         # 将开始按钮的 clicked 信号连接到 process 方法
-        self.start_button.clicked.connect(self.process)
+        self.start_button.clicked.connect(self.on_start_button_clicked)
         # 将文件选择按钮的 clicked 信号连接到 on_file_select 方法
         self.file_select_button.clicked.connect(self.on_file_select)
 
@@ -392,6 +392,12 @@ class SubtitleOptimizationInterface(QWidget):
 
         # 缩短行长
         self.max_width_apply.clicked.connect(self.on_max_width_apply_clicked)
+
+    def on_start_button_clicked(self):
+        # 更新任务配置
+        self._update_task_config_for_start_button()
+        self.process()
+
 
     def on_max_width_apply_clicked(self):
         w = self.max_width_line.text()
@@ -721,8 +727,6 @@ class SubtitleOptimizationInterface(QWidget):
         self.progress_bar.reset()
         # 显示取消按钮
         self.cancel_button.show()
-        # 更新任务配置
-        self._update_task_config()
 
         # 创建字幕优化线程
         self.subtitle_optimization_thread = SubtitleOptimizationThread(self.task)
@@ -745,11 +749,12 @@ class SubtitleOptimizationInterface(QWidget):
         # 显示优化开始信息
         InfoBar.info(self.tr("开始优化"), self.tr("开始优化字幕"), duration=3000, parent=self)
 
-    def _update_task_config(self):
+    def _update_task_config_for_start_button(self):
         """
         更新任务配置，以便在设定改动后重新拿到设定值。
         同时也把字幕保存，因为源字幕可能是以词为单位的，在导入时会变成合并后的结果。
         而用户也有可能会自己手动改动字幕。
+        这个只会在用“开始”按钮时跑
         """
         # 更新任务的需要翻译标志
         self.task.need_translate = True
@@ -765,7 +770,7 @@ class SubtitleOptimizationInterface(QWidget):
         self.task.original_language = cfg.transcribe_language.value.value
         
         # 在这个界面下不会合成视频
-        self.task.need_video = False
+        self.task.need_video = cfg.need_video.value
 
         # 更新任务的 API 密钥
         self.task.api_key = cfg.api_key.value
@@ -814,8 +819,7 @@ class SubtitleOptimizationInterface(QWidget):
         # 隐藏取消按钮
         self.cancel_button.hide()
         # 如果任务状态为待处理，发射完成信号
-        if self.task.status == Task.Status.PENDING:
-            self.finished.emit(task)
+        # if self.task.status == Task.Status.PENDING:
         # 显示优化完成信息
         InfoBar.success(
             self.tr("优化完成"),
@@ -828,6 +832,9 @@ class SubtitleOptimizationInterface(QWidget):
         if self.file_queue:
             self._process_next_file()
             self.process()  # 调用处理逻辑
+        else:
+            # All files are done.
+            self.finished.emit(task)
 
         #改end
 

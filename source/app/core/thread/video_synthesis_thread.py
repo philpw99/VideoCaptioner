@@ -34,12 +34,12 @@ class VideoSynthesisThread(QThread):
                 logger.info(f"时间：{datetime.datetime.now()}")
                 self.task.status = Task.Status.SYNTHESIZING
                 video_file = self.task.file_path
-                if self.task.original_subtitle_save_path and Path(self.task.original_subtitle_save_path).is_file():
-                    # result sub exist (after optimizing)
-                    subtitle_file = self.task.original_subtitle_save_path
-                elif self.task.result_subtitle_save_path and Path(self.task.result_subtitle_save_path).is_file():
+                if self.task.result_subtitle_save_path and Path(self.task.result_subtitle_save_path).is_file():
                     # No optimzing, original sub only
                     subtitle_file = self.task.result_subtitle_save_path
+                elif self.task.original_subtitle_save_path and Path(self.task.original_subtitle_save_path).is_file():
+                    # result sub exist (after optimizing)
+                    subtitle_file = self.task.original_subtitle_save_path
                 else:
                     raise RuntimeError("No subtitle file available.")
                 

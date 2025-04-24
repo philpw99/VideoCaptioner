@@ -482,7 +482,7 @@ def from_lrc(lrc_str: str) -> 'ASRData':
     """
     segments = []
     lrc_pattern = re.compile(
-        r'\[(\d{2}):(\d{2})\.(\d{2})\](.*)'
+        r'\[(\d{1,2}):(\d{2})\.(\d{2})\](.*)'
     )
     lines = lrc_str.split("\n")
     last_start_time: int = None
