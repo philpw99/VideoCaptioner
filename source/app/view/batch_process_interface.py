@@ -24,6 +24,7 @@ from ..core.entities import Task, VideoInfo, BatchTaskTypeEnum, TranslateMethodE
 from ..core.thread.create_task_thread import CreateTaskThread
 from ..core.thread.subtitle_pipeline_thread import SubtitlePipelineThread
 from ..core.thread.transcript_thread import TranscriptThread
+from ..core.thread.video_synthesis_thread import VideoSynthesisThread
 from ..view.subtitle_optimization_interface import SubtitleOptimizationInterface
 
 
@@ -420,6 +421,10 @@ class BatchProcessInterface(QWidget):
                 filter_str = f"{self.tr('音频文件或视频文件')} ({' '.join(audio_formats + video_formats)})"
                 task_type = Task.Type.TRANSLATE
                 soft_sub = True
+            case BatchTaskTypeEnum.LOGO.value:      # Add logo to video only.
+                filter_str = f"{self.tr('视频文件')} ({' '.join(video_formats)})"
+                task_type = Task.Type.SYNTHESIS
+                soft_sub = False
             case _:
                 pass
 
@@ -459,6 +464,10 @@ class BatchProcessInterface(QWidget):
             case Task.Type.TRANSLATE:
                 need_video = cfg.need_video.value
                 need_translate = True
+            case Task.Type.SYNTHESIS:
+                # Add logo or video processing.
+                need_video = True
+                need_translate = False
         
         create_thread = CreateTaskThread(
                             file_path,
@@ -577,11 +586,15 @@ class BatchProcessInterface(QWidget):
                     supported_formats = {fmt.value for fmt in SupportedVideoFormats} | {fmt.value for fmt in SupportedAudioFormats}
                     task_type = Task.Type.TRANSCRIBE
                     soft_sub = True
-            
+                case BatchTaskTypeEnum.LOGO.value:
+                    supported_formats = {fmt.value for fmt in SupportedVideoFormats}
+                    task_type = Task.Type.SYNTHESIS
+                    soft_sub = False
+                    
             if file_ext in supported_formats:
                 self.create_task(file_path, task_type, soft_sub)
             else:
-                error_msg = self.tr("请拖入视频文件") if task_type in [ BatchTaskTypeEnum.SOFT or BatchTaskTypeEnum.HARD ] else self.tr("请拖入音频或视频文件")
+                error_msg = self.tr("请拖入视频文件") if task_type in [ Task.Type.SUBTITLE, Task.Type.SYNTHESIS ] else self.tr("请拖入音频或视频文件")
                 InfoBar.error(
                     self.tr("格式错误") + file_ext,
                     error_msg,
@@ -842,20 +855,22 @@ class TaskInfoCard(CardWidget):
         if self.task.logo_picture:
             strategy_text += self.tr("水印: ") + self.task.logo_picture
 
-        tooltip = self.tr("任务类型: ") + self.task.type.value + "  " \
+        if self.task.type.value == Task.Type.SYNTHESIS.value:
+            tooltip = self.tr("任务类型：") + self.tr("加水印，字幕，或者其它处理") + "\n"
+            tooltip += self.tr("字幕文件：") + self.shorten_filename(self.task.original_subtitle_save_path) + "\n"
+        else:
+            tooltip = self.tr("任务类型: ") + self.task.type.value + "  " \
             + self.tr("转录模型: ") + self.task.transcribe_model.value + "  " \
             + self.tr("源语言：") + next(lang for lang, v in LANGUAGES.items() if v==self.task.transcribe_language) \
             + "\n"
-        
-        
-        
-        if len(self.task.file_path) > 100:
-            tooltip += self.tr("文件: ") + self.task.file_path[:50] + "..." + Path(self.task.file_path).name + "\n"
-        else:
-            tooltip += self.tr("文件: ") + self.task.file_path + '\n'
+    
+        tooltip += self.tr("文件: ") + self.shorten_filename(self.task.file_path) + "\n"
         tooltip += strategy_text + "\n"
         tooltip += self.tr("任务状态: ") + self.task.status.value
         self.setToolTip(tooltip)
+
+    def shorten_filename(self, filename: str):
+        return filename if len(filename)< 100 else filename[:50] + "..." + Path(filename).name
 
     def update_thumbnail(self, thumbnail_path):
         """更新视频缩略图"""
@@ -942,7 +957,7 @@ class TaskInfoCard(CardWidget):
         # The original sub might be word-split and not full sentence sub.
         # elif self.task.original_subtitle_save_path and Path(self.task.original_subtitle_save_path).exists():
         #     preview_subtitle_path = Path(self.task.original_subtitle_save_path)
-        else:
+        if not preview_subtitle_path.exists():
             # Open file dialog
             subtitle_formats = [f"*.{fmt.value}" for fmt in SupportedSubtitleFormats]
             filter_str = f"{self.tr('字幕文件')} ({' '.join(subtitle_formats)})"
@@ -952,26 +967,18 @@ class TaskInfoCard(CardWidget):
             else:
                 return
 
-        if preview_subtitle_path.exists():
-            self.subtitle_window = QWidget()
-            self.subtitle_window.setWindowTitle(self.tr("字幕预览"))
-            subtitle_interface = SubtitleOptimizationInterface(self.subtitle_window)
-            subtitle_interface.load_subtitle_file(str(preview_subtitle_path))
-            subtitle_interface.remove_widget()
-            layout = QHBoxLayout(self.subtitle_window)
-            layout.setContentsMargins(3, 0, 3, 3)
-            layout.addWidget(subtitle_interface)
-            
-            self.subtitle_window.resize(1000, 800)
-            self.subtitle_window.setStyleSheet(cfg.theme_style_sheet)
-            self.subtitle_window.show()
-        else:
-            InfoBar.warning(
-                self.tr("警告"),
-                self.tr("字幕文件不存在"), 
-                duration=2000,
-                parent=self
-            )
+        self.subtitle_window = QWidget()
+        self.subtitle_window.setWindowTitle(self.tr("字幕预览"))
+        subtitle_interface = SubtitleOptimizationInterface(self.subtitle_window)
+        subtitle_interface.load_subtitle_file(str(preview_subtitle_path))
+        subtitle_interface.remove_widget()
+        layout = QHBoxLayout(self.subtitle_window)
+        layout.setContentsMargins(3, 0, 3, 3)
+        layout.addWidget(subtitle_interface)
+        
+        self.subtitle_window.resize(1000, 800)
+        self.subtitle_window.setStyleSheet(cfg.theme_style_sheet)
+        self.subtitle_window.show()
 
     def delete(self):
         self.remove.emit(self)
@@ -1040,6 +1047,12 @@ class TaskInfoCard(CardWidget):
                 self.subtitle_thread.progress.connect(self.on_progress)
                 self.subtitle_thread.error.connect(self.on_error)
                 self.subtitle_thread.start()
+            case Task.Type.SYNTHESIS:
+                self.synthesis_thread = VideoSynthesisThread(self.task)
+                self.synthesis_thread.finished.connect(self.on_finished)
+                self.synthesis_thread.progress.connect(self.on_progress)
+                self.synthesis_thread.error.connect(self.on_error)
+                self.synthesis_thread.start()
             case _:
                 self.on_error(self.tr("任务类型错误"))
         

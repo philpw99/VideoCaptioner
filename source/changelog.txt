@@ -1,3 +1,9 @@
+3.6.7
+	Fix FasterWhisperXXL download bug.
+	Add "Add Logo or Video Processing" to Batch Processing.
+	Now you can batch adding existing subtitles or logo to video files without any transcribing or translating.
+	The subtitle file must have the same name as the video file.
+	The logo file is the one in the front page.
 3.6.6
 	Fix ASS subtitle not being synthesized.
 	Fix some bugs of Video synthesis automation.

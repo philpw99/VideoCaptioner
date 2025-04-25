@@ -29,7 +29,7 @@ class BatchTaskTypeEnum(MuEnum):
     TRANSLATE = "Transcribe + Translate Audio/Video"
     SOFT = "Create Soft Subtitle Video"
     HARD = "Create Hard Subtitle Video"
-
+    LOGO = "Add Logo or Video Processing"
 
 class SubtitleLayoutEnum(MuEnum):
     """ 字幕布局 """

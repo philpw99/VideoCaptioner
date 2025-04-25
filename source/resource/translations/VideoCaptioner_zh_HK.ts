@@ -4,273 +4,273 @@
 <context>
     <name>BatchProcessInterface</name>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="56"/>
+        <location filename="../../app/view/batch_process_interface.py" line="57"/>
         <source>批量处理</source>
         <translation>批量處理</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="78"/>
+        <location filename="../../app/view/batch_process_interface.py" line="79"/>
         <source>添加视频文件</source>
         <translation>添加視頻文件</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="82"/>
+        <location filename="../../app/view/batch_process_interface.py" line="83"/>
         <source>清空任务</source>
         <translation>清空任務</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="83"/>
+        <location filename="../../app/view/batch_process_interface.py" line="84"/>
         <source>删除所有的任务</source>
         <translation>刪除所有的任務</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="89"/>
+        <location filename="../../app/view/batch_process_interface.py" line="90"/>
         <source>添加新任务时的类型，一般和首页的类型一致，但也可以选其它类型</source>
         <translation>添加新任務時的類型，一般和首頁的一致，但也可以選其它類型</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="97"/>
-        <location filename="../../app/view/batch_process_interface.py" line="220"/>
+        <location filename="../../app/view/batch_process_interface.py" line="98"/>
+        <location filename="../../app/view/batch_process_interface.py" line="221"/>
         <source>开始处理</source>
         <translation>開始處理</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="98"/>
+        <location filename="../../app/view/batch_process_interface.py" line="99"/>
         <source>开始批量音视频处理，将会处理所有处于&apos;等待&apos;或者&apos;取消&apos;状态的任务。</source>
         <translation>開始批量音視頻處理，將會處理所有處於“等待”或者“取消”狀態的任務。</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="99"/>
+        <location filename="../../app/view/batch_process_interface.py" line="100"/>
         <source>取消</source>
         <translation>取消取消</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="100"/>
+        <location filename="../../app/view/batch_process_interface.py" line="101"/>
         <source>停止所有正在运行中的任务</source>
         <translation>停止所有正在運行中的任務</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="102"/>
+        <location filename="../../app/view/batch_process_interface.py" line="103"/>
         <source>After All Done, </source>
         <translation>所有任務完成后， </translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="106"/>
+        <location filename="../../app/view/batch_process_interface.py" line="107"/>
         <source>设定所有任务完成后执行的行动</source>
         <translation>設定所有任務完成后執行的行動</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="180"/>
+        <location filename="../../app/view/batch_process_interface.py" line="181"/>
         <source>无法清空</source>
         <translation>無法清空</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="181"/>
+        <location filename="../../app/view/batch_process_interface.py" line="182"/>
         <source>正在处理的任务无法清空</source>
         <translation>正在處理的任務無法清空</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="193"/>
+        <location filename="../../app/view/batch_process_interface.py" line="194"/>
         <source>已清空</source>
         <translation>已清空</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="194"/>
+        <location filename="../../app/view/batch_process_interface.py" line="195"/>
         <source>已清空所有任务</source>
         <translation>已清空所有任務</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="211"/>
+        <location filename="../../app/view/batch_process_interface.py" line="212"/>
         <source>警告</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="212"/>
+        <location filename="../../app/view/batch_process_interface.py" line="213"/>
         <source>没有可处理的任务</source>
         <translation>沒有可處理的任務</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="221"/>
+        <location filename="../../app/view/batch_process_interface.py" line="222"/>
         <source>开始批量处理任务</source>
         <translation>開始批量處理任務</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="273"/>
+        <location filename="../../app/view/batch_process_interface.py" line="274"/>
         <source>已取消</source>
         <translation>已取消</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="274"/>
+        <location filename="../../app/view/batch_process_interface.py" line="275"/>
         <source>已取消批量处理</source>
         <translation>已取消批量處理</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="280"/>
+        <location filename="../../app/view/batch_process_interface.py" line="281"/>
         <source>Batch Process Canceled.</source>
         <translation>批量處理已取消。</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="286"/>
+        <location filename="../../app/view/batch_process_interface.py" line="287"/>
         <source>任务完成</source>
         <translation>任務完成</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="287"/>
+        <location filename="../../app/view/batch_process_interface.py" line="288"/>
         <source>任务已完成</source>
         <translation>任務已完成</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="322"/>
+        <location filename="../../app/view/batch_process_interface.py" line="323"/>
         <source>任务出错</source>
         <translation>任務出錯</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="323"/>
+        <location filename="../../app/view/batch_process_interface.py" line="324"/>
         <source>任务出错:</source>
         <translation>任務出錯：</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="351"/>
+        <location filename="../../app/view/batch_process_interface.py" line="352"/>
         <source>Program exiting in 1 minute</source>
         <translation>程序在1分鐘后退出</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="352"/>
+        <location filename="../../app/view/batch_process_interface.py" line="353"/>
         <source>All jobs are done. This program is going to be closed.</source>
         <translation>所有工作都已完成，程序會自動關閉。</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="360"/>
+        <location filename="../../app/view/batch_process_interface.py" line="361"/>
         <source>Suspending in 1 minute</source>
         <translation>一分鐘后停機</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="361"/>
+        <location filename="../../app/view/batch_process_interface.py" line="362"/>
         <source>All jobs are done. The computer is going to be suspended.</source>
         <translation>所有工作都已完成。電腦會自動進入睡眠狀態。</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="373"/>
+        <location filename="../../app/view/batch_process_interface.py" line="374"/>
         <source>Shutting Down in 1 minute</source>
         <translation>一分鐘后關機</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="374"/>
+        <location filename="../../app/view/batch_process_interface.py" line="375"/>
         <source>All jobs are done. The computer is shutting down. </source>
         <translation>所有工作都已完成，電腦會自動關機。 </translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="393"/>
+        <location filename="../../app/view/batch_process_interface.py" line="394"/>
         <source>全部完成</source>
         <translation>全部完成</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="394"/>
+        <location filename="../../app/view/batch_process_interface.py" line="395"/>
         <source>所有任务已处理完成</source>
         <translation>所有任務已處理完成</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="426"/>
+        <location filename="../../app/view/batch_process_interface.py" line="431"/>
         <source>选择文件</source>
         <translation>選擇文件</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="442"/>
+        <location filename="../../app/view/batch_process_interface.py" line="447"/>
         <source>添加失败</source>
         <translation>添加失敗</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="443"/>
+        <location filename="../../app/view/batch_process_interface.py" line="448"/>
         <source>该文件已存在于任务列表中</source>
         <translation>該文件已存在于任務列表中</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="496"/>
+        <location filename="../../app/view/batch_process_interface.py" line="505"/>
         <source>添加成功</source>
         <translation>添加成功</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="497"/>
+        <location filename="../../app/view/batch_process_interface.py" line="506"/>
         <source>已添加视频:</source>
         <translation>已添加視頻：</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="516"/>
+        <location filename="../../app/view/batch_process_interface.py" line="525"/>
         <source>无法删除</source>
         <translation>無法刪除</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="517"/>
+        <location filename="../../app/view/batch_process_interface.py" line="526"/>
         <source>正在处理的任务无法删除</source>
         <translation>正在處理的任務無法刪除</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="531"/>
+        <location filename="../../app/view/batch_process_interface.py" line="540"/>
         <source>删除成功</source>
         <translation>刪除成功</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="532"/>
+        <location filename="../../app/view/batch_process_interface.py" line="541"/>
         <source>已删除任务:</source>
         <translation>已刪除任務：</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="584"/>
+        <location filename="../../app/view/batch_process_interface.py" line="597"/>
         <source>请拖入视频文件</source>
         <translation>請拖入視頻文件</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="585"/>
+        <location filename="../../app/view/batch_process_interface.py" line="598"/>
         <source>请拖入音频或视频文件</source>
         <translation>請拖入音頻或視頻文件</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="586"/>
+        <location filename="../../app/view/batch_process_interface.py" line="599"/>
         <source>格式错误</source>
         <translation>格式錯誤</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="603"/>
+        <location filename="../../app/view/batch_process_interface.py" line="616"/>
         <source>File not exist.</source>
         <translation>文件不存在。</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="604"/>
+        <location filename="../../app/view/batch_process_interface.py" line="617"/>
         <source>The file {file_str} is not a valid file.</source>
         <translation>這個文件 {file_str} 不存在。</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="638"/>
+        <location filename="../../app/view/batch_process_interface.py" line="651"/>
         <source>File Format Error</source>
         <translation>文件格式錯誤</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="639"/>
+        <location filename="../../app/view/batch_process_interface.py" line="652"/>
         <source>This file, {file_str}, has a wrong extension.</source>
         <translation>這個文件：{file_str} 的後綴名錯誤。</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="659"/>
+        <location filename="../../app/view/batch_process_interface.py" line="672"/>
         <source>task</source>
         <translation>個任務</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="660"/>
+        <location filename="../../app/view/batch_process_interface.py" line="673"/>
         <source>tasks</source>
         <translation>個任務</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="662"/>
+        <location filename="../../app/view/batch_process_interface.py" line="675"/>
         <source>{status[key]} {t} {key}, </source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="664"/>
+        <location filename="../../app/view/batch_process_interface.py" line="677"/>
         <source>Currently </source>
         <translation>當前有 </translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="668"/>
+        <location filename="../../app/view/batch_process_interface.py" line="681"/>
         <source>Currently the task list is empty.</source>
         <translation>當前沒有任務。</translation>
     </message>
@@ -286,22 +286,22 @@
 <context>
     <name>CreateTaskThread</name>
     <message>
-        <location filename="../../app/core/thread/create_task_thread.py" line="73"/>
+        <location filename="../../app/core/thread/create_task_thread.py" line="91"/>
         <source>创建任务失败</source>
         <translation>創建任務失敗</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/create_task_thread.py" line="199"/>
+        <location filename="../../app/core/thread/create_task_thread.py" line="217"/>
         <source>创建任务完成</source>
         <translation>創建任務完成</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/create_task_thread.py" line="211"/>
+        <location filename="../../app/core/thread/create_task_thread.py" line="229"/>
         <source>正在获取视频信息</source>
         <translation>正在獲取視頻信息</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/create_task_thread.py" line="214"/>
+        <location filename="../../app/core/thread/create_task_thread.py" line="232"/>
         <source>下载视频完成</source>
         <translation>下載視頻完成</translation>
     </message>
@@ -860,172 +860,177 @@ Or go to GitHub for the new release.</source>
         <translation>視頻加入硬字幕</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="203"/>
+        <location filename="../../app/view/main_window.py" line="202"/>
+        <source>Add Logo or Video Processing</source>
+        <translation>加水印或者其它視頻處理</translation>
+    </message>
+    <message>
+        <location filename="../../app/view/main_window.py" line="204"/>
         <source>Original Only</source>
         <translation>只留原文</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="204"/>
+        <location filename="../../app/view/main_window.py" line="205"/>
         <source>Translated Only</source>
         <translation>只留譯文</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="205"/>
+        <location filename="../../app/view/main_window.py" line="206"/>
         <source>Original on Top</source>
         <translation>原文在上</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="206"/>
+        <location filename="../../app/view/main_window.py" line="207"/>
         <source>Translated on Top</source>
         <translation>譯文在上</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="208"/>
+        <location filename="../../app/view/main_window.py" line="209"/>
         <source>Optimize Translate</source>
         <translation>大模型優化+翻譯</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="209"/>
+        <location filename="../../app/view/main_window.py" line="210"/>
         <source>Google Translate</source>
         <translation>谷歌翻譯</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="210"/>
+        <location filename="../../app/view/main_window.py" line="211"/>
         <source>Single Sentence Translate</source>
         <translation>大模型單句翻譯</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="211"/>
+        <location filename="../../app/view/main_window.py" line="212"/>
         <source>No Translation</source>
         <translation>不翻譯</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="213"/>
+        <location filename="../../app/view/main_window.py" line="214"/>
         <source>Nothing</source>
         <translation>沒事</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="214"/>
+        <location filename="../../app/view/main_window.py" line="215"/>
         <source>Exit The Program</source>
         <translation>退出程序</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="215"/>
+        <location filename="../../app/view/main_window.py" line="216"/>
         <source>Shutdown The Computer</source>
         <translation>關機</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="216"/>
+        <location filename="../../app/view/main_window.py" line="217"/>
         <source>Suspend The Computer</source>
         <translation>停機</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="218"/>
+        <location filename="../../app/view/main_window.py" line="219"/>
         <source>Canceled</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="219"/>
+        <location filename="../../app/view/main_window.py" line="220"/>
         <source>Completed</source>
         <translation>已完成</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="220"/>
+        <location filename="../../app/view/main_window.py" line="221"/>
         <source>Downloading</source>
         <translation>正在下載</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="221"/>
+        <location filename="../../app/view/main_window.py" line="222"/>
         <source>Failed</source>
         <translation>已失敗</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="222"/>
+        <location filename="../../app/view/main_window.py" line="223"/>
         <source>Generating</source>
         <translation>正在產生</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="223"/>
+        <location filename="../../app/view/main_window.py" line="224"/>
         <source>Optimizing/Translating</source>
         <translation>優化/翻譯</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="224"/>
+        <location filename="../../app/view/main_window.py" line="225"/>
         <source>Pending</source>
         <translation>等待</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="225"/>
+        <location filename="../../app/view/main_window.py" line="226"/>
         <source>Synthesizing</source>
         <translation>正在合成</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="226"/>
+        <location filename="../../app/view/main_window.py" line="227"/>
         <source>Transcribing</source>
         <translation>轉錄中</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="227"/>
+        <location filename="../../app/view/main_window.py" line="228"/>
         <source>Transcoding</source>
         <translation>正在轉碼</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="228"/>
+        <location filename="../../app/view/main_window.py" line="229"/>
         <source>Translating</source>
         <translation>正在翻譯</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="229"/>
+        <location filename="../../app/view/main_window.py" line="230"/>
         <source>Waiting for audio transcoding</source>
         <translation>等待語言轉碼</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="230"/>
+        <location filename="../../app/view/main_window.py" line="231"/>
         <source>Waiting for translating.</source>
         <translation>等待翻譯。</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="231"/>
+        <location filename="../../app/view/main_window.py" line="232"/>
         <source>Waiting for video synthesis</source>
         <translation>等待合成</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="232"/>
+        <location filename="../../app/view/main_window.py" line="233"/>
         <source>Waiting for transcripting</source>
         <translation>等待轉錄</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="234"/>
+        <location filename="../../app/view/main_window.py" line="235"/>
         <source>File Import</source>
         <translation>接受文件</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="235"/>
+        <location filename="../../app/view/main_window.py" line="236"/>
         <source>URL Import</source>
         <translation>接受網址</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="237"/>
+        <location filename="../../app/view/main_window.py" line="238"/>
         <source>Add Subtitle To Video</source>
         <translation>視頻添加字幕</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="238"/>
+        <location filename="../../app/view/main_window.py" line="239"/>
         <source>Combine Subtitle with Video</source>
         <translation>視頻合成字幕</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="239"/>
+        <location filename="../../app/view/main_window.py" line="240"/>
         <source>Get Subtitle From Video/Audio</source>
         <translation>從音頻視頻提取字幕</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="240"/>
+        <location filename="../../app/view/main_window.py" line="241"/>
         <source>Add Translated Sub To Video</source>
         <translation>視頻加字幕</translation>
     </message>
     <message>
-        <location filename="../../app/view/main_window.py" line="241"/>
+        <location filename="../../app/view/main_window.py" line="242"/>
         <source>Download Video from URL then Add Subtitle</source>
         <translation>從網絡下載視頻然後加入字幕</translation>
     </message>
@@ -2991,258 +2996,266 @@ Or go to GitHub for the new release.</source>
 <context>
     <name>TaskInfoCard</name>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="723"/>
+        <location filename="../../app/view/batch_process_interface.py" line="736"/>
         <source>未选择视频</source>
         <translation>未選擇視頻</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="734"/>
+        <location filename="../../app/view/batch_process_interface.py" line="747"/>
         <source>画质</source>
         <translation>畫質</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="735"/>
+        <location filename="../../app/view/batch_process_interface.py" line="748"/>
         <source>文件大小</source>
         <translation>文件大小</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="736"/>
+        <location filename="../../app/view/batch_process_interface.py" line="749"/>
         <source>时长</source>
         <translation>時長</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="737"/>
+        <location filename="../../app/view/batch_process_interface.py" line="750"/>
         <source>视频码</source>
         <translation>視頻碼</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="738"/>
+        <location filename="../../app/view/batch_process_interface.py" line="751"/>
         <source>音频码</source>
         <translation>音頻碼</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="741"/>
+        <location filename="../../app/view/batch_process_interface.py" line="754"/>
         <source>竖屏</source>
         <translation>竪屏</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="742"/>
+        <location filename="../../app/view/batch_process_interface.py" line="755"/>
         <source>横屏</source>
         <translation>橫屏</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="774"/>
+        <location filename="../../app/view/batch_process_interface.py" line="787"/>
         <source>预览字幕</source>
         <translation>預覽字幕</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="775"/>
-        <location filename="../../app/view/batch_process_interface.py" line="914"/>
+        <location filename="../../app/view/batch_process_interface.py" line="788"/>
+        <location filename="../../app/view/batch_process_interface.py" line="929"/>
         <source>打开文件夹</source>
         <translation>打開文件夾</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="776"/>
+        <location filename="../../app/view/batch_process_interface.py" line="789"/>
         <source>未开始转录</source>
         <translation>未開始轉錄</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="795"/>
+        <location filename="../../app/view/batch_process_interface.py" line="808"/>
         <source>画质: </source>
         <translation>畫質: </translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="797"/>
+        <location filename="../../app/view/batch_process_interface.py" line="810"/>
         <source>大小: </source>
         <translation>大小: </translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="799"/>
+        <location filename="../../app/view/batch_process_interface.py" line="812"/>
         <source>时长: </source>
         <translation>時長: </translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="800"/>
+        <location filename="../../app/view/batch_process_interface.py" line="813"/>
         <source>视频码 </source>
         <translation>視頻碼 </translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="801"/>
+        <location filename="../../app/view/batch_process_interface.py" line="814"/>
         <source>音频码 </source>
         <translation>音頻碼 </translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="829"/>
+        <location filename="../../app/view/batch_process_interface.py" line="842"/>
         <source>翻译方式：智能多线程优化+翻译，目标: </source>
         <translation>翻譯方式：智能多綫程優化+翻譯，目標： </translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="832"/>
+        <location filename="../../app/view/batch_process_interface.py" line="845"/>
         <source>翻译方式：智能单线程单句翻译，目标: </source>
         <translation>翻譯方式：智能單綫程單句翻譯，目標： </translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="835"/>
+        <location filename="../../app/view/batch_process_interface.py" line="848"/>
         <source>翻译方式：谷歌批量翻译，目标: </source>
         <translation>翻譯方式：谷歌批量翻譯，目標： </translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="837"/>
+        <location filename="../../app/view/batch_process_interface.py" line="850"/>
         <source>, 使用的LLM 模型: </source>
         <translation>，使用的LLM模型： </translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="743"/>
-        <location filename="../../app/view/batch_process_interface.py" line="816"/>
+        <location filename="../../app/view/batch_process_interface.py" line="756"/>
+        <location filename="../../app/view/batch_process_interface.py" line="829"/>
         <source>水印：无</source>
         <translation>水印：無</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="814"/>
+        <location filename="../../app/view/batch_process_interface.py" line="827"/>
         <source>水印：</source>
         <translation>水印：</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="842"/>
+        <location filename="../../app/view/batch_process_interface.py" line="855"/>
         <source>竖屏模式：开启 </source>
         <translation>竪屏模式：開啓</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="843"/>
+        <location filename="../../app/view/batch_process_interface.py" line="856"/>
         <source>水印: </source>
         <translation>水印：</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="845"/>
+        <location filename="../../app/view/batch_process_interface.py" line="859"/>
+        <source>任务类型：</source>
+        <translation>任務類型：</translation>
+    </message>
+    <message>
+        <location filename="../../app/view/batch_process_interface.py" line="859"/>
+        <source>加水印，字幕，或者其它处理</source>
+        <translation>加水印，字幕，或者其它處理</translation>
+    </message>
+    <message>
+        <location filename="../../app/view/batch_process_interface.py" line="860"/>
+        <source>字幕文件：</source>
+        <translation>字幕文件：</translation>
+    </message>
+    <message>
+        <location filename="../../app/view/batch_process_interface.py" line="862"/>
         <source>任务类型: </source>
         <translation>任務類型： </translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="846"/>
+        <location filename="../../app/view/batch_process_interface.py" line="863"/>
         <source>转录模型: </source>
         <translation>轉錄模型： </translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="847"/>
+        <location filename="../../app/view/batch_process_interface.py" line="864"/>
         <source>源语言：</source>
         <translation>源語言：</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="853"/>
-        <location filename="../../app/view/batch_process_interface.py" line="855"/>
+        <location filename="../../app/view/batch_process_interface.py" line="867"/>
         <source>文件: </source>
         <translation>文件： </translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="857"/>
+        <location filename="../../app/view/batch_process_interface.py" line="869"/>
         <source>任务状态: </source>
         <translation>任務狀態： </translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="886"/>
+        <location filename="../../app/view/batch_process_interface.py" line="901"/>
         <source>选择背景图片</source>
         <translation>選擇背景圖片</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="888"/>
+        <location filename="../../app/view/batch_process_interface.py" line="903"/>
         <source>Image Files (</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="894"/>
+        <location filename="../../app/view/batch_process_interface.py" line="909"/>
         <source>文件不存在</source>
         <translation>文件不存在</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="895"/>
+        <location filename="../../app/view/batch_process_interface.py" line="910"/>
         <source>请重新选择</source>
         <translation>請重新選擇</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="900"/>
+        <location filename="../../app/view/batch_process_interface.py" line="915"/>
         <source>背景：</source>
         <translation>背景：</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="909"/>
+        <location filename="../../app/view/batch_process_interface.py" line="924"/>
         <source>打开字幕（双击）</source>
         <translation>打開字幕（雙擊）</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="918"/>
+        <location filename="../../app/view/batch_process_interface.py" line="933"/>
         <source>重新处理</source>
         <translation>重新處理</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="922"/>
+        <location filename="../../app/view/batch_process_interface.py" line="937"/>
         <source>取消/停止任务</source>
         <translation>取消/停止任務</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="926"/>
+        <location filename="../../app/view/batch_process_interface.py" line="941"/>
         <source>删除任务</source>
         <translation>刪除任務</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="949"/>
+        <location filename="../../app/view/batch_process_interface.py" line="964"/>
         <source>选择字幕文件</source>
         <translation>選擇字幕文件</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="957"/>
+        <location filename="../../app/view/batch_process_interface.py" line="971"/>
         <source>字幕预览</source>
         <translation>字幕預覽</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="970"/>
-        <location filename="../../app/view/batch_process_interface.py" line="1012"/>
-        <location filename="../../app/view/batch_process_interface.py" line="1060"/>
-        <location filename="../../app/view/batch_process_interface.py" line="1068"/>
+        <location filename="../../app/view/batch_process_interface.py" line="1019"/>
+        <location filename="../../app/view/batch_process_interface.py" line="1073"/>
+        <location filename="../../app/view/batch_process_interface.py" line="1081"/>
         <source>警告</source>
         <translation>警告</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="971"/>
-        <source>字幕文件不存在</source>
-        <translation>字幕文件不存在</translation>
-    </message>
-    <message>
-        <location filename="../../app/view/batch_process_interface.py" line="985"/>
+        <location filename="../../app/view/batch_process_interface.py" line="992"/>
         <source>Cancelled</source>
         <translation>取消</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="1001"/>
+        <location filename="../../app/view/batch_process_interface.py" line="1008"/>
         <source>已取消</source>
         <translation>已取消</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="1002"/>
+        <location filename="../../app/view/batch_process_interface.py" line="1009"/>
         <source>任务已取消</source>
         <translation>任務已取消</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="1013"/>
+        <location filename="../../app/view/batch_process_interface.py" line="1020"/>
         <source>该任务已完成</source>
         <translation>該任務已完成</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="1044"/>
+        <location filename="../../app/view/batch_process_interface.py" line="1057"/>
         <source>任务类型错误</source>
         <translation>任務類型錯誤</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="1061"/>
+        <location filename="../../app/view/batch_process_interface.py" line="1074"/>
         <source>找不到文件 {self.task.file_path}</source>
         <translation>找不到文件 {self.task.file_path}</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="1069"/>
+        <location filename="../../app/view/batch_process_interface.py" line="1082"/>
         <source>找不到文件{self.task.file_path}</source>
         <translation>找不到文件{self.task.file_path}</translation>
     </message>
     <message>
-        <location filename="../../app/view/batch_process_interface.py" line="1109"/>
+        <location filename="../../app/view/batch_process_interface.py" line="1122"/>
         <source>转录失败</source>
         <translation>轉錄失敗</translation>
     </message>
@@ -3850,6 +3863,14 @@ Or go to GitHub for the new release.</source>
         <location filename="../../app/components/WhisperSettingDialog.py" line="319"/>
         <source>Whisper设置已更新</source>
         <translation>Whisper設置已更新</translation>
+    </message>
+</context>
+<context>
+    <name>qoCreateTask</name>
+    <message>
+        <location filename="../../app/core/thread/create_task_thread.py" line="470"/>
+        <source>【生成】</source>
+        <translation></translation>
     </message>
 </context>
 <context>

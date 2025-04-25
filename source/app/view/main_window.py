@@ -199,6 +199,7 @@ class MainWindow(FluentWindow):
         BatchTaskTypeEnum.TRANSLATE.setValue( self.tr("Transcribe + Translate Audio/Video") )
         BatchTaskTypeEnum.SOFT.setValue( self.tr("Create Soft Subtitle Video") )
         BatchTaskTypeEnum.HARD.setValue( self.tr("Create Hard Subtitle Video") )
+        BatchTaskTypeEnum.LOGO.setValue( self.tr("Add Logo or Video Processing"))
         
         SubtitleLayoutEnum.ONLY_ORIGINAL.setValue( self.tr("Original Only") )
         SubtitleLayoutEnum.ONLY_TRANSLATE.setValue( self.tr("Translated Only") )

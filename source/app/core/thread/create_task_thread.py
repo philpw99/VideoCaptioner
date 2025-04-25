@@ -8,10 +8,11 @@ import yt_dlp
 from PyQt5.QtCore import QThread, pyqtSignal, QObject
 
 from ..entities import Task, TranscribeModelEnum, TranslateMethodEnum, VideoInfo, LANGUAGES, WHISPER_LANGUAGES
+from ..entities import SupportedSubtitleFormats
 from ..utils.video_utils import get_video_info
 from ...common.config import cfg
 from ..utils.logger import setup_logger
-from ...config import SUBTITLE_STYLE_PATH, APPDATA_PATH
+from ...config import SUBTITLE_STYLE_PATH, APPDATA_PATH, WORK_PATH
 
 logger = setup_logger("create_task_thread")
 qoCreateTask = QObject()
@@ -21,7 +22,7 @@ class CreateTaskThread(QThread):
     progress = pyqtSignal(int, str)
     error = pyqtSignal(str)
 
-    def __init__(self, file_path,
+    def __init__(self, file_path: str,
                  task_type: Task.Type,
                  need_translate: bool = False,
                  translate_method: TranslateMethodEnum = None,
@@ -66,6 +67,23 @@ class CreateTaskThread(QThread):
                                          )
                 case Task.Type.TRANSCRIBE:
                     self.create_transcription_task(self.file_path)
+                case Task.Type.SYNTHESIS:
+                    # Logo or video processing only.
+                    
+                    # Check to see if there is a subtitle file with the same name
+                    sub_file: str = None
+                    for ext in SupportedSubtitleFormats:
+                        sub_path = Path(self.file_path).with_suffix("." + ext.value)
+                        if sub_path.exists():
+                            sub_file = str(sub_path)
+                            break
+                    if not sub_file:
+                        # No such subtitle file. Create an empty one.
+                        with open( WORK_PATH / "empty.srt", "w") as f:
+                            # Write an empty srt file.
+                            f.write("1\n" + "00:00:00,100 --> 00:00:01,000\n" + " ")
+                        sub_file = str(WORK_PATH / "empty.srt")
+                    self.create_video_synthesis_task(sub_file, self.file_path, False, create_entry=True)
                 case _:
                     ValueError("No matching task type.")
         except Exception as e:
@@ -443,12 +461,21 @@ class CreateTaskThread(QThread):
         logger.info(f"转录任务创建完成：{task}")
         return task
 
-    def create_video_synthesis_task(self, subtitle_file, video_file, soft_sub: bool):
+    def create_video_synthesis_task(self, subtitle_file: str, video_file: str, soft_sub: bool, create_entry = False):
         logger.info(f"开始创建视频合成任务：{subtitle_file} {video_file}")
+        video_file = video_file.strip()
         subtitle_file = Path(subtitle_file.strip()).as_posix()
-        video_file = Path(video_file.strip()).as_posix()
-        task_work_dir = Path(video_file.strip()).parent
-        video_save_path = task_work_dir / f"{qoCreateTask.tr("【生成】")}{Path(video_file).name}"
+        video_file = Path(video_file).as_posix()
+        task_work_dir = Path(video_file).parent
+        video_save_path = task_work_dir / (qoCreateTask.tr("【生成】") + Path(video_file).name)
+
+        if create_entry:
+            # 获取 视频/音频 信息
+            thumbnail_path = str(WORK_PATH / (video_file + ".thumbnail.jpg") )
+            video_info = get_video_info(video_file, thumbnail_path=thumbnail_path )
+            video_info = VideoInfo(**video_info)
+        else:
+            video_info = None
 
         # 创建 Task 对象,保存文件夹与原视频路径一样
         task = Task(
@@ -456,11 +483,12 @@ class CreateTaskThread(QThread):
             queued_at=datetime.datetime.now(),
             started_at=datetime.datetime.now(),
             completed_at=None,
-            status=Task.Status.GENERATING,
+            status=Task.Status.PENDING,
             work_dir=str(task_work_dir),
             file_path=str(Path(video_file)),
             original_subtitle_save_path=str(Path(subtitle_file)),
             video_save_path=str(video_save_path),
+            video_info=video_info,
             soft_subtitle=soft_sub,
             type=Task.Type.SYNTHESIS,
             need_video=True,    # Just in case, because synthesis always generate a video
@@ -471,6 +499,8 @@ class CreateTaskThread(QThread):
             zoom_subtitle=cfg.zoom_subtitle.value,
             task_thread=self,
         )
+        if create_entry:
+            self.finished.emit(task)
         logger.info(f"视频合成任务创建完成：{task}")
         return task
 
