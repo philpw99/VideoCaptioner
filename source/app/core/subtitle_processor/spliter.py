@@ -221,11 +221,11 @@ def split_long_segment(segs_to_merge: List[ASRDataSeg]) -> List[ASRDataSeg]:
 
     # 根据文本类型确定最大词数限制
     # max_word_count = MAX_WORD_COUNT_CJK if is_mainly_cjk(merged_text) else MAX_WORD_COUNT_ENGLISH
-    max_word_count = cfg.max_word_count_cjk.value if is_mainly_cjk(merged_text) else cfg.max_word_count_english.value
+    max_char_count = cfg.max_char_count_cjk.value if is_mainly_cjk(merged_text) else cfg.max_char_count_english.value
     # logger.debug(f"正在拆分分段: {merged_text}")
 
     # 基本情况：如果分段足够短或无法进一步拆分
-    if count_words(merged_text) <= max_word_count or len(segs_to_merge) == 1:
+    if len(merged_text) <= max_char_count or len(segs_to_merge) == 1:
         merged_seg = ASRDataSeg(
             merged_text.strip(),
             segs_to_merge[0].start_time,
@@ -337,13 +337,12 @@ def merge_short_segment(segments: List[ASRDataSeg]) -> None:
         # 2. 当前段落或下一段落词数小于5
         # 3. 合并后总词数不超过限制
         time_gap = abs(next_seg.start_time - current_seg.end_time)
-        current_words = count_words(current_seg.text)
-        next_words = count_words(next_seg.text)
-        total_words = current_words + next_words
-        # max_word_count = MAX_WORD_COUNT_CJK if is_mainly_cjk(current_seg.text) else MAX_WORD_COUNT_ENGLISH
-        max_word_count = cfg.max_word_count_cjk.value if is_mainly_cjk(current_seg.text) else cfg.max_word_count_english.value
+        current_chars = len(current_seg.text)
+        next_chars = len(next_seg.text)
+        total_chars = current_chars + next_chars
+        max_char_count = cfg.max_char_count_cjk.value if is_mainly_cjk(current_seg.text) else cfg.max_char_count_english.value
 
-        if time_gap < 300 and (current_words < 5 or next_words <= 5) and total_words <= max_word_count:
+        if time_gap < 300 and (current_chars < 10 or next_chars <= 10) and total_chars <= max_char_count:
             # 执行合并操作
             logger.debug(f"优化：合并相邻分段: {current_seg.text} --- {next_seg.text} -> {time_gap}")
             
@@ -506,16 +505,15 @@ def merge_common_words(segments: List[ASRDataSeg]) -> List[List[ASRDataSeg]]:
     for i, seg in enumerate(segments):
         # 如果当前词是前缀词且前面已经累积了至少7个词
         # logger.debug(seg.text)
-        # max_word_count = MAX_WORD_COUNT_CJK if is_mainly_cjk(seg.text) else MAX_WORD_COUNT_ENGLISH
-        max_word_count = cfg.max_word_count_cjk.value if is_mainly_cjk(seg.text) else cfg.max_word_count_english.value
-        if any(seg.text.lower().startswith(word) for word in prefix_split_words) and len(current_group) >= int(max_word_count*0.6):
+        max_char_count = cfg.max_char_count_cjk.value - 2 if is_mainly_cjk(seg.text) else cfg.max_char_count_english.value - 8
+        if any(seg.text.lower().startswith(word) for word in prefix_split_words) and len(current_group) >= max_char_count:
             # 合并当前组并添加到结果
             result.append(current_group)
             logger.debug(f"在前缀词 {seg.text} 前分割 - {''.join(seg.text for seg in current_group)}")
             current_group = []
         
         # 如果前一个词是后缀词且当前组至少有5个词
-        if i > 0 and any(segments[i-1].text.lower().endswith(word) for word in suffix_split_words) and len(current_group) >= int(max_word_count*0.4):
+        if i > 0 and any(segments[i-1].text.lower().endswith(word) for word in suffix_split_words) and len(current_group) >= max_char_count:
             # 添加当前组到结果
             result.append(current_group)
             logger.debug(f"在后缀词 {segments[i-1].text} 后分割 - {''.join(seg.text for seg in current_group)}")
@@ -555,9 +553,8 @@ def process_by_rules(segments: List[ASRDataSeg]) -> List[ASRDataSeg]:
     common_result_groups = []
     for group in segment_groups:
         # logger.debug("".join(seg.text for seg in group))
-        # max_word_count = MAX_WORD_COUNT_CJK if is_mainly_cjk("".join(seg.text for seg in group)) else MAX_WORD_COUNT_ENGLISH
-        max_word_count = cfg.max_word_count_cjk.value if is_mainly_cjk("".join(seg.text for seg in group)) else cfg.max_word_count_english.value
-        if count_words("".join(seg.text for seg in group)) > max_word_count:    
+        max_char_count = cfg.max_char_count_cjk.value if is_mainly_cjk("".join(seg.text for seg in group)) else cfg.max_char_count_english.value
+        if len("".join(seg.text for seg in group)) > max_char_count:    
             segments = merge_common_words(group)
             common_result_groups.extend(segments)
         else:
@@ -586,8 +583,8 @@ def process_by_llm(segments: List[ASRDataSeg],
     sentences = split_by_llm(txt, 
                              model=model, 
                              use_cache=USE_CACHE,
-                             max_word_count_cjk=cfg.max_word_count_cjk.value,
-                             max_word_count_english=cfg.max_word_count_english.value,
+                             max_char_count_cjk=cfg.max_char_count_cjk.value,
+                             max_char_count_english=cfg.max_char_count_english.value,
                             )
     logger.info(f"分段的句子提取完成，共 {len(sentences)} 句")
     # 对当前分段进行合并处理

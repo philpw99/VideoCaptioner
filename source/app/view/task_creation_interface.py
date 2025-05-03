@@ -985,8 +985,8 @@ class TaskCreationInterface(QWidget):
         
         # Other settings
         self.task.subtitle_layout = cfg.subtitle_layout.value
-        self.task.max_word_count_cjk = cfg.max_word_count_cjk.value
-        self.task.max_word_count_english = cfg.max_word_count_english.value
+        self.task.max_char_count_cjk = cfg.max_char_count_cjk.value
+        self.task.max_char_count_english = cfg.max_char_count_english.value
         self.task.need_split = cfg.need_split.value
 
         if self.audio_track_select.value() is not None:

@@ -1,10 +1,3 @@
-from enum import Enum
+test = 14173925717660158959
 
-class test(Enum):
-    aaa = "aaa"
-    bbb = "bbb"
-    ccc = "ccc"
-
-e = test.aaa
-
-print (e in [test.aaa, test.bbb, test.ccc] )
+print( hex(test)[-8:])

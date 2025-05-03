@@ -4,8 +4,9 @@ import os
 from concurrent.futures import ThreadPoolExecutor
 import re, json
 from typing import Dict
-from ...common.config import INVISIBLE_ORIGINAL,INVISIBLE_TRANSLATED
+from ...common.config import INVISIBLE_ORIGINAL,INVISIBLE_TRANSLATED, cfg
 from ..utils.subtitles import get_original_and_translated
+from ..bk_asr.ASRData import split_line
 import retry
 from openai import OpenAI
 
@@ -34,22 +35,22 @@ class SubtitleOptimizer:
 
     def __init__(
         self,
-        model: str = DEFAULT_MODEL,
+        model: str = cfg.model.value,
         summary_content: str = "",
-        thread_num: int = MAX_THREADS,
-        batch_num: int = BATCH_SIZE,
-        target_language: str = "Chinese",
+        thread_num: int = cfg.thread_num.value,
+        batch_num: int = cfg.batch_size.value,
+        target_language: str = cfg.target_language.value,
         llm_result_logger: logging.Logger = None,
-        need_remove_punctuation: bool = True,
+        need_remove_punctuation: bool = cfg.needs_remove_punctuation.value,
         cjk_only: bool = True,
         single_sentence_translate = False,
         allow_running = None,
-        original_language = None,
+        original_language = cfg.transcribe_language.value,
         custom_prompt = None,
     ) -> None:
-        base_url = os.getenv('OPENAI_BASE_URL')
-        api_key = os.getenv('OPENAI_API_KEY')
-        assert base_url and api_key, "环境变量 OPENAI_BASE_URL 和 OPENAI_API_KEY 必须设置"
+        base_url = cfg.api_base.value
+        api_key = cfg.api_key.value
+        # assert base_url and api_key, "环境变量 OPENAI_BASE_URL 和 OPENAI_API_KEY 必须设置"
 
         self.model = model
         self.client = OpenAI(base_url=base_url, api_key=api_key)
@@ -134,7 +135,10 @@ class SubtitleOptimizer:
                     translate_line = " ".join(lines[1:]) # The translate result is in the second line.
                 else:
                     translate_line = lines[0]
-                result[key] = INVISIBLE_ORIGINAL + chunk[key] + "\n" + INVISIBLE_TRANSLATED + translate_line
+                # Splite the line according to cfg
+                translate_line = split_line(translate_line, cfg.max_char_count_english.value, cfg.max_char_count_cjk.value)
+                original_line = split_line(chunk[key], cfg.max_char_count_english.value, cfg.max_char_count_cjk.value)
+                result[key] = INVISIBLE_ORIGINAL + original_line + "\n" + INVISIBLE_TRANSLATED + translate_line
 
             if callback:
                 if isinstance(result, Dict):
@@ -354,7 +358,7 @@ class SubtitleOptimizer:
                 ]
             
             previous_sentence = original
-            
+
             response = self.client.chat.completions.create(
                 model=self.model,
                 stream=False,
@@ -386,6 +390,10 @@ class SubtitleOptimizer:
 
             previous_translation = translated
             logger.info(f"{key}. Original: {value}\n{key}. Translated: {translated}")
+            
+            # Split by cfg settings
+            original = split_line(original, cfg.max_char_count_english.value, cfg.max_char_count_cjk.value)
+            translated = split_line(translated, cfg.max_char_count_english.value, cfg.max_char_count_cjk.value)
             line = {str(key): INVISIBLE_ORIGINAL+ original + "\n" + INVISIBLE_TRANSLATED + translated}  # Create a dictionary with key and translated text
 
             if callback:

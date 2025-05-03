@@ -166,14 +166,16 @@ class Config(QConfig):
         EnumSerializer(TargetLanguageEnum)
     )
     need_split = ConfigItem("Subtitle", "NeedSplit", True, BoolValidator())
-    max_word_count_cjk = ConfigItem("Subtitle", "MaxWordCountCJK", 18, RangeValidator(8, 50))
-    max_word_count_english = ConfigItem("Subtitle", "MaxWordCountEnglish", 12, RangeValidator(8, 50))
+    max_char_count_cjk = ConfigItem("Subtitle", "MaxCharacterCountCJK", 20, RangeValidator(8, 100))
+    max_char_count_english = ConfigItem("Subtitle", "MaxCharacterCountEnglish", 40, RangeValidator(8, 100))
     needs_remove_punctuation = ConfigItem("Subtitle", "NeedsRemovePunctuation", False, BoolValidator())
     custom_prompt_text = ConfigItem("Subtitle", "CustomPromptText", "")
 
     # ------------------- 字幕合成配置 -------------------
     soft_subtitle = ConfigItem("Video", "SoftSubtitle", True, BoolValidator())
     need_video = ConfigItem("Video", "NeedVideo", True, BoolValidator())
+    video_prefix = ConfigItem("Video", "VideoPrefix", "")
+    video_suffix = ConfigItem("Video", "VideoSuffix", "_out")
     subtitle_vertical_offset = RangeConfigItem("Video", 
         "SubtitleVerticalOffset", 0, RangeValidator(-500, 500))
     portrait = ConfigItem("Video", "PortraitMode", False, BoolValidator())

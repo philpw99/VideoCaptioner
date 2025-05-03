@@ -1,5 +1,5 @@
 import json
-import re
+import re, textwrap
 from typing import List, Tuple
 from pathlib import Path
 import math, unicodedata
@@ -789,6 +789,16 @@ def remove_line_break(text:str):
             if char:
                 prev_char_is_half_width = unicodedata.east_asian_width(char) not in ["W", "F"]
     return new_text
+
+def split_line(line: str, max_char_english:int, max_char_cjk: int):
+    line = remove_line_break(line)
+    if is_mostly_half_width(line):
+        # English or western
+        return "\n".join( textwrap.wrap(line, max_char_english) )
+    else:
+        # Chinese, Japanese or Korean
+        return "\n".join(textwrap.wrap(line, max_char_cjk))
+
 
 if __name__ == '__main__':
     from pathlib import Path

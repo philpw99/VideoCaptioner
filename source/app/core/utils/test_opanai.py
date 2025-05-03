@@ -1,7 +1,7 @@
 import openai
 
 
-def test_openai(base_url, api_key, model):
+def test_openai(base_url, api_key, model, timeout=20):
     """
     这是一个测试OpenAI API的函数。
     它使用指定的API设置与OpenAI的GPT模型进行对话。
@@ -22,7 +22,7 @@ def test_openai(base_url, api_key, model):
                 {"role": "user", "content": "Hello!"}
             ],
             max_tokens=100,
-            timeout=10
+            timeout=timeout,
         )
         # 返回AI的回复
         return True, str(response.choices[0].message.content)

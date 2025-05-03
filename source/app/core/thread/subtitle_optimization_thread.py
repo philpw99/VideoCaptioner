@@ -1,5 +1,5 @@
 import datetime
-import os
+import os, textwrap
 from pathlib import Path
 import asyncio
 from typing import Dict
@@ -9,7 +9,7 @@ from PyQt5.QtCore import QThread, pyqtSignal, QMutexLocker
 from ..subtitle_processor.optimizer import SubtitleOptimizer
 from ..subtitle_processor.summarizer import SubtitleSummarizer
 from ..subtitle_processor.gtranslator import googleTranslate
-from ..bk_asr.ASRData import from_subtitle_file
+from ..bk_asr.ASRData import from_subtitle_file, split_line, SubEnum
 from ..entities import Task, TranslateMethodEnum
 from ..utils.test_opanai import test_openai
 from ..utils.subtitles import get_original_and_translated
@@ -184,17 +184,18 @@ class SubtitleOptimizationThread(QThread):
                     seg.text = INVISIBLE_ORIGINAL + original + "\n" + INVISIBLE_TRANSLATED +translated
 
                 # 保存字幕
-                if result_subtitle_save_path.endswith(".ass"):
-                    asr_data.to_ass(style_str=subtitle_style_srt, layout=subtitle_layout, save_path=result_subtitle_save_path)
-                else:
-                    asr_data.save(save_path=result_subtitle_save_path, ass_style=subtitle_style_srt,
-                                    layout=subtitle_layout)
+                asr_data.save(save_path=result_subtitle_save_path, ass_style=subtitle_style_srt,
+                                layout=subtitle_layout)
                 logger.info(f"字幕优化/翻译完成，保存到 {result_subtitle_save_path}")
 
-                # 保存srt文件
-                if self.task.video_info and self.task.need_video:
-                    save_srt_path = Path(self.task.work_dir) / f"VideoSub_{Path(self.task.video_info.file_name).stem}.srt"
-                    asr_data.to_srt(save_path=str(save_srt_path), layout=subtitle_layout)
+                # 保存翻译srt文件
+                translate_srt_path = Path(self.task.work_dir) / ( "【翻译字幕】" + Path(self.task.file_path).stem + ".srt")
+                asr_data.to_srt(save_path=str(translate_srt_path), layout=SubEnum.ONLY_TRANSLATE)
+
+
+                # if self.task.video_info and self.task.need_video:
+                #     save_srt_path = Path(self.task.work_dir) / f"VideoSub_{Path(self.task.video_info.file_name).stem}.srt"
+                #     asr_data.to_srt(save_path=str(save_srt_path), layout=subtitle_layout)
 
                 # stop the llm logging in working dir
                 if self.llm_result_logger:
@@ -228,3 +229,4 @@ class SubtitleOptimizationThread(QThread):
         # if hasattr(self, 'optimizer'):
         #     self.optimizer.stop()
         # self.terminate()
+        

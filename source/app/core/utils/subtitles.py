@@ -5,6 +5,8 @@ def get_original_and_translated(text) -> list[str, str]:
     lines = text.split("\n")
     trans_mode = False
     for line in lines:
+        if line is None or len(line) == 0:
+            continue
         if line[0] == INVISIBLE_ORIGINAL:
             trans_mode = False  # Now the rest lines are original
             line = line[1:]

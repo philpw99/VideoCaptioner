@@ -168,7 +168,7 @@ class SettingInterface(ScrollArea):
             self.tr("Subtitle File Name Prefix"),
             self.tr("Add this string to the front of the subtitle file name."),
             "",
-            self.subtitleGroup
+            parent=self.subtitleGroup
         )
         self.saveSubtitleSuffixCard = LineEditSettingCard(
             cfg.subtitle_file_suffix,
@@ -176,7 +176,7 @@ class SettingInterface(ScrollArea):
             self.tr("Subtitle File Name Suffix"),
             self.tr("Add this string to the end of the subtitle file name."),
             "",
-            self.subtitleGroup
+            parent=self.subtitleGroup
         )
 
         # 字幕句子最少时长
@@ -215,6 +215,21 @@ class SettingInterface(ScrollArea):
             self.videoGroup
         )
 
+        # 生成视频前缀
+        self.videoPrefixCard = LineEditSettingCard(
+            cfg.video_prefix,
+            FIF.CARE_LEFT_SOLID,
+            self.tr("Synthesis video name prefix"),
+            self.tr("The prefix for generated video name."),
+            parent=self.videoGroup
+        )
+        self.videoSuffixCard = LineEditSettingCard(
+            cfg.video_suffix,
+            FIF.CARE_RIGHT_SOLID,
+            self.tr("Synthesis video name suffix"),
+            self.tr("The suffix for generated video name.")
+        )
+
         # 开启软字幕
         self.softSubtitleCard = SwitchSettingCard(
             FIF.FONT,
@@ -246,7 +261,7 @@ class SettingInterface(ScrollArea):
             self.tr("Picture Logo"),
             self.tr("When generating a hard-subbed video, or you can add a picture logo to it."),
             "",
-            self.videoGroup
+            parent=self.videoGroup
         )
         
         self.videoBlurBackgroundCard = SwitchSettingCard(
@@ -424,8 +439,9 @@ class SettingInterface(ScrollArea):
             self.saveSubtitleSuffixCard, self.enableSubtitleSentenceMinimumTimeCard,
             self.SubtitleSentenceMinimumTimeCard, self.SubtitleTimeOffsetCard])
 
-        self.videoGroup.addSettingCards([self.needVideoCard, self.softSubtitleCard,
-            self.subtitleVerticalOffsetCard, self.videoPortraitCard, self.videoLogoCard,
+        self.videoGroup.addSettingCards([self.needVideoCard, self.videoPrefixCard, self.videoSuffixCard,
+            self.softSubtitleCard, self.subtitleVerticalOffsetCard,
+            self.videoPortraitCard, self.videoLogoCard,
             self.videoBlurBackgroundCard, self.zoomVideoCard, self.zoomSubtitleCard, self.videoQualityCard])
 
         self.saveGroup.addSettingCard(self.savePathCard)

@@ -1,9 +1,10 @@
 import time, os
-import logging, re
+import re, shutil
 from pathlib import Path
 
 from PyQt5.QtCore import QThread, pyqtSignal, QMutexLocker
-from ...common.signal_bus import signalBus
+from ..bk_asr.ASRData import split_line
+
 
 from ..bk_asr import (
     JianYingASR,
@@ -62,11 +63,17 @@ class TranscriptThread(QThread):
                 logger.error("视频路径不能为空")
                 raise ValueError(self.tr("视频路径不能为空"))
 
+            # Create the work dir just in case.
+            Path(self.task.work_dir).mkdir(parents=True, exist_ok=True)
+            
             if self.task.type == Task.Type.URL and self.task.url_subtitle_file \
                 and Path(self.task.url_subtitle_file).exists():
                 # Have subtitle already downloaded from Internet.
                 logger.info(f"已下载字幕文件，直接调用：{self.task.url_subtitle_file}")
-                self.task.original_subtitle_save_path = self.task.url_subtitle_file
+                # Make a copy to work dir
+                sub_copy = "【视频原字幕】" + str( Path(self.task.work_dir) / (Path(self.task.file_path).stem + Path(self.task.url_subtitle_file).suffix))
+                shutil.copyfile(self.task.url_subtitle_file, sub_copy)
+                self.task.original_subtitle_save_path = sub_copy
                 # 删除封面
                 try:
                     thumbnail_path = Path(self.task.video_info.thumbnail_path)
@@ -176,14 +183,15 @@ class TranscriptThread(QThread):
                             args["one_word"] = True
                         else:
                             args["sentence"] = True
-                            if self.task.transcribe_language in ["zh", "ja", "ko"] and not self.isFasterWhisperTranslate():
-                                args["max_line_width"] = int(self.task.max_word_count_cjk)
-                                args["max_comma_cent"] = 50
-                                args["max_comma"] = 5
-                            else:
-                                args["max_line_width"] = int(self.task.max_word_count_english * 8)
-                                args["max_comma_cent"] = 50
-                                args["max_comma"] = 20
+                            # No more max line width limit. The line will be devided later.
+                            # if self.task.transcribe_language in ["zh", "ja", "ko"] and not self.isFasterWhisperTranslate():
+                            #     args["max_line_width"] = int(self.task.max_word_count_cjk)
+                            #     args["max_comma_cent"] = 50
+                            #     args["max_comma"] = 5
+                            # else:
+                            #     args["max_line_width"] = int(self.task.max_word_count_english*8)
+                            #     args["max_comma_cent"] = 50
+                            #     args["max_comma"] = 20
                     
                         args["translate_to_english"] = self.task.faster_whisper_translate_to_english
                         args["repetition_penalty"] = self.task.faster_whisper_repetion_penalty
@@ -232,14 +240,18 @@ class TranscriptThread(QThread):
                     re_punctuation = re.compile( r'[,.!?;:，。！？；：、]+$')
                     for seg in asr_data.segments:
                         seg.text = re.sub(re_punctuation, "", seg.text)
+                        
+                # Split lines according to settings
+                for seg in asr_data.segments:
+                    seg.text = split_line(seg.text, cfg.max_char_count_english.value, cfg.max_char_count_cjk.value)
                 
                 # 保存字幕文件
                 if not self.task.allow_running[0]:
                     logger.error("字幕保存前中断")
                     return
-                original_subtitle_path = Path(self.task.original_subtitle_save_path)
-                original_subtitle_path.parent.mkdir(parents=True, exist_ok=True)
-                asr_data.to_srt(save_path=str(original_subtitle_path))
+                # original_subtitle_path = Path(self.task.original_subtitle_save_path)
+                # original_subtitle_path.parent.mkdir(parents=True, exist_ok=True)
+                asr_data.to_srt(save_path=self.task.original_subtitle_save_path)
                 logger.info("源字幕文件已保存到: %s", self.task.original_subtitle_save_path)
                 
                 if self.task.result_subtitle_save_path:

@@ -1,3 +1,11 @@
+3.6.8
+	For youtube video, if there is a built-in subtitle, it will be saved in work_dir as well.
+	Save both original subtitle and translated subtitle file in work_dir
+	Shorten work_dir name to reduce chances of errors.
+	Split lines by characters instead of words.
+	Automatically split lines in both batch mode and regular mode.
+	Add synthesis video prefix and suffix options.
+	Test OpenAI timeout now is 20 seconds.
 3.6.7
 	Fix FasterWhisperXXL download bug.
 	Add "Add Logo or Video Processing" to Batch Processing.

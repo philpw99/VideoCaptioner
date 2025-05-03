@@ -42,22 +42,22 @@ class SubtitleSettingDialog(MessageBoxBase):
         )
 
         self.word_count_cjk_card = SpinBoxSettingCard(
-            cfg.max_word_count_cjk,
+            cfg.max_char_count_cjk,
             FIF.TILES,
             self.tr('中文最大字数'),
-            self.tr('单条字幕的最大字数 (对于中日韩等字符)'),
+            self.tr('单行字幕的最大字数 (对于中日韩等字符)'),
             minimum=8,
-            maximum=30,
+            maximum=100,
             parent=self
         )
 
         self.word_count_english_card = SpinBoxSettingCard(
-            cfg.max_word_count_english,
+            cfg.max_char_count_english,
             FIF.TILES,
-            self.tr('英文最大单词数'),
-            self.tr('单条字幕的最大单词数 (英文)'),
+            self.tr('英文最大字符数'),
+            self.tr('单行字幕的最大字符数 (英文)'),
             minimum=8,
-            maximum=30,
+            maximum=100,
             parent=self
         )
 

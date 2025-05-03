@@ -91,6 +91,18 @@ class CreateTaskThread(QThread):
             self.progress.emit(0, self.tr("创建任务失败"))
             self.error.emit(str(e))
 
+    def short_work_path(self, path: str) -> Path:
+        """Create and return a shorten work dir path
+        Arg1: the path string of original video file
+        return: The Path of work_dir for that video file. Name must 
+        """
+        # Work dir + First 20 characters + hash hex code last 8 digits
+        work_dir: Path = Path(cfg.work_dir.value) / ( Path(path).stem[:20] + "-" + hex(hash(path))[-8:] )
+        # Create the path if not exist
+        work_dir.mkdir(parents=True, exist_ok=True)
+        return work_dir
+        
+    
     def create_file_task(self,
                          file_path: str,
                          task_type: Task.Type,
@@ -104,7 +116,8 @@ class CreateTaskThread(QThread):
         logger.info("\n===================")
         logger.info(f"开始创建文件任务：{file_path}")
         # 使用 Path 对象处理路径
-        task_work_dir = Path(cfg.work_dir.value) / Path(file_path).stem
+        task_work_dir: Path = self.short_work_path(file_path)
+        
         file_full_path = Path(file_path)
         file_dir = file_full_path.parent
         file_name = file_full_path.stem
@@ -134,7 +147,7 @@ class CreateTaskThread(QThread):
         # 定义各个路径
         original_subtitle_save_path = task_work_dir / f"{self.tr("【原始字幕】")}{file_name}-{cfg.transcribe_model.value.value}{whisper_type}.srt"
         result_subtitle_save_path = file_dir / ( cfg.subtitle_file_prefix.value + file_name + cfg.subtitle_file_suffix.value + "." + cfg.subtitle_output_format.value.value )
-        video_save_path = file_dir / f"{self.tr("【生成】")}{Path(file_path).name}"
+        video_save_path = file_dir / f"{cfg.video_prefix.value}{Path(file_path).stem}{cfg.video_suffix.value}{Path(file_path).suffix}"
 
         # 音频处理
         audio_save_path = task_work_dir / f"{self.tr("【音频】")}{file_name}.wav"
@@ -195,8 +208,8 @@ class CreateTaskThread(QThread):
             llm_model=cfg.model.value,
             need_translate=need_translate,
             translate_method=translate_method,
-            max_word_count_cjk=cfg.max_word_count_cjk.value,
-            max_word_count_english=cfg.max_word_count_english.value,
+            max_char_count_cjk=cfg.max_char_count_cjk.value,
+            max_char_count_english=cfg.max_char_count_english.value,
             need_split=cfg.need_split.value,
             result_subtitle_save_path=str(result_subtitle_save_path),
             subtitle_layout=cfg.subtitle_layout.value,
@@ -251,7 +264,6 @@ class CreateTaskThread(QThread):
         task_work_dir = file_full_path.parent
         file_name = file_full_path.stem
 
-        # No subtitle from download. Do the audio transcrption.
         match cfg.transcribe_model.value.value:
             case TranscribeModelEnum.WHISPER.value:
                 whisper_type = f"{cfg.whisper_model.value.value}-{cfg.transcribe_language.value.value}"
@@ -267,9 +279,9 @@ class CreateTaskThread(QThread):
 
         # 定义各个路径
         audio_save_path = task_work_dir / f"{self.tr("【音频】")}{Path(video_file_path).stem}.wav"
-        original_subtitle_save_path = task_work_dir / f"{self.tr("【原始字幕】")}{cfg.transcribe_model.value.value}-file_name-{whisper_type}.srt" if not subtitle_file_path else subtitle_file_path
+        original_subtitle_save_path = task_work_dir / f"{self.tr("【原始字幕】")}{Path(video_file_path).stem}.srt" if not subtitle_file_path else subtitle_file_path
         result_subtitle_save_path = task_work_dir / ( cfg.subtitle_file_prefix.value + file_name + cfg.subtitle_file_suffix.value + "." + cfg.subtitle_output_format.value.value )
-        video_save_path = task_work_dir / f"{self.tr("【生成】")}{Path(video_file_path).name}"
+        video_save_path = task_work_dir / f"{cfg.video_prefix.value}{Path(video_file_path).stem}{cfg.video_suffix.value}{Path(video_file_path).suffix}"
 
         # 音频处理
         audio_format = "pcm_s16le"    # for all other audio format
@@ -333,8 +345,8 @@ class CreateTaskThread(QThread):
             llm_model=cfg.model.value,
             need_translate=need_translate,
             translate_method=translate_method,
-            max_word_count_cjk=cfg.max_word_count_cjk.value,
-            max_word_count_english=cfg.max_word_count_english.value,
+            max_char_count_cjk=cfg.max_char_count_cjk.value,
+            max_char_count_english=cfg.max_char_count_english.value,
             need_split=cfg.need_split.value,
             result_subtitle_save_path=str(result_subtitle_save_path),
             subtitle_layout=cfg.subtitle_layout.value,
@@ -362,8 +374,10 @@ class CreateTaskThread(QThread):
         # 使用 Path 对象处理路径
         file_full_path = Path(file_path)
         file_name = file_full_path.stem
-        task_work_dir = Path(cfg.work_dir.value) / file_name
+        task_work_dir = self.short_work_path(file_path)
         thumbnail_path = task_work_dir / "thumbnail.jpg"
+
+
 
         video_info = get_video_info(file_path, thumbnail_path=str(thumbnail_path))
         video_info = VideoInfo(**video_info)
@@ -446,8 +460,8 @@ class CreateTaskThread(QThread):
             result_subtitle_save_path=str(result_subtitle_save_path),
             subtitle_style_srt=subtitle_style_srt,
             subtitle_layout=cfg.subtitle_layout.value,
-            max_word_count_cjk=cfg.max_word_count_cjk.value,
-            max_word_count_english=cfg.max_word_count_english.value,
+            max_char_count_cjk=cfg.max_char_count_cjk.value,
+            max_char_count_english=cfg.max_char_count_english.value,
             need_video=False,
             soft_subtitle=True,
             translate_method=None,
@@ -599,8 +613,9 @@ def download(url, work_dir, progress_hook):
         info_dict = ydl.extract_info(url, download=False)
 
         # 设置动态下载文件夹为视频标题，最多50个字符长
-        video_title = sanitize_filename(info_dict.get('title', 'MyVideo'))[:50]
-        video_work_dir = Path(work_dir) / sanitize_filename(video_title)
+        video_title = sanitize_filename(info_dict.get('title', 'MyVideo'))
+        # First 20 characters plus hash 8 digits hex
+        video_work_dir = Path(work_dir) / (video_title[:20] + "-" + hex(hash(video_title))[-8:] )
         subtitle_language = info_dict.get('language', None)
         if subtitle_language:
             subtitle_language = subtitle_language.lower().split('-')[0]

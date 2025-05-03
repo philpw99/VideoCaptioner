@@ -789,9 +789,9 @@ class SubtitleOptimizationInterface(QWidget):
         # 更新任务的需要分割标志
         self.task.need_split = cfg.need_split.value
         # 更新任务的中文最大词数
-        self.task.max_word_count_cjk = cfg.max_word_count_cjk.value
+        self.task.max_char_count_cjk = cfg.max_char_count_cjk.value
         # 更新任务的英文最大词数
-        self.task.max_word_count_english = cfg.max_word_count_english.value
+        self.task.max_char_count_english = cfg.max_char_count_english.value
         
         # 储存临时字幕，保留源字幕同时允许字幕有改动
         # 如果源字幕是以词为单位，导入时会自动合并，产生很不同的字幕，因此很有必要。
@@ -972,7 +972,6 @@ class SubtitleOptimizationInterface(QWidget):
             return
 
         # 获取保存路径
-        # default_name = os.path.splitext(os.path.basename(self.task.original_subtitle_save_path))[0]
         file_path, _ = QFileDialog.getSaveFileName(
             self,
             self.tr("保存字幕文件"),

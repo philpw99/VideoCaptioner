@@ -725,8 +725,8 @@ class Task:
     thread_num: int = 10
     batch_size: int = 10
     subtitle_layout: Optional[str] = None
-    max_word_count_cjk: int = 12
-    max_word_count_english: int = 18
+    max_char_count_cjk: int = 12
+    max_char_count_english: int = 18
     need_split: bool = False
 
     # 视频生成

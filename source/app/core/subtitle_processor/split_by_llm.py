@@ -10,10 +10,11 @@ import retry
 from app.config import CACHE_PATH
 from .subtitle_config import SPLIT_SYSTEM_PROMPT
 from ..utils.logger import setup_logger
+from ..bk_asr.ASRData import is_mostly_half_width
 
 logger = setup_logger("split_by_llm")
 
-MAX_WORD_COUNT = 20  # 英文单词或中文字符的最大数量
+# MAX_WORD_COUNT = 20  # 英文单词或中文字符的最大数量
 
 
 def count_words(text: str) -> int:
@@ -66,13 +67,13 @@ def set_cache(text: str, model: str, result: List[str]) -> None:
 def split_by_llm(text: str, 
                  model: str = "gpt-4o-mini", 
                  use_cache: bool = False,
-                 max_word_count_cjk: int = 18,
-                 max_word_count_english: int = 32) -> List[str]:
+                 max_char_count_cjk: int = 18,
+                 max_char_count_english: int = 32) -> List[str]:
     """
     包装 split_by_llm_retry 函数，确保在重试全部失败后返回空列表
     """
     try:
-        return split_by_llm_retry(text, model, use_cache, max_word_count_cjk, max_word_count_english)
+        return split_by_llm_retry(text, model, use_cache, max_char_count_cjk, max_char_count_english)
     except Exception as e:
         logger.error(f"断句失败: {e}")
         return [text]
@@ -81,13 +82,15 @@ def split_by_llm(text: str,
 def split_by_llm_retry(text: str, 
                        model: str = "gpt-4o-mini", 
                        use_cache: bool = False,
-                       max_word_count_cjk: int = 18,
-                       max_word_count_english: int = 12) -> List[str]:
+                       max_char_count_cjk: int = 18,
+                       max_char_count_english: int = 32) -> List[str]:
     """
     使用LLM进行文本断句
     """
-    system_prompt = SPLIT_SYSTEM_PROMPT.replace("[max_word_count_cjk]", str(max_word_count_cjk))
-    system_prompt = system_prompt.replace("[max_word_count_english]", str(max_word_count_english))
+    
+    
+    system_prompt = SPLIT_SYSTEM_PROMPT.replace("[max_char_count_cjk]", str(max_char_count_cjk))
+    system_prompt = system_prompt.replace("[max_char_count_english]", str(max_char_count_english))
     user_prompt = f"Please use multiple <br> tags to separate the following sentence:\n{text}"
 
     if use_cache:
@@ -115,8 +118,12 @@ def split_by_llm_retry(text: str,
     split_result = [segment.strip() for segment in result.split("<br>") if segment.strip()]
 
     br_count = len(split_result)
-    if br_count < count_words(text) / MAX_WORD_COUNT * 0.9:
-        raise Exception("断句失败")
+    if is_mostly_half_width(text):
+        if br_count < len(text) / max_char_count_english:
+            raise Exception("断句失败")
+    else:
+        if br_count < len(text) / max_char_count_cjk:
+            raise Exception("断句失败")
     set_cache(system_prompt+user_prompt, model, split_result)
     return split_result
 
