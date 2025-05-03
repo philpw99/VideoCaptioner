@@ -1,3 +1,4 @@
+aria2
 requests
 psutil
 openai
