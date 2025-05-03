@@ -18,7 +18,7 @@ from app.config import SUBTITLE_STYLE_PATH, VLC_PATH
 
 from ..core.thread.subtitle_optimization_thread import SubtitleOptimizationThread
 from ..common.config import cfg
-from ..core.bk_asr.ASRData import from_subtitle_file, from_json, remove_line_break
+from ..core.bk_asr.ASRData import from_subtitle_file, from_json, remove_line_break, split_line
 from ..core.entities import OutputSubtitleFormatEnum, SupportedSubtitleFormats, SubtitleLayoutEnum, TranslateMethodEnum
 from ..core.entities import Task, SupportedVideoFormats
 from ..core.thread.create_task_thread import CreateTaskThread
@@ -416,10 +416,12 @@ class SubtitleOptimizationInterface(QWidget):
 
         for key in self.model._data:
             # Replace western alpha line breaks with space
-            line = remove_line_break(self.model._data[key][item])
-            lines = textwrap.wrap(line, width)
+            # line = remove_line_break(self.model._data[key][item])
+            output_lines = split_line(self.model._data[key][item], width, width)
+            # lines = textwrap.wrap(line, width)
             # Set new data back.
-            self.model._data[key][item] = "\n".join(lines)
+            # self.model._data[key][item] = "\n".join(lines)
+            self.model._data[key][item] = output_lines
         # Done, emit the change
         self.model.layoutChanged.emit()
 

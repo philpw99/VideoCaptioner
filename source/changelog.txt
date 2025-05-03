@@ -3,6 +3,7 @@
 	Save both original subtitle and translated subtitle file in work_dir
 	Shorten work_dir name to reduce chances of errors.
 	Split lines by characters instead of words.
+	When split lines, avoid splitting punctuations.
 	Automatically split lines in both batch mode and regular mode.
 	Add synthesis video prefix and suffix options.
 	Test OpenAI timeout now is 20 seconds.

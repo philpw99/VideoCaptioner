@@ -790,16 +790,46 @@ def remove_line_break(text:str):
                 prev_char_is_half_width = unicodedata.east_asian_width(char) not in ["W", "F"]
     return new_text
 
-def split_line(line: str, max_char_english:int, max_char_cjk: int):
-    line = remove_line_break(line)
-    if is_mostly_half_width(line):
+def split_line(text: str, max_char_english:int, max_char_cjk: int):
+    suffix_English = ["either", "neither", ",", "!", "?", "...", ".", "]", ">"]
+    suffix_cjk = ["的","了", "着", "过", "吗", "呢", "吧", "啊", "呀", "哦", "哈", "嘛", "啦","。",
+                  "，", "！", "？","……","…", ",", "!", "?", "...", ".", "]", ">"]
+    # suffix_pun = [".", ",", "!", "?", "。", "，", "！", "？", "...", "……", "…"]
+    
+    text = remove_line_break(text)
+
+    output = []
+    last_line = ""
+    
+    if is_mostly_half_width(text):
         # English or western
-        return "\n".join( textwrap.wrap(line, max_char_english) )
+        max_char = max_char_english
+        suffixes = suffix_English
     else:
         # Chinese, Japanese or Korean
-        return "\n".join(textwrap.wrap(line, max_char_cjk))
+        max_char = max_char_cjk
+        suffixes = suffix_cjk
 
+    lines = textwrap.wrap(text, max_char)
+    for i,line in enumerate(lines):
+        if i == 0:
+            last_line = line
+            continue
+        # From 2nd line
+        for suffix in suffixes:
+            # Put all suffix in the last line
+            if line.startswith(suffix):
+                last_line += suffix    # Add the suffix to the previous line
+                line = line[len(suffix):]  # remove the suffix in the start of line
+        output.append(last_line)
+        line = line.strip()
+        last_line = line
 
+    if last_line:
+        # After all lines processed, add the last line.
+        output.append(last_line)
+    return "\n".join(output)
+    
 if __name__ == '__main__':
     from pathlib import Path
 
