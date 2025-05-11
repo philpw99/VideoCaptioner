@@ -3,16 +3,17 @@ import logging
 from pathlib import Path
 
 VERSION = "v1.2.0"
-SUBVERSION = "3.6.8"
+SUBVERSION = "3.6.9"
 YEAR = 2025
 APP_NAME = "VideoCaptioner"
 AUTHOR = "Weifeng"
 COAUTHOR = "Philpw99"
 
-HELP_URL = "https://github.com/WEIFENG2333/VideoCaptioner"
-GITHUB_REPO_URL = "https://github.com/WEIFENG2333/VideoCaptioner"
-RELEASE_URL = "https://github.com/WEIFENG2333/VideoCaptioner/releases/latest"
-FEEDBACK_URL = "https://github.com/WEIFENG2333/VideoCaptioner/issues"
+HELP_URL = "https://github.com/philpw99/VideoCaptioner/wiki"
+GITHUB_REPO_URL = "https://github.com/philpw99/VideoCaptioner"
+RELEASE_URL = "https://github.com/philpw99/VideoCaptioner/releases/latest"
+FEEDBACK_URL = "https://github.com/philpw99/VideoCaptioner/issues"
+MAIN_REPO_URL = "https://github.com/WEIFENG2333/VideoCaptioner"
 
 FFMPEG_DOWNLOAD_URL = "https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-essentials.7z"
 

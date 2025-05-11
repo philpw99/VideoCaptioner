@@ -8,7 +8,7 @@ import openai
 import retry
 
 from app.config import CACHE_PATH
-from .subtitle_config import SPLIT_SYSTEM_PROMPT
+from .subtitle_config import SPLIT_SYSTEM_PROMPT, SPLIT_ENGLISH_SYSTEM_PROMPT, SPLIT_CJK_SYSTEM_PROMPT
 from ..utils.logger import setup_logger
 from ..bk_asr.ASRData import is_mostly_half_width
 
@@ -87,11 +87,13 @@ def split_by_llm_retry(text: str,
     """
     使用LLM进行文本断句
     """
+    is_mostly_English = is_mostly_half_width(text)
+    if is_mostly_English:
+        system_prompt = SPLIT_ENGLISH_SYSTEM_PROMPT.replace("[max_char_count_english]", str(max_char_count_english))
+    else:
+        system_prompt = SPLIT_CJK_SYSTEM_PROMPT.replace("[max_char_count_cjk]", str(max_char_count_cjk))
     
-    
-    system_prompt = SPLIT_SYSTEM_PROMPT.replace("[max_char_count_cjk]", str(max_char_count_cjk))
-    system_prompt = system_prompt.replace("[max_char_count_english]", str(max_char_count_english))
-    user_prompt = f"Please use multiple <br> tags to separate the following sentence:\n{text}"
+    user_prompt = f"Please use <br> tags to separate the following sentence:\n{text}"
 
     if use_cache:
         cached_result = get_cache(system_prompt+user_prompt, model)
@@ -118,7 +120,7 @@ def split_by_llm_retry(text: str,
     split_result = [segment.strip() for segment in result.split("<br>") if segment.strip()]
 
     br_count = len(split_result)
-    if is_mostly_half_width(text):
+    if is_mostly_English:
         if br_count < len(text) / max_char_count_english:
             raise Exception("断句失败")
     else:

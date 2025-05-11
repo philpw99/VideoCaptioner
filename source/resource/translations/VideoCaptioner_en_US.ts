@@ -3289,89 +3289,88 @@ Detail settings are in the &apos;Settings&apos; on the lower left corner.</trans
         <translation>Video path cannot be empty</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="94"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="82"/>
         <source>等待其他音频处理结束</source>
         <translation>Waiting for other task to finish audio processing</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="100"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="88"/>
         <source>音频转换前中断</source>
         <translation>Interruped before audio transcoding</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="102"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="90"/>
         <source>转换音频中</source>
         <translation>Transcoding Audio</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="120"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="108"/>
         <source>音频转换失败</source>
         <translation>Audio transcoding failed</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="127"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="115"/>
         <source>等待其他转录结束</source>
         <translation>Waiting for other task to finish transcribing</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="133"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="121"/>
         <source>转录前中断</source>
         <translation>Interrupted before transcribing</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="136"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="124"/>
         <source>语音转录中</source>
         <translation>Voice transcribing</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="143"/>
-        <location filename="../../app/core/thread/transcript_thread.py" line="211"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="131"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="199"/>
         <source>无效的转录模型: </source>
         <translation>Invalid transcribe model: </translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="217"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="206"/>
         <source>字幕断句前中断</source>
         <translation>Interrupted before sentence breaking</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="223"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="212"/>
         <source>智能断句被中断</source>
         <translation>Smart sentence breaking was interrupted</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="226"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="215"/>
         <source>智能断句失败，请检查你的大模型Base URL和API Key是否有效。</source>
         <translation>Smart Sentence Breaking failed, please check your LLM&apos;s Base URL and API Key Settings.</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="85"/>
-        <location filename="../../app/core/thread/transcript_thread.py" line="277"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="266"/>
         <source>转录完成</source>
         <translation>Transcription Complete</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="284"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="273"/>
         <source>转录失败</source>
         <translation>Transcribing Failed</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="294"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="283"/>
         <source>OpenAI API 测试失败, 请检查设置</source>
         <translation>OpenAI API test failed. Please check your settings</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="303"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="292"/>
         <source>开始验证API配置...</source>
         <translation>Start checking API settings...</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="309"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="298"/>
         <source>字幕断句...</source>
         <translation>Subtitle Sentence Breaking...</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/transcript_thread.py" line="319"/>
+        <location filename="../../app/core/thread/transcript_thread.py" line="308"/>
         <source>断句失败</source>
         <translation>Smart Sentence Breaking Failed</translation>
     </message>

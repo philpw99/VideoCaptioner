@@ -1,3 +1,9 @@
+3.6.9
+	Add aria2 as requirement, not as the exe file in resource/bin
+	Add 7z.dll to the resource/bin folder.
+	Modify some split configuration, minimum English chars per line is now 20, default is 40.
+	Fix a bug for rtx5000fix.
+	Update yt-dlp to 2025.4.30
 3.6.8
 	For youtube video, if there is a built-in subtitle, it will be saved in work_dir as well.
 	Save both original subtitle and translated subtitle file in work_dir

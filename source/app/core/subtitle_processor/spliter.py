@@ -207,7 +207,7 @@ def is_mainly_cjk(text: str) -> bool:
     return cjk_count / total_chars > 0.5 if total_chars > 0 else False
 
 
-def split_long_segment(segs_to_merge: List[ASRDataSeg]) -> List[ASRDataSeg]:
+def split_long_segment(segs_to_merge: List[ASRDataSeg], is_mostly_English = None) -> List[ASRDataSeg]:
     """
     基于最大时间间隔拆分长分段，根据文本类型使用不同的最大词数限制
     """
@@ -221,8 +221,13 @@ def split_long_segment(segs_to_merge: List[ASRDataSeg]) -> List[ASRDataSeg]:
 
     # 根据文本类型确定最大词数限制
     # max_word_count = MAX_WORD_COUNT_CJK if is_mainly_cjk(merged_text) else MAX_WORD_COUNT_ENGLISH
-    max_char_count = cfg.max_char_count_cjk.value if is_mainly_cjk(merged_text) else cfg.max_char_count_english.value
+    if is_mostly_English is None:
+        is_mostly_English = is_mostly_half_width(merged_text)
+    
+    max_char_count = cfg.max_char_count_english.value if is_mostly_English else cfg.max_char_count_cjk.value
+
     # logger.debug(f"正在拆分分段: {merged_text}")
+
 
     # 基本情况：如果分段足够短或无法进一步拆分
     if len(merged_text) <= max_char_count or len(segs_to_merge) == 1:
@@ -234,6 +239,15 @@ def split_long_segment(segs_to_merge: List[ASRDataSeg]) -> List[ASRDataSeg]:
         result_segs.append(merged_seg)
         return result_segs
     
+    # 特别情况：第一个词长于max_char_count
+    if is_mostly_English:
+        if len(segs_to_merge[0].text) > max_char_count:
+            second_segs = segs_to_merge[1:]
+            # 递归拆分
+            result_segs.extend(segs_to_merge[0], is_mostly_English)
+            result_segs.extend(split_long_segment(second_segs, is_mostly_English))
+            return result_segs
+
     # logger.debug(f"正在拆分长分段: {merged_text}")
 
     # 检查时间间隔是否都相等
@@ -260,8 +274,8 @@ def split_long_segment(segs_to_merge: List[ASRDataSeg]) -> List[ASRDataSeg]:
     # print(f"分段2: {''.join(seg.text for seg in second_segs)}")
     # logger.debug(f"-------")
     # 递归拆分
-    result_segs.extend(split_long_segment(first_segs))
-    result_segs.extend(split_long_segment(second_segs))
+    result_segs.extend(split_long_segment(first_segs, is_mostly_English))
+    result_segs.extend(split_long_segment(second_segs, is_mostly_English))
 
     return result_segs
 

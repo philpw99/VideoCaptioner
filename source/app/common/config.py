@@ -167,7 +167,7 @@ class Config(QConfig):
     )
     need_split = ConfigItem("Subtitle", "NeedSplit", True, BoolValidator())
     max_char_count_cjk = ConfigItem("Subtitle", "MaxCharacterCountCJK", 20, RangeValidator(8, 100))
-    max_char_count_english = ConfigItem("Subtitle", "MaxCharacterCountEnglish", 40, RangeValidator(8, 100))
+    max_char_count_english = ConfigItem("Subtitle", "MaxCharacterCountEnglish", 40, RangeValidator(20, 100))
     needs_remove_punctuation = ConfigItem("Subtitle", "NeedsRemovePunctuation", False, BoolValidator())
     custom_prompt_text = ConfigItem("Subtitle", "CustomPromptText", "")
 

@@ -316,7 +316,7 @@ class SubtitleOptimizer:
         translate_result = {}
         previous_sentence = ""
         previous_translation = ""
-        re_remove_think = re.compile(r".*</think>")
+        re_remove_think = re.compile(r".*<\/think>")
         re_translate = re.compile(r".*<[Tt]ranslation>(.*?)</[Tt]ranslation>")
         re_notag = re.compile(r"<.*?>")
         
