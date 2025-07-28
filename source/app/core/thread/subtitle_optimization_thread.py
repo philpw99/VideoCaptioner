@@ -165,7 +165,8 @@ class SubtitleOptimizationThread(QThread):
                             original_language=self.task.original_language,
                             custom_prompt=self.custom_prompt_text,
                         )
-                        translate_result = self.optimizer.translate_single_batch(subtitle_json, callback=self.callback)
+                        # Single batch will use both the time and original text
+                        translate_result = self.optimizer.translate_single_batch(asr_data, callback=self.callback)
                     case TranslateMethodEnum.GOOGLE:
                         self.task.status = Task.Status.TRANSLATING
                         self.progress.emit(30, self.tr("批量谷歌翻译字幕..."))

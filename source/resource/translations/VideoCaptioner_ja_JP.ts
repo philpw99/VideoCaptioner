@@ -2202,27 +2202,27 @@ Or go to GitHub for the new release.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="171"/>
+        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="172"/>
         <source>批量谷歌翻译字幕...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="176"/>
+        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="177"/>
         <source>Error! Translation result is empty!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="207"/>
+        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="208"/>
         <source>优化/翻译完成</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="214"/>
+        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="215"/>
         <source>优化失败</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="224"/>
+        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="225"/>
         <source>{0}% 处理字幕</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2725,11 +2725,6 @@ Or go to GitHub for the new release.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="106"/>
-        <source>选择字幕翻译方式，或者不翻译。</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <location filename="../../app/view/task_creation_interface.py" line="114"/>
         <source>Translate Target</source>
         <translation type="unfinished"></translation>
@@ -2970,6 +2965,11 @@ Or go to GitHub for the new release.</source>
         <location filename="../../app/view/task_creation_interface.py" line="953"/>
         <location filename="../../app/view/task_creation_interface.py" line="1041"/>
         <source>错误</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../app/view/task_creation_interface.py" line="106"/>
+        <source>选择字幕翻译方式，或者不翻译。建议使用&apos;大模型单句翻译&apos;，&apos;大模型优化+翻译&apos;比较容易出问题。</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

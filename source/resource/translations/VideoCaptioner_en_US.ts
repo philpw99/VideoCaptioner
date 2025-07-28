@@ -2203,27 +2203,27 @@ Detail settings are in the &apos;Settings&apos; on the lower left corner.</trans
         <translation>Batch translating subtitles by single sentence...</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="171"/>
+        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="172"/>
         <source>批量谷歌翻译字幕...</source>
         <translation>Batch translate by Google...</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="176"/>
+        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="177"/>
         <source>Error! Translation result is empty!</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="207"/>
+        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="208"/>
         <source>优化/翻译完成</source>
         <translation>Optimizing / Translation finished</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="214"/>
+        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="215"/>
         <source>优化失败</source>
         <translation>Optimization failed</translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="224"/>
+        <location filename="../../app/core/thread/subtitle_optimization_thread.py" line="225"/>
         <source>{0}% 处理字幕</source>
         <translation>{0}% processing subtitle</translation>
     </message>
@@ -2716,11 +2716,6 @@ Detail settings are in the &apos;Settings&apos; on the lower left corner.</trans
         <translation>Translate Method</translation>
     </message>
     <message>
-        <location filename="../../app/view/task_creation_interface.py" line="106"/>
-        <source>选择字幕翻译方式，或者不翻译。</source>
-        <translation>Choose the method to translate the subtitle, or not translating.</translation>
-    </message>
-    <message>
         <location filename="../../app/view/task_creation_interface.py" line="133"/>
         <source>字幕输出格式</source>
         <translation>Sub Output Format</translation>
@@ -2769,6 +2764,11 @@ Detail settings are in the &apos;Settings&apos; on the lower left corner.</trans
         <location filename="../../app/view/task_creation_interface.py" line="98"/>
         <source>音频的源语言</source>
         <translation>The original spoken language in the source audio</translation>
+    </message>
+    <message>
+        <location filename="../../app/view/task_creation_interface.py" line="106"/>
+        <source>选择字幕翻译方式，或者不翻译。建议使用&apos;大模型单句翻译&apos;，&apos;大模型优化+翻译&apos;比较容易出问题。</source>
+        <translation type="unfinished">Choose method of subtitle translation, or no translation. Recommend using &apos;Single Sentence translation&apos; instead of &apos;Optimize translate&apos;.</translation>
     </message>
     <message>
         <location filename="../../app/view/task_creation_interface.py" line="115"/>

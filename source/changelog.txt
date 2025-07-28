@@ -1,3 +1,6 @@
+3.6.10
+	Better "Single sentence translation" handling.
+	Fix "Devide by 0" error in a funtion.
 3.6.9
 	Add aria2 as requirement, not as the exe file in resource/bin
 	Add 7z.dll to the resource/bin folder.

@@ -758,6 +758,9 @@ def is_mostly_half_width(text: str):
     If over 80% is half width then return true.
     """
     text_len = len(text)
+    if text_len == 0:
+        # Empty can be considered as half-width
+        return True
     full_count = 0
     for char in text:
         if unicodedata.east_asian_width(char) in ["W", "F"]:

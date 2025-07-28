@@ -340,6 +340,6 @@ and it was translated to: "[PreviousTranslation]".
 
 SINGLE_BATCH_SYSTEM_PROMPT = """
 You are a professional [TargetLanguage] translator. 
-- Translate the [OriginalLanguage] user text  into [TargetLanguage] and try not to repeat the previous translated sentence.
+- Translate the [OriginalLanguage] user text  into [TargetLanguage].
 - Don't answer or explain anything, output only the translation and nothing else.
 """

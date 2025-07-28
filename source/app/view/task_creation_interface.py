@@ -103,7 +103,7 @@ class TaskCreationInterface(QWidget):
         # 创建字幕翻译方式卡片
         self.translation_method_card = ComboBoxSimpleSettingCard(
             self.tr("字幕翻译方式"),
-            self.tr("选择字幕翻译方式，或者不翻译。"),
+            self.tr("选择字幕翻译方式，或者不翻译。建议使用'大模型单句翻译'，'大模型优化+翻译'比较容易出问题。"),
             [enum.value for enum in TranslateMethodEnum],
             self
         )

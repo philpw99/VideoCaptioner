@@ -6,7 +6,7 @@ import re, json
 from typing import Dict
 from ...common.config import INVISIBLE_ORIGINAL,INVISIBLE_TRANSLATED, cfg
 from ..utils.subtitles import get_original_and_translated
-from ..bk_asr.ASRData import split_line
+from ..bk_asr.ASRData import split_line, ASRData
 import retry
 from openai import OpenAI
 
@@ -311,7 +311,7 @@ class SubtitleOptimizer:
                  translate_result[key] = f"{value}\n "
         return translate_result
 
-    def translate_single_batch(self, original_subtitle: Dict[int,str], callback = None) -> Dict[int,str]:
+    def translate_single_batch(self, asr_data: ASRData , callback = None) -> Dict[int,str]:
         """直接大批翻译字幕"""
         translate_result = {}
         previous_sentence = ""
@@ -319,6 +319,9 @@ class SubtitleOptimizer:
         re_remove_think = re.compile(r".*<\/think>")
         re_translate = re.compile(r".*<[Tt]ranslation>(.*?)</[Tt]ranslation>")
         re_notag = re.compile(r"<.*?>")
+
+        subtitle_json = asr_data.to_json()
+        original_subtitle = {str(k): v["original_subtitle"] for k, v in subtitle_json.items()}
         
         print(f"Target language: {self.target_language}")
 
@@ -345,12 +348,23 @@ class SubtitleOptimizer:
             #     ).replace( "[PreviousTranslation]", previous_translation)
             
             if previous_sentence:
-                message =[
-                    {"role": "system", "content": sys_prompt},
-                    {"role": "user", "content": previous_sentence},
-                    {"role": "assistant", "content": previous_translation},
-                    {"role": "user", "content": original}
-                ]
+                # Calculate the time difference between last sentence and this sentence
+                # If it's over 2000 ms, then no need for showing the previous sentence.
+                
+                pre_end_time = subtitle_json[str( int(key)-1 )]["end_time"]
+                time_diff = subtitle_json[key]["start_time"] - pre_end_time
+                if time_diff > 2000:
+                    message = [
+                        {"role": "system", "content": sys_prompt},
+                        {"role": "user", "content": original}
+                    ]
+                else:
+                    message =[
+                        {"role": "system", "content": sys_prompt},
+                        {"role": "user", "content": previous_sentence},
+                        {"role": "assistant", "content": previous_translation},
+                        {"role": "user", "content": original}
+                    ]
             else:
                 message =[
                     {"role": "system", "content": sys_prompt},
@@ -387,6 +401,13 @@ class SubtitleOptimizer:
                 if ( original[-1] != "." and translated[-1] == "。") \
                         or (original[-1] != "?" and translated[-1] == "？") :
                     translated = translated[:-1]
+
+            # Special handling for sound descriptions
+            if original[0]=="[" and original[-1]=="]":
+                if translated[0] != "[":
+                    translated = "[" + translated
+                if translated[-1] != "]":
+                    translated = translated + "]"
 
             previous_translation = translated
             logger.info(f"{key}. Original: {value}\n{key}. Translated: {translated}")
