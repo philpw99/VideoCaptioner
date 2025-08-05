@@ -1,3 +1,7 @@
+3.6.11
+	If soft-subtitled or no logo, the batch interface will not show watermark/logo buttons.
+	Same for the landscape switch in batch interface.
+	Fix a small bug for rtx 5000 fix.
 3.6.10
 	Better "Single sentence translation" handling.
 	Fix "Devide by 0" error in a funtion.

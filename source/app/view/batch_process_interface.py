@@ -1143,6 +1143,13 @@ class TaskInfoCard(CardWidget):
         self.progress_ring.setValue(100)
         self.task_state.setLevel(InfoLevel.INFOAMTION)
         self.task_state.setIcon(FIF.REMOVE)
+        if self.task.soft_subtitle or self.task.logo_picture is None:
+            self.logo_picture.setHidden(True)
+        else:
+            self.logo_picture.setHidden(False)
+
+        # Hide the portrait/landscape switch if soft-subtitle
+        self.portrait_mode.setHidden(self.task.soft_subtitle)
         self.update_tooltip()
 
     def set_task(self, task):
