@@ -82,7 +82,7 @@ WHISPER_MODELS = [
         "sha": "ad82bf6a9043ceed055076d0fd39f5f186ff8062"
     },
     {
-        "label": "Distil-large-v3",
+        "label": "Distil-Large-v3",
         "value": "ggml-distil-large-v3.bin",
         "size": "1.52 GB",
         "downloadLink": "https://huggingface.co/distil-whisper/distil-large-v3-ggml/resolve/main/ggml-distil-large-v3.bin?download=true",

@@ -619,6 +619,8 @@ class WhisperModelEnum(Enum):
     MEDIUM = "medium"
     LARGE_V1 = "large-v1"
     LARGE_V2 = "large-v2"
+    LARGE_V3 = "large-v3"
+    LARGE_V3_D = "distil-large-v3"
 
 
 class FasterWhisperModelEnum(Enum):
