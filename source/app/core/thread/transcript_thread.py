@@ -140,13 +140,21 @@ class TranscriptThread(QThread):
                     match self.task.transcribe_model:
                         case TranscribeModelEnum.WHISPER:
                             args["language"] = self.task.transcribe_language
-                            args["whisper_model"] = self.task.whisper_model
+                            # Just a patch. No idea why sometimes is Enum, sometimes is str.
+                            if isinstance( self.task.whisper_model, str):
+                                args["whisper_model"] = self.task.whisper_model
+                            else:
+                                args["whisper_model"] = self.task.whisper_model.value
                             args["use_cache"] = False
                             args["need_word_time_stamp"] = True
                             self.asr = WhisperASR(self.task.audio_save_path, **args)
                         case TranscribeModelEnum.WHISPER_API:
                             args["language"] = self.task.transcribe_language
-                            args["whisper_model"] = self.task.whisper_api_model
+                            # Patch
+                            if isinstance(self.task.whisper_api_model, str):
+                                args["whisper_model"] = self.task.whisper_api_model
+                            else:
+                                args["whisper_model"] = self.task.whisper_api_model.value
                             args["api_key"] = self.task.whisper_api_key
                             args["base_url"] = self.task.whisper_api_base
                             args["prompt"] = self.task.whisper_api_prompt
@@ -155,7 +163,11 @@ class TranscriptThread(QThread):
                             self.asr = WhisperAPI(self.task.audio_save_path, **args)
                         case TranscribeModelEnum.FASTER_WHISPER:
                             args["faster_whisper_path"] = cfg.faster_whisper_program.value
-                            args["whisper_model"] = self.task.faster_whisper_model.value
+                            # Patch
+                            if isinstance( self.task.faster_whisper_model, str ):
+                                args["whisper_model"] = self.task.faster_whisper_model
+                            else:
+                                args["whisper_model"] = self.task.faster_whisper_model.value
                             args["model_dir"] = str(MODEL_PATH)
                             args["language"] = self.task.transcribe_language
                             args["device"] = self.task.faster_whisper_device

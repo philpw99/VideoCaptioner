@@ -87,10 +87,14 @@ class WhisperASR(BaseASR):
                     str(self.whisper_cpp_path),
                     '-m', str(self.model_path),
                     '-f', str(wav_path),
-                    '-l', self.language,
                     '--output-srt',
                 ]
                 
+                if self.language.lower() != "unknown":
+                    whisper_params.extend([
+                        '-l', self.language,
+                    ])
+
                 # 根据版本添加额外参数
                 if not is_const_me_version:
                     whisper_params.extend([

@@ -473,6 +473,7 @@ class TaskCreationInterface(QWidget):
                         FIF.ASTERISK,
                         cfg.whisper_api_prompt.value
                         )
+        self.create_task_thread = None
     
     def on_output_format_changed(self, value:str):
         if cfg.subtitle_output_format.value != value:
@@ -480,7 +481,7 @@ class TaskCreationInterface(QWidget):
         comboBox = self.target_format_card.comboBox
         if comboBox.currentText() != value:
             comboBox.setCurrentText(value)
-
+        
     def on_original_language_changed(self, value: str):
         enum = TranscribeLanguageEnum(value)
         if cfg.transcribe_language.value != enum:
@@ -489,6 +490,7 @@ class TaskCreationInterface(QWidget):
         if comboBox.currentText() != value:
             comboBox.setCurrentText(value)
 
+        
     def on_subtitle_layout_changed(self, value: str):
         enum = SubtitleLayoutEnum(value)
         if cfg.subtitle_layout.value != enum:
@@ -538,7 +540,6 @@ class TaskCreationInterface(QWidget):
             self.logo_card.setEnabled(True)
         else:
             self.logo_card.setDisabled(True)
-        
 
     def on_target_language_changed(self, language: str):
         enum = TargetLanguageEnum(language)
@@ -1029,7 +1030,7 @@ class TaskCreationInterface(QWidget):
     def process(self):
         # Update task settings before processing.
         self.update_info()
-        
+        self.create_task_thread = None
         search_input = self.search_input.text()
 
         if os.path.isfile(search_input):

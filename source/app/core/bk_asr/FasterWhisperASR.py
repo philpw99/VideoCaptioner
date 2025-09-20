@@ -90,11 +90,15 @@ class FasterWhisperASR(BaseASR):
         """构建命令行参数"""
         cmd = [
             str(self.faster_whisper_path),
-            "-l", self.language,
             "-m", str(self.model_path),
             # "--verbose", "true",
             "--print_progress"
         ]
+        
+        if self.language != "unknown":
+            cmd.extend([
+                "-l", self.language,
+            ])
         
         # 添加模型目录参数
         if self.model_dir:

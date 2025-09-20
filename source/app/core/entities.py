@@ -263,6 +263,7 @@ class TranscribeLanguageEnum(Enum):
     CHINESE_TRADITIONAL = "繁體中文"
     JAPANESE = "Japanese"
     KOREAN = "Korean"
+    UNKNOWN = "Unknown"
     YUE = "粤语"
     CANTONESE = "粤语"
     AFRIKAANS = "Afrikaans"
@@ -376,6 +377,7 @@ WHISPER_LANGUAGES ={
     "法语": "fr",
     "葡萄牙语": "pt",
     "土耳其语": "tr",
+    "Unknown": "unknown",
     "English": "en",
     "Chinese": "zh",
     "German": "de", 
@@ -494,6 +496,7 @@ LANGUAGES = {
     "法语": "fr",
     "葡萄牙语": "pt",
     "土耳其语": "tr",
+    "Unknown": "unknown",
     "English": "en",
     "Chinese": "zh",
     "German": "de", 
