@@ -614,7 +614,7 @@ class VideoInfo:
 
 class WhisperModelEnum(Enum):
     TINY = "tiny"
-    # BASE = "base"
+    BASE = "base"
     SMALL = "small"
     MEDIUM = "medium"
     LARGE_V1 = "large-v1"

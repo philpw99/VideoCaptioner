@@ -20,10 +20,9 @@ import tempfile
 import shutil
 from pathlib import Path
 
-from modelscope.hub.snapshot_download import snapshot_download
-
 from ..core.thread.download_thread import DownloadThread
 from ..core.thread.modelscope_download_thread import ModelscopeDownloadThread
+from ..core.thread.huggingface_download_thread import HuggingfaceDownloadThread
 from ..core.thread.unzip_thread import UnzipThread
 
 
@@ -50,63 +49,63 @@ FASTER_WHISPER_MODELS = [
         "label": "Tiny",
         "value": "faster-whisper-tiny", 
         "size": "77824",
-        "downloadLink": "https://huggingface.co/Systran/faster-whisper-tiny",
+        "downloadLink": "Systran/faster-whisper-tiny",
         "modelScopeLink": "pengzhendong/faster-whisper-tiny",
     },
     {
         "label": "Base",
         "value": "faster-whisper-base",
         "size": "148480",
-        "downloadLink": "https://huggingface.co/Systran/faster-whisper-base",
+        "downloadLink": "Systran/faster-whisper-base",
         "modelScopeLink": "pengzhendong/faster-whisper-base",
     },
     {
         "label": "Small",
         "value": "faster-whisper-small",
         "size": "495616",
-        "downloadLink": "https://huggingface.co/Systran/faster-whisper-small",
+        "downloadLink": "Systran/faster-whisper-small",
         "modelScopeLink": "pengzhendong/faster-whisper-small",
     },
     {
         "label": "Medium",
         "value": "faster-whisper-medium",
         "size": "1572864",
-        "downloadLink": "https://huggingface.co/Systran/faster-whisper-medium",
+        "downloadLink": "Systran/faster-whisper-medium",
         "modelScopeLink": "pengzhendong/faster-whisper-medium",
     },
     {
         "label": "Large-v1",
         "value": "faster-whisper-large-v1",
         "size": "3145728",
-        "downloadLink": "https://huggingface.co/Systran/faster-whisper-large-v1",
+        "downloadLink": "Systran/faster-whisper-large-v1",
         "modelScopeLink": "pengzhendong/faster-whisper-large-v1",
     },
     {
         "label": "Large-v2",
         "value": "faster-whisper-large-v2",
         "size": "3145728",
-        "downloadLink": "https://huggingface.co/Systran/faster-whisper-large-v2",
+        "downloadLink": "Systran/faster-whisper-large-v2",
         "modelScopeLink": "pengzhendong/faster-whisper-large-v2",
     },
     {
         "label": "Large-v3",
         "value": "faster-whisper-large-v3",
         "size": "3145728",
-        "downloadLink": "https://huggingface.co/Systran/faster-whisper-large-v3",
+        "downloadLink": "Systran/faster-whisper-large-v3",
         "modelScopeLink": "pengzhendong/faster-whisper-large-v3",
     },
     {
         "label": "Large-v3-turbo",
         "value": "faster-whisper-large-v3-turbo",
         "size": "1739466",
-        "downloadLink": "https://huggingface.co/Purfview/faster-whisper-large-v3-turbo",
+        "downloadLink": "Purfview/faster-whisper-large-v3-turbo",
         "modelScopeLink": "pengzhendong/faster-whisper-large-v3-turbo"
     },
     {
         "label": "Large-distil-turbo",
         "value": "faster-whisper-distil-large-turbo",
         "size": "1739466",
-        "downloadLink": "https://huggingface.co/Purfview/faster-distil-whisper-large-v3.5",
+        "downloadLink": "Purfview/faster-distil-whisper-large-v3.5",
         "modelScopeLink": "pengzhendong/faster-distil-whisper-large-v2"
     }
 
@@ -189,6 +188,15 @@ class FasterWhisperDownloadDialog(MessageBoxBase):
             desc_label = BodyLabel(self.tr("未下载Faster Whisper 程序"), self)
             layout.addWidget(desc_label)
 
+        # 选择下载源
+        source_layout= QHBoxLayout()
+        self.download_source_label = BodyLabel(self.tr("Download Source:"), self)
+        self.download_source_combo = ComboBox(self)
+        self.download_source_combo.addItems(['huggingface.co', 'modelScope.CN'])
+        source_layout.addWidget(self.download_source_label)
+        source_layout.addWidget(self.download_source_combo)
+        layout.addLayout(source_layout)
+        
         # 下载控件
         program_layout = QHBoxLayout()
         self.program_combo = ComboBox(self)
@@ -384,7 +392,6 @@ class FasterWhisperDownloadDialog(MessageBoxBase):
         
         # 直接下载到bin目录
         save_path = os.path.join(BIN_PATH, program['value'])
-        
         self.program_download_thread = DownloadThread(program['downloadLink'], save_path)
         self.program_download_thread.progress.connect(self._on_program_download_progress)
         self.program_download_thread.finished.connect(lambda: self._on_program_download_finished(save_path))
@@ -479,10 +486,18 @@ class FasterWhisperDownloadDialog(MessageBoxBase):
             download_btn.setEnabled(False)
         
         # 创建并启动下载线程，保存到类属性
-        self.model_download_thread = ModelscopeDownloadThread(
-            model['modelScopeLink'],
-            os.path.join(MODEL_PATH, model['value'])
-        )
+        if self.download_source_combo.currentIndex == 1:
+            # Download from ModelScope.CN
+            self.model_download_thread = ModelscopeDownloadThread(
+                model['modelScopeLink'],
+                os.path.join(MODEL_PATH, model['value'])
+            )
+        else:
+            # Download from HuggingFace hub
+            self.model_download_thread = HuggingfaceDownloadThread(
+                model['downloadLink'],
+                os.path.join(MODEL_PATH, model['value'])
+            )
         
         def _on_model_download_progress(value, msg):
             self.progress_bar.setValue(value)

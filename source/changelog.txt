@@ -1,3 +1,7 @@
+3.6.12
+	Changed rtx5000 fix from --float16 to --float32.
+	Fix WhisperCPP model download problem. Add download source chooser (Huggingface or ModelScope).
+	Add model download source chooser ( HuggingFace or ModelScope).
 3.6.11
 	If soft-subtitled or no logo, the batch interface will not show watermark/logo buttons.
 	Same for the landscape switch in batch interface.

@@ -6,5 +6,6 @@ PyQt5
 PyQt-Fluent-Widgets
 yt_dlp
 modelscope
+huggingface_hub
 googleTrans
 cinemagoer

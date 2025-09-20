@@ -98,6 +98,7 @@ class DownloadDialog(MessageBoxBase):
         self.setup_ui()
         self.setWindowTitle(self.tr('下载模型'))
         self.download_thread = None
+        self.model_downloading = None
 
     def setup_ui(self):
         self.titleLabel = BodyLabel(self.tr('下载模型'), self)
@@ -111,6 +112,11 @@ class DownloadDialog(MessageBoxBase):
             downloaded = "✓ " if os.path.exists(model_path) else " "
             self.model_combo.addItem(f"{downloaded}{model['label']} ({model['size']})")
         
+        # 模型下载链接：HuggingFace or modelscope.cn
+        self.download_source_combo = ComboBox(self)
+        self.download_source_combo.addItems(["HuggingFace.co", "ModelScope.CN"])
+        # self.download_source_combo.setCurrentIndex(0)
+                
         # 进度条
         self.progress_bar = ProgressBar()
         self.progress_bar.hide()
@@ -126,6 +132,7 @@ class DownloadDialog(MessageBoxBase):
         # 添加到布局
         self.viewLayout.addWidget(self.titleLabel)
         self.viewLayout.addWidget(self.model_combo)
+        self.viewLayout.addWidget(self.download_source_combo)
         self.viewLayout.addWidget(self.progress_bar)
         self.viewLayout.addWidget(self.progress_label)
         self.viewLayout.addWidget(self.download_button)
@@ -155,10 +162,13 @@ class DownloadDialog(MessageBoxBase):
         self.progress_label.show()
         self.download_button.setEnabled(False)
         
+        download_link = model['mirrorLink'] if self.download_source_combo.currentIndex() == 1 else model['downloadLink']
         self.download_thread = DownloadThread(
-            model['mirrorLink'],
+            download_link,
             save_path
         )
+        self.model_downloading = model["label"].lower()
+
         self.download_thread.progress.connect(self.update_progress)
         self.download_thread.finished.connect(self.download_finished)
         self.download_thread.error.connect(self.download_error)
@@ -177,6 +187,8 @@ class DownloadDialog(MessageBoxBase):
         )
         self.download_button.setEnabled(True)
         self.progress_label.setText(self.tr('下载完成'))
+        # Add model to list.
+        self.parent().add_model(self.model_downloading)
         
     def download_error(self, error):
         InfoBar.error(
@@ -270,6 +282,10 @@ class WhisperSettingDialog(MessageBoxBase):
         download_dialog = DownloadDialog(self)
         download_dialog.show()
 
+    def add_model(self, model):
+        # Model download finish and add new one.
+        self.model_card.comboBox.addItem(model)
+
     def verify_sha(self, file_path, expected_sha):
         sha1 = hashlib.sha1()
         with open(file_path, 'rb') as f:
@@ -278,7 +294,8 @@ class WhisperSettingDialog(MessageBoxBase):
         return sha1.hexdigest() == expected_sha
 
     def check_whisper_model(self):
-        model_type = cfg.whisper_model.value.value
+        # model_type = cfg.whisper_model.value.value
+        model_type = self.model_card.comboBox.currentText()
         model_files = list(Path(MODEL_PATH).glob(f"*ggml*{model_type}*.bin"))
         # 检测模型文件是否存在
         if not model_files:
@@ -287,7 +304,7 @@ class WhisperSettingDialog(MessageBoxBase):
             return False
             
         # 检测模型配置是否存在
-        model_config = next((m for m in WHISPER_MODELS if model_type in m['value']), None)
+        model_config = next((m for m in WHISPER_MODELS if model_type in m['label'].lower()), None)
         if not model_config:
             self.show_error_info(self.tr('模型配置不存在'))
             logger.error(f"未找到模型 '{model_type}' 的配置信息")
