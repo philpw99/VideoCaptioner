@@ -202,7 +202,7 @@ class BatchProcessInterface(QWidget):
     def start_batch_process(self):
         """开始批量处理"""
         self.processing = True
-        # self.start_all_button.setEnabled(False)
+        self.start_all_button.setEnabled(False)
         self.cancel_button.setEnabled(True)
         # self.add_file_button.setEnabled(False)
         self.clear_all_button.setEnabled(False)
@@ -259,7 +259,7 @@ class BatchProcessInterface(QWidget):
     def cancel_batch_process(self):
         """取消批量处理"""
         self.processing = False
-        # self.start_all_button.setEnabled(True)
+        self.start_all_button.setEnabled(True)
         self.cancel_button.setEnabled(False)
         # self.add_file_button.setEnabled(True)
         self.clear_all_button.setEnabled(True)
@@ -385,7 +385,7 @@ class BatchProcessInterface(QWidget):
 
         # Doing nothing.
         self.processing = False
-        # self.start_all_button.setEnabled(True)
+        self.start_all_button.setEnabled(True)
         self.cancel_button.setEnabled(False)
         # self.add_file_button.setEnabled(True)
         self.clear_all_button.setEnabled(True)
@@ -1137,8 +1137,8 @@ class TaskInfoCard(CardWidget):
 
     def reset_ui(self):
         """重置UI状态"""
-        # self.start_button.setEnabled(True)
-        # self.start_button.setText(self.tr("开始转录"))
+        self.start_button.setEnabled(True)
+        self.start_button.setText(self.tr("开始转录"))
         self.preview_subtitle_button.setEnabled(True)
         self.progress_ring.setValue(100)
         self.task_state.setLevel(InfoLevel.INFOAMTION)

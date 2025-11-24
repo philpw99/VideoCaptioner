@@ -1,3 +1,4 @@
+filelock
 requests
 psutil
 openai
