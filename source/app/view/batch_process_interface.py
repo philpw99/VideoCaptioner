@@ -1015,19 +1015,21 @@ class TaskInfoCard(CardWidget):
         """开始转录按钮点击事件"""
         # 获取任务类型
         if self.task.status == Task.Status.COMPLETED:
-            InfoBar.warning(
-                self.tr("警告"),
-                self.tr("该任务已完成"),
-                duration=2000,
-                parent=self
+            reply = QMessageBox.question(
+                self,
+                self.tr("确定"),
+                self.tr("该任务已完成，重新跑一次吗？"),
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No
             )
-            return
+            if reply == QMessageBox.StandardButton.No:
+                return
 
         self.task.status = Task.Status.PENDING
         self.task.allow_running[0] = True
         self.progress_ring.show()
-        self.progress_ring.setValue(100)
-        # self.start_button.setDisabled(True)
+        self.progress_ring.setValue(0)
+        self.start_button.setDisabled(True)
         self.preview_subtitle_button.setDisabled(True)
         self.task_state.setLevel(InfoLevel.WARNING)
         self.task_state.setIcon(FIF.SYNC)

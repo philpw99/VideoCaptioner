@@ -1,5 +1,6 @@
 3.6.14
 	Fix batch start button.
+	Allow individually start task in batch.
 	Change prompt for batch single translation.
 3.6.13
 	Fix a bug for changing settings after a task is created.
