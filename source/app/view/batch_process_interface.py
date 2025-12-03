@@ -83,6 +83,16 @@ class BatchProcessInterface(QWidget):
         self.clear_all_button = PushButton(self.tr("清空任务"), self, icon=FIF.DELETE)
         self.clear_all_button.setToolTip(self.tr("删除所有的任务"))
         self.top_layout.addWidget(self.clear_all_button)
+        
+        # 储存未完成任务按钮
+        self.save_unfinished_button = PushButton( self.tr("储存清单"), self, icon=FIF.SAVE_COPY)
+        self.save_unfinished_button.setToolTip( self.tr("把未完成的文件作为清单以文本格式存起来"))
+        self.top_layout.addWidget(self.save_unfinished_button)
+
+        # 载入任务清单按钮
+        self.load_unfinished_button = PushButton( self.tr("载入清单"), self, icon=FIF.LIBRARY_FILL)
+        self.load_unfinished_button.setToolTip( self.tr("载入未完成的文件清单"))
+        self.top_layout.addWidget(self.load_unfinished_button)
 
         # 任务类型选择
         self.task_type_combo = ComboBox(self)
@@ -143,6 +153,8 @@ class BatchProcessInterface(QWidget):
         # Local
         self.add_file_button.clicked.connect(self.on_add_file)
         self.clear_all_button.clicked.connect(self.clear_all_tasks)
+        self.save_unfinished_button.clicked.connect(self.save_unfinished)
+        self.load_unfinished_button.clicked.connect(self.load_unfinished)
         self.start_all_button.clicked.connect(self.start_batch_process)
         self.cancel_button.clicked.connect(self.cancel_batch_process)
         self.todo_when_done_combobox.currentTextChanged.connect(self.todo_when_done_changed)
@@ -153,6 +165,106 @@ class BatchProcessInterface(QWidget):
         signalBus.translation_method_changed.connect(self.set_default_task_type)
         signalBus.soft_subtitle_changed.connect(self.set_default_task_type)
 
+    def save_unfinished(self):
+        # Save unfinish files as a list to a text file
+        if not self.task_cards:
+            return
+        save_file, _ = QFileDialog.getSaveFileName(self,
+            self.tr("选择储存文件名"),
+            cfg.last_open_dir.value,
+            f"{self.tr("文本文件")} (*.txt)",
+        )
+        if not save_file:
+            return
+
+        file_list : str = ""
+        for task_card in self.task_cards[:]:
+            if task_card.task.status == Task.Status.COMPLETED:
+                continue
+            file_list += task_card.task.file_path + "\n"
+        try:
+            with open( save_file, "w") as f:
+                f.write(file_list)
+        except:
+            InfoBar.error(
+                self.tr("出错"),
+                self.tr("写入文件时出错"),
+                duration=3000,
+            )
+            return
+        
+        InfoBar.info(
+            self.tr("成功"),
+            self.tr("文件成功写入"),
+            duration=5000,
+        )
+
+    def load_unfinished(self):
+        # Load files list from a text file
+        load_file, _ = QFileDialog.getOpenFileName(self,
+            self.tr("选择载入文件"),
+            cfg.last_open_dir.value,
+            f"{self.tr("文本文件")} (*.txt)",
+        )
+        if not load_file or not Path(load_file).is_file():
+            return
+        file_list : list[str] = None
+        try:
+            with open(load_file, "r") as f:
+                file_list = f.readlines()
+        except:
+            InfoBar.error(
+                self.tr("出错"),
+                self.tr("读入文件出错"),
+                duration=5000,
+            )
+            return
+        for file in file_list:
+            self.add_file(file.strip())
+
+    def add_file(self, file_path: str):
+        # Add file directly.
+        if not os.path.isfile(file_path):
+            return
+    
+        file_ext = Path(file_path).suffix[1:].lower()
+        # 根据任务类型检查文件格式
+        match self.task_type_combo.currentText():
+            case BatchTaskTypeEnum.HARD.value:
+                # Create hard sub video
+                supported_formats = {fmt.value for fmt in SupportedVideoFormats}
+                task_type = Task.Type.SUBTITLE
+                soft_sub = False
+            case BatchTaskTypeEnum.SOFT.value:
+                # Create soft sub video
+                supported_formats = {fmt.value for fmt in SupportedVideoFormats}
+                task_type = Task.Type.SUBTITLE
+                soft_sub = True
+            case BatchTaskTypeEnum.TRANSLATE.value:
+                # Create Optimize+Translate / Single Sentence Translate / Google Translate sub
+                supported_formats = {fmt.value for fmt in SupportedVideoFormats} | {fmt.value for fmt in SupportedAudioFormats}
+                task_type = Task.Type.TRANSLATE
+                soft_sub = True
+            case BatchTaskTypeEnum.TRANSCRIBE.value:
+                # Create transcrptions only
+                supported_formats = {fmt.value for fmt in SupportedVideoFormats} | {fmt.value for fmt in SupportedAudioFormats}
+                task_type = Task.Type.TRANSCRIBE
+                soft_sub = True
+            case BatchTaskTypeEnum.LOGO.value:
+                supported_formats = {fmt.value for fmt in SupportedVideoFormats}
+                task_type = Task.Type.SYNTHESIS
+                soft_sub = False
+                
+        if file_ext in supported_formats:
+            self.create_task(file_path, task_type, soft_sub)
+        else:
+            InfoBar.error(
+                self.tr("格式错误") + file_ext,
+                self.tr(f"该文件 {file_path} 格式不正确"),
+                duration=3000,
+                parent=self
+            )
+        
     def set_default_task_type(self, whatever):
         # Set it according to the configuration
         if cfg.need_video.value:
@@ -559,49 +671,7 @@ class BatchProcessInterface(QWidget):
         """拖拽放下事件处理"""
         for url in event.mimeData().urls():
             file_path = url.toLocalFile()
-            if not os.path.isfile(file_path):
-                continue
-
-            file_ext = os.path.splitext(file_path)[1][1:].lower()
-
-            # 根据任务类型检查文件格式
-            match self.task_type_combo.currentText():
-                case BatchTaskTypeEnum.HARD.value:
-                    # Create hard sub video
-                    supported_formats = {fmt.value for fmt in SupportedVideoFormats}
-                    task_type = Task.Type.SUBTITLE
-                    soft_sub = False
-                case BatchTaskTypeEnum.SOFT.value:
-                    # Create soft sub video
-                    supported_formats = {fmt.value for fmt in SupportedVideoFormats}
-                    task_type = Task.Type.SUBTITLE
-                    soft_sub = True
-                case BatchTaskTypeEnum.TRANSLATE.value:
-                    # Create Optimize+Translate / Single Sentence Translate / Google Translate sub
-                    supported_formats = {fmt.value for fmt in SupportedVideoFormats} | {fmt.value for fmt in SupportedAudioFormats}
-                    task_type = Task.Type.TRANSLATE
-                    soft_sub = True
-                case BatchTaskTypeEnum.TRANSCRIBE.value:
-                    # Create transcrptions only
-                    supported_formats = {fmt.value for fmt in SupportedVideoFormats} | {fmt.value for fmt in SupportedAudioFormats}
-                    task_type = Task.Type.TRANSCRIBE
-                    soft_sub = True
-                case BatchTaskTypeEnum.LOGO.value:
-                    supported_formats = {fmt.value for fmt in SupportedVideoFormats}
-                    task_type = Task.Type.SYNTHESIS
-                    soft_sub = False
-                    
-            if file_ext in supported_formats:
-                self.create_task(file_path, task_type, soft_sub)
-            else:
-                error_msg = self.tr("请拖入视频文件") if task_type in [ Task.Type.SUBTITLE, Task.Type.SYNTHESIS ] else self.tr("请拖入音频或视频文件")
-                InfoBar.error(
-                    self.tr("格式错误") + file_ext,
-                    error_msg,
-                    duration=3000,
-                    parent=self
-                )
-                
+            self.add_file(file_path)
 
     def closeEvent(self, event):
         """关闭事件处理"""
@@ -800,7 +870,8 @@ class TaskInfoCard(CardWidget):
 
     def mouseDoubleClickEvent(self, event):
         """双击事件处理"""
-        self.open_subtitle()
+        if self.task.status == Task.Status.COMPLETED:
+            self.open_subtitle()
 
     def update_info(self, video_info: VideoInfo):
         """更新视频信息显示"""
@@ -952,12 +1023,12 @@ class TaskInfoCard(CardWidget):
     def open_subtitle(self):
         """打开字幕优化界面"""
         preview_subtitle_path = Path(self.task.original_subtitle_save_path)
-        if self.task.result_subtitle_save_path and Path(self.task.result_subtitle_save_path).exists():
+        if self.task.result_subtitle_save_path and Path(self.task.result_subtitle_save_path).is_file():
             preview_subtitle_path = Path(self.task.result_subtitle_save_path)
         # The original sub might be word-split and not full sentence sub.
         # elif self.task.original_subtitle_save_path and Path(self.task.original_subtitle_save_path).exists():
         #     preview_subtitle_path = Path(self.task.original_subtitle_save_path)
-        if not preview_subtitle_path.exists():
+        if not preview_subtitle_path.is_file():
             # Open file dialog
             subtitle_formats = [f"*.{fmt.value}" for fmt in SupportedSubtitleFormats]
             filter_str = f"{self.tr('字幕文件')} ({' '.join(subtitle_formats)})"
@@ -1140,7 +1211,7 @@ class TaskInfoCard(CardWidget):
     def reset_ui(self):
         """重置UI状态"""
         self.start_button.setEnabled(True)
-        self.start_button.setText(self.tr("开始转录"))
+        self.start_button.setText(self.tr("开始"))
         self.preview_subtitle_button.setEnabled(True)
         self.progress_ring.setValue(100)
         self.task_state.setLevel(InfoLevel.INFOAMTION)

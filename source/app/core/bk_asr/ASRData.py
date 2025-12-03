@@ -145,7 +145,13 @@ class ASRData:
 
     def save(self, save_path: str, ass_style: str = None, layout: SubEnum = SubEnum.ONLY_ORIGINAL) -> None:
         """Save the ASRData to a file"""
-        Path(save_path).parent.mkdir(parents=True, exist_ok=True)
+        path = Path(save_path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        # Make sure the target sub file doesn't not exist.
+        if path.is_file():
+            # Rename the file if exists
+            path.rename( path.with_stem(path.stem + "_old"))
+        
         # Cannot use match/case here. Too much extra calculations.
         if save_path.endswith('.srt'):
             self.to_srt(save_path=save_path, layout=layout)
