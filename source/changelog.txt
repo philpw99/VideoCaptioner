@@ -1,9 +1,12 @@
+3.6.15
+
 3.6.14
 	Fix batch start button.
 	Allow individually start task in batch.
 	Change prompt for batch single translation.
 	Rename existing subtitle file to avoid name conflict.
 	Unfinished batch file list save / load feature.
+	Update yt-dlp to 2025.11.12
 3.6.13
 	Fix a bug for changing settings after a task is created.
 	Better task re-running.
