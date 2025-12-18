@@ -10,7 +10,7 @@
 
 # Recommend Using "Single Sentence Translate", instead of "Optimize Translate".
 # 注意：推荐使用“大模型单句翻译”，“大模型智能+优化”的出错率实在太高！
-
+# 本分支的主要改进地方是在于批处理功能，以及增加单句翻译功能以增强稳定性
 ## 📖 Project Introduction
 
 VideoCaptioner is easy to operate and requires no high-end configuration. It supports both online and offline (GPU-enabled) speech recognition, utilizing large language models for intelligent subtitle segmentation, correction, and translation. Process video subtitles with one click for stunning subtitle effects!
