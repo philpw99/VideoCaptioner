@@ -1,5 +1,6 @@
 3.6.15
-
+	Add Kotoba-v2.0 as new FasterWhisperXXL model. It's a model fine tuned for Japanese audio.
+	Fix some problems in FasterWhisper settings dialog.
 3.6.14
 	Fix batch start button.
 	Allow individually start task in batch.

@@ -189,14 +189,14 @@ class BatchProcessInterface(QWidget):
             InfoBar.error(
                 self.tr("出错"),
                 self.tr("写入文件时出错"),
-                duration=3000,
+                duration=10000,
             )
             return
         
         InfoBar.info(
             self.tr("成功"),
             self.tr("文件成功写入"),
-            duration=5000,
+            duration=10000,
         )
 
     def load_unfinished(self):

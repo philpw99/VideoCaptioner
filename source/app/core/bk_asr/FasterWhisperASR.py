@@ -50,7 +50,7 @@ class FasterWhisperASR(BaseASR):
         super().__init__(audio_path, False)
         
         # 基本参数
-        self.model_path = whisper_model
+        self.model = whisper_model
         self.model_dir = model_dir
         self.faster_whisper_path = Path(faster_whisper_path)
         self.need_word_time_stamp = need_word_time_stamp
@@ -90,7 +90,7 @@ class FasterWhisperASR(BaseASR):
         """构建命令行参数"""
         cmd = [
             str(self.faster_whisper_path),
-            "-m", str(self.model_path),
+            "-m", str(self.model),
             # "--verbose", "true",
             "--print_progress"
         ]
@@ -101,8 +101,9 @@ class FasterWhisperASR(BaseASR):
             ])
         
         # 添加模型目录参数
+        
         if self.model_dir:
-            cmd.extend(["--model_dir", str(self.model_dir)])
+            cmd.extend(["--model_dir", self.model_dir])
         
         # 基本参数
         cmd.extend([
@@ -157,7 +158,7 @@ class FasterWhisperASR(BaseASR):
         # 重复字句的惩罚
         cmd.extend(["--repetition_penalty", f"{self.repetition_penalty:.2f}"])
         
-        if self.sentence:
+        if self.sentence and self.model != "kotoba-v2":
             cmd.extend([
                 "--sentence",
                 "--max_line_width", str(self.max_line_width),
@@ -177,6 +178,14 @@ class FasterWhisperASR(BaseASR):
         if self.prompt:
             cmd.extend(["--initial_prompt", self.prompt])
 
+        # 对 Kotoba Whisper v2 特殊处理
+        if self.model == "kotoba-v2":
+            cmd.extend([
+                "--condition_on_previous_text", "False",
+                "-prompt", "None",
+                "--word_timestamps", "False",
+            ])
+        
         return cmd
 
     def _make_segments(self, resp_data: str) -> list[ASRDataSeg]:
@@ -269,4 +278,4 @@ class FasterWhisperASR(BaseASR):
             return output_path.read_text(encoding='utf-8')
 
     def _get_key(self):
-        return f"{self.__class__.__name__}-{self.crc32_hex}-{self.need_word_time_stamp}-{self.model_path}-{self.language}"
+        return f"{self.__class__.__name__}-{self.crc32_hex}-{self.need_word_time_stamp}-{self.model}-{self.language}"

@@ -380,7 +380,9 @@ class SubtitleOptimizer:
 
             return_text = response.choices[0].message.content
             # logger.info(f"response:{type(return_text)}")
-            
+            if type(return_text) != str :
+                # Empty reply
+                continue
             # print(f"reply: {return_text}")
             # Single line only.
             return_text = return_text.replace("\n", " ").strip()

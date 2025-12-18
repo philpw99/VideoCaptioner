@@ -453,153 +453,153 @@
 <context>
     <name>FasterWhisperDownloadDialog</name>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="163"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="169"/>
         <source>关闭</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="169"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="175"/>
         <source>Faster Whisper 下载</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="179"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="188"/>
         <source>已安装版本: {versions_text}</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="185"/>
-        <source>您可以继续下载其他版本:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="188"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="191"/>
         <source>未下载Faster Whisper 程序</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="193"/>
-        <source>Download Source:</source>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="208"/>
+        <source>下载其他版本:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="213"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="210"/>
         <source>下载程序</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="226"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="218"/>
+        <source>Model Download Source:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="231"/>
         <source>模型下载</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="232"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="237"/>
         <source>打开模型文件夹</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="255"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="260"/>
         <source>模型名称</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="255"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="260"/>
         <source>大小</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="256"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="261"/>
         <source>状态</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="257"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="262"/>
         <source>操作</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="318"/>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="510"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="323"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="515"/>
         <source>已下载</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="319"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="324"/>
         <source>未下载</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="332"/>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="517"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="337"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="522"/>
         <source>重新下载</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="332"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="337"/>
         <source>下载</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="351"/>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="467"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="356"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="472"/>
         <source>下载进行中</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="352"/>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="468"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="357"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="473"/>
         <source>请等待当前下载任务完成</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="376"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="381"/>
         <source>下载错误</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="377"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="382"/>
         <source>未找到对应的程序配置</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="416"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="421"/>
         <source>正在解压文件...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="427"/>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="598"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="432"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="603"/>
         <source>安装失败</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="437"/>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="544"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="442"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="549"/>
         <source>下载失败</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="480"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="485"/>
         <source>正在下载 {model[&apos;label&apos;]} 模型...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="529"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="534"/>
         <source>下载成功</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="530"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="535"/>
         <source>{model[&apos;label&apos;]} 模型已下载完成</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="586"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="591"/>
         <source>安装完成</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="587"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="592"/>
         <source>Faster Whisper 程序已安装成功</source>
         <translation type="unfinished"></translation>
     </message>
@@ -607,208 +607,208 @@
 <context>
     <name>FasterWhisperSettingDialog</name>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="617"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="622"/>
         <source>Faster Whisper 设置</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="628"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="633"/>
         <source>模型设置</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="634"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="639"/>
         <source>模型</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="635"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="640"/>
         <source>选择 Faster Whisper 模型</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="656"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="661"/>
         <source>管理模型</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="658"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="663"/>
         <source>模型管理</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="659"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="664"/>
         <source>下载或更新 Faster Whisper 模型</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="667"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="672"/>
         <source>源语言</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="668"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="673"/>
         <source>音频的源语言</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="678"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="683"/>
         <source>运行设备</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="679"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="684"/>
         <source>模型运行设备</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="688"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="693"/>
         <source>VAD设置</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="693"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="698"/>
         <source>VAD过滤</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="694"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="699"/>
         <source>过滤无人声语音片断，减少幻觉</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="703"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="708"/>
         <source>VAD阈值</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="704"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="709"/>
         <source>语音概率阈值，高于此值视为语音</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="715"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="720"/>
         <source>VAD方法</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="716"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="721"/>
         <source>选择VAD检测方法</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="722"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="727"/>
         <source>其他设置</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="727"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="732"/>
         <source>人声分离</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="728"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="733"/>
         <source>处理前使用MDX-Net降噪，分离人声和背景音乐</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="736"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="741"/>
         <source>单字时间戳</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="737"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="742"/>
         <source>开启生成单字级时间戳；关闭后使用原始分段断句</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="745"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="750"/>
         <source>翻译成英语</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="746"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="751"/>
         <source>使用FastWhisper内置的翻译成英语功能</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="755"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="760"/>
         <source>重复字句惩罚</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="756"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="761"/>
         <source>对重复字句的惩罚，1为不惩罚，一般1.2就可</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="768"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="773"/>
         <source>提示词</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="769"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="774"/>
         <source>可选的提示词,默认空</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="777"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="782"/>
         <source>多语言</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="778"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="783"/>
         <source>除了主要语言外，视频里还含有其它语言需要识别</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="786"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="791"/>
         <source>RTX 5000 系列补丁</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="787"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="792"/>
         <source>如果你使用的是Nvidia RTX 5000系列显卡，则需要打开这个设定而避免出错。</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="844"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="849"/>
         <source>确定</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="845"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="850"/>
         <source>取消</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="879"/>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="929"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="891"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="942"/>
         <source>Faster Whisper程序不存在，请先下载程序</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="892"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="905"/>
         <source>设置已保存</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="893"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="906"/>
         <source>Faster Whisper 设置已更新</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="913"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="926"/>
         <source>错误</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="936"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="949"/>
         <source>模型配置不存在</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="943"/>
+        <location filename="../../app/components/FasterWhisperSettingDialog.py" line="956"/>
         <source>模型文件不存在: </source>
         <translation type="unfinished"></translation>
     </message>

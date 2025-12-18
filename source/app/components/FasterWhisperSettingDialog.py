@@ -107,8 +107,14 @@ FASTER_WHISPER_MODELS = [
         "size": "1739466",
         "downloadLink": "Purfview/faster-distil-whisper-large-v3.5",
         "modelScopeLink": "pengzhendong/faster-distil-whisper-large-v2"
+    },
+    {
+        "label": "Kotoba-v2",
+        "value": "faster-whisper-kotoba-v2",
+        "size": "1583350",
+        "downloadLink": "kotoba-tech/kotoba-whisper-v2.0-faster",
+        "modelScopeLink": ""
     }
-
 ]
 
 # 在类外添加这个工具函数
@@ -132,7 +138,7 @@ def check_faster_whisper_exists() -> tuple[bool, list[str]]:
     # 检查 Faster-Whisper-XXL/faster-whisper-xxl.exe(GPU版本)
     xxl_path = bin_path / "Faster-Whisper-XXL" / "faster-whisper-xxl.exe"
     if xxl_path.exists():
-        installed_versions.extend(["GPU", "CPU"])
+        installed_versions.append("GPU")
     installed_versions = list(set(installed_versions))
 
     return bool(installed_versions), installed_versions
@@ -145,7 +151,7 @@ class FasterWhisperDownloadDialog(MessageBoxBase):
     
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.widget.setMinimumWidth(600)
+        self.widget.setMinimumWidth(800)
         self.program_download_thread = None
         self.model_download_thread = None
         self._setup_ui()
@@ -155,7 +161,7 @@ class FasterWhisperDownloadDialog(MessageBoxBase):
         """设置UI"""
         layout = QVBoxLayout()
         self._setup_program_section(layout)
-        layout.addSpacing(20)
+        # layout.addSpacing(10)
         self._setup_model_section(layout)
         self._setup_progress_section(layout)
         
@@ -163,7 +169,7 @@ class FasterWhisperDownloadDialog(MessageBoxBase):
         self.cancelButton.setText(self.tr("关闭"))
         self.yesButton.hide()
         
-    def _setup_program_section(self, layout):
+    def _setup_program_section(self, layout: QVBoxLayout):
         """设置程序下载部分UI"""
         # 标题
         faster_whisper_title = SubtitleLabel(self.tr("Faster Whisper 下载"), self)
@@ -172,33 +178,20 @@ class FasterWhisperDownloadDialog(MessageBoxBase):
 
         # 检查已安装的版本
         has_program, installed_versions = check_faster_whisper_exists()
+
+        # 下载控件
+        program_layout = QHBoxLayout()
         
         if has_program:
             # 显示已安装版本
             versions_text = " + ".join(installed_versions)
             program_status = BodyLabel(self.tr(f"已安装版本: {versions_text}"), self)
             program_status.setStyleSheet("color: green")
-            layout.addWidget(program_status)
-            
-            # 添加说明标签
-            if len(installed_versions) == 1:
-                desc_label = BodyLabel(self.tr("您可以继续下载其他版本:"), self)
-                layout.addWidget(desc_label)
         else:
-            desc_label = BodyLabel(self.tr("未下载Faster Whisper 程序"), self)
-            layout.addWidget(desc_label)
-
-        # 选择下载源
-        source_layout= QHBoxLayout()
-        self.download_source_label = BodyLabel(self.tr("Download Source:"), self)
-        self.download_source_combo = ComboBox(self)
-        self.download_source_combo.addItems(['huggingface.co', 'modelScope.CN'])
-        source_layout.addWidget(self.download_source_label)
-        source_layout.addWidget(self.download_source_combo)
-        layout.addLayout(source_layout)
+            program_status = BodyLabel(self.tr("未下载Faster Whisper 程序"), self)
+            program_status.setStyleSheet("color: red")
+        program_layout.addWidget(program_status)
         
-        # 下载控件
-        program_layout = QHBoxLayout()
         self.program_combo = ComboBox(self)
         self.program_combo.setFixedWidth(300)
         
@@ -210,14 +203,26 @@ class FasterWhisperDownloadDialog(MessageBoxBase):
         
         # 如果还有可下载的版本，显示下载控件
         if self.program_combo.count() > 0:
+            program_layout.addStretch()
+            if len(installed_versions) < 2:
+                desc_label = BodyLabel(self.tr("下载其他版本:"), self)
+                program_layout.addWidget(desc_label)
             self.program_download_btn = PushButton(self.tr("下载程序"), self)
             self.program_download_btn.clicked.connect(self._start_download)
             program_layout.addWidget(self.program_combo)
             program_layout.addWidget(self.program_download_btn)
-            program_layout.addStretch()
             layout.addLayout(program_layout)
+        
+        # 选择下载源
+        source_layout= QHBoxLayout()
+        self.download_source_label = BodyLabel(self.tr("Model Download Source:"), self)
+        self.download_source_combo = ComboBox(self)
+        self.download_source_combo.addItems(['huggingface.co', 'modelScope.CN'])
+        source_layout.addWidget(self.download_source_label)
+        source_layout.addWidget(self.download_source_combo)
+        layout.addLayout(source_layout)
 
-    def _setup_model_section(self, layout):
+    def _setup_model_section(self, layout: QVBoxLayout):
         """设置模型下载部分UI"""
         # 标题和按钮的水平布局
         title_layout = QHBoxLayout()
@@ -238,7 +243,7 @@ class FasterWhisperDownloadDialog(MessageBoxBase):
         title_layout.addWidget(open_folder_btn)
         
         layout.addLayout(title_layout)
-        layout.addSpacing(10)
+        # layout.addSpacing(10)
 
         # 模型表格
         self.model_table = self._create_model_table()
@@ -269,15 +274,15 @@ class FasterWhisperDownloadDialog(MessageBoxBase):
         header.setSectionResizeMode(3, QHeaderView.Fixed)
         
         table.setColumnWidth(1, 100)
-        table.setColumnWidth(2, 80)
+        table.setColumnWidth(2, 150)
         table.setColumnWidth(3, 150)
         
         # 设置行高
-        row_height = 50
+        row_height = 30
         table.verticalHeader().setDefaultSectionSize(row_height)
         
         # 设置表格高度
-        header_height = 35
+        header_height = 30
         table_height = row_height * len(FASTER_WHISPER_MODELS) + header_height
         table.setFixedHeight(table_height)
         
@@ -856,7 +861,14 @@ class FasterWhisperSettingDialog(MessageBoxBase):
         self.one_word_card.switchButton.checkedChanged.connect(self._on_one_word_changed)
         self.translate_to_english_card.checkedChanged.connect(self._on_translate_to_english_changed)
         self.language_card.comboBox.currentTextChanged.connect(signalBus.on_original_language_changed)
+        self.model_card.comboBox.currentTextChanged.connect(self._on_model_card_changed)
         
+    def _on_model_card_changed(self, model_value:str):
+        # Set the model and model dir once it's changed.
+        model_value = model_value.lower()
+        model = FasterWhisperModelEnum(model_value)
+        cfg.faster_whisper_model.value = model
+    
     def _on_one_word_changed(self, checked: bool):
         cfg.faster_whisper_one_word.value = checked
         if checked:
@@ -888,6 +900,7 @@ class FasterWhisperSettingDialog(MessageBoxBase):
 
         if self.check_faster_whisper_model():
             self.accept()
+            cfg.save()
             InfoBar.success(
                 self.tr("设置已保存"),
                 self.tr("Faster Whisper 设置已更新"),
