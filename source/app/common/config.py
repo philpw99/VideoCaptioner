@@ -42,6 +42,8 @@ mutAudioRecording = QMutex()
 mutTranscribing = QMutex()
 mutTranslating = QMutex()
 mutSynthezing = QMutex()
+# Creating 1 task at a time.
+mutTaskCreating = QMutex()
 
 INVISIBLE_ORIGINAL = "\u3164"
 INVISIBLE_TRANSLATED = "\u115F"
@@ -123,7 +125,7 @@ class Config(QConfig):
     )
     # 文本处理参数
     faster_whisper_one_word = ConfigItem(
-        "FasterWhisper", "OneWord", True, BoolValidator()
+        "FasterWhisper", "OneWord", False, BoolValidator()
     )
     # 翻译成英语
     faster_whisper_translate_to_english = ConfigItem(

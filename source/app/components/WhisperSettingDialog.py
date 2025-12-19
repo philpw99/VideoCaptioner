@@ -269,7 +269,6 @@ class WhisperSettingDialog(MessageBoxBase):
         self.yesButton.clicked.connect(self.__onYesButtonClicked)
         self.widget.setMinimumWidth(400)
 
-
     def open_folder(self):
         if sys.platform == "win32":
             os.startfile(MODEL_PATH)

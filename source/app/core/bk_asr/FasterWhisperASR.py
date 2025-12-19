@@ -142,30 +142,29 @@ class FasterWhisperASR(BaseASR):
             cmd.extend(["--ff_vocal_extract", "mdx_kim2"])
 
         # 文本处理参数
-        if self.one_word:
-            self.one_word = 1
-        else:
-            self.one_word = 0
-        if self.one_word in [0, 1, 2]:
-            cmd.extend(["--one_word", str(self.one_word)])
-        else:
-            cmd.append("--sentence")
-        
+        if self.model != "kotoba-v2-japanese":
+            if self.one_word:
+                self.one_word = 1
+            else:
+                self.one_word = 0
+            if self.one_word in [0, 1, 2]:
+                cmd.extend(["--one_word", str(self.one_word)])
+
+            if self.sentence:
+                cmd.extend([
+                    "--sentence",
+                    "--max_line_width", str(self.max_line_width),
+                    "--max_line_count", str(self.max_line_count),
+                    "--max_comma", str(self.max_comma),
+                    "--max_comma_cent", str(self.max_comma_cent)
+                ])
+
         # 翻译成英语
         if self.translate_to_english:
             cmd.extend(["--task", "translate"])
         
         # 重复字句的惩罚
         cmd.extend(["--repetition_penalty", f"{self.repetition_penalty:.2f}"])
-        
-        if self.sentence and self.model != "kotoba-v2":
-            cmd.extend([
-                "--sentence",
-                "--max_line_width", str(self.max_line_width),
-                "--max_line_count", str(self.max_line_count),
-                "--max_comma", str(self.max_comma),
-                "--max_comma_cent", str(self.max_comma_cent)
-            ])
 
         # 关闭声音
         cmd.append("--beep_off")
@@ -179,7 +178,7 @@ class FasterWhisperASR(BaseASR):
             cmd.extend(["--initial_prompt", self.prompt])
 
         # 对 Kotoba Whisper v2 特殊处理
-        if self.model == "kotoba-v2":
+        if self.model == "kotoba-v2-japanese":
             cmd.extend([
                 "--condition_on_previous_text", "False",
                 "-prompt", "None",

@@ -625,18 +625,16 @@ class WhisperModelEnum(Enum):
     LARGE_V3 = "large-v3"
     LARGE_V3_D = "distil-large-v3"
 
-
 class FasterWhisperModelEnum(Enum):
     TINY = "tiny"
-    BASE = "base"
-    SMALL = "small"
-    MEDIUM = "medium"
-    LARGE_V1 = "large-v1"
     LARGE_V2 = "large-v2"
     LARGE_V3 = "large-v3"
     LARGE_V3_T = "large-v3-turbo"
     LARGE_DISTI_T = "large-distil-turbo"
-    KOTOBA_V2 = "kotoba-v2"
+    KOTOBA_V2 = "kotoba-v2-japanese"
+    LARGE_ZH_CV11 = "large-chinese-cv11"
+    LARGE_BELLE_CAN = "large-v3-belle-cantonese"
+    LARGE_BELLE_CN = "large-v3-belle-chinese"
 
 @dataclass
 class Task:

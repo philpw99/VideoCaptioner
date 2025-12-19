@@ -1,6 +1,12 @@
 3.6.15
 	Add Kotoba-v2.0 as new FasterWhisperXXL model. It's a model fine tuned for Japanese audio.
+	Add 3 more FasterWhisperXXL models: Large-zh-cv11, Large-v3-belle-cantonese and Large-v3-belle-chinese
+	- Large-zh-cv11 use Whisper Large v2 to train on Common Voice 11 samples.
+	- Large-v3-belle-cantonese use Whisper Large v3 to train on Cantonese voices.
+	- Large-v3-belle-chinese use Whisper Large v3 to train on Chinese(Mandarin) voices in float32 format.
+	All the models above has HuggingFace download link but I couldn't find the modelscope.cn links. Anyone wants to help?
 	Fix some problems in FasterWhisper settings dialog.
+	In batch mode creating one transcribe/translate task at a time, to reduce the time of the first task to show up.
 3.6.14
 	Fix batch start button.
 	Allow individually start task in batch.

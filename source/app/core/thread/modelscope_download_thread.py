@@ -23,7 +23,7 @@ class ModelscopeDownloadThread(QThread):
                 if match:
                     percentage = int(match.group(1))
                     # 提取文件名
-                    file_match = re.search(r'\[(.*?)\]:', text)
+                    file_match = re.search(r'^(.*?):', text)
                     if file_match:
                         filename = file_match.group(1)
                         self.progress.emit(percentage, f"正在下载 {filename}: {percentage}%")

@@ -5,12 +5,12 @@ from pathlib import Path
 
 import requests
 import yt_dlp
-from PyQt5.QtCore import QThread, pyqtSignal, QObject
+from PyQt5.QtCore import QThread, pyqtSignal, QObject, QMutexLocker
 
 from ..entities import Task, TranscribeModelEnum, TranslateMethodEnum, VideoInfo, LANGUAGES, WHISPER_LANGUAGES
 from ..entities import SupportedSubtitleFormats
 from ..utils.video_utils import get_video_info
-from ...common.config import cfg
+from ...common.config import cfg, mutTaskCreating
 from ..utils.logger import setup_logger
 from ...config import SUBTITLE_STYLE_PATH, APPDATA_PATH, WORK_PATH
 
@@ -44,52 +44,53 @@ class CreateTaskThread(QThread):
         self.audio_track = audio_track
 
     def run(self):
-        try:
-            match self.task_type:
-                case Task.Type.SUBTITLE | Task.Type.TRANSLATE:
-                    self.create_file_task(self.file_path,
-                                            task_type=self.task_type,
-                                            soft_sub=self.soft_sub,
-                                            need_translate = self.need_translate,
-                                            translate_method = self.translate_method,
-                                            need_video =self.need_video,
-                                            post_url=self.post_url,
-                                            audio_track=self.audio_track,
-                                        )
+        with QMutexLocker(mutTaskCreating):     # Lock the threat so only 1 runs at a time.
+            try:
+                match self.task_type:
+                    case Task.Type.SUBTITLE | Task.Type.TRANSLATE:
+                        self.create_file_task(self.file_path,
+                                                task_type=self.task_type,
+                                                soft_sub=self.soft_sub,
+                                                need_translate = self.need_translate,
+                                                translate_method = self.translate_method,
+                                                need_video =self.need_video,
+                                                post_url=self.post_url,
+                                                audio_track=self.audio_track,
+                                            )
 
-                case Task.Type.URL:
-                    # Here whether to do the final video synthesis depends on config value
-                    self.create_url_task(need_translate=self.need_translate,
-                                         translate_method = self.translate_method,
-                                         url=self.url,
-                                         soft_sub=self.soft_sub,
-                                         need_video=cfg.need_video.value,
-                                         )
-                case Task.Type.TRANSCRIBE:
-                    self.create_transcription_task(self.file_path)
-                case Task.Type.SYNTHESIS:
-                    # Logo or video processing only.
-                    
-                    # Check to see if there is a subtitle file with the same name
-                    sub_file: str = None
-                    for ext in SupportedSubtitleFormats:
-                        sub_path = Path(self.file_path).with_suffix("." + ext.value)
-                        if sub_path.exists():
-                            sub_file = str(sub_path)
-                            break
-                    if not sub_file:
-                        # No such subtitle file. Create an empty one.
-                        with open( WORK_PATH / "empty.srt", "w") as f:
-                            # Write an empty srt file.
-                            f.write("1\n" + "00:00:00,100 --> 00:00:01,000\n" + " ")
-                        sub_file = str(WORK_PATH / "empty.srt")
-                    self.create_video_synthesis_task(sub_file, self.file_path, False, create_entry=True)
-                case _:
-                    ValueError("No matching task type.")
-        except Exception as e:
-            logger.exception("创建任务失败: %s", str(e))
-            self.progress.emit(0, self.tr("创建任务失败"))
-            self.error.emit(str(e))
+                    case Task.Type.URL:
+                        # Here whether to do the final video synthesis depends on config value
+                        self.create_url_task(need_translate=self.need_translate,
+                                            translate_method = self.translate_method,
+                                            url=self.url,
+                                            soft_sub=self.soft_sub,
+                                            need_video=cfg.need_video.value,
+                                            )
+                    case Task.Type.TRANSCRIBE:
+                        self.create_transcription_task(self.file_path)
+                    case Task.Type.SYNTHESIS:
+                        # Logo or video processing only.
+                        
+                        # Check to see if there is a subtitle file with the same name
+                        sub_file: str = None
+                        for ext in SupportedSubtitleFormats:
+                            sub_path = Path(self.file_path).with_suffix("." + ext.value)
+                            if sub_path.exists():
+                                sub_file = str(sub_path)
+                                break
+                        if not sub_file:
+                            # No such subtitle file. Create an empty one.
+                            with open( WORK_PATH / "empty.srt", "w") as f:
+                                # Write an empty srt file.
+                                f.write("1\n" + "00:00:00,100 --> 00:00:01,000\n" + " ")
+                            sub_file = str(WORK_PATH / "empty.srt")
+                        self.create_video_synthesis_task(sub_file, self.file_path, False, create_entry=True)
+                    case _:
+                        ValueError("No matching task type.")
+            except Exception as e:
+                logger.exception("创建任务失败: %s", str(e))
+                self.progress.emit(0, self.tr("创建任务失败"))
+                self.error.emit(str(e))
 
     def short_work_path(self, path: str) -> Path:
         """Create and return a shorten work dir path

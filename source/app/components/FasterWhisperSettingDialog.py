@@ -1,7 +1,7 @@
 import sys
 import subprocess
 from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QTableWidgetItem, QHeaderView, QHBoxLayout
+from PyQt5.QtWidgets import (QWidget, QVBoxLayout, QTableWidgetItem, QHeaderView, QHBoxLayout, QMessageBox)
 from qfluentwidgets import (MessageBoxBase, BodyLabel, SubtitleLabel,
                           SettingCardGroup, InfoBar, InfoBarPosition, 
                           ComboBoxSettingCard, SwitchSettingCard, SingleDirectionScrollArea,
@@ -10,14 +10,12 @@ from qfluentwidgets import FluentIcon as FIF
 
 from .SpinBoxSettingCard import DoubleSpinBoxSettingCard
 from ..common.config import cfg
-from ..core.entities import FasterWhisperModelEnum, TranscribeLanguageEnum, WhisperModelEnum, VadMethodEnum
+from ..core.entities import FasterWhisperModelEnum, TranscribeLanguageEnum, VadMethodEnum
 from ..common.signal_bus import signalBus
 from ..components.LineEditSettingCard import LineEditSettingCard
 from ..config import BIN_PATH, MODEL_PATH
 import os
 import subprocess
-import tempfile
-import shutil
 from pathlib import Path
 
 from ..core.thread.download_thread import DownloadThread
@@ -53,34 +51,6 @@ FASTER_WHISPER_MODELS = [
         "modelScopeLink": "pengzhendong/faster-whisper-tiny",
     },
     {
-        "label": "Base",
-        "value": "faster-whisper-base",
-        "size": "148480",
-        "downloadLink": "Systran/faster-whisper-base",
-        "modelScopeLink": "pengzhendong/faster-whisper-base",
-    },
-    {
-        "label": "Small",
-        "value": "faster-whisper-small",
-        "size": "495616",
-        "downloadLink": "Systran/faster-whisper-small",
-        "modelScopeLink": "pengzhendong/faster-whisper-small",
-    },
-    {
-        "label": "Medium",
-        "value": "faster-whisper-medium",
-        "size": "1572864",
-        "downloadLink": "Systran/faster-whisper-medium",
-        "modelScopeLink": "pengzhendong/faster-whisper-medium",
-    },
-    {
-        "label": "Large-v1",
-        "value": "faster-whisper-large-v1",
-        "size": "3145728",
-        "downloadLink": "Systran/faster-whisper-large-v1",
-        "modelScopeLink": "pengzhendong/faster-whisper-large-v1",
-    },
-    {
         "label": "Large-v2",
         "value": "faster-whisper-large-v2",
         "size": "3145728",
@@ -103,18 +73,40 @@ FASTER_WHISPER_MODELS = [
     },
     {
         "label": "Large-distil-turbo",
-        "value": "faster-whisper-distil-large-turbo",
+        "value": "faster-whisper-large-distill-turbo",
         "size": "1739466",
         "downloadLink": "Purfview/faster-distil-whisper-large-v3.5",
         "modelScopeLink": "pengzhendong/faster-distil-whisper-large-v2"
     },
     {
-        "label": "Kotoba-v2",
-        "value": "faster-whisper-kotoba-v2",
+        "label": "Kotoba-v2-japanese",
+        "value": "faster-whisper-kotoba-v2-japanese",
         "size": "1583350",
         "downloadLink": "kotoba-tech/kotoba-whisper-v2.0-faster",
         "modelScopeLink": ""
+    },
+    {
+        "label": "Large-chinese-cv11",
+        "value": "faster-whisper-large-chinese-cv11",
+        "size": "3240100",
+        "downloadLink": "nephilimbin/faster-whispe-large-zh-cv11",
+        "modelScopeLink": ""
+    },
+    {
+        "label": "Large-v3-belle-cantonese",
+        "value": "faster-whisper-large-v3-belle-cantonese",
+        "size": "3240100",
+        "downloadLink": "XA9/Belle-faster-whisper-large-v3-zh-punct",
+        "modelScopeLink": ""
+    },
+    {
+        "label": "Large-v3-belle-chinese",
+        "value": "faster-whisper-large-v3-belle-chinese",
+        "size": "6469714",
+        "downloadLink": "CWTchen/Belle-whisper-large-v3-zh-punct-ct2-float32",
+        "modelScopeLink": ""
     }
+
 ]
 
 # 在类外添加这个工具函数
@@ -359,7 +351,7 @@ class FasterWhisperDownloadDialog(MessageBoxBase):
                 parent=self
             )
             return
-            
+
         FasterWhisperDownloadDialog.is_downloading = True
         # 禁用所有下载按钮
         self._set_all_download_buttons_enabled(False)
@@ -467,6 +459,7 @@ class FasterWhisperDownloadDialog(MessageBoxBase):
 
     def _download_model(self, row):
         """下载选中的模型"""
+
         if FasterWhisperDownloadDialog.is_downloading:
             InfoBar.warning(
                 self.tr("下载进行中"),
@@ -476,10 +469,31 @@ class FasterWhisperDownloadDialog(MessageBoxBase):
             )
             return
             
+        
+        model = FASTER_WHISPER_MODELS[row]
+
+        if self.download_source_combo.currentIndex() == 1:
+            # Check ModelScope link
+            if model['modelScopeLink'] == "":
+                QMessageBox.critical(
+                    self,
+                    self.tr("No Download Link"),
+                    self.tr("This model has no modelscope.cn link!"),
+                )
+                return
+        else:
+            # Check HuggingFace link
+            if model['downloadLink'] == "":
+                QMessageBox.critical(
+                    self,
+                    self.tr("No Download Link"),
+                    self.tr("This model has no HuggingFace link!"),
+                )
+                return
+        
         FasterWhisperDownloadDialog.is_downloading = True
         self._set_all_download_buttons_enabled(False)
         
-        model = FASTER_WHISPER_MODELS[row]
         self.progress_bar.show()
         self.progress_label.show()
         self.progress_label.setText(self.tr(f"正在下载 {model['label']} 模型..."))
@@ -491,7 +505,7 @@ class FasterWhisperDownloadDialog(MessageBoxBase):
             download_btn.setEnabled(False)
         
         # 创建并启动下载线程，保存到类属性
-        if self.download_source_combo.currentIndex == 1:
+        if self.download_source_combo.currentIndex() == 1:
             # Download from ModelScope.CN
             self.model_download_thread = ModelscopeDownloadThread(
                 model['modelScopeLink'],
@@ -499,6 +513,7 @@ class FasterWhisperDownloadDialog(MessageBoxBase):
             )
         else:
             # Download from HuggingFace hub
+
             self.model_download_thread = HuggingfaceDownloadThread(
                 model['downloadLink'],
                 os.path.join(MODEL_PATH, model['value'])
@@ -899,8 +914,8 @@ class FasterWhisperSettingDialog(MessageBoxBase):
             cfg.faster_whisper_vad_method.value = VadMethodEnum.NONE
 
         if self.check_faster_whisper_model():
-            self.accept()
             cfg.save()
+            self.accept()
             InfoBar.success(
                 self.tr("设置已保存"),
                 self.tr("Faster Whisper 设置已更新"),
@@ -942,9 +957,9 @@ class FasterWhisperSettingDialog(MessageBoxBase):
             self.show_error_info(self.tr('Faster Whisper程序不存在，请先下载程序'))
             return False
         
-        model_value = cfg.faster_whisper_model.value.value
+        model_value = cfg.faster_whisper_model.value.value.lower()
         # 检查模型配置是否存在
-        model_config = next((m for m in FASTER_WHISPER_MODELS if m['label'].lower() == model_value.lower()), None)
+        model_config = next((m for m in FASTER_WHISPER_MODELS if m['label'].lower() == model_value), None)
         if not model_config:
             self.show_error_info(self.tr('模型配置不存在'))
             return False
