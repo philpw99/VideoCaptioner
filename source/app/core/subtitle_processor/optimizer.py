@@ -39,13 +39,13 @@ class SubtitleOptimizer:
         summary_content: str = "",
         thread_num: int = cfg.thread_num.value,
         batch_num: int = cfg.batch_size.value,
-        target_language: str = cfg.target_language.value,
+        target_language: str = cfg.target_language.value.value,
         llm_result_logger: logging.Logger = None,
         need_remove_punctuation: bool = cfg.needs_remove_punctuation.value,
         cjk_only: bool = True,
         single_sentence_translate = False,
         allow_running = None,
-        original_language = cfg.transcribe_language.value,
+        original_language = cfg.transcribe_language.value.value,
         custom_prompt = None,
     ) -> None:
         base_url = cfg.api_base.value

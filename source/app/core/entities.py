@@ -632,9 +632,12 @@ class FasterWhisperModelEnum(Enum):
     LARGE_V3_T = "large-v3-turbo"
     LARGE_DISTI_T = "large-distil-turbo"
     KOTOBA_V2 = "kotoba-v2-japanese"
-    LARGE_ZH_CV11 = "large-chinese-cv11"
-    LARGE_BELLE_CAN = "large-v3-belle-cantonese"
-    LARGE_BELLE_CN = "large-v3-belle-chinese"
+    LV3_ZH_CV11 = "large-v3-chinese-cv11"
+    LV3T_BELLE_CN = "lv3-turbo-belle-chinese"
+    LV3T_CAN = "lv3-turbo-cantonese"
+    LV3T_TW = "lv3-turbo-zh-tw"
+    LV3T_KOR = "lv3-turbo-korean"
+    LV3T_JP = "lv3-turbo-japanese"
 
 @dataclass
 class Task:

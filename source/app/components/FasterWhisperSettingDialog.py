@@ -79,34 +79,54 @@ FASTER_WHISPER_MODELS = [
         "modelScopeLink": "pengzhendong/faster-distil-whisper-large-v2"
     },
     {
-        "label": "Kotoba-v2-japanese",
+        "label": "Kotoba-v2-Japanese",
         "value": "faster-whisper-kotoba-v2-japanese",
         "size": "1583350",
         "downloadLink": "kotoba-tech/kotoba-whisper-v2.0-faster",
-        "modelScopeLink": ""
+        "modelScopeLink": "philpw99/kotoba-whisper-v2.0-faster"
     },
     {
-        "label": "Large-chinese-cv11",
-        "value": "faster-whisper-large-chinese-cv11",
+        "label": "Large-v3-Chinese-cv11",
+        "value": "faster-whisper-large-v3-chinese-cv11",
         "size": "3240100",
         "downloadLink": "nephilimbin/faster-whispe-large-zh-cv11",
-        "modelScopeLink": ""
+        "modelScopeLink": "philpw99/faster-whisper-large-chinese-cv11"
     },
     {
-        "label": "Large-v3-belle-cantonese",
-        "value": "faster-whisper-large-v3-belle-cantonese",
-        "size": "3240100",
-        "downloadLink": "XA9/Belle-faster-whisper-large-v3-zh-punct",
-        "modelScopeLink": ""
+        "label": "LV3-Turbo-Belle-Chinese",
+        "value": "faster-whisper-lv3-turbo-belle-chinese",
+        "size": "853540",
+        "downloadLink": "wolfofbackstreet/faster-whisper-belle-whisper-large-v3-turbo-zh-ct2-int8",
+        "modelScopeLink": "philpw99/LV3-Turbo-Belle-Chinese"
     },
     {
-        "label": "Large-v3-belle-chinese",
-        "value": "faster-whisper-large-v3-belle-chinese",
-        "size": "6469714",
-        "downloadLink": "CWTchen/Belle-whisper-large-v3-zh-punct-ct2-float32",
-        "modelScopeLink": ""
-    }
-
+        "label": "Lv3-Turbo-Cantonese",
+        "value": "faster-whisper-lv3-turbo-cantonese",
+        "size": "1698693",
+        "downloadLink": "ylpeter/faster-whisper-large-v3-turbo-cantonese-16",
+        "modelScopeLink": "philpw99/Lv3-Turbo-Cantonese"
+    },
+    {
+        "label": "Lv3-Turbo-ZH-TW",
+        "value": "faster-whisper-lv3-turbo-zh-tw",
+        "size": "1698693",
+        "downloadLink": "asadfgglie/faster-whisper-large-v3-zh-TW",
+        "modelScopeLink": "philpw99/Lv3-Turbo-ZH-TW"
+    },
+    {
+        "label": "Lv3-Turbo-Korean",
+        "value": "faster-whisper-lv3-turbo-korean",
+        "size": "853540",
+        "downloadLink": "imTak/faster-whisper_Korean_L3turbo",
+        "modelScopeLink": "philpw99/Lv3-Turbo-Korean"
+    },
+    {
+        "label": "Lv3-Turbo-Japanese",
+        "value": "faster-whisper-lv3-turbo-japanese",
+        "size": "1698693",
+        "downloadLink": "XA9/faster-whisper-large-v3-ja-int8",
+        "modelScopeLink": "philpw99/Lv3-Turbo-Japanese"
+    },
 ]
 
 # 在类外添加这个工具函数
@@ -528,8 +548,8 @@ class FasterWhisperDownloadDialog(MessageBoxBase):
             self._set_all_download_buttons_enabled(True)
             # 更新状态
             status_item = QTableWidgetItem(self.tr("已下载"))
-            status_item.setForeground(Qt.green)
-            status_item.setTextAlignment(Qt.AlignCenter)
+            status_item.setForeground(Qt.GlobalColor.green)
+            status_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             self.model_table.setItem(row, 2, status_item)
             
             # 更新下载按钮文本
@@ -880,9 +900,9 @@ class FasterWhisperSettingDialog(MessageBoxBase):
         
     def _on_model_card_changed(self, model_value:str):
         # Set the model and model dir once it's changed.
-        model_value = model_value.lower()
-        model = FasterWhisperModelEnum(model_value)
-        cfg.faster_whisper_model.value = model
+        model = FasterWhisperModelEnum(model_value.lower())
+        if cfg.faster_whisper_model.value != model:
+            cfg.faster_whisper_model.value = model
     
     def _on_one_word_changed(self, checked: bool):
         cfg.faster_whisper_one_word.value = checked

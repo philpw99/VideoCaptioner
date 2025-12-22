@@ -969,8 +969,8 @@ class TaskCreationInterface(QWidget):
         if not self.task:
             return
         
-        self.task.original_language = cfg.transcribe_language.value
-        self.task.target_language = cfg.target_language.value
+        self.task.original_language = cfg.transcribe_language.value.value
+        self.task.target_language = cfg.target_language.value.value
         
         self.task.transcribe_model = cfg.transcribe_model.value
         # cfg.transcribe_language is enum

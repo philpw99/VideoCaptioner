@@ -1,3 +1,10 @@
+3.6.16
+	Add more Faster Whisper models with ModelScope.cn download mirrors:
+	- Large V3 Turbo Belle Chinese 
+	- Lv3 Turbo Cantonese
+	- Lv3 Turbo Japanese
+	- Lv3 Turbo Korean
+	- Lv3 Turbo ZH Taiwan
 3.6.15
 	Add Kotoba-v2.0 as new FasterWhisperXXL model. It's a model fine tuned for Japanese audio.
 	Add 3 more FasterWhisperXXL models: Large-zh-cv11, Large-v3-belle-cantonese and Large-v3-belle-chinese
