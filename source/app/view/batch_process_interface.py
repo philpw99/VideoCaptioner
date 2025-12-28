@@ -7,19 +7,19 @@ from threading import Lock
 
 from PyQt5.QtCore import *
 from PyQt5.QtGui import QPixmap, QFont, QDropEvent, QDragEnterEvent, QCloseEvent
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFileDialog, QMainWindow, QMessageBox
-from qfluentwidgets import ComboBox, CardWidget, ToolTipFilter, FluentWindow, isDarkTheme, \
-    ToolTipPosition, PrimaryPushButton, PushButton, InfoBar, BodyLabel, PillPushButton, setFont, \
-    InfoBadgePosition, ProgressRing, InfoBarPosition, ScrollArea, Action, RoundMenu, IconInfoBadge, \
-    InfoLevel, SwitchButton, IndicatorPosition
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFileDialog, QMessageBox
+from qfluentwidgets import (ComboBox, CardWidget, ToolTipFilter,
+    ToolTipPosition, PrimaryPushButton, PushButton, InfoBar, BodyLabel, PillPushButton, setFont,
+    InfoBadgePosition, ProgressRing, InfoBarPosition, ScrollArea, Action, RoundMenu, IconInfoBadge,
+    InfoLevel, SwitchButton, IndicatorPosition )
 from qfluentwidgets import FluentIcon as FIF
-from qframelesswindow import FramelessWindow, StandardTitleBar
 
 from ..config import RESOURCE_PATH
 from ..common.config import cfg
 from ..common.signal_bus import signalBus
 
-from ..core.entities import SupportedVideoFormats, SupportedAudioFormats, TodoWhenDoneEnum, SupportedSubtitleFormats, SupportedImageFormats
+from ..core.entities import ( SupportedVideoFormats, SupportedAudioFormats, 
+                             TodoWhenDoneEnum, SupportedSubtitleFormats, SupportedImageFormats)
 from ..core.entities import Task, VideoInfo, BatchTaskTypeEnum, TranslateMethodEnum, NOT_RUNNING_TASKS, LANGUAGES
 from ..core.thread.create_task_thread import CreateTaskThread
 from ..core.thread.subtitle_pipeline_thread import SubtitlePipelineThread
@@ -605,7 +605,7 @@ class BatchProcessInterface(QWidget):
         self.scroll_widget = QWidget()
         self.scroll_layout = QVBoxLayout(self.scroll_widget)
         self.scroll_layout.setSpacing(10)
-        self.scroll_layout.setAlignment(Qt.AlignTop)
+        self.scroll_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         self.scroll_area.setWidget(self.scroll_widget)
         self.scroll_area.setWidgetResizable(True)
         self.main_layout.addWidget(self.scroll_area)
@@ -879,27 +879,30 @@ class BatchProcessInterface(QWidget):
         )
 
         # 查找下一个未完成的任务
-        next_task = None
+        new_task_card = None
         c = 0
         for task_card in self.task_cards:
             if task_card.task.status not in NOT_RUNNING_TASKS:
                 # This task is running.
                 c += 1
                 continue
-            if c >= 2:
-                # Over 2 tasks are running.
+            if c >= 3:
+                # 3 or more tasks are running.
                 break
             if task_card.task.status == Task.Status.PENDING:
                 # Not includes Failed or Completed.
                 task_card.finished.connect(self.on_task_finished)
-                if c == 1:  # Add a 2 second pause between 1 and 2
+                if c > 0:  # Add a 2 second pause between 1 and 2
                     time.sleep(2)
                 task_card.start()
+                new_task_card = task_card
                 c += 1
-            if c >= 2:  # 2 tasks are running
-                break
 
         self.update_win_title()
+        # Scroll to this new task
+        if new_task_card:
+            self.scroll_area.ensureWidgetVisible(new_task_card)
+
         if c == 0:  # No next task at all
             # 所有任务都完成了
             self.on_batch_finished()

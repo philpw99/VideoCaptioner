@@ -1,7 +1,8 @@
 3.6.17
 	Change some default config settings.
 	Improve translator system prompt.
-	Now you can drag and drop a folder to batch processing instead of files.
+	Now you can drag and drop folders to batch processing instead of files.
+	Autoscroll batch tasks to the current running.
 3.6.16
 	Add more Faster Whisper models with ModelScope.cn download mirrors:
 	- Large V3 Turbo Belle Chinese 
