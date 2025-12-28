@@ -67,7 +67,7 @@ class Config(QConfig):
     # ------------------- 转录配置 -------------------
     transcribe_model = OptionsConfigItem(
         "Transcribe", "TranscribeModel",
-        TranscribeModelEnum.JIANYING.value,
+        TranscribeModelEnum.FASTER_WHISPER.value,
         OptionsValidator(TranscribeModelEnum),
         EnumSerializer(TranscribeModelEnum)
     )
@@ -115,7 +115,7 @@ class Config(QConfig):
     )
     faster_whisper_vad_method = OptionsConfigItem(
         "FasterWhisper", "VadMethod",
-        VadMethodEnum.SILERO_V3.value,
+        VadMethodEnum.SILERO_V4_FW.value,
         OptionsValidator(VadMethodEnum),
         EnumSerializer(VadMethodEnum)
     )
@@ -157,7 +157,7 @@ class Config(QConfig):
     # ------------------- 字幕配置 -------------------
     translate_method = OptionsConfigItem(
         "Subtitle","Translate Method",
-        TranslateMethodEnum.NONE,
+        TranslateMethodEnum.SINGLE_SENTENCE.value,
         EnumOptionsValidator(TranslateMethodEnum),
         EnumExSerializer(TranslateMethodEnum)
         )

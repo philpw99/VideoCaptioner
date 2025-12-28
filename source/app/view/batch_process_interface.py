@@ -6,7 +6,7 @@ import sys
 from threading import Lock
 
 from PyQt5.QtCore import *
-from PyQt5.QtGui import QPixmap, QFont
+from PyQt5.QtGui import QPixmap, QFont, QDropEvent, QDragEnterEvent, QCloseEvent
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QFileDialog, QMainWindow, QMessageBox
 from qfluentwidgets import ComboBox, CardWidget, ToolTipFilter, FluentWindow, isDarkTheme, \
     ToolTipPosition, PrimaryPushButton, PushButton, InfoBar, BodyLabel, PillPushButton, setFont, \
@@ -41,6 +41,481 @@ class TimedMessageBox(QMessageBox):
     def showEvent(self, event):
         QTimer().singleShot(self.timeout*1000, self.accept)
         super(TimedMessageBox, self).showEvent(event)
+
+class TaskInfoCard(CardWidget):
+    finished = pyqtSignal(Task)
+    remove = pyqtSignal(object)
+    error = pyqtSignal(str)
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.task: Task = None
+        self.setup_ui()
+        self.setup_signals()
+        self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
+        self.customContextMenuRequested.connect(self.show_context_menu)
+        self.installEventFilter(ToolTipFilter(self, 100, ToolTipPosition.BOTTOM))
+
+        self.transcript_thread = None
+        self.subtitle_thread = None
+        self.subtitle_window = None  # 添加成员变量
+
+    def setup_ui(self):
+        self.setFixedHeight(180)
+        self.layout = QHBoxLayout(self)
+        self.layout.setContentsMargins(15, 5, 15, 5)
+        self.layout.setSpacing(10)
+
+        # 设置缩略图
+        self.setup_thumbnail()
+        # 设置视频信息
+        self.setup_info_layout()
+        # 设置按钮
+        self.setup_button_layout()
+
+        self.task_state = IconInfoBadge.info(FIF.REMOVE, self, target=self.video_title,
+                                             position=InfoBadgePosition.TOP_RIGHT)
+
+    def setup_thumbnail(self):
+        self.video_thumbnail = QLabel(self)
+        self.video_thumbnail.setFixedSize(208, 117)
+        self.video_thumbnail.setStyleSheet("background-color: #1E1F22;")
+        self.video_thumbnail.setAlignment(Qt.AlignCenter)
+        self.layout.addWidget(self.video_thumbnail, 0, Qt.AlignLeft)
+
+    def setup_info_layout(self):
+        self.info_layout = QVBoxLayout()
+        self.info_layout.setContentsMargins(3, 8, 3, 8)
+        self.info_layout.setSpacing(5)
+
+        # 设置视频标题
+        self.video_title = BodyLabel(self.tr("未选择视频"), self)
+        self.video_title.setFont(QFont("Microsoft YaHei", 12))
+        self.video_title.setWordWrap(True)
+        self.info_layout.addWidget(self.video_title, alignment=Qt.AlignTop)
+
+        # 设置视频详细信息
+        self.details_layout1 = QHBoxLayout()
+        self.details_layout1.setSpacing(10)
+        self.details_layout2 = QHBoxLayout()
+        self.details_layout2.setSpacing(10)
+
+        self.resolution_info = self.create_pill_button(self.tr("画质"), 120)
+        self.file_size_info = self.create_pill_button(self.tr("文件大小"), 120)
+        self.duration_info = self.create_pill_button(self.tr("时长"), 120)
+        self.video_codec = self.create_pill_button(self.tr("视频码"), 120)
+        self.audio_codec = self.create_pill_button(self.tr("音频码"), 120)
+        
+        self.portrait_mode = SwitchButton(self, indicatorPos = IndicatorPosition.RIGHT)
+        self.portrait_mode.setOnText(self.tr("竖屏"))
+        self.portrait_mode.setOffText(self.tr("横屏"))
+        self.logo_picture = PushButton(self.tr("水印：无"), parent=self)
+        
+        self.progress_ring = ProgressRing(self)
+        self.progress_ring.setFixedSize(20, 20)
+        self.progress_ring.setStrokeWidth(4)
+        self.progress_ring.hide()
+
+        self.details_layout1.addWidget(self.resolution_info)
+        self.details_layout1.addWidget(self.file_size_info)
+        self.details_layout1.addWidget(self.duration_info)
+        self.details_layout1.addWidget(self.progress_ring)
+        self.details_layout1.addStretch(1)
+        self.details_layout2.addWidget(self.video_codec)
+        self.details_layout2.addWidget(self.audio_codec)
+        self.details_layout2.addWidget(self.portrait_mode)
+        self.details_layout2.addWidget(self.logo_picture)
+        
+        self.details_layout2.addStretch(1)
+        self.info_layout.addLayout(self.details_layout1)
+        self.info_layout.addLayout(self.details_layout2)
+        self.layout.addLayout(self.info_layout)
+
+    def create_pill_button(self, text, width):
+        button = PillPushButton(text, self)
+        button.setCheckable(False)
+        setFont(button, 11)
+        button.setFixedWidth(width)
+        return button
+
+    def setup_button_layout(self):
+        self.button_layout = QVBoxLayout()
+        self.preview_subtitle_button = PushButton(self.tr("预览字幕"), self)
+        self.open_folder_button = PushButton(self.tr("打开文件夹"), self)
+        self.start_button = PrimaryPushButton(self.tr("未开始转录"), self)
+        self.button_layout.addWidget(self.preview_subtitle_button)
+        self.button_layout.addWidget(self.open_folder_button)
+        self.button_layout.addWidget(self.start_button)
+
+        self.start_button.setDisabled(True)
+
+        button_widget = QWidget()
+        button_widget.setLayout(self.button_layout)
+        button_widget.setFixedWidth(200)
+        self.layout.addWidget(button_widget)
+
+    def mouseDoubleClickEvent(self, event):
+        """双击事件处理"""
+        if self.task.status == Task.Status.COMPLETED:
+            self.open_subtitle()
+
+    def update_info(self, video_info: VideoInfo):
+        """更新视频信息显示"""
+        self.video_title.setText(video_info.file_name + '\n' + video_info.file_path)
+        self.resolution_info.setText(self.tr("画质: ") + f"{video_info.width}x{video_info.height}")
+        file_size_mb = os.path.getsize(self.task.file_path) / 1024 / 1024
+        self.file_size_info.setText(self.tr("大小: ") + f"{file_size_mb:.1f} MB")
+        duration = datetime.timedelta(seconds=int(video_info.duration_seconds))
+        self.duration_info.setText(self.tr("时长: ") + str(duration))
+        self.video_codec.setText(self.tr("视频码 ") + video_info.video_codec)
+        self.audio_codec.setText(self.tr("音频码 ") + video_info.audio_codec)
+        # self.start_button.setDisabled(False)
+        self.update_thumbnail(video_info.thumbnail_path)
+        if self.task and self.task.type == Task.Type.SUBTITLE and not cfg.soft_subtitle.value:
+            # When need to hard code subtitles, enable it.
+            self.portrait_mode.setDisabled(False)
+        else:
+            # Other cases, disable it.
+            self.portrait_mode.setDisabled(True)
+        
+        # 水印
+        if self.task.logo_picture:
+            logo_path = Path(self.task.logo_picture)
+            self.logo_picture.setText(self.tr("水印：")+ logo_path.name)
+        else:
+            self.logo_picture.setText(self.tr("水印：无"))
+        
+        self.update_tooltip()
+
+    def update_tooltip(self):
+        """更新tooltip"""
+        # 设置整体tooltip
+        
+        strategy_text = ""
+        if self.task.need_translate:
+            match self.task.translate_method:
+                case TranslateMethodEnum.OPTIMIZE:
+                    strategy_text += self.tr("翻译方式：智能多线程优化+翻译，目标: "
+                                            ) + str(self.task.target_language) + " "
+                case TranslateMethodEnum.SINGLE_SENTENCE:
+                    strategy_text += self.tr("翻译方式：智能单线程单句翻译，目标: "
+                                             ) + self.task.target_language + " "
+                case TranslateMethodEnum.GOOGLE:
+                    strategy_text += self.tr("翻译方式：谷歌批量翻译，目标: "
+                                             ) + self.task.target_language + " "
+
+            strategy_text += self.tr(", 使用的LLM 模型: ") + self.task.llm_model + "\n"
+
+        if self.task.portrait and self.task.need_video:
+            strategy_text += self.tr("竖屏模式：开启 ")
+
+        if self.task.logo_picture:
+            strategy_text += self.tr("水印: ") + self.task.logo_picture
+
+        if self.task.type.value == Task.Type.SYNTHESIS.value:
+            tooltip = self.tr("任务类型：") + self.tr("加水印，字幕，或者其它处理") + "\n"
+            tooltip += self.tr("字幕文件：") + self.shorten_filename(self.task.original_subtitle_save_path) + "\n"
+        else:
+            tooltip = self.tr("任务类型: ") + self.task.type.value + "  " \
+            + self.tr("转录模型: ") + self.task.transcribe_model.value + "  " \
+            + self.tr("源语言：") + next(lang for lang, v in LANGUAGES.items() if v==self.task.transcribe_language) \
+            + "\n"
+    
+        tooltip += self.tr("文件: ") + self.shorten_filename(self.task.file_path) + "\n"
+        tooltip += strategy_text + "\n"
+        tooltip += self.tr("任务状态: ") + self.task.status.value
+        self.setToolTip(tooltip)
+
+    def shorten_filename(self, filename: str):
+        return filename if len(filename)< 100 else filename[:50] + "..." + Path(filename).name
+
+    def update_thumbnail(self, thumbnail_path):
+        """更新视频缩略图"""
+        if not Path(thumbnail_path).exists() or cfg.no_thumbnail.value:
+            thumbnail_path = RESOURCE_PATH / "assets" / "audio-thumbnail.png"
+
+        pixmap = QPixmap(str(thumbnail_path)).scaled(
+            self.video_thumbnail.size(),
+            Qt.AspectRatioMode.KeepAspectRatio,
+            Qt.TransformationMode.SmoothTransformation
+        )
+        self.video_thumbnail.setPixmap(pixmap)
+
+    def setup_signals(self):
+        self.start_button.clicked.connect(self.start)
+        self.open_folder_button.clicked.connect(self.on_open_folder_clicked)
+        self.preview_subtitle_button.clicked.connect(self.open_subtitle)
+        self.portrait_mode.checkedChanged.connect(self.on_portrait_mode_changed)
+        self.logo_picture.clicked.connect(self.on_logo_picture_clicked)
+
+    def on_portrait_mode_changed(self, checked):
+        """竖屏模式切换"""
+        self.task.portrait = checked
+        self.update_tooltip()
+
+    def on_logo_picture_clicked(self):
+        picture_formats = [f"*.{fmt.value}" for fmt in SupportedImageFormats]
+        file, _ = QFileDialog.getOpenFileName(self, self.tr("选择背景图片"),
+                                               cfg.last_open_dir.value,
+                                               self.tr("Image Files (") + " ".join(picture_formats) + ")")
+        if not file:
+            return
+        file_path = Path(file)
+        if not file_path.exists():
+            InfoBar.warning(
+                self.tr("文件不存在"),
+                self.tr("请重新选择"),
+                duration=3000,
+            )
+            return
+
+        self.logo_picture.setText(self.tr("背景：") + file_path.name)
+        self.task.logo_picture = file
+        self.update_tooltip()
+
+    def show_context_menu(self, pos):
+        """显示右键菜单"""
+        menu = RoundMenu(parent=self)
+        
+        # 添加打开字幕选项
+        open_subtitle_action = Action(FIF.DOCUMENT, self.tr("打开字幕（双击）"), self)
+        open_subtitle_action.triggered.connect(self.open_subtitle)
+        menu.addAction(open_subtitle_action)
+
+        # 添加菜单项
+        open_folder_action = Action(FIF.FOLDER, self.tr("打开文件夹"), self)
+        open_folder_action.triggered.connect(self.on_open_folder_clicked)
+        menu.addAction(open_folder_action)
+        
+        reprocess_action = Action(FIF.SYNC, self.tr("重新处理"), self)
+        reprocess_action.triggered.connect(self.reprocess)
+        menu.addAction(reprocess_action)
+
+        cancel_action = Action(FIF.CANCEL, self.tr("取消/停止任务"), self)
+        cancel_action.triggered.connect(self.cancel)
+        menu.addAction(cancel_action)
+
+        delete_action = Action(FIF.DELETE, self.tr("删除任务"), self)
+        delete_action.triggered.connect(lambda: self.remove.emit(self))
+        menu.addAction(delete_action)
+        
+        # 显示菜单
+        menu.exec_(self.mapToGlobal(pos))
+
+    def reprocess(self):
+        self.status = Task.Status.PENDING
+        self.start()
+
+    def open_subtitle(self):
+        """打开字幕优化界面"""
+        preview_subtitle_path = Path(self.task.original_subtitle_save_path)
+        if self.task.result_subtitle_save_path and Path(self.task.result_subtitle_save_path).is_file():
+            preview_subtitle_path = Path(self.task.result_subtitle_save_path)
+        # The original sub might be word-split and not full sentence sub.
+        # elif self.task.original_subtitle_save_path and Path(self.task.original_subtitle_save_path).exists():
+        #     preview_subtitle_path = Path(self.task.original_subtitle_save_path)
+        if not preview_subtitle_path.is_file():
+            # Open file dialog
+            subtitle_formats = [f"*.{fmt.value}" for fmt in SupportedSubtitleFormats]
+            filter_str = f"{self.tr('字幕文件')} ({' '.join(subtitle_formats)})"
+            file, _ = QFileDialog.getOpenFileName( self, self.tr("选择字幕文件"), cfg.last_open_dir.value, filter_str)
+            if file and Path(file).exists():
+                preview_subtitle_path = Path(file)
+            else:
+                return
+
+        self.subtitle_window = QWidget()
+        self.subtitle_window.setWindowTitle(self.tr("字幕预览"))
+        subtitle_interface = SubtitleOptimizationInterface(self.subtitle_window)
+        subtitle_interface.load_subtitle_file(str(preview_subtitle_path))
+        subtitle_interface.remove_widget()
+        layout = QHBoxLayout(self.subtitle_window)
+        layout.setContentsMargins(3, 0, 3, 3)
+        layout.addWidget(subtitle_interface)
+        
+        self.subtitle_window.resize(1000, 800)
+        self.subtitle_window.setStyleSheet(cfg.theme_style_sheet)
+        self.subtitle_window.show()
+
+    def delete(self):
+        self.remove.emit(self)
+
+    def cancel(self):
+        """修改任务状态"""
+        if not self.task.status in NOT_RUNNING_TASKS:
+            # Stop the task if it's running.
+            self.stop()
+        self.task.status = Task.Status.CANCELED
+        self.start_button.setText(self.tr("Cancelled"))
+        self.update_tooltip()
+        # if not self.task.status in NOT_RUNNING_TASKS:
+        #     # If the task is running or pending
+        #     self.finished.emit(self.task)
+
+    def stop(self):
+        """停止转录"""
+        if self.task:
+            self.task.allow_running[0] = False
+            # self.transcript_thread.quit()
+            # self.transcript_thread.terminate()
+
+        # self.reset_ui()
+
+        InfoBar.success(
+            self.tr("已取消"),
+            self.tr("任务已取消"),
+            duration=2000,
+            parent=self
+        )
+
+    def start(self):
+        """开始转录按钮点击事件"""
+        # 获取任务类型
+        if self.task.status == Task.Status.COMPLETED:
+            reply = QMessageBox.question(
+                self,
+                self.tr("确定"),
+                self.tr("该任务已完成，重新跑一次吗？"),
+                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+                QMessageBox.StandardButton.No
+            )
+            if reply == QMessageBox.StandardButton.No:
+                return
+
+        self.task.status = Task.Status.PENDING
+        self.task.allow_running[0] = True
+        self.progress_ring.show()
+        self.progress_ring.setValue(0)
+        self.start_button.setDisabled(True)
+        self.preview_subtitle_button.setDisabled(True)
+        self.task_state.setLevel(InfoLevel.WARNING)
+        self.task_state.setIcon(FIF.SYNC)
+        self.progress_ring.resume()
+
+        # 开始转录过程
+        match self.task.type:
+            case Task.Type.TRANSCRIBE:
+                self.transcript_thread = TranscriptThread(self.task)
+                self.transcript_thread.finished.connect(self.on_finished)
+                self.transcript_thread.progress.connect(self.on_progress)
+                self.transcript_thread.error.connect(self.on_error)
+                self.transcript_thread.start()
+            case Task.Type.SUBTITLE | Task.Type.TRANSLATE:
+                self.subtitle_thread = SubtitlePipelineThread(self.task)
+                self.subtitle_thread.finished.connect(self.on_finished)
+                self.subtitle_thread.progress.connect(self.on_progress)
+                self.subtitle_thread.error.connect(self.on_error)
+                self.subtitle_thread.start()
+            case Task.Type.SYNTHESIS:
+                self.synthesis_thread = VideoSynthesisThread(self.task)
+                self.synthesis_thread.finished.connect(self.on_finished)
+                self.synthesis_thread.progress.connect(self.on_progress)
+                self.synthesis_thread.error.connect(self.on_error)
+                self.synthesis_thread.start()
+            case _:
+                self.on_error(self.tr("任务类型错误"))
+        
+
+    def on_open_folder_clicked(self):
+        """打开文件夹按钮点击事件"""
+        if self.task and Path(self.task.file_path).exists():
+            if sys.platform == "win32":
+                os.startfile(str( Path(self.task.file_path).parent) )
+            elif sys.platform == "darwin":  # macOS
+                subprocess.run(["open", str( Path(self.task.file_path).parent) ])
+            else:  # Linux
+                subprocess.run(["xdg-open", str( Path(self.task.file_path).parent) ])
+        else:
+            if self.task:
+                # Task exists, so the file is missing.
+                InfoBar.warning(
+                    self.tr("警告"),
+                    self.tr(f"找不到文件 {self.task.file_path}"),
+                    duration=2000,
+                    parent=self
+                )
+            else:
+                # Task not exists yet.
+                InfoBar.warning(
+                    self.tr("警告"),
+                    self.tr(f"找不到文件{self.task.file_path}"),
+                    duration=2000,
+                    parent=self
+                )
+
+    def is_canceled(self):
+        if self.task:
+            allow_running = self.task.allow_running[0]
+        else:
+            allow_running = True
+        
+        # If allow_running was set to False somehow, it's canceled.
+        return not allow_running
+
+    def on_progress(self, value, message):
+        """更新转录进度"""
+        self.start_button.setText(message)
+        self.progress_ring.setValue(value)
+        self.update_tooltip()
+
+    def on_error(self, error):
+        """处理转录错误"""
+        self.reset_ui()
+        
+        if self.is_canceled():
+            # An error by cancelling.
+            self.task_state.setLevel(InfoLevel.WARNING)
+            self.progress_ring.setValue(0)
+            self.task.status = Task.Status.CANCELED
+            self.update_tooltip()
+        else:
+            # Other errors.
+            self.task_state.setLevel(InfoLevel.ERROR)
+            self.task_state.setIcon(FIF.CLOSE)
+            self.progress_ring.error()
+            self.task.status = Task.Status.FAILED
+
+            self.update_tooltip()
+            self.error.emit(error)
+            InfoBar.error(
+                self.tr("转录失败"),
+                self.tr(error),
+                duration=5000,
+                parent=self
+            )
+
+    def on_finished(self, task):
+        """转录完成处理"""
+        self.reset_ui()
+        self.task_state.setLevel(InfoLevel.SUCCESS)
+        self.task_state.setIcon(FIF.ACCEPT)
+        self.update_tooltip()
+
+        self.task.status = Task.Status.COMPLETED
+        self.finished.emit(task)
+
+    def reset_ui(self):
+        """重置UI状态"""
+        self.start_button.setEnabled(True)
+        self.start_button.setText(self.tr("开始"))
+        self.preview_subtitle_button.setEnabled(True)
+        self.progress_ring.setValue(100)
+        self.task_state.setLevel(InfoLevel.INFOAMTION)
+        self.task_state.setIcon(FIF.REMOVE)
+        if self.task.soft_subtitle or self.task.logo_picture is None:
+            self.logo_picture.setHidden(True)
+        else:
+            self.logo_picture.setHidden(False)
+
+        # Hide the portrait/landscape switch if soft-subtitle
+        self.portrait_mode.setHidden(self.task.soft_subtitle)
+        self.update_tooltip()
+
+    def set_task(self, task):
+        """设置任务并更新UI"""
+        self.task = task
+        self.update_info(self.task.video_info)
+        self.reset_ui()
 
 class BatchProcessInterface(QWidget):
     add_tasks_finished = pyqtSignal()
@@ -594,7 +1069,7 @@ class BatchProcessInterface(QWidget):
         self.create_threads.append(create_thread)
         create_thread.start()
 
-    def cleanup_thread(self, thread):
+    def cleanup_thread(self, thread: QThread):
         """清理完成的线程"""
         if thread in self.create_threads:
             self.create_threads.remove(thread)
@@ -628,7 +1103,7 @@ class BatchProcessInterface(QWidget):
                 self.file_list = None
                 
 
-    def remove_task_card(self, task_card):
+    def remove_task_card(self, task_card: TaskInfoCard ):
         """移除任务卡片"""
         if task_card in self.task_cards:
             # 如果任务正在处理中,不允许删除
@@ -660,20 +1135,30 @@ class BatchProcessInterface(QWidget):
             # if len(self.task_cards) == 0:  # 因为当前任务还未被移除
             #   self.task_type_combo.setEnabled(True)
 
-    def dragEnterEvent(self, event):
+    def dragEnterEvent(self, event: QDragEnterEvent):
         """拖拽进入事件处理"""
         if event.mimeData().hasUrls():
             event.accept()
         else:
             event.ignore()
 
-    def dropEvent(self, event):
+    def dropEvent(self, event: QDropEvent):
         """拖拽放下事件处理"""
         for url in event.mimeData().urls():
-            file_path = url.toLocalFile()
-            self.add_file(file_path)
+            if url.isLocalFile():
+                file_path = Path( url.toLocalFile())
+                if file_path.is_file():
+                    self.add_file(str(file_path))
+                else:
+                    # It's a folder. Add all files inside.
+                    for file in file_path.iterdir():
+                        if file.is_file() and (
+                            file.suffix[1:] in SupportedVideoFormats or
+                            file.suffix[1:] in SupportedAudioFormats
+                        ):
+                            self.add_file(str(file))
 
-    def closeEvent(self, event):
+    def closeEvent(self, event: QCloseEvent):
         """关闭事件处理"""
         self.cancel_batch_process()
         super().closeEvent(event)
@@ -755,483 +1240,6 @@ class BatchProcessInterface(QWidget):
         self.setWindowTitle(final_text)
         self.win_title_update.emit(final_text)
         
-
-class TaskInfoCard(CardWidget):
-    finished = pyqtSignal(Task)
-    remove = pyqtSignal(object)
-    error = pyqtSignal(str)
-
-    def __init__(self, parent=None):
-        super().__init__(parent)
-        self.task: Task = None
-        self.setup_ui()
-        self.setup_signals()
-        self.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
-        self.customContextMenuRequested.connect(self.show_context_menu)
-        self.installEventFilter(ToolTipFilter(self, 100, ToolTipPosition.BOTTOM))
-
-        self.transcript_thread = None
-        self.subtitle_thread = None
-        self.subtitle_window = None  # 添加成员变量
-
-    def setup_ui(self):
-        self.setFixedHeight(180)
-        self.layout = QHBoxLayout(self)
-        self.layout.setContentsMargins(15, 5, 15, 5)
-        self.layout.setSpacing(10)
-
-        # 设置缩略图
-        self.setup_thumbnail()
-        # 设置视频信息
-        self.setup_info_layout()
-        # 设置按钮
-        self.setup_button_layout()
-
-        self.task_state = IconInfoBadge.info(FIF.REMOVE, self, target=self.video_title,
-                                             position=InfoBadgePosition.TOP_RIGHT)
-
-    def setup_thumbnail(self):
-        self.video_thumbnail = QLabel(self)
-        self.video_thumbnail.setFixedSize(208, 117)
-        self.video_thumbnail.setStyleSheet("background-color: #1E1F22;")
-        self.video_thumbnail.setAlignment(Qt.AlignCenter)
-        self.layout.addWidget(self.video_thumbnail, 0, Qt.AlignLeft)
-
-    def setup_info_layout(self):
-        self.info_layout = QVBoxLayout()
-        self.info_layout.setContentsMargins(3, 8, 3, 8)
-        self.info_layout.setSpacing(5)
-
-        # 设置视频标题
-        self.video_title = BodyLabel(self.tr("未选择视频"), self)
-        self.video_title.setFont(QFont("Microsoft YaHei", 12))
-        self.video_title.setWordWrap(True)
-        self.info_layout.addWidget(self.video_title, alignment=Qt.AlignTop)
-
-        # 设置视频详细信息
-        self.details_layout1 = QHBoxLayout()
-        self.details_layout1.setSpacing(10)
-        self.details_layout2 = QHBoxLayout()
-        self.details_layout2.setSpacing(10)
-
-        self.resolution_info = self.create_pill_button(self.tr("画质"), 120)
-        self.file_size_info = self.create_pill_button(self.tr("文件大小"), 120)
-        self.duration_info = self.create_pill_button(self.tr("时长"), 120)
-        self.video_codec = self.create_pill_button(self.tr("视频码"), 120)
-        self.audio_codec = self.create_pill_button(self.tr("音频码"), 120)
-        
-        self.portrait_mode = SwitchButton(self, indicatorPos = IndicatorPosition.RIGHT)
-        self.portrait_mode.setOnText(self.tr("竖屏"))
-        self.portrait_mode.setOffText(self.tr("横屏"))
-        self.logo_picture = PushButton(self.tr("水印：无"), parent=self)
-        
-        self.progress_ring = ProgressRing(self)
-        self.progress_ring.setFixedSize(20, 20)
-        self.progress_ring.setStrokeWidth(4)
-        self.progress_ring.hide()
-
-        self.details_layout1.addWidget(self.resolution_info)
-        self.details_layout1.addWidget(self.file_size_info)
-        self.details_layout1.addWidget(self.duration_info)
-        self.details_layout1.addWidget(self.progress_ring)
-        self.details_layout1.addStretch(1)
-        self.details_layout2.addWidget(self.video_codec)
-        self.details_layout2.addWidget(self.audio_codec)
-        self.details_layout2.addWidget(self.portrait_mode)
-        self.details_layout2.addWidget(self.logo_picture)
-        
-        self.details_layout2.addStretch(1)
-        self.info_layout.addLayout(self.details_layout1)
-        self.info_layout.addLayout(self.details_layout2)
-        self.layout.addLayout(self.info_layout)
-
-    def create_pill_button(self, text, width):
-        button = PillPushButton(text, self)
-        button.setCheckable(False)
-        setFont(button, 11)
-        button.setFixedWidth(width)
-        return button
-
-    def setup_button_layout(self):
-        self.button_layout = QVBoxLayout()
-        self.preview_subtitle_button = PushButton(self.tr("预览字幕"), self)
-        self.open_folder_button = PushButton(self.tr("打开文件夹"), self)
-        self.start_button = PrimaryPushButton(self.tr("未开始转录"), self)
-        self.button_layout.addWidget(self.preview_subtitle_button)
-        self.button_layout.addWidget(self.open_folder_button)
-        self.button_layout.addWidget(self.start_button)
-
-        self.start_button.setDisabled(True)
-
-        button_widget = QWidget()
-        button_widget.setLayout(self.button_layout)
-        button_widget.setFixedWidth(200)
-        self.layout.addWidget(button_widget)
-
-    def mouseDoubleClickEvent(self, event):
-        """双击事件处理"""
-        if self.task.status == Task.Status.COMPLETED:
-            self.open_subtitle()
-
-    def update_info(self, video_info: VideoInfo):
-        """更新视频信息显示"""
-        self.video_title.setText(video_info.file_name + '\n' + video_info.file_path)
-        self.resolution_info.setText(self.tr("画质: ") + f"{video_info.width}x{video_info.height}")
-        file_size_mb = os.path.getsize(self.task.file_path) / 1024 / 1024
-        self.file_size_info.setText(self.tr("大小: ") + f"{file_size_mb:.1f} MB")
-        duration = datetime.timedelta(seconds=int(video_info.duration_seconds))
-        self.duration_info.setText(self.tr("时长: ") + str(duration))
-        self.video_codec.setText(self.tr("视频码 ") + video_info.video_codec)
-        self.audio_codec.setText(self.tr("音频码 ") + video_info.audio_codec)
-        # self.start_button.setDisabled(False)
-        self.update_thumbnail(video_info.thumbnail_path)
-        if self.task and self.task.type == Task.Type.SUBTITLE and not cfg.soft_subtitle.value:
-            # When need to hard code subtitles, enable it.
-            self.portrait_mode.setDisabled(False)
-        else:
-            # Other cases, disable it.
-            self.portrait_mode.setDisabled(True)
-        
-        # 水印
-        if self.task.logo_picture:
-            logo_path = Path(self.task.logo_picture)
-            self.logo_picture.setText(self.tr("水印：")+ logo_path.name)
-        else:
-            self.logo_picture.setText(self.tr("水印：无"))
-        
-        self.update_tooltip()
-
-    def update_tooltip(self):
-        """更新tooltip"""
-        # 设置整体tooltip
-        
-        strategy_text = ""
-        if self.task.need_translate:
-            match self.task.translate_method:
-                case TranslateMethodEnum.OPTIMIZE:
-                    strategy_text += self.tr("翻译方式：智能多线程优化+翻译，目标: "
-                                            ) + str(self.task.target_language) + " "
-                case TranslateMethodEnum.SINGLE_SENTENCE:
-                    strategy_text += self.tr("翻译方式：智能单线程单句翻译，目标: "
-                                             ) + self.task.target_language + " "
-                case TranslateMethodEnum.GOOGLE:
-                    strategy_text += self.tr("翻译方式：谷歌批量翻译，目标: "
-                                             ) + self.task.target_language + " "
-
-            strategy_text += self.tr(", 使用的LLM 模型: ") + self.task.llm_model + "\n"
-
-        if self.task.portrait and self.task.need_video:
-            strategy_text += self.tr("竖屏模式：开启 ")
-
-        if self.task.logo_picture:
-            strategy_text += self.tr("水印: ") + self.task.logo_picture
-
-        if self.task.type.value == Task.Type.SYNTHESIS.value:
-            tooltip = self.tr("任务类型：") + self.tr("加水印，字幕，或者其它处理") + "\n"
-            tooltip += self.tr("字幕文件：") + self.shorten_filename(self.task.original_subtitle_save_path) + "\n"
-        else:
-            tooltip = self.tr("任务类型: ") + self.task.type.value + "  " \
-            + self.tr("转录模型: ") + self.task.transcribe_model.value + "  " \
-            + self.tr("源语言：") + next(lang for lang, v in LANGUAGES.items() if v==self.task.transcribe_language) \
-            + "\n"
-    
-        tooltip += self.tr("文件: ") + self.shorten_filename(self.task.file_path) + "\n"
-        tooltip += strategy_text + "\n"
-        tooltip += self.tr("任务状态: ") + self.task.status.value
-        self.setToolTip(tooltip)
-
-    def shorten_filename(self, filename: str):
-        return filename if len(filename)< 100 else filename[:50] + "..." + Path(filename).name
-
-    def update_thumbnail(self, thumbnail_path):
-        """更新视频缩略图"""
-        if not Path(thumbnail_path).exists() or cfg.no_thumbnail.value:
-            thumbnail_path = RESOURCE_PATH / "assets" / "audio-thumbnail.png"
-
-        pixmap = QPixmap(str(thumbnail_path)).scaled(
-            self.video_thumbnail.size(),
-            Qt.AspectRatioMode.KeepAspectRatio,
-            Qt.TransformationMode.SmoothTransformation
-        )
-        self.video_thumbnail.setPixmap(pixmap)
-
-    def setup_signals(self):
-        self.start_button.clicked.connect(self.start)
-        self.open_folder_button.clicked.connect(self.on_open_folder_clicked)
-        self.preview_subtitle_button.clicked.connect(self.open_subtitle)
-        self.portrait_mode.checkedChanged.connect(self.on_portrait_mode_changed)
-        self.logo_picture.clicked.connect(self.on_logo_picture_clicked)
-
-    def on_portrait_mode_changed(self, checked):
-        """竖屏模式切换"""
-        self.task.portrait = checked
-        self.update_tooltip()
-
-    def on_logo_picture_clicked(self):
-        picture_formats = [f"*.{fmt.value}" for fmt in SupportedImageFormats]
-        file, _ = QFileDialog.getOpenFileName(self, self.tr("选择背景图片"),
-                                               cfg.last_open_dir.value,
-                                               self.tr("Image Files (") + " ".join(picture_formats) + ")")
-        if not file:
-            return
-        file_path = Path(file)
-        if not file_path.exists():
-            InfoBar.warning(
-                self.tr("文件不存在"),
-                self.tr("请重新选择"),
-                duration=3000,
-            )
-            return
-
-        self.logo_picture.setText(self.tr("背景：") + file_path.name)
-        self.task.logo_picture = file
-        self.update_tooltip()
-
-    def show_context_menu(self, pos):
-        """显示右键菜单"""
-        menu = RoundMenu(parent=self)
-        
-        # 添加打开字幕选项
-        open_subtitle_action = Action(FIF.DOCUMENT, self.tr("打开字幕（双击）"), self)
-        open_subtitle_action.triggered.connect(self.open_subtitle)
-        menu.addAction(open_subtitle_action)
-
-        # 添加菜单项
-        open_folder_action = Action(FIF.FOLDER, self.tr("打开文件夹"), self)
-        open_folder_action.triggered.connect(self.on_open_folder_clicked)
-        menu.addAction(open_folder_action)
-        
-        reprocess_action = Action(FIF.SYNC, self.tr("重新处理"), self)
-        reprocess_action.triggered.connect(self.reprocess)
-        menu.addAction(reprocess_action)
-
-        cancel_action = Action(FIF.CANCEL, self.tr("取消/停止任务"), self)
-        cancel_action.triggered.connect(self.cancel)
-        menu.addAction(cancel_action)
-
-        delete_action = Action(FIF.DELETE, self.tr("删除任务"), self)
-        delete_action.triggered.connect(lambda: self.remove.emit(self))
-        menu.addAction(delete_action)
-        
-        # 显示菜单
-        menu.exec_(self.mapToGlobal(pos))
-
-    def reprocess(self):
-        self.status = Task.Status.PENDING
-        self.start()
-
-    def open_subtitle(self):
-        """打开字幕优化界面"""
-        preview_subtitle_path = Path(self.task.original_subtitle_save_path)
-        if self.task.result_subtitle_save_path and Path(self.task.result_subtitle_save_path).is_file():
-            preview_subtitle_path = Path(self.task.result_subtitle_save_path)
-        # The original sub might be word-split and not full sentence sub.
-        # elif self.task.original_subtitle_save_path and Path(self.task.original_subtitle_save_path).exists():
-        #     preview_subtitle_path = Path(self.task.original_subtitle_save_path)
-        if not preview_subtitle_path.is_file():
-            # Open file dialog
-            subtitle_formats = [f"*.{fmt.value}" for fmt in SupportedSubtitleFormats]
-            filter_str = f"{self.tr('字幕文件')} ({' '.join(subtitle_formats)})"
-            file, _ = QFileDialog.getOpenFileName( self, self.tr("选择字幕文件"), cfg.last_open_dir.value, filter_str)
-            if file and Path(file).exists():
-                preview_subtitle_path = Path(file)
-            else:
-                return
-
-        self.subtitle_window = QWidget()
-        self.subtitle_window.setWindowTitle(self.tr("字幕预览"))
-        subtitle_interface = SubtitleOptimizationInterface(self.subtitle_window)
-        subtitle_interface.load_subtitle_file(str(preview_subtitle_path))
-        subtitle_interface.remove_widget()
-        layout = QHBoxLayout(self.subtitle_window)
-        layout.setContentsMargins(3, 0, 3, 3)
-        layout.addWidget(subtitle_interface)
-        
-        self.subtitle_window.resize(1000, 800)
-        self.subtitle_window.setStyleSheet(cfg.theme_style_sheet)
-        self.subtitle_window.show()
-
-    def delete(self):
-        self.remove.emit(self)
-
-    def cancel(self):
-        """修改任务状态"""
-        if not self.task.status in NOT_RUNNING_TASKS:
-            # Stop the task if it's running.
-            self.stop()
-        self.task.status = Task.Status.CANCELED
-        self.start_button.setText(self.tr("Cancelled"))
-        self.update_tooltip()
-        # if not self.task.status in NOT_RUNNING_TASKS:
-        #     # If the task is running or pending
-        #     self.finished.emit(self.task)
-
-    def stop(self):
-        """停止转录"""
-        if self.task:
-            self.task.allow_running[0] = False
-            # self.transcript_thread.quit()
-            # self.transcript_thread.terminate()
-
-        # self.reset_ui()
-
-        InfoBar.success(
-            self.tr("已取消"),
-            self.tr("任务已取消"),
-            duration=2000,
-            parent=self
-        )
-
-    def start(self):
-        """开始转录按钮点击事件"""
-        # 获取任务类型
-        if self.task.status == Task.Status.COMPLETED:
-            reply = QMessageBox.question(
-                self,
-                self.tr("确定"),
-                self.tr("该任务已完成，重新跑一次吗？"),
-                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-                QMessageBox.StandardButton.No
-            )
-            if reply == QMessageBox.StandardButton.No:
-                return
-
-        self.task.status = Task.Status.PENDING
-        self.task.allow_running[0] = True
-        self.progress_ring.show()
-        self.progress_ring.setValue(0)
-        self.start_button.setDisabled(True)
-        self.preview_subtitle_button.setDisabled(True)
-        self.task_state.setLevel(InfoLevel.WARNING)
-        self.task_state.setIcon(FIF.SYNC)
-        self.progress_ring.resume()
-
-        # 开始转录过程
-        match self.task.type:
-            case Task.Type.TRANSCRIBE:
-                self.transcript_thread = TranscriptThread(self.task)
-                self.transcript_thread.finished.connect(self.on_finished)
-                self.transcript_thread.progress.connect(self.on_progress)
-                self.transcript_thread.error.connect(self.on_error)
-                self.transcript_thread.start()
-            case Task.Type.SUBTITLE | Task.Type.TRANSLATE:
-                self.subtitle_thread = SubtitlePipelineThread(self.task)
-                self.subtitle_thread.finished.connect(self.on_finished)
-                self.subtitle_thread.progress.connect(self.on_progress)
-                self.subtitle_thread.error.connect(self.on_error)
-                self.subtitle_thread.start()
-            case Task.Type.SYNTHESIS:
-                self.synthesis_thread = VideoSynthesisThread(self.task)
-                self.synthesis_thread.finished.connect(self.on_finished)
-                self.synthesis_thread.progress.connect(self.on_progress)
-                self.synthesis_thread.error.connect(self.on_error)
-                self.synthesis_thread.start()
-            case _:
-                self.on_error(self.tr("任务类型错误"))
-        
-
-    def on_open_folder_clicked(self):
-        """打开文件夹按钮点击事件"""
-        if self.task and Path(self.task.file_path).exists():
-            if sys.platform == "win32":
-                os.startfile(str( Path(self.task.file_path).parent) )
-            elif sys.platform == "darwin":  # macOS
-                subprocess.run(["open", str( Path(self.task.file_path).parent) ])
-            else:  # Linux
-                subprocess.run(["xdg-open", str( Path(self.task.file_path).parent) ])
-        else:
-            if self.task:
-                # Task exists, so the file is missing.
-                InfoBar.warning(
-                    self.tr("警告"),
-                    self.tr(f"找不到文件 {self.task.file_path}"),
-                    duration=2000,
-                    parent=self
-                )
-            else:
-                # Task not exists yet.
-                InfoBar.warning(
-                    self.tr("警告"),
-                    self.tr(f"找不到文件{self.task.file_path}"),
-                    duration=2000,
-                    parent=self
-                )
-
-    def is_canceled(self):
-        if self.task:
-            allow_running = self.task.allow_running[0]
-        else:
-            allow_running = True
-        
-        # If allow_running was set to False somehow, it's canceled.
-        return not allow_running
-
-    def on_progress(self, value, message):
-        """更新转录进度"""
-        self.start_button.setText(message)
-        self.progress_ring.setValue(value)
-        self.update_tooltip()
-
-    def on_error(self, error):
-        """处理转录错误"""
-        self.reset_ui()
-        
-        if self.is_canceled():
-            # An error by cancelling.
-            self.task_state.setLevel(InfoLevel.WARNING)
-            self.progress_ring.setValue(0)
-            self.task.status = Task.Status.CANCELED
-            self.update_tooltip()
-        else:
-            # Other errors.
-            self.task_state.setLevel(InfoLevel.ERROR)
-            self.task_state.setIcon(FIF.CLOSE)
-            self.progress_ring.error()
-            self.task.status = Task.Status.FAILED
-
-            self.update_tooltip()
-            self.error.emit(error)
-            InfoBar.error(
-                self.tr("转录失败"),
-                self.tr(error),
-                duration=5000,
-                parent=self
-            )
-
-    def on_finished(self, task):
-        """转录完成处理"""
-        self.reset_ui()
-        self.task_state.setLevel(InfoLevel.SUCCESS)
-        self.task_state.setIcon(FIF.ACCEPT)
-        self.update_tooltip()
-
-        self.task.status = Task.Status.COMPLETED
-        self.finished.emit(task)
-
-    def reset_ui(self):
-        """重置UI状态"""
-        self.start_button.setEnabled(True)
-        self.start_button.setText(self.tr("开始"))
-        self.preview_subtitle_button.setEnabled(True)
-        self.progress_ring.setValue(100)
-        self.task_state.setLevel(InfoLevel.INFOAMTION)
-        self.task_state.setIcon(FIF.REMOVE)
-        if self.task.soft_subtitle or self.task.logo_picture is None:
-            self.logo_picture.setHidden(True)
-        else:
-            self.logo_picture.setHidden(False)
-
-        # Hide the portrait/landscape switch if soft-subtitle
-        self.portrait_mode.setHidden(self.task.soft_subtitle)
-        self.update_tooltip()
-
-    def set_task(self, task):
-        """设置任务并更新UI"""
-        self.task = task
-        self.update_info(self.task.video_info)
-        self.reset_ui()
-
-
 class UpdateTimer(QThread):
     """
     This emit signal every 5 seconds after batch processing starts.

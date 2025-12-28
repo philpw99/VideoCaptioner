@@ -15,7 +15,6 @@ from .subtitle_config import (
     OPTIMIZER_PROMPT,
     REFLECT_TRANSLATE_PROMPT,
     SINGLE_TRANSLATE_PROMPT,
-    SINGLE_BATCH_TRANSLATE_PROMPT,
     SINGLE_BATCH_SYSTEM_PROMPT,
 )
 from ..subtitle_processor.aligner import SubtitleAligner
