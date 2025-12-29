@@ -62,6 +62,12 @@ class Config(QConfig):
         "LLM", "ThreadNum", 10, RangeValidator(1, 30)
     )
 
+    # When doing single translate, insert a time interval in seconds between each translation.
+    single_translate_interval = RangeConfigItem(
+        "LLM", "Single Translate Interval", 
+        0, RangeValidator(0, 60)
+    )
+
     llm_preset = ConfigItem( "LLM", "LLM_Preset", "" )
 
     # ------------------- 转录配置 -------------------

@@ -1,6 +1,6 @@
 import difflib
 import logging
-import os
+import os, time
 from concurrent.futures import ThreadPoolExecutor
 import re, json
 from typing import Dict
@@ -308,6 +308,9 @@ class SubtitleOptimizer:
             except Exception as e:
                  logger.error(f"单条翻译失败: {e}")
                  translate_result[key] = f"{value}\n "
+            # Insert interval if need to slow down the translation.
+            if cfg.single_translate_interval.value.value != 0:
+                time.sleep(cfg.single_translate_interval.value.value)
         return translate_result
 
     def translate_single_batch(self, asr_data: ASRData , callback = None) -> Dict[int,str]:

@@ -392,8 +392,6 @@ class CreateTaskThread(QThread):
         task_work_dir = self.short_work_path(file_path)
         thumbnail_path = task_work_dir / "thumbnail.jpg"
 
-
-
         video_info = get_video_info(file_path, thumbnail_path=str(thumbnail_path))
         video_info = VideoInfo(**video_info)
 

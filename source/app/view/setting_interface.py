@@ -105,6 +105,13 @@ class SettingInterface(ScrollArea):
             self.tr('优化翻译下，模型并行处理的数量，模型服务商允许的情况下建议尽可能大'),
             parent=self.llmGroup
         )
+        self.SingleTranslateIntervalCard = RangeSettingCard(
+            cfg.single_translate_interval,
+            FIF.STOP_WATCH,
+            self.tr('Single Sentence Translate Interval (seconds)'),
+            self.tr('In seconds, the time interval between each single sentence translation. This will slow down the requests sent to LLM server.'),
+            parent=self.llmGroup
+        )
         self.saveLLMSettingsCard = SaveSettingComboCard(
             FIF.SAVE,
             self.tr("Save LLM Settings"),
@@ -429,7 +436,8 @@ class SettingInterface(ScrollArea):
 
         self.llmGroup.addSettingCards([self.apiKeyCard,
             self.apiBaseCard, self.modelCard, self.checkLLMConnectionCard,
-            self.batchSizeCard, self.threadNumCard, self.saveLLMSettingsCard])
+            self.batchSizeCard, self.threadNumCard, self.saveLLMSettingsCard,
+            self.SingleTranslateIntervalCard])
 
         self.translateGroup.addSettingCards([self.subtitleTranslateCard,
             self.targetLanguageCard,])
@@ -437,7 +445,7 @@ class SettingInterface(ScrollArea):
         self.subtitleGroup.addSettingCards([self.subtitleStyleCard, self.subtitleLayoutCard,
             self.saveSubtitleFormatCard, self.saveSubtitlePrefixCard,
             self.saveSubtitleSuffixCard, self.enableSubtitleSentenceMinimumTimeCard,
-            self.SubtitleSentenceMinimumTimeCard, self.SubtitleTimeOffsetCard])
+            self.SubtitleSentenceMinimumTimeCard, self.SubtitleTimeOffsetCard,])
 
         self.videoGroup.addSettingCards([self.needVideoCard, self.videoPrefixCard, self.videoSuffixCard,
             self.softSubtitleCard, self.subtitleVerticalOffsetCard,

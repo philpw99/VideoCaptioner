@@ -1,6 +1,7 @@
 3.6.18
-	Save the local video thumb and info in work dir so it will much faster when loading a list next time.
+	In batch processing save the local video thumb and info in work dir so it will much faster when loading a list next time.
 	Change the hash method to crc32 so the same file will have the same temp work dir.
+	Add "Single Sentence Translate Interval" to the settings. So it can slow down the requests to the LLM server.
 3.6.17
 	Change some default config settings.
 	Improve translator system prompt.
