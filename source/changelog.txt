@@ -1,5 +1,6 @@
 3.6.18
 	Save the local video thumb and info in work dir so it will much faster when loading a list next time.
+	Change the hash method to crc32 so the same file will have the same temp work dir.
 3.6.17
 	Change some default config settings.
 	Improve translator system prompt.

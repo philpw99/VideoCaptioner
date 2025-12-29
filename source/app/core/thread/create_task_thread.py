@@ -1,4 +1,4 @@
-import datetime, os, re, json
+import datetime, os, re, json, binascii
 from pathlib import Path
 
 import requests
@@ -96,7 +96,8 @@ class CreateTaskThread(QThread):
         return: The Path of work_dir for that video file. Name must 
         """
         # Work dir + First 20 characters + hash hex code last 8 digits
-        work_dir: Path = Path(cfg.work_dir.value) / ( Path(path).stem[:20] + "-" + hex(hash(path))[-8:] )
+        
+        work_dir: Path = Path(cfg.work_dir.value) / ( Path(path).stem[:20] + "-" + hex(binascii.crc32(path.encode('utf-8')))[-8:] )
         # Create the path if not exist
         work_dir.mkdir(parents=True, exist_ok=True)
         return work_dir
@@ -124,17 +125,22 @@ class CreateTaskThread(QThread):
 
         # 获取 视频/音频 信息
         thumbnail_path = task_work_dir / "thumbnail.jpg"
-        info_file = task_work_dir / "info.json"        
+        info_file = task_work_dir / "info.json"
+        extract_video_info = True
         if thumbnail_path.is_file() and info_file.is_file():
             # Thumbnail and info already existed.
-            with open(info_file, "r") as file:
-                video_info = json.load(file)
-                # video_info['thumbnail_path'] = str(thumbnail_path)
-        else:
-            video_info = get_video_info(file_path, thumbnail_path=thumbnail_path, post_url=post_url)
+            try: 
+                with open(info_file, "r") as file:
+                    video_info = json.load(file)
+                extract_video_info = False
+            except:
+                pass
+
+        if extract_video_info:
+            video_info = get_video_info(file_path, thumbnail_path=str(thumbnail_path), post_url=post_url)
             # Save the info in work dir
-            with open(info_file,"w") as file:
-                file.write( json.dump(video_info))
+            with open(info_file,'w', encoding='utf-8') as file:
+                json.dump(video_info, file)
         video_info = VideoInfo(**video_info)
 
         match cfg.transcribe_model.value.value:
