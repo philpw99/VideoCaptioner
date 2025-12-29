@@ -815,7 +815,8 @@ class BatchProcessInterface(QWidget):
         # Reset all canceled tasks to pending tasks.
         for task_card in self.task_cards:
             if task_card.task:
-                if task_card.task.status == Task.Status.CANCELED:
+                if (task_card.task.status == Task.Status.CANCELED 
+                    or task_card.task.status == Task.Status.FAILED) :
                     task_card.task.status = Task.Status.PENDING
                 task_card.task.allow_running[0] = True
 
@@ -868,7 +869,7 @@ class BatchProcessInterface(QWidget):
         self.update_win_title(self.tr("Batch Process Canceled."))
         self.update_timer.stop()
 
-    def on_task_finished(self, task):
+    def on_task_finished(self, task: Task):
         """单个任务完成的处理"""
         InfoBar.success(
             self.tr("任务完成"),
@@ -877,6 +878,10 @@ class BatchProcessInterface(QWidget):
             position=InfoBarPosition.BOTTOM,
             parent=self
         )
+
+        # Cancel button hit.
+        if not task.allow_running[0]:
+            return
 
         # 查找下一个未完成的任务
         new_task_card = None

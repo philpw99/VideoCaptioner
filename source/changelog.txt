@@ -1,7 +1,10 @@
+3.6.18
+	Save the local video thumb and info in work dir so it will much faster when loading a list next time.
 3.6.17
 	Change some default config settings.
 	Improve translator system prompt.
 	Now you can drag and drop folders to batch processing instead of files.
+	3 active tasks instead of 2 in batch processing.
 	Autoscroll batch tasks to the current running.
 3.6.16
 	Add more Faster Whisper models with ModelScope.cn download mirrors:

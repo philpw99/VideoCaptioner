@@ -93,16 +93,15 @@ class TranscriptThread(QThread):
 
                     audio_save_path = Path(self.task.audio_save_path)
                     if audio_save_path.exists():
-                        # There is already a wave file with same name.
-                        os.remove(audio_save_path)
-                
-                    is_success = video2audio(str(video_path),
-                                            output_file=str(audio_save_path),
-                                            format= self.task.audio_format,
-                                            allow_running=self.task.allow_running,
-                                            audio_track = self.task.audio_track,
-                                            )
-
+                        # If there is already a wave file with same name. Use it directly.
+                        is_success = True
+                    else:
+                        is_success = video2audio(str(video_path),
+                                                output_file=str(audio_save_path),
+                                                format= self.task.audio_format,
+                                                allow_running=self.task.allow_running,
+                                                audio_track = self.task.audio_track,
+                                                )
                 if not is_success:
                     logger.error("音频转换失败")
                     raise RuntimeError(self.tr("音频转换失败"))
@@ -267,13 +266,13 @@ class TranscriptThread(QThread):
                     logger.info("目的字幕文件已保存到: %s", self.task.result_subtitle_save_path)
                         
             # 删除音频文件 和 封面
-            try:
-                audio_save_path.unlink()
-                thumbnail_path = Path(self.task.video_info.thumbnail_path)
-                if thumbnail_path.exists():
-                    thumbnail_path.unlink()
-            except Exception as e:
-                logger.error("删除音频文件或封面失败: %s", str(e))
+            # try:
+            #    audio_save_path.unlink()
+            #    thumbnail_path = Path(self.task.video_info.thumbnail_path)
+            #    if thumbnail_path.exists():
+            #        thumbnail_path.unlink()
+            # except Exception as e:
+            #    logger.error("删除音频文件或封面失败: %s", str(e))
 
             self.progress.emit(100, self.tr("转录完成"))
             self.finished.emit(self.task)

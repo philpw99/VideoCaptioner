@@ -753,5 +753,6 @@ class Task:
     # 声道
     audio_track: int = 0
     
-NOT_RUNNING_TASKS = [Task.Status.CANCELED, Task.Status.COMPLETED, Task.Status.FAILED, Task.Status.PENDING]
+NOT_RUNNING_TASKS = [Task.Status.CANCELED, Task.Status.COMPLETED, Task.Status.FAILED, 
+                     Task.Status.PENDING]
 

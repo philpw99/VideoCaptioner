@@ -1,6 +1,4 @@
-import datetime
-import os
-import re
+import datetime, os, re, json
 from pathlib import Path
 
 import requests
@@ -125,8 +123,18 @@ class CreateTaskThread(QThread):
         audio_track = audio_track
 
         # 获取 视频/音频 信息
-        thumbnail_path = str(task_work_dir / "thumbnail.jpg")
-        video_info = get_video_info(file_path, thumbnail_path=thumbnail_path, post_url=post_url)
+        thumbnail_path = task_work_dir / "thumbnail.jpg"
+        info_file = task_work_dir / "info.json"        
+        if thumbnail_path.is_file() and info_file.is_file():
+            # Thumbnail and info already existed.
+            with open(info_file, "r") as file:
+                video_info = json.load(file)
+                # video_info['thumbnail_path'] = str(thumbnail_path)
+        else:
+            video_info = get_video_info(file_path, thumbnail_path=thumbnail_path, post_url=post_url)
+            # Save the info in work dir
+            with open(info_file,"w") as file:
+                file.write( json.dump(video_info))
         video_info = VideoInfo(**video_info)
 
         match cfg.transcribe_model.value.value:
