@@ -1,3 +1,5 @@
+3.6.19
+	Change translation prompt to prevent repeating exclamations.
 3.6.18
 	In batch processing save the local video thumb and info in work dir so it will much faster when loading a list next time.
 	Change the hash method to crc32 so the same file will have the same temp work dir.
