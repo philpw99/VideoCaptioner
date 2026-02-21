@@ -495,6 +495,14 @@ class CreateTaskThread(QThread):
         video_file = Path(video_file).as_posix()
         task_work_dir = Path(video_file).parent
         video_save_path = task_work_dir / (qoCreateTask.tr("【生成】") + Path(video_file).name)
+        
+        if str(subtitle_file[-4:]).lower() == ".ass":
+            ass_style_name = cfg.subtitle_style_name.value
+            ass_style_path = SUBTITLE_STYLE_PATH / f"{ass_style_name}.txt"
+            if ass_style_path.exists():
+                subtitle_style_srt = ass_style_path.read_text(encoding="utf-8")
+        else:
+            subtitle_style_srt = None
 
         if create_entry:
             # 获取 视频/音频 信息
@@ -517,6 +525,7 @@ class CreateTaskThread(QThread):
             video_save_path=str(video_save_path),
             video_info=video_info,
             soft_subtitle=soft_sub,
+            subtitle_style_srt=subtitle_style_srt,
             type=Task.Type.SYNTHESIS,
             need_video=True,    # Just in case, because synthesis always generate a video
             subtitle_vertical_offset=cfg.subtitle_vertical_offset.value,

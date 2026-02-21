@@ -614,6 +614,7 @@ class VideoInfo:
     audio_sampling_rate: int
     thumbnail_path: str
     audio_tracks: list
+    rotation: int
 
 class WhisperModelEnum(Enum):
     TINY = "tiny"

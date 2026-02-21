@@ -533,7 +533,6 @@ class FasterWhisperDownloadDialog(MessageBoxBase):
             )
         else:
             # Download from HuggingFace hub
-
             self.model_download_thread = HuggingfaceDownloadThread(
                 model['downloadLink'],
                 os.path.join(MODEL_PATH, model['value'])
@@ -560,8 +559,7 @@ class FasterWhisperDownloadDialog(MessageBoxBase):
             # 更新主设置对话框的模型选择
             parent = self.parent()
             if isinstance(parent, FasterWhisperSettingDialog):
-                model = FASTER_WHISPER_MODELS[row]
-                model_text = model['label']
+                model_text = str( FASTER_WHISPER_MODELS[row]['label'] ).lower()
                 if parent.model_card.comboBox.findText(model_text) == -1:
                     parent.model_card.comboBox.addItem(model_text)
             

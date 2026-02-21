@@ -103,7 +103,7 @@ class Config(QConfig):
     faster_whisper_model = OptionsConfigItem(
         "FasterWhisper", "Model",
         FasterWhisperModelEnum.TINY.value,
-        OptionsValidator(FasterWhisperModelEnum),
+        EnumOptionsValidator(FasterWhisperModelEnum),
         EnumSerializer(FasterWhisperModelEnum)
     )
     faster_whisper_model_dir = ConfigItem("FasterWhisper", "ModelDir", "")

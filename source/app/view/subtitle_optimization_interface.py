@@ -367,7 +367,6 @@ class SubtitleOptimizationInterface(QWidget):
         # 将批量翻译按钮的 clicked 信号连接到 on_batch_file_select 方法
         self.batch_translate_button.clicked.connect(self.on_batch_file_select)
 
-
         # 将保存按钮的 clicked 信号连接到 on_save_clicked 方法
         self.save_button.clicked.connect(self.on_save_clicked)
         # 将打开视频按钮的 clicked 信号连接到 on_open_folder_clicked 方法
@@ -392,6 +391,13 @@ class SubtitleOptimizationInterface(QWidget):
 
         # 缩短行长
         self.max_width_apply.clicked.connect(self.on_max_width_apply_clicked)
+
+        # 字幕输出格式改变
+        self.format_combobox.currentTextChanged.connect(self.on_format_combox_changed)
+        
+    def on_format_combox_changed(self, text):
+        # print( "set it to:" + text)
+        cfg.set(cfg.subtitle_output_format, OutputSubtitleFormatEnum(text))
 
     def on_start_button_clicked(self):
         # 更新任务配置
@@ -910,8 +916,6 @@ class SubtitleOptimizationInterface(QWidget):
 
             self.file_select_button.setProperty("selected_file", file_path)
             self.load_subtitle_file(file_path)
-            
-            # print(file_path)
 
     #改start
     def on_batch_file_select(self):
@@ -994,6 +998,7 @@ class SubtitleOptimizationInterface(QWidget):
                 asr_data.to_ass(style_str, layout, file_path)
             else:
                 asr_data.save(file_path, layout=layout)
+
             InfoBar.success(
                 self.tr("保存成功"),
                 self.tr(f"字幕已保存至:") + file_path,
@@ -1132,6 +1137,8 @@ class SubtitleOptimizationInterface(QWidget):
             else:
                 subtitle_style_srt = None
             temp_srt_path = os.path.join(tempfile.gettempdir(), "temp_subtitle.ass")
+            if os.path.exists(temp_srt_path):
+                os.unlink(temp_srt_path)
             asr_data = from_json(self.model._data)
             asr_data.save(temp_srt_path, layout=cfg.subtitle_layout.value, ass_style=subtitle_style_srt)
             signalBus.add_subtitle(temp_srt_path)
@@ -1450,7 +1457,7 @@ class PromptDialog(MessageBoxBase):
         # 在点击确定按钮时保存提示文本到配置
         prompt_text = self.text_edit.toPlainText()
         cfg.set(cfg.custom_prompt_text, prompt_text, True)
-        # print(cfg.custom_prompt_text.value)
+
 
 
 if __name__ == "__main__":

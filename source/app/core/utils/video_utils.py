@@ -145,6 +145,7 @@ def add_subtitles(
         zoom_subtitle: int = 100,
         blur_background = False,
         progress_callback: callable = None,
+        video_rotation: int = 0,
         allow_running: list = [True],
 ) -> None:
     """ Add subtitles to videos by hard coding method.
@@ -231,7 +232,6 @@ def add_subtitles(
         
         # print (f"portrait: {portrait}, background{background}\n" \
         #    +f"output_width: {output_width}, output_height: {output_height}, duration{duration}")
-        
         
         if portrait and input_width > input_height:
             # Landscape convert to portrait mode.
@@ -320,12 +320,12 @@ def add_subtitles(
             if logo:
                 # With logo
                 cmd.extend(['-i', logo])
-                
                 vf =  f"[1:v]trim=0:{duration},scale={output_width}:{output_height}[logo];" \
                     + f"color=d={duration}:c=black@0:s={output_width_subtitle}x{output_height_subtitle}," \
                     + f"subtitles='{subtitle_file}':alpha=1[sub];" \
                     + f"[0:v][logo]overlay[outlogo];" \
                     + f"[outlogo][sub]overlay={subtitle_x}:{subtitle_y+vertical_offset},setsar=1"
+
             else:
                 # No logo
                 vf = f"color=d={duration}:c=black@0:s={output_width_subtitle}x{output_height_subtitle}," \
@@ -464,6 +464,7 @@ def get_video_info(filepath: str, thumbnail_path: str = "", post_url: str = None
             'audio_sampling_rate': 0,
             'thumbnail_path': '',
             'audio_tracks': None,
+            'rotation': 0,
         }
 
         # 提取时长
@@ -523,6 +524,10 @@ def get_video_info(filepath: str, thumbnail_path: str = "", post_url: str = None
         # 提取音频流语言列表信息
         if audio_track_match := re.findall(r"Stream #\d+:(\d+\(.+?\)): Audio:", info, re.DOTALL):
             video_info['audio_tracks'] = audio_track_match     # It's a list like ["1(eng)", "2(fra)", "3(ita)"]
+
+        # 提取MP4旋转信息
+        if rotation_match := re.search(r'rotation of (\d+)\.\d+ degrees', info):
+            video_info["rotation"] = int( rotation_match.group(1) )
 
         return video_info
     except Exception as e:

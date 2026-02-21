@@ -61,11 +61,19 @@ class VideoSynthesisThread(QThread):
                     w = video_info["width"]
                     h = video_info["height"]
                     duration = int(video_info["duration_seconds"])
+                    self.task.video_info = video_info
                 else:
                     w = self.task.video_info.width
                     h = self.task.video_info.height
                     duration = int(self.task.video_info.duration_seconds)
-                    
+                
+                rotation = self.task.video_info["rotation"]
+                if rotation == 90 or rotation == 270:
+                    # Rotated side way
+                    temp = w
+                    w = h
+                    h = temp
+
                 if ( self.task.portrait and w > h ) or (not self.task.portrait and w < h):
                     # Need to convert lanscape <-> portrait
                     width = h
@@ -92,6 +100,7 @@ class VideoSynthesisThread(QThread):
                             blur_background=cfg.blur_background.value,
                             crf=cfg.encoder_quality.value,
                             progress_callback=self.progress_callback,
+                            video_rotation=self.task.video_info["rotation"],
                             allow_running=self.task.allow_running,
                             )
                 self.progress.emit(100, self.tr("合成完成"))
