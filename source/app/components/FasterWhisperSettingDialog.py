@@ -561,8 +561,12 @@ class FasterWhisperDownloadDialog(MessageBoxBase):
             if isinstance(parent, FasterWhisperSettingDialog):
                 model_text = str( FASTER_WHISPER_MODELS[row]['label'] ).lower()
                 if parent.model_card.comboBox.findText(model_text) == -1:
-                    parent.model_card.comboBox.addItem(model_text)
-            
+                    parent.model_card.comboBox.addItem(
+                        model_text,
+                        userData = FasterWhisperModelEnum(model_text)
+                        )
+                parent.model_card.comboBox.setCurrentText(model_text)
+                
             InfoBar.success(
                 self.tr("下载成功"),
                 self.tr(f"{model['label']} 模型已下载完成"),
@@ -898,9 +902,10 @@ class FasterWhisperSettingDialog(MessageBoxBase):
         
     def _on_model_card_changed(self, model_value:str):
         # Set the model and model dir once it's changed.
-        model = FasterWhisperModelEnum(model_value.lower())
-        if cfg.faster_whisper_model.value != model:
-            cfg.faster_whisper_model.value = model
+        if model_value:  # For some strange reason sometimes model_value is empty
+            model = FasterWhisperModelEnum(model_value.lower())
+            if cfg.faster_whisper_model.value.value != model.value:
+                cfg.faster_whisper_model.value = model
     
     def _on_one_word_changed(self, checked: bool):
         cfg.faster_whisper_one_word.value = checked

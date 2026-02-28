@@ -3795,7 +3795,7 @@ Detail settings are in the &apos;Settings&apos; on the lower left corner.</trans
     <name>VideoSynthesisThread</name>
     <message>
         <location filename="../../app/core/thread/video_synthesis_thread.py" line="51"/>
-        <location filename="../../app/core/thread/video_synthesis_thread.py" line="97"/>
+        <location filename="../../app/core/thread/video_synthesis_thread.py" line="106"/>
         <source>合成完成</source>
         <translation>Synthesis Done</translation>
     </message>
@@ -3810,7 +3810,7 @@ Detail settings are in the &apos;Settings&apos; on the lower left corner.</trans
         <translation></translation>
     </message>
     <message>
-        <location filename="../../app/core/thread/video_synthesis_thread.py" line="103"/>
+        <location filename="../../app/core/thread/video_synthesis_thread.py" line="112"/>
         <source>视频合成失败</source>
         <translation>Video synthesizing failed</translation>
     </message>
@@ -3987,12 +3987,12 @@ Detail settings are in the &apos;Settings&apos; on the lower left corner.</trans
 <context>
     <name>qoVideo</name>
     <message>
-        <location filename="../../app/core/utils/video_utils.py" line="154"/>
+        <location filename="../../app/core/utils/video_utils.py" line="155"/>
         <source>输入文件不存在</source>
         <translation>Input File Does Not Exist</translation>
     </message>
     <message>
-        <location filename="../../app/core/utils/video_utils.py" line="156"/>
+        <location filename="../../app/core/utils/video_utils.py" line="157"/>
         <source>字幕文件不存在</source>
         <translation>Subtitle file does not exist</translation>
     </message>

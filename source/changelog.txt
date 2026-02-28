@@ -1,3 +1,5 @@
+3.7.0
+	Finally fix the downloaded whisper model forced to set to "tiny" error.
 3.6.19
 	Change translation prompt to prevent repeating exclamations.
 	Fix ass subtitle synthesis problem.

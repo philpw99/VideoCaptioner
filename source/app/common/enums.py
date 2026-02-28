@@ -8,17 +8,20 @@ class EnumOptionsValidator(ConfigValidator):
     def __init__(self, enumClass: Enum):
         if not enumClass or len(enumClass) == 0:
             raise ValueError("The `enums` can't be empty.")
-
         self.options = list(enumClass)
 
     def validate(self, enum):
         if isinstance(enum, Enum): # It's enum
-            return enum in self.options
+            result = enum in self.options
+            return result 
         return False
 
     def correct(self, enum):
         if isinstance(enum, Enum):  # It's enum
-            return enum if self.validate(enum) else self.options[0]
+            if self.validate(enum):
+                return enum
+            else:
+                return self.options[0]
         else:   # It's other value
             return self.options[0]
             
