@@ -302,6 +302,14 @@ class SettingInterface(ScrollArea):
             self.tr("The constant quality value (CRF). Range from 0 to 50. 0 is the best and 50 is the worst. Default is 23. "),
             self.videoGroup
         )
+
+        self.batchFileMinimumSizeCard = RangeSettingCard(
+            cfg.batch_file_minimum_size,
+            FIF.UNIT,
+            self.tr("Minimum Batch File Size"),
+            self.tr("The minimum size of file that can be added to the batch."),
+            self.videoGroup
+        )
         
         # 保存配置
         self.saveGroup = SettingCardGroup(self.tr("保存配置"), self.scrollWidget)
@@ -360,6 +368,7 @@ class SettingInterface(ScrollArea):
             cfg.no_thumbnail,
             parent=self.personalGroup
         )
+        
 
         # 应用信息
         self.aboutGroup = SettingCardGroup(self.tr('关于'), self.scrollWidget)
@@ -379,20 +388,20 @@ class SettingInterface(ScrollArea):
             self.aboutGroup
         )
         self.aboutCard = PrimaryPushSettingCard(
-            self.tr('检查更新'),
+            self.tr('版本信息'),
             FIF.INFO,
             self.tr('关于'),
             '© ' + self.tr('版权所有') + f" {YEAR}, {AUTHOR}. " +
             self.tr('版本') + " " + VERSION,
             self.aboutGroup
         )
-        self.check_update_startup_card = SwitchSettingCard(
-            FIF.UPDATE,
-            self.tr("自动检测更新"),
-            self.tr("每次程序开跑时自动检测更新"),
-            cfg.checkUpdateAtStartUp,
-            self.aboutGroup,
-        )
+        # self.check_update_startup_card = SwitchSettingCard(
+        #     FIF.UPDATE,
+        #     self.tr("自动检测更新"),
+        #     self.tr("每次程序开跑时自动检测更新"),
+        #     cfg.checkUpdateAtStartUp,
+        #     self.aboutGroup,
+        # )
         self.__initWidget()
 
     def __initWidget(self):
@@ -450,7 +459,9 @@ class SettingInterface(ScrollArea):
         self.videoGroup.addSettingCards([self.needVideoCard, self.videoPrefixCard, self.videoSuffixCard,
             self.softSubtitleCard, self.subtitleVerticalOffsetCard,
             self.videoPortraitCard, self.videoLogoCard,
-            self.videoBlurBackgroundCard, self.zoomVideoCard, self.zoomSubtitleCard, self.videoQualityCard])
+            self.videoBlurBackgroundCard, self.zoomVideoCard, self.zoomSubtitleCard, self.videoQualityCard,
+            self.batchFileMinimumSizeCard
+            ])
 
         self.saveGroup.addSettingCard(self.savePathCard)
 
@@ -458,7 +469,9 @@ class SettingInterface(ScrollArea):
             self.zoomCard, self.languageCard, self.noThumbnailCard])
 
         self.aboutGroup.addSettingCards([self.helpCard, self.feedbackCard, 
-                                         self.aboutCard, self.check_update_startup_card])
+                                         self.aboutCard,
+                                         # self.check_update_startup_card,
+                                         ])
 
         # 将设置卡片组添加到布局
         self.expandLayout.setSpacing(28)

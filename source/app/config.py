@@ -3,8 +3,8 @@ import logging
 from pathlib import Path
 
 VERSION = "v1.2.0"
-SUBVERSION = "3.7.0"
-YEAR = 2025
+SUBVERSION = "3.7.1"
+YEAR = 2026
 APP_NAME = "VideoCaptioner"
 AUTHOR = "Weifeng"
 COAUTHOR = "Philpw99"

@@ -270,6 +270,14 @@ class Config(QConfig):
         EnumExSerializer(TodoWhenDoneEnum)
     )
     
+    # ------------------- 批量处理文件最小大小 ----------------
+    batch_file_minimum_size = RangeConfigItem(
+        "All",
+        "MinimumBatchFileSize",
+        100,
+        RangeValidator(0, 1000)
+    )
+    
     theme_style_sheet = ""      # Load the value from qss, not from the config file.
 
 cfg = Config()

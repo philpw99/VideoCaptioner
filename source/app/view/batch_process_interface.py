@@ -731,13 +731,23 @@ class BatchProcessInterface(QWidget):
                 soft_sub = False
                 
         if file_ext in supported_formats:
+            if cfg.batch_file_minimum_size != 0:
+                if os.path.getsize(file_path) < cfg.batch_file_minimum_size.value * 1048576:
+                    # File size is too small for batch processing. Default is 100mb.
+                    InfoBar.error(
+                        self.tr("文件太小"),
+                        self.tr(f"该文件{file_path}太小，需要至少{cfg.batch_file_minimum_size.value}MB"),
+                        duration=3000,
+                        parent=self,
+                    )
+                    return
             self.create_task(file_path, task_type, soft_sub)
         else:
             InfoBar.error(
                 self.tr("格式错误") + file_ext,
                 self.tr(f"该文件 {file_path} 格式不正确"),
                 duration=3000,
-                parent=self
+                parent=self,
             )
         
     def set_default_task_type(self, whatever):

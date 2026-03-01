@@ -1,5 +1,8 @@
+3.7.1
+
 3.7.0
 	Finally fix the downloaded whisper model forced to set to "tiny" error.
+	Add "Minimum batch file size" to settings, so small files won't add to the queue.
 3.6.19
 	Change translation prompt to prevent repeating exclamations.
 	Fix ass subtitle synthesis problem.
